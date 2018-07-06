@@ -79,7 +79,7 @@ server <- function(input, output) {
                                                   " and HADM_ID = ", 
                                                   as.numeric(input$hadm_id)), 
                                            project_id) %>% 
-      select(ROW_ID = a_ROW_ID, ICUSTAY_ID = a_ICUSTAY_ID, CHARTTIME = a_CHARTTIME, STORETIME = a_STORETIME, CGID = a_CGID, LABEL = b_LABEL, VALUE = a_VALUE, VALUENUM = a_VALUENUM, UOM = a_UOM, WARNING = a_WARNING, ERROR = a_ERROR, RESULTSTATUS = a_RESULTSTATUS, STOPPED = a_STOPPED, DBSOURCE = b_DBSOURCE, CATEGORY = b_CATEGORY, UNITNAME = b_UNITNAME) %>% mutate(LABEL = as.factor(LABEL), CATEGORY = as.factor(CATEGORY)) %>% arrange(CHARTTIME)})
+      select(ROW_ID = a_ROW_ID, ICUSTAY_ID = a_ICUSTAY_ID, CHARTTIME = a_CHARTTIME, STORETIME = a_STORETIME, CGID = a_CGID, LABEL = b_LABEL, VALUE = a_VALUE, VALUENUM = a_VALUENUM, VALUEUOM = a_VALUEUOM, WARNING = a_WARNING, ERROR = a_ERROR, RESULTSTATUS = a_RESULTSTATUS, STOPPED = a_STOPPED, DBSOURCE = b_DBSOURCE, CATEGORY = b_CATEGORY, UNITNAME = b_UNITNAME) %>% mutate(LABEL = as.factor(LABEL), CATEGORY = as.factor(CATEGORY)) %>% arrange(CHARTTIME)})
   
   cptevents_data <- reactive({query_exec(paste0("select * from [mimic3.CPTEVENTS] where SUBJECT_ID = ", 
                                                 as.numeric(input$subject_id), 
@@ -87,11 +87,11 @@ server <- function(input, output) {
                                                 as.numeric(input$hadm_id)), 
                                          project_id) %>% select(-SUBJECT_ID, -HADM_ID) %>% arrange(CHARTDATE)}) 
   
-  diagnoses_icd_data <- reactive({query_exec(paste0("select * from [mimic3.DIAGNOSES_ICD] a inner join [mimic3.D_ICD_DIAGNOSES] b on a. ICD_CODE=b.ICD_CODE where SUBJECT_ID = ", 
+  diagnoses_icd_data <- reactive({query_exec(paste0("select * from [mimic3.DIAGNOSES_ICD] a inner join [mimic3.D_ICD_DIAGNOSES] b on a.ICD9_CODE = b.ICD9_CODE where SUBJECT_ID = ", 
                                           as.numeric(input$subject_id), 
                                           " and HADM_ID = ", 
                                           as.numeric(input$hadm_id)), 
-                                   project_id) %>% select(ROW_ID = a_ROW_ID, SEQ_NUM = a_SEQ_NUM, ICD_CODE = a_ICD_CODE, LONG_TITLE = b_LONG_TITLE) %>% arrange(SEQ_NUM)})
+                                   project_id) %>% select(ROW_ID = a_ROW_ID, SEQ_NUM = a_SEQ_NUM, ICD9_CODE = a_ICD9_CODE, LONG_TITLE = b_LONG_TITLE) %>% arrange(SEQ_NUM)})
   
   drgcodes_data <- reactive({query_exec(paste0("select * from [mimic3.DRGCODES] where SUBJECT_ID = ", 
                                                as.numeric(input$subject_id), 
@@ -110,7 +110,7 @@ server <- function(input, output) {
                                                               " and HADM_ID = ", 
                                                               as.numeric(input$hadm_id)), 
                                                        project_id) %>% 
-      select(ROW_ID = a_ROW_ID, CHARTTIME = a_CHARTTIME, LABEL = b_LABEL, FLUID = b_FLUID, CATEGORY = b_CATEGORY, VALUE = a_VALUE, VALUENUM = a_VALUENUM, UOM = a_UOM, FLAG = a_FLAG) %>% mutate(LABEL = as.factor(LABEL), CATEGORY = as.factor(CATEGORY)) %>% arrange(CHARTTIME)})
+      select(ROW_ID = a_ROW_ID, CHARTTIME = a_CHARTTIME, LABEL = b_LABEL, FLUID = b_FLUID, CATEGORY = b_CATEGORY, VALUE = a_VALUE, VALUENUM = a_VALUENUM, VALUEUOM = a_VALUEUOM, FLAG = a_FLAG) %>% mutate(LABEL = as.factor(LABEL), CATEGORY = as.factor(CATEGORY)) %>% arrange(CHARTTIME)})
   
   microbiologyevents_data <- reactive({query_exec(paste0("select * from [mimic3.MICROBIOLOGYEVENTS] where SUBJECT_ID = ", 
                                                          as.numeric(input$subject_id), 
@@ -124,14 +124,14 @@ server <- function(input, output) {
                                            " and HADM_ID = ", 
                                            as.numeric(input$hadm_id)), 
                                     project_id) %>% 
-      filter(ISERROR!=1) %>% 
+      filter(is.na(ISERROR)) %>% 
       select(-ISERROR, -SUBJECT_ID, -HADM_ID, -ROW_ID) %>% 
-      group_by(CHARTDATE_STR, CHARTTIME_STR, STORETIME, CATEGORY, CGID, TEXT) %>% 
+      group_by(CHARTDATE, CHARTTIME, STORETIME, CATEGORY, CGID, TEXT) %>% 
       arrange(DESCRIPTION) %>% 
       summarise(DESCRIPTION = paste(DESCRIPTION,collapse = "; ")) %>% 
       ungroup() %>% 
       mutate(CATEGORY = as.factor(CATEGORY), DESCRIPTION = as.factor(DESCRIPTION)) %>% 
-      arrange(CHARTDATE_STR)})
+      arrange(CHARTDATE)})
   
   patients_data <- reactive({query_exec(paste0("select * from [mimic3.PATIENTS] where SUBJECT_ID = ", 
                                                as.numeric(input$subject_id)), 
@@ -141,7 +141,7 @@ server <- function(input, output) {
                                                     as.numeric(input$subject_id), 
                                                     " and HADM_ID = ", 
                                                     as.numeric(input$hadm_id)), 
-                                             project_id) %>% select(-SUBJECT_ID, -HADM_ID) %>% mutate(DRUG = as.factor(DRUG), FORM_UNIT_DISP = as.factor(FORM_UNIT_DISP), ROUTE = as.factor(ROUTE)) %>% arrange(STARTTIME)}) 
+                                             project_id) %>% select(-SUBJECT_ID, -HADM_ID) %>% mutate(DRUG = as.factor(DRUG), FORM_UNIT_DISP = as.factor(FORM_UNIT_DISP), ROUTE = as.factor(ROUTE)) %>% arrange(STARTDATE)}) 
   
   procedureevents_mv_data <- reactive({query_exec(paste0("select * from [mimic3.PROCEDUREEVENTS_MV] a inner join [mimic3.D_ITEMS] b on a.ITEMID = b.ITEMID where SUBJECT_ID = ", 
                                                          as.numeric(input$subject_id), 
@@ -149,11 +149,11 @@ server <- function(input, output) {
                                                          as.numeric(input$hadm_id)), 
                                                   project_id) %>% select(ROW_ID = a_ROW_ID, ICUSTAY_ID = a_ICUSTAY_ID, STARTTIME = a_STARTTIME, ENDTIME = a_ENDTIME, LABEL = b_LABEL, DBSOURCE = b_DBSOURCE, VALUE = a_VALUE, VALUEUOM = a_VALUEUOM, LOCATION = a_LOCATION, LOCATIONCATEGORY = a_LOCATIONCATEGORY, STORETIME = a_STORETIME, CGID = a_CGID, ORDERID = a_ORDERID, LINKORDERIK = a_LINKORDERID, ORDERCATEGORYNAME = a_ORDERCATEGORYNAME, SECONDARYORDERCATEGORYNAME = a_SECONDARYORDERCATEGORYNAME, ORDERCATEGORYDESCRIPTION = a_ORDERCATEGORYDESCRIPTION, ISOPENBAG = a_ISOPENBAG, CONTINUEINNEXTDEPT = a_CONTINUEINNEXTDEPT, CANCELREASON = a_CANCELREASON, STATUSDESCRIPTION = a_STATUSDESCRIPTION, COMMENTS_EDITEDBY = a_COMMENTS_EDITEDBY, COMMENTS_CANCELEDBY = a_COMMENTS_CANCELEDBY, COMMENTS_DATE = a_COMMENTS_DATE) %>% mutate(ORDERCATEGORYNAME = as.factor(ORDERCATEGORYNAME), SECONDARYORDERCATEGORYNAME = as.factor(SECONDARYORDERCATEGORYNAME), ORDERCATEGORYDESCRIPTION = as.factor(ORDERCATEGORYDESCRIPTION)) %>% arrange(STARTTIME)}) 
 
-  procedures_icd_data <- reactive({query_exec(paste0("select * from [mimic3.PROCEDURES_ICD] a inner join [mimic3.D_ICD_PROCEDURES] b on a.ICD_CODE = b.ICD_CODE where SUBJECT_ID = ", 
+  procedures_icd_data <- reactive({query_exec(paste0("select * from [mimic3.PROCEDURES_ICD] a inner join [mimic3.D_ICD_PROCEDURES] b on a.ICD9_CODE = b.ICD9_CODE where SUBJECT_ID = ", 
                                                          as.numeric(input$subject_id), 
                                                          " and HADM_ID = ", 
                                                          as.numeric(input$hadm_id)), 
-                                                  project_id) %>% select(ROW_ID = a_ROW_ID, SEQ_NUM = a_SEQ_NUM, ICD_CODE = a_ICD_CODE, LONG_TITLE = b_LONG_TITLE) %>% arrange(SEQ_NUM)})
+                                                  project_id) %>% select(ROW_ID = a_ROW_ID, SEQ_NUM = a_SEQ_NUM, ICD9_CODE = a_ICD9_CODE, LONG_TITLE = b_LONG_TITLE) %>% arrange(SEQ_NUM)})
   
   
   services_labels <- data.frame(SERVICE = c("CMED","CSURG","DENT","ENT","GU","GYN","MED","NB","NBB","NMED","NSURG","OBS","ORTHO","OMED", "PSURG","PSYCH","SURG","TRAUMA","TSURG","VSURG"), DESCRIPTION = c("Cardiac Medical - for non-surgical cardiac related admissions
