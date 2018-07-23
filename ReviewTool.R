@@ -6,7 +6,7 @@
 #
 #    http://shiny.rstudio.com/
 #
-## Requires the following packages:  install.packages(c("shiny", "tidyverse", "shinytemes", "DT", "bigrquery"))
+## Requires the following packages:  install.packages(c("shiny", "tidyverse", "shinythemes", "DT", "bigrquery"))
 
 
 # First time setup for all dependencies:
@@ -17,6 +17,7 @@
 library(shiny)
 library(shinyjs)
 library(shinydashboard)
+library(shinycssloaders)
 #library(shinythemes)
 
 # Define UI for application 
@@ -25,47 +26,58 @@ ui <- dashboardPage(
   dashboardSidebar(
     sidebarMenu(
       id = "tabs",
-      menuItem("Patient Search", tabName = "patient_search", icon = icon("dashboard")),
-      menuItem("Chart Review", icon = icon("th"), tabName = "chart_review")
+      menuItem("Patient Search", tabName = "patient_search", icon = icon("users")),
+      menuItem("Chart Review", icon = icon("table"), tabName = "chart_review")
     )
   ),
   dashboardBody(
+    tags$head(tags$style(HTML('.wrapper .content-wrapper { overflow-y: scroll; }'))),
     tabItems(
       tabItem(tabName = "patient_search",
               h2("Select a patient to view"),
-              DT::dataTableOutput('all_patients_tbl')
+              withSpinner(DT::dataTableOutput('all_patients_tbl'))
       ),
       
       tabItem(tabName = "chart_review",
-              fluidRow(
-                column(12, h2("You are seeing the record of:"), 
-                       h4(textOutput("subject_id_output")),
-                       h4(textOutput("hadm_id_output")),
-                       em("If you see 'Error: x>0 is not TRUE, that means that there are no data that match that request"),
-                       br())
+              conditionalPanel(
+                condition = "!(input.subject_id)",
+                h4("Please select a patient from the 'Patient Search' tab")
               ),
-              
-              tabsetPanel(
-                tabPanel("ADMISSIONS", DT::dataTableOutput('admissions_tbl')),
-                tabPanel("CALLOUT", DT::dataTableOutput('callout_tbl')),
-                tabPanel("CHARTEVENTS",DT::dataTableOutput('chartevents_tbl')), ## MAKE SURE TO MAP TO D_ITEMTS
-                tabPanel("CPTEVENTS", br(), em("Please note that due to licensing restrictions, neither MIMIC-III nor course instructors can provide labels for these CPT codes."), br(), DT::dataTableOutput('cptevents_tbl')),
-                #tabPanel("DATETIMEEVENTS", DT:dataTableOutput('datetimeevents_tbl')), ## MAKE SURE TO MAP TO D_ITEMS
-                tabPanel("DIAGNOSES_ICD", br(), em("Please note that this table has been joined with 'D_ICD_DIAGNOSES' to provide the long title value for your reference."), br(), DT::dataTableOutput('diagnoses_icd_tbl')),
-                tabPanel("DRGCODES", DT::dataTableOutput('drgcodes_tbl')),
-                tabPanel("ICUSTAYS", DT::dataTableOutput('icustays_tbl')),
-                # tabPanel("INPUTEVENTS_CV", DT::dataTableOutput('inputevents_cv_tbl')),
-                # tabPanel("INPUTEVENTS_MV", DT::dataTableOutput('inputevents_mv_tbl')),
-                tabPanel("LABEVENTS", br(), em("Please note that this table has been joined with 'D_LABITEMS' to provide the lab label, fluid, and category for your reference."), br(), DT::dataTableOutput('labevents_tbl')),
-                tabPanel("MICROBIOLOGYEVENTS", DT::dataTableOutput('microbiologyevents_tbl')),
-                tabPanel("NOTEEVENTS", br(), em("Please note that all 'ISERROR' notes have been removed from this table."),br(), DT::dataTableOutput('noteevent_tbl')),
-                #tabPanel("OUTPUTEVENTS", DT::dataTableOutput('outputevents_tbl')),
-                tabPanel("PATIENTS", DT::dataTableOutput('patients_tbl')),
-                tabPanel("PRESCRIPTIONS", DT::dataTableOutput('prescriptions_tbl')),
-                tabPanel("PROCEDUREEVENTS_MV", br(), em("Please note that this table has been joined with 'D_ITEMS' to provide the Label, and DBSource for your reference."), br(), DT::dataTableOutput('procedureevents_mv_tbl')),
-                tabPanel("PROCEDURES_ICD", br(), em("Please note that this table has been joined with 'D_ICD_PROCEDURES' to provide the long title value for your reference."), br(), DT::dataTableOutput('procedures_icd_tbl')),
-                tabPanel("SERVICES", br(), em("Please note that service descriptions have been provided from the data dictionary for your reference."), br(), DT::dataTableOutput('services_tbl'), br(), tableOutput('services_labels_tbl')),
-                tabPanel("TRANSFERS", DT::dataTableOutput('transfers_tbl'))
+              conditionalPanel(
+                condition = "input.subject_id",
+                fluidRow(
+                  column(12, h2("You are seeing the record of:"), 
+                         h4(textOutput("subject_id_output")),
+                         h4(textOutput("hadm_id_output")),
+                         br())
+                ),
+                
+                fluidRow(
+                  column(12,
+                    tabsetPanel(
+                      tabPanel("ADMISSIONS", withSpinner(DT::dataTableOutput('admissions_tbl'))),
+                      tabPanel("CALLOUT", withSpinner(DT::dataTableOutput('callout_tbl'))),
+                      tabPanel("CHARTEVENTS", withSpinner(DT::dataTableOutput('chartevents_tbl'))), ## MAKE SURE TO MAP TO D_ITEMTS
+                      tabPanel("CPTEVENTS", br(), em("Please note that due to licensing restrictions, neither MIMIC-III nor course instructors can provide labels for these CPT codes."), br(), withSpinner(DT::dataTableOutput('cptevents_tbl'))),
+                      #tabPanel("DATETIMEEVENTS", DT:dataTableOutput('datetimeevents_tbl')), ## MAKE SURE TO MAP TO D_ITEMS
+                      tabPanel("DIAGNOSES_ICD", br(), em("Please note that this table has been joined with 'D_ICD_DIAGNOSES' to provide the long title value for your reference."), br(), withSpinner(DT::dataTableOutput('diagnoses_icd_tbl'))),
+                      tabPanel("DRGCODES", withSpinner(DT::dataTableOutput('drgcodes_tbl'))),
+                      tabPanel("ICUSTAYS", withSpinner(DT::dataTableOutput('icustays_tbl'))),
+                      # tabPanel("INPUTEVENTS_CV", DT::dataTableOutput('inputevents_cv_tbl')),
+                      # tabPanel("INPUTEVENTS_MV", DT::dataTableOutput('inputevents_mv_tbl')),
+                      tabPanel("LABEVENTS", br(), em("Please note that this table has been joined with 'D_LABITEMS' to provide the lab label, fluid, and category for your reference."), br(), withSpinner(DT::dataTableOutput('labevents_tbl'))),
+                      tabPanel("MICROBIOLOGYEVENTS", withSpinner(DT::dataTableOutput('microbiologyevents_tbl'))),
+                      tabPanel("NOTEEVENTS", br(), em("Please note that all 'ISERROR' notes have been removed from this table."),br(), withSpinner(DT::dataTableOutput('noteevent_tbl'))),
+                      #tabPanel("OUTPUTEVENTS", DT::dataTableOutput('outputevents_tbl')),
+                      tabPanel("PATIENTS", withSpinner(DT::dataTableOutput('patients_tbl'))),
+                      tabPanel("PRESCRIPTIONS", withSpinner(DT::dataTableOutput('prescriptions_tbl'))),
+                      tabPanel("PROCEDUREEVENTS_MV", br(), em("Please note that this table has been joined with 'D_ITEMS' to provide the Label, and DBSource for your reference."), br(), withSpinner(DT::dataTableOutput('procedureevents_mv_tbl'))),
+                      tabPanel("PROCEDURES_ICD", br(), em("Please note that this table has been joined with 'D_ICD_PROCEDURES' to provide the long title value for your reference."), br(), withSpinner(DT::dataTableOutput('procedures_icd_tbl'))),
+                      tabPanel("SERVICES", br(), em("Please note that service descriptions have been provided from the data dictionary for your reference."), br(), withSpinner(DT::dataTableOutput('services_tbl'))),
+                      tabPanel("TRANSFERS", withSpinner(DT::dataTableOutput('transfers_tbl')))
+                    )
+                  )
+                )
               )
       )
     )
@@ -73,16 +85,16 @@ ui <- dashboardPage(
 )
 
 query_admissions <- function(table_config, input, database_type, connection) {
-  query_text <- paste0("select row_id, admittime, dischtime, deathtime, admission_type, admission_location, discharge_location, insurance, language, religion, marital_status, ethnicity, edregtime, edouttime, diagnosis, hospital_expire_flag, has_chartevents_data from ",
+  query_text <- paste0("select row_id, hadm_id, admittime, dischtime, deathtime, admission_type, admission_location, discharge_location, insurance, language, religion, marital_status, ethnicity, edregtime, edouttime, diagnosis, hospital_expire_flag, has_chartevents_data from ",
          table_config["admissions"],
          " where SUBJECT_ID = ", as.numeric(input$subject_id),
-         ifelse(is.na(input$hadm_id), paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
-  
+         ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   if (database_type == "bigquery") {
     query_exec(query_text, connection)
   }
   else {
-    dbGetQuery(connection, query_text)
+    dbGetQuery(connection, query_text) %>%
+      mutate(hadm_id = paste0("<a class='row_hadm_id' href='#'>", hadm_id, "</a>"))
   }
 }
 
@@ -331,16 +343,24 @@ query_procedures_icd <- function(table_config, input, database_type, connection)
 }
 
 query_services <- function(table_config, input, database_type, connection) {
+  services_labels <- data.frame(
+    SERVICE = c("CMED","CSURG","DENT","ENT","GU","GYN","MED","NB","NBB","NMED","NSURG","OBS","ORTHO","OMED", "PSURG","PSYCH","SURG","TRAUMA","TSURG","VSURG"),
+    DESCRIPTION = c("Cardiac Medical - for non-surgical cardiac related admissions", "Cardiac Surgery - for surgical cardiac admissions", "Dental - for dental/jaw related admissions", "Ear, nose, and throat - conditions primarily affecting these areas", "Genitourinary - reproductive organs/urinary system", "Gynecological - female reproductive systems and breasts", "Medical - general service for internal medicine", "Newborn - infants born at the hospital", "Newborn baby - infants born at the hospital", "Neurologic Medical - non-surgical, relating to the brain", "Neurologic Surgical - surgical, relating to the brain", "Obstetrics - conerned with childbirth and the care of women giving birth", "Orthopaedic - surgical, relating to the musculoskeletal system", "Orthopaedic medicine - non-surgical, relating to musculoskeletal system", "Plastic - restortation/reconstruction of the human body (including cosmetic or aesthetic)", "Psychiatric - mental disorders relating to mood, behaviour, cognition, or perceptions", "Surgical - general surgical service not classified elsewhere", "Trauma - injury or damage caused by physical harm from an external source", "Thoracic Surgical - surgery on the thorax, located between the neck and the abdomen", "Vascular Surgical - surgery relating to the circulatory system"))
   query_text <- paste0("select row_id, transfertime, prev_service, curr_service from ",
                        table_config["services"],
                        " where SUBJECT_ID = ",as.numeric(input$subject_id),
                        ifelse(is.na(input$hadm_id), paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   if (database_type == "bigquery") {
-    query_exec(query_text, connection) %>% arrange(TRANSFERTIME)
+    query_result = query_exec(query_text, connection) %>% arrange(TRANSFERTIME)
   }
   else {
-    dbGetQuery(connection, query_text) %>% arrange(transfertime)
+    query_result = dbGetQuery(connection, query_text) %>% arrange(transfertime)
   }
+  
+  query_result %>%
+    left_join(services_labels, by = c("prev_service" = "SERVICE")) %>%
+    left_join(services_labels, by = c("curr_service" = "SERVICE")) %>%
+    select(row_id, transfertime, prev_service, prev_service_desc = DESCRIPTION.x, curr_service, curr_service_desc = DESCRIPTION.y)
 }
 
 query_transfers <- function(table_config, input, database_type, connection) {
@@ -408,15 +428,18 @@ server <- function(input, output, session) {
   prescriptions_data <- reactive({query_prescriptions(table_config, input, database_type, connection)})
   procedureevents_mv_data <- reactive({query_procedureevents_mv(table_config, input, database_type, connection)})
   procedures_icd_data <- reactive({query_procedures_icd(table_config, input, database_type, connection)})
-  services_labels <- data.frame(SERVICE = c("CMED","CSURG","DENT","ENT","GU","GYN","MED","NB","NBB","NMED","NSURG","OBS","ORTHO","OMED", "PSURG","PSYCH","SURG","TRAUMA","TSURG","VSURG"), DESCRIPTION = c("Cardiac Medical - for non-surgical cardiac related admissions
-", "Cardiac Surgery - for surgical cardiac admissions", "Dental - for dental/jaw related admissions", "Ear, nose, and throat - conditions primarily affecting these areas", "Genitourinary - reproductive organs/urinary system", "Gynecological - female reproductive systems and breasts", "Medical - general service for internal medicine", "Newborn - infants born at the hospital", "Newborn baby - infants born at the hospital", "Neurologic Medical - non-surgical, relating to the brain", "Neurologic Surgical - surgical, relating to the brain", "Obstetrics - conerned with childbirth and the care of women giving birth", "Orthopaedic - surgical, relating to the musculoskeletal system", "Orthopaedic medicine - non-surgical, relating to musculoskeletal system", "Plastic - restortation/reconstruction of the human body (including cosmetic or aesthetic)", "Psychiatric - mental disorders relating to mood, behaviour, cognition, or perceptions", "Surgical - general surgical service not classified elsewhere", "Trauma - injury or damage caused by physical harm from an external source", "Thoracic Surgical - surgery on the thorax, located between the neck and the abdomen", "Vascular Surgical - surgery relating to the circulatory system"))
   services_data <- reactive({query_services(table_config, input, database_type, connection)})
   transfers_data <- reactive({query_transfers(table_config, input, database_type, connection)})
   
   output$subject_id_output <- renderText({paste("Subject ID - ",input$subject_id)})
-  output$hadm_id_output <- renderText({paste("HADM ID - ", input$hadm_id)})
+  output$hadm_id_output <- renderText({paste("Hospital Admission ID - ", input$hadm_id)})
   
-  output$admissions_tbl <- DT::renderDataTable(admissions_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
+  output$admissions_tbl <- DT::renderDataTable(admissions_data(), options = list(paging = FALSE, searchHighlight = TRUE),
+                                               escape=FALSE, rownames=F,
+                                               callback = JS(
+                                                 'table.on("click", "tr td a.row_hadm_id", function() {
+                                                 Shiny.onInputChange("hadm_id", $(this).text());
+                                                 });'))
   output$callout_tbl <- DT::renderDataTable(callout_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
   output$chartevents_tbl <- DT::renderDataTable(chartevents_data(), filter = 'top', options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
   output$cptevents_tbl <- DT::renderDataTable(cptevents_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F) 
