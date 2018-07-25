@@ -1,0 +1,14 @@
+
+#hadm_id_output, #reset_hadm_id, #hadm_id_display {
+  display: inline-block;
+}
+
+#reset_hadm_id {
+  margin-left: 20px;
+}
+
+.parameters {
+  font-size: 18px;
+}
+
+.wrapper .content-wrapper { overflow-y: scroll; }

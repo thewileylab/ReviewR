@@ -31,7 +31,9 @@ ui <- dashboardPage(
     )
   ),
   dashboardBody(
-    tags$head(tags$style(HTML('.wrapper .content-wrapper { overflow-y: scroll; }'))),
+    tags$head(
+      tags$link(rel = "stylesheet", type = "text/css", href = "app.css")),
+    
     tabItems(
       tabItem(tabName = "patient_search",
               h2("Select a patient to view"),
@@ -46,12 +48,14 @@ ui <- dashboardPage(
               conditionalPanel(
                 condition = "input.subject_id",
                 fluidRow(
-                  column(12, h2("You are seeing the record of:"), 
-                         h4(textOutput("subject_id_output")),
-                         h4(textOutput("hadm_id_output")),
-                         br())
-                ),
-                
+                  column(12, h2("You are seeing the record of:"))),
+                fluidRow(
+                  column(12, div(class='parameters', textOutput("subject_id_output")))),
+                fluidRow(
+                  column(12, div(id='hadm_id_display', class='parameters', textOutput("hadm_id_output")),
+                         HTML("<a id='reset_hadm_id' href='#' onclick='Shiny.onInputChange(\"hadm_id\", null);'>Clear HADM ID</a>"))),
+                br(),
+
                 fluidRow(
                   column(12,
                     tabsetPanel(
@@ -102,7 +106,7 @@ query_callout <- function(table_config, input, database_type, connection) {
   query_text <- paste0("select row_id, submit_wardid, submit_careunit, curr_wardid, curr_careunit, callout_wardid, callout_service, request_tele, request_resp, request_cdiff, request_mrsa, request_vre, callout_status, callout_outcome, discharge_wardid, acknowledge_status, createtime, updatetime, acknowledgetime, outcometime, firstreservationtime, currentreservationtime from ",
                       table_config["callout"],
                       " where SUBJECT_ID = ", as.numeric(input$subject_id), 
-                      ifelse(is.na(input$hadm_id), paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
+                      ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   
   if (database_type == "bigquery") {
     query_exec(query_text, connection) %>% arrange(ROW_ID)
@@ -118,7 +122,7 @@ query_chartevents <- function(table_config, input, database_type, connection) {
                        " a inner join ",
                        table_config["d_items"],
                        " b on a.ITEMID=b.ITEMID where SUBJECT_ID = ", as.numeric(input$subject_id),
-                       ifelse(is.na(input$hadm_id), paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
+                       ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   
   if (database_type == "bigquery") {
     query_exec(query_text, connection) %>%
@@ -136,9 +140,9 @@ query_chartevents <- function(table_config, input, database_type, connection) {
 
 query_cptevents <- function(table_config, input, database_type, connection) {
   query_text <- paste0("select row_id, costcenter, chartdate, cpt_cd, cpt_number, cpt_suffix, ticket_id_seq, sectionheader, subsectionheader, description from ",
-                              table_config["cptevents"],
-                              " where SUBJECT_ID = ", as.numeric(input$subject_id),
-                       ifelse(is.na(input$hadm_id), paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
+                       table_config["cptevents"],
+                       " where SUBJECT_ID = ", as.numeric(input$subject_id),
+                       ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   
   if (database_type == "bigquery") {
     query_exec(query_text, connection) %>% arrange(CHARTDATE)
@@ -154,7 +158,7 @@ query_diagnoses_icd <- function(table_config, input, database_type, connection) 
                        " a inner join ",
                        table_config["d_icd_diagnoses"],
                        " b on a.ICD9_CODE = b.ICD9_CODE where SUBJECT_ID = ", as.numeric(input$subject_id), 
-                       ifelse(is.na(input$hadm_id), paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
+                       ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   
   if (database_type == "bigquery") {
     query_exec(query_text, connection) %>%
@@ -171,7 +175,7 @@ query_drgcodes <- function(table_config, input, database_type, connection) {
                        table_config["drgcodes"],
                        " where SUBJECT_ID = ", 
                        as.numeric(input$subject_id), 
-                       ifelse(is.na(input$hadm_id), paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
+                       ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   
   if (database_type == "bigquery") {
     query_exec(query_text, connection) %>% arrange(row_id)
@@ -185,7 +189,7 @@ query_icustays <- function(table_config, input, database_type, connection) {
   query_text <- paste0("select row_id, icustay_id, dbsource, first_careunit, last_careunit, first_wardid, last_wardid, intime, outtime, los from ",
                        table_config["icustays"],
                        " where SUBJECT_ID = ", as.numeric(input$subject_id), 
-                       ifelse(is.na(input$hadm_id), paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
+                       ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   
   if (database_type == "bigquery") {
     query_exec(query_text, connection) %>% arrange(ROW_ID)
@@ -201,7 +205,7 @@ query_labevents <- function(table_config, input, database_type, connection) {
                        " a inner join ",
                        table_config["d_labitems"],
                        " b on a.ITEMID=b.ITEMID where SUBJECT_ID = ", as.numeric(input$subject_id), 
-                       ifelse(is.na(input$hadm_id), paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
+                       ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   
   if (database_type == "bigquery") {
     query_exec(query_text, connection) %>%
@@ -219,7 +223,7 @@ query_microbiologyevents <- function(table_config, input, database_type, connect
   query_text <- paste0("select row_id, chartdate, charttime, spec_itemid, spec_type_desc, org_itemid, org_name, isolate_num, ab_itemid, ab_name, dilution_text, dilution_comparison, dilution_value, interpretation from ",
                        table_config["microbiologyevents"],
                        " where SUBJECT_ID = ", as.numeric(input$subject_id), 
-                       ifelse(is.na(input$hadm_id), paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
+                       ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   
   if (database_type == "bigquery") {
     query_exec(query_text, connection) %>%
@@ -235,7 +239,7 @@ query_noteevent <- function(table_config, input, database_type, connection) {
   query_text <- paste0("select chartdate, charttime, storetime, category, description, cgid, iserror, text from ",
                        table_config["noteevent"],
                        " where SUBJECT_ID = ", as.numeric(input$subject_id), 
-                       ifelse(is.na(input$hadm_id), paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
+                       ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   
   if (database_type == "bigquery") {
     query_exec(query_text, connection) %>%
@@ -292,7 +296,7 @@ query_prescriptions <- function(table_config, input, database_type, connection) 
   query_text <- paste0("select row_id, icustay_id, startdate, enddate, drug_type, drug, drug_name_poe, drug_name_generic, formulary_drug_cd, gsn, ndc, prod_strength, dose_val_rx, dose_unit_rx, form_val_disp, form_unit_disp, route from ",
                        table_config["prescriptions"],
                        " where SUBJECT_ID = ", as.numeric(input$subject_id), 
-                       ifelse(is.na(input$hadm_id), paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
+                       ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   
   if (database_type == "bigquery") {
     query_exec(query_text, connection) %>%
@@ -312,7 +316,7 @@ query_procedureevents_mv <- function(table_config, input, database_type, connect
                        " a inner join ",
                        table_config["d_items"],
                        " b on a.ITEMID = b.ITEMID where SUBJECT_ID = ", as.numeric(input$subject_id), 
-                       ifelse(is.na(input$hadm_id), paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
+                       ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   
   if (database_type == "bigquery") {
     query_exec(query_text, connection) %>%
@@ -333,7 +337,7 @@ query_procedures_icd <- function(table_config, input, database_type, connection)
                        " a inner join ",
                        table_config["d_icd_procedures"],
                        " b on a.ICD9_CODE = b.ICD9_CODE where SUBJECT_ID = ", as.numeric(input$subject_id), 
-                       ifelse(is.na(input$hadm_id), paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
+                       ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   if (database_type == "bigquery") {
     query_exec(query_text, connection) %>% arrange(SEQ_NUM)
   }
@@ -349,7 +353,7 @@ query_services <- function(table_config, input, database_type, connection) {
   query_text <- paste0("select row_id, transfertime, prev_service, curr_service from ",
                        table_config["services"],
                        " where SUBJECT_ID = ",as.numeric(input$subject_id),
-                       ifelse(is.na(input$hadm_id), paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
+                       ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   if (database_type == "bigquery") {
     query_result = query_exec(query_text, connection) %>% arrange(TRANSFERTIME)
   }
@@ -367,7 +371,7 @@ query_transfers <- function(table_config, input, database_type, connection) {
   query_text <- paste0("select row_id, icustay_id, dbsource, eventtype, prev_careunit, curr_careunit, prev_wardid, curr_wardid, intime, outtime, los from ",
                        table_config["services"],
                        " where SUBJECT_ID = ",as.numeric(input$subject_id),
-                       ifelse(is.na(input$hadm_id), paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
+                       ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   if (database_type == "bigquery") {
     query_exec(query_text, connection) %>% arrange(ROW_ID)
   }
@@ -432,7 +436,7 @@ server <- function(input, output, session) {
   transfers_data <- reactive({query_transfers(table_config, input, database_type, connection)})
   
   output$subject_id_output <- renderText({paste("Subject ID - ",input$subject_id)})
-  output$hadm_id_output <- renderText({paste("Hospital Admission ID - ", input$hadm_id)})
+  output$hadm_id_output <- renderText({ paste("Hospital Admission ID - ", input$hadm_id) })
   
   output$admissions_tbl <- DT::renderDataTable(admissions_data(), options = list(paging = FALSE, searchHighlight = TRUE),
                                                escape=FALSE, rownames=F,
