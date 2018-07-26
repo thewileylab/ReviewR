@@ -88,9 +88,13 @@ ui <- dashboardPage(
   )
 )
 
-query_admissions <- function(table_config, input, database_type, connection) {
+format_table_name <- function(table_key, table_config, db_config) {
+  paste0(db_config["schema"], ".", table_config[table_key])
+}
+
+query_admissions <- function(table_config, db_config, input, database_type, connection) {
   query_text <- paste0("select row_id, hadm_id, admittime, dischtime, deathtime, admission_type, admission_location, discharge_location, insurance, language, religion, marital_status, ethnicity, edregtime, edouttime, diagnosis, hospital_expire_flag, has_chartevents_data from ",
-         table_config["admissions"],
+                       format_table_name("admissions", table_config, db_config),
          " where SUBJECT_ID = ", as.numeric(input$subject_id),
          ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   if (database_type == "bigquery") {
@@ -102,9 +106,9 @@ query_admissions <- function(table_config, input, database_type, connection) {
   }
 }
 
-query_callout <- function(table_config, input, database_type, connection) {
+query_callout <- function(table_config, db_config, input, database_type, connection) {
   query_text <- paste0("select row_id, submit_wardid, submit_careunit, curr_wardid, curr_careunit, callout_wardid, callout_service, request_tele, request_resp, request_cdiff, request_mrsa, request_vre, callout_status, callout_outcome, discharge_wardid, acknowledge_status, createtime, updatetime, acknowledgetime, outcometime, firstreservationtime, currentreservationtime from ",
-                      table_config["callout"],
+                       format_table_name("callout", table_config, db_config),
                       " where SUBJECT_ID = ", as.numeric(input$subject_id), 
                       ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   
@@ -116,11 +120,11 @@ query_callout <- function(table_config, input, database_type, connection) {
   }
 }
 
-query_chartevents <- function(table_config, input, database_type, connection) {
+query_chartevents <- function(table_config, db_config, input, database_type, connection) {
   query_text <- paste0("select a.row_id, a.ICUSTAY_ID, a.CHARTTIME, a.STORETIME, a.CGID, b.LABEL, a.VALUE, a.VALUENUM, a.VALUEUOM, a.WARNING, a.ERROR, a.RESULTSTATUS, a.STOPPED, b.DBSOURCE, b.CATEGORY, b.UNITNAME from ",
-                       table_config["chartevents"],
+                       format_table_name("chartevents", table_config, db_config),
                        " a inner join ",
-                       table_config["d_items"],
+                       format_table_name("d_items", table_config, db_config),
                        " b on a.ITEMID=b.ITEMID where SUBJECT_ID = ", as.numeric(input$subject_id),
                        ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   
@@ -138,9 +142,9 @@ query_chartevents <- function(table_config, input, database_type, connection) {
   }
 }
 
-query_cptevents <- function(table_config, input, database_type, connection) {
+query_cptevents <- function(table_config, db_config, input, database_type, connection) {
   query_text <- paste0("select row_id, costcenter, chartdate, cpt_cd, cpt_number, cpt_suffix, ticket_id_seq, sectionheader, subsectionheader, description from ",
-                       table_config["cptevents"],
+                       format_table_name("cptevents", table_config, db_config),
                        " where SUBJECT_ID = ", as.numeric(input$subject_id),
                        ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   
@@ -152,11 +156,11 @@ query_cptevents <- function(table_config, input, database_type, connection) {
   }
 }
 
-query_diagnoses_icd <- function(table_config, input, database_type, connection) {
+query_diagnoses_icd <- function(table_config, db_config, input, database_type, connection) {
   query_text <- paste0("select a.row_id, a.seq_num, a.icd9_code, b.long_title from ",
-                       table_config["diagnoses_icd"],
+                       format_table_name("diagnoses_icd", table_config, db_config),
                        " a inner join ",
-                       table_config["d_icd_diagnoses"],
+                       format_table_name("d_icd_diagnoses", table_config, db_config),
                        " b on a.ICD9_CODE = b.ICD9_CODE where SUBJECT_ID = ", as.numeric(input$subject_id), 
                        ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   
@@ -170,9 +174,9 @@ query_diagnoses_icd <- function(table_config, input, database_type, connection) 
   }
 }
 
-query_drgcodes <- function(table_config, input, database_type, connection) {
+query_drgcodes <- function(table_config, db_config, input, database_type, connection) {
   query_text <- paste0("select row_id, drg_type, drg_code, description, drg_severity, drg_mortality from ",
-                       table_config["drgcodes"],
+                       format_table_name("drgcodes", table_config, db_config),
                        " where SUBJECT_ID = ", 
                        as.numeric(input$subject_id), 
                        ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
@@ -185,9 +189,9 @@ query_drgcodes <- function(table_config, input, database_type, connection) {
   }
 }
 
-query_icustays <- function(table_config, input, database_type, connection) {
+query_icustays <- function(table_config, db_config, input, database_type, connection) {
   query_text <- paste0("select row_id, icustay_id, dbsource, first_careunit, last_careunit, first_wardid, last_wardid, intime, outtime, los from ",
-                       table_config["icustays"],
+                       format_table_name("icustays", table_config, db_config),
                        " where SUBJECT_ID = ", as.numeric(input$subject_id), 
                        ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   
@@ -199,11 +203,11 @@ query_icustays <- function(table_config, input, database_type, connection) {
   }
 }
 
-query_labevents <- function(table_config, input, database_type, connection) {
+query_labevents <- function(table_config, db_config, input, database_type, connection) {
   query_text <- paste0("select a.ROW_ID, a.CHARTTIME, b.LABEL, b.FLUID, b.CATEGORY, a.VALUE, a.VALUENUM, a.VALUEUOM, a.FLAG from ",
-                       table_config["labevents"],
+                       format_table_name("labevents", table_config, db_config),
                        " a inner join ",
-                       table_config["d_labitems"],
+                       format_table_name("d_labitems", table_config, db_config),
                        " b on a.ITEMID=b.ITEMID where SUBJECT_ID = ", as.numeric(input$subject_id), 
                        ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   
@@ -219,9 +223,9 @@ query_labevents <- function(table_config, input, database_type, connection) {
   }
 }
 
-query_microbiologyevents <- function(table_config, input, database_type, connection) {
+query_microbiologyevents <- function(table_config, db_config, input, database_type, connection) {
   query_text <- paste0("select row_id, chartdate, charttime, spec_itemid, spec_type_desc, org_itemid, org_name, isolate_num, ab_itemid, ab_name, dilution_text, dilution_comparison, dilution_value, interpretation from ",
-                       table_config["microbiologyevents"],
+                       format_table_name("microbiologyevents", table_config, db_config),
                        " where SUBJECT_ID = ", as.numeric(input$subject_id), 
                        ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   
@@ -235,9 +239,9 @@ query_microbiologyevents <- function(table_config, input, database_type, connect
   }
 }
 
-query_noteevent <- function(table_config, input, database_type, connection) {
+query_noteevent <- function(table_config, db_config, input, database_type, connection) {
   query_text <- paste0("select chartdate, charttime, storetime, category, description, cgid, iserror, text from ",
-                       table_config["noteevent"],
+                       format_table_name("noteevent", table_config, db_config),
                        " where SUBJECT_ID = ", as.numeric(input$subject_id), 
                        ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   
@@ -265,9 +269,9 @@ query_noteevent <- function(table_config, input, database_type, connection) {
   }
 }
 
-query_patients <- function(table_config, input, database_type, connection) {
+query_patients <- function(table_config, db_config, input, database_type, connection) {
   query_text <- paste0("select row_id, gender, dob, dod, dod_hosp, dod_ssn, expire_flag from ",
-                       table_config["patients"],
+                       format_table_name("patients", table_config, db_config),
                        " where SUBJECT_ID = ", as.numeric(input$subject_id))
   
   if (database_type == "bigquery") {
@@ -278,9 +282,9 @@ query_patients <- function(table_config, input, database_type, connection) {
   }
 }
 
-query_all_patients <- function(table_config, database_type, connection) {
+query_all_patients <- function(table_config, db_config, database_type, connection) {
   query_text <- paste0("select subject_id, gender, dob, dod, dod_hosp, dod_ssn, expire_flag from ",
-                       table_config["patients"])
+                       format_table_name("patients", table_config, db_config))
   
   if (database_type == "bigquery") {
     query_exec(query_text, connection)
@@ -292,9 +296,9 @@ query_all_patients <- function(table_config, database_type, connection) {
 }
 
 
-query_prescriptions <- function(table_config, input, database_type, connection) {
+query_prescriptions <- function(table_config, db_config, input, database_type, connection) {
   query_text <- paste0("select row_id, icustay_id, startdate, enddate, drug_type, drug, drug_name_poe, drug_name_generic, formulary_drug_cd, gsn, ndc, prod_strength, dose_val_rx, dose_unit_rx, form_val_disp, form_unit_disp, route from ",
-                       table_config["prescriptions"],
+                       format_table_name("prescriptions", table_config, db_config),
                        " where SUBJECT_ID = ", as.numeric(input$subject_id), 
                        ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   
@@ -310,11 +314,11 @@ query_prescriptions <- function(table_config, input, database_type, connection) 
   }
 }
 
-query_procedureevents_mv <- function(table_config, input, database_type, connection) {
+query_procedureevents_mv <- function(table_config, db_config, input, database_type, connection) {
   query_text <- paste0("select a.ROW_ID, a.ICUSTAY_ID, a.STARTTIME, a.ENDTIME, b.LABEL, b.DBSOURCE, a.VALUE, a.VALUEUOM, a.LOCATION, a.LOCATIONCATEGORY, a.STORETIME, a.CGID, a.ORDERID, a.LINKORDERID, a.ORDERCATEGORYNAME, a.SECONDARYORDERCATEGORYNAME, a.ORDERCATEGORYDESCRIPTION, a.ISOPENBAG, a.CONTINUEINNEXTDEPT, a.CANCELREASON, a.STATUSDESCRIPTION, a.COMMENTS_EDITEDBY, a.COMMENTS_CANCELEDBY, a.COMMENTS_DATE from ",
-                       table_config["procedureevents"],
+                       format_table_name("procedureevents", table_config, db_config),
                        " a inner join ",
-                       table_config["d_items"],
+                       format_table_name("d_items", table_config, db_config),
                        " b on a.ITEMID = b.ITEMID where SUBJECT_ID = ", as.numeric(input$subject_id), 
                        ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   
@@ -331,11 +335,11 @@ query_procedureevents_mv <- function(table_config, input, database_type, connect
   }
 }
 
-query_procedures_icd <- function(table_config, input, database_type, connection) {
+query_procedures_icd <- function(table_config, db_config, input, database_type, connection) {
   query_text <- paste0("select a.ROW_ID, a.SEQ_NUM, a.ICD9_CODE, b.LONG_TITLE from ",
-                       table_config["procedures_icd"],
+                       format_table_name("procedures_icd", table_config, db_config),
                        " a inner join ",
-                       table_config["d_icd_procedures"],
+                       format_table_name("d_icd_procedures", table_config, db_config),
                        " b on a.ICD9_CODE = b.ICD9_CODE where SUBJECT_ID = ", as.numeric(input$subject_id), 
                        ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   if (database_type == "bigquery") {
@@ -346,12 +350,12 @@ query_procedures_icd <- function(table_config, input, database_type, connection)
   }
 }
 
-query_services <- function(table_config, input, database_type, connection) {
+query_services <- function(table_config, db_config, input, database_type, connection) {
   services_labels <- data.frame(
     SERVICE = c("CMED","CSURG","DENT","ENT","GU","GYN","MED","NB","NBB","NMED","NSURG","OBS","ORTHO","OMED", "PSURG","PSYCH","SURG","TRAUMA","TSURG","VSURG"),
     DESCRIPTION = c("Cardiac Medical - for non-surgical cardiac related admissions", "Cardiac Surgery - for surgical cardiac admissions", "Dental - for dental/jaw related admissions", "Ear, nose, and throat - conditions primarily affecting these areas", "Genitourinary - reproductive organs/urinary system", "Gynecological - female reproductive systems and breasts", "Medical - general service for internal medicine", "Newborn - infants born at the hospital", "Newborn baby - infants born at the hospital", "Neurologic Medical - non-surgical, relating to the brain", "Neurologic Surgical - surgical, relating to the brain", "Obstetrics - conerned with childbirth and the care of women giving birth", "Orthopaedic - surgical, relating to the musculoskeletal system", "Orthopaedic medicine - non-surgical, relating to musculoskeletal system", "Plastic - restortation/reconstruction of the human body (including cosmetic or aesthetic)", "Psychiatric - mental disorders relating to mood, behaviour, cognition, or perceptions", "Surgical - general surgical service not classified elsewhere", "Trauma - injury or damage caused by physical harm from an external source", "Thoracic Surgical - surgery on the thorax, located between the neck and the abdomen", "Vascular Surgical - surgery relating to the circulatory system"))
   query_text <- paste0("select row_id, transfertime, prev_service, curr_service from ",
-                       table_config["services"],
+                       format_table_name("services", table_config, db_config),
                        " where SUBJECT_ID = ",as.numeric(input$subject_id),
                        ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   if (database_type == "bigquery") {
@@ -367,9 +371,9 @@ query_services <- function(table_config, input, database_type, connection) {
     select(row_id, transfertime, prev_service, prev_service_desc = DESCRIPTION.x, curr_service, curr_service_desc = DESCRIPTION.y)
 }
 
-query_transfers <- function(table_config, input, database_type, connection) {
+query_transfers <- function(table_config, db_config, input, database_type, connection) {
   query_text <- paste0("select row_id, icustay_id, dbsource, eventtype, prev_careunit, curr_careunit, prev_wardid, curr_wardid, intime, outtime, los from ",
-                       table_config["services"],
+                       format_table_name("transfers", table_config, db_config),
                        " where SUBJECT_ID = ",as.numeric(input$subject_id),
                        ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   if (database_type == "bigquery") {
@@ -392,20 +396,31 @@ server <- function(input, output, session) {
   
   options("httr_oob_default" = TRUE)
   
-  database_type <- "postgres"  # postgres | bigquery
-  if (database_type == "bigquery") {
-    connection <- read_lines(file = "./bigquery_projectid.txt")
+  #database_type <- "postgres"  # postgres | bigquery
+  app_config_df <- read.csv(file="./conf/app_config.csv", stringsAsFactors = FALSE)
+  app_config <- as.list(app_config_df[,"value"])
+  names(app_config) <- app_config_df[,"key"]
+  rm(app_config_df)
+  
+  
+  if (app_config["database"] == "bigquery") {
+    bq_connection_details_df <- read.csv(file="./conf/bigquery_secrets.csv", stringsAsFactors = FALSE)
+    db_config <- as.list(bq_connection_details_df[,"value"])
+    names(db_config) <- bq_connection_details_df[,"key"]
+    rm(bq_connection_details_df)
+
+    connection <- db_config["project_id"]
   }
-  else if (database_type == "postgres") {
+  else if (app_config["database"] == "postgres") {
     pg_connection_details_df <- read.csv(file="./conf/postgres_secrets.csv", stringsAsFactors = FALSE)
-    pg_connection_details <- as.list(pg_connection_details_df[,"value"])
-    names(pg_connection_details) <- pg_connection_details_df[,"key"]
+    db_config <- as.list(pg_connection_details_df[,"value"])
+    names(db_config) <- pg_connection_details_df[,"key"]
     rm(pg_connection_details_df)
     
     drv <- dbDriver("PostgreSQL")
-    connection <- dbConnect(drv, dbname = pg_connection_details["dbname"],
-                     host = pg_connection_details["host"], port = as.integer(pg_connection_details["port"]),
-                     user = pg_connection_details["user"], password = pg_connection_details["password"])
+    connection <- dbConnect(drv, dbname = db_config["dbname"],
+                     host = db_config["host"], port = as.integer(db_config["port"]),
+                     user = db_config["user"], password = db_config["password"])
   }
   else {
     stop("Currently this application only supports Postgres and BigQuery databases")
@@ -413,27 +428,27 @@ server <- function(input, output, session) {
   
   # Load the table mapping configuration.  For a given database system, this will tell us
   # the correct SQL statements to use
-  table_config_df <- read.csv(file=paste0("./conf/table_map_",database_type,".csv"), stringsAsFactors = FALSE)
+  table_config_df <- read.csv(file=paste0("./conf/",app_config["table_map_file"]), stringsAsFactors = FALSE)
   table_config <- as.list(table_config_df[,"database_table"])
   names(table_config) <- table_config_df[,"table_key"]
   rm(table_config_df)
 
-  admissions_data <- reactive({query_admissions(table_config, input, database_type, connection)})
-  callout_data <- reactive({query_callout(table_config, input, database_type, connection)})
-  chartevents_data <- reactive({query_chartevents(table_config, input, database_type, connection)})
-  cptevents_data <- reactive({query_cptevents(table_config, input, database_type, connection)}) 
-  diagnoses_icd_data <- reactive({query_diagnoses_icd(table_config, input, database_type, connection)})
-  drgcodes_data <- reactive({query_drgcodes(table_config, input, database_type, connection)})
-  icustays_data <- reactive({query_icustays(table_config, input, database_type, connection)})
-  labevents_data <- reactive({query_labevents(table_config, input, database_type, connection)})
-  microbiologyevents_data <- reactive({query_microbiologyevents(table_config, input, database_type, connection)})
-  noteevent_data <- reactive({query_noteevent(table_config, input, database_type, connection)})
-  patients_data <- reactive({query_patients(table_config, input, database_type, connection)})
-  prescriptions_data <- reactive({query_prescriptions(table_config, input, database_type, connection)})
-  procedureevents_mv_data <- reactive({query_procedureevents_mv(table_config, input, database_type, connection)})
-  procedures_icd_data <- reactive({query_procedures_icd(table_config, input, database_type, connection)})
-  services_data <- reactive({query_services(table_config, input, database_type, connection)})
-  transfers_data <- reactive({query_transfers(table_config, input, database_type, connection)})
+  admissions_data <- reactive({query_admissions(table_config, db_config, input, app_config["database"], connection)})
+  callout_data <- reactive({query_callout(table_config, db_config, input, app_config["database"], connection)})
+  chartevents_data <- reactive({query_chartevents(table_config, db_config, input, app_config["database"], connection)})
+  cptevents_data <- reactive({query_cptevents(table_config, db_config, input, app_config["database"], connection)}) 
+  diagnoses_icd_data <- reactive({query_diagnoses_icd(table_config, db_config, input, app_config["database"], connection)})
+  drgcodes_data <- reactive({query_drgcodes(table_config, db_config, input, app_config["database"], connection)})
+  icustays_data <- reactive({query_icustays(table_config, db_config, input, app_config["database"], connection)})
+  labevents_data <- reactive({query_labevents(table_config, db_config, input, app_config["database"], connection)})
+  microbiologyevents_data <- reactive({query_microbiologyevents(table_config, db_config, input, app_config["database"], connection)})
+  noteevent_data <- reactive({query_noteevent(table_config, db_config, input, app_config["database"], connection)})
+  patients_data <- reactive({query_patients(table_config, db_config, input, app_config["database"], connection)})
+  prescriptions_data <- reactive({query_prescriptions(table_config, db_config, input, app_config["database"], connection)})
+  procedureevents_mv_data <- reactive({query_procedureevents_mv(table_config, db_config, input, app_config["database"], connection)})
+  procedures_icd_data <- reactive({query_procedures_icd(table_config, db_config, input, app_config["database"], connection)})
+  services_data <- reactive({query_services(table_config, db_config, input, app_config["database"], connection)})
+  transfers_data <- reactive({query_transfers(table_config, db_config, input, app_config["database"], connection)})
   
   output$subject_id_output <- renderText({paste("Subject ID - ",input$subject_id)})
   output$hadm_id_output <- renderText({ paste("Hospital Admission ID - ", input$hadm_id) })
@@ -454,7 +469,7 @@ server <- function(input, output, session) {
   output$microbiologyevents_tbl <- DT::renderDataTable(microbiologyevents_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
   output$noteevent_tbl <- DT::renderDataTable(noteevent_data(), filter = 'top', options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
   output$all_patients_tbl <- DT::renderDataTable(
-    query_all_patients(table_config, database_type, connection),
+    query_all_patients(table_config, db_config, app_config["database"], connection),
     options = list(paging = TRUE, pageLength = 20, searchHighlight = TRUE),
     escape=FALSE, rownames=F,
     callback = JS(
@@ -471,7 +486,7 @@ server <- function(input, output, session) {
   output$transfers_tbl <- DT::renderDataTable(transfers_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
 
   session$onSessionEnded(function() {
-    if (database_type == "postgres") {
+    if (app_config["database"] == "postgres") {
       dbDisconnect(connection);
     }
   })  
