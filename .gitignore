@@ -6,3 +6,4 @@ bigquery_projectid.txt
 .httr-oauth
 conf/*secret*
 .DS_Store
+projects/*
