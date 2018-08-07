@@ -1,4 +1,4 @@
-# Manual Review Tool
+# ReviewR: A light-weight, portable tool for reviewing individual patient records
 
 This is a shiny tool that allows for manual review of the MIMIC-III (https://mimic.physionet.org/) database when it has been uploaded into a Google Bigquery database. 
 
