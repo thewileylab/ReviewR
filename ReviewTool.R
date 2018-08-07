@@ -25,7 +25,7 @@ source('project_helpers.R')
 
 # Define UI for application 
 ui <- dashboardPage(
-  dashboardHeader(title = "MIMICIII Chart Review Tool"),
+  dashboardHeader(title = "ReviewR"),
   dashboardSidebar(
     sidebarMenu(
       id = "tabs",
