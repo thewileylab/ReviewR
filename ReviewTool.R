@@ -18,6 +18,7 @@ library(shiny)
 library(shinyjs)
 library(shinydashboard)
 library(shinycssloaders)
+library(bigrquery)
 source('data_helpers.R')
 source('project_helpers.R')
 #library(shinythemes)
@@ -117,24 +118,20 @@ ui <- dashboardPage(
                       )
                     )
                   ),
-
                   # Chart review row
                   div(
                     fluidRow(
                       column(12, 
                              div(
                                id = "abstraction_form",
-                               h3("Abstraction Form"),
-                               span("Subject ID: ", textOutput("subject_id")),
-                               span("HADM ID: ", textOutput("hadm_id")),
-                               checkboxInput("has_dx", "Has diagnosis of...", FALSE),
-                               actionButton("submit", "Save", class = "btn-primary")
+                               h4("Abstraction Results"),
+                               withSpinner(DT::dataTableOutput('abstraction_tbl'))
                              )
                       )
+                    )
                   )
-                  )
-              )  # div
-          ) #splitLayout
+                )
+              )
       )
     )
   )
@@ -164,7 +161,7 @@ server <- function(input, output, session) {
     names(db_config) <- bq_connection_details_df[,"key"]
     rm(bq_connection_details_df)
 
-    connection <- db_config["project_id"]
+    connection <- as.character(db_config["project_id"])
   }
   else if (app_config["database"] == "postgres") {
     pg_connection_details_df <- read.csv(file="./conf/postgres_secrets.csv", stringsAsFactors = FALSE)
@@ -210,6 +207,9 @@ server <- function(input, output, session) {
   procedures_icd_data <- reactive({query_procedures_icd(table_config, db_config, input, app_config["database"], connection)})
   services_data <- reactive({query_services(table_config, db_config, input, app_config["database"], connection)})
   transfers_data <- reactive({query_transfers(table_config, db_config, input, app_config["database"], connection)})
+
+  cohort_data <- reactive({ active_cohort_data(input$project_id, projects) })
+  abstraction_data <- reactive({ active_abstraction_data(input$project_id, projects) %>% filter(subject_id == input$subject_id)})
   
   project_list = projects %>%
     mutate(project_id = paste0("<a class='row_project_id' href='#'>", id, "</a>")) %>%
@@ -258,7 +258,16 @@ server <- function(input, output, session) {
                                                'table.on("click", "tr td a.row_project_id", function() {
                                                Shiny.onInputChange("project_id", $(this).text());
                                                });'))
-  output$cohort_tbl <- DT::renderDataTable(active_cohort_data(input$project_id, projects), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
+  output$cohort_tbl <- DT::renderDataTable(cohort_data(), options = list(paging = FALSE, searchHighlight = TRUE),
+                                           escape = FALSE, rownames=F, selection='none',
+                                           callback = JS(
+                                             'table.on("click", "tr td a.row_subject_id", function() {
+                                             Shiny.onInputChange("subject_id", $(this).text());
+                                             $(".main-sidebar li a").click();
+                                             });'))
+  output$abstraction_tbl <- DT::renderDataTable(abstraction_data(),
+                                               options = list(paging = FALSE, searchHighlight = FALSE, dom='t', ordering=FALSE),
+                                               rownames=F, edit=TRUE, selection='none')
   
   output$selected_project_title <- renderText({
     ifelse(is.null(input$project_id),

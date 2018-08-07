@@ -9,7 +9,8 @@ query_admissions <- function(table_config, db_config, input, database_type, conn
                        " where SUBJECT_ID = ", as.numeric(input$subject_id),
                        ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   if (database_type == "bigquery") {
-    query_exec(query_text, connection)
+    query_exec(query_text, connection) %>%
+      mutate(hadm_id = paste0("<a class='row_hadm_id' href='#'>", hadm_id, "</a>"))
   }
   else {
     dbGetQuery(connection, query_text) %>%
@@ -24,7 +25,7 @@ query_callout <- function(table_config, db_config, input, database_type, connect
                        ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   
   if (database_type == "bigquery") {
-    query_exec(query_text, connection) %>% arrange(ROW_ID)
+    query_exec(query_text, connection) %>% arrange(row_id)
   }
   else {
     dbGetQuery(connection, query_text) %>% arrange(row_id)
@@ -32,7 +33,7 @@ query_callout <- function(table_config, db_config, input, database_type, connect
 }
 
 query_chartevents <- function(table_config, db_config, input, database_type, connection) {
-  query_text <- paste0("select a.row_id, a.ICUSTAY_ID, a.CHARTTIME, a.STORETIME, a.CGID, b.LABEL, a.VALUE, a.VALUENUM, a.VALUEUOM, a.WARNING, a.ERROR, a.RESULTSTATUS, a.STOPPED, b.DBSOURCE, b.CATEGORY, b.UNITNAME from ",
+  query_text <- paste0("select a.ROW_ID, a.ICUSTAY_ID, a.CHARTTIME, a.STORETIME, a.CGID, b.LABEL, a.VALUE, a.VALUENUM, a.VALUEUOM, a.WARNING, a.ERROR, a.RESULTSTATUS, a.STOPPED, b.DBSOURCE, b.CATEGORY, b.UNITNAME from ",
                        format_table_name("chartevents", table_config, db_config),
                        " a inner join ",
                        format_table_name("d_items", table_config, db_config),
@@ -60,7 +61,7 @@ query_cptevents <- function(table_config, db_config, input, database_type, conne
                        ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   
   if (database_type == "bigquery") {
-    query_exec(query_text, connection) %>% arrange(CHARTDATE)
+    query_exec(query_text, connection) %>% arrange(chartdate)
   }
   else {
     dbGetQuery(connection, query_text) %>% arrange(chartdate)
@@ -77,7 +78,7 @@ query_diagnoses_icd <- function(table_config, db_config, input, database_type, c
   
   if (database_type == "bigquery") {
     query_exec(query_text, connection) %>%
-      select(ROW_ID = a_ROW_ID, SEQ_NUM = a_SEQ_NUM, ICD9_CODE = a_ICD9_CODE, LONG_TITLE = b_LONG_TITLE) %>% arrange(SEQ_NUM)
+      select(row_id = a_row_id, seq_num = a_seq_num, icd9_code = a_icd9_code, long_title = b_long_title) %>% arrange(seq_num)
   }
   else {
     dbGetQuery(connection, query_text) %>%
@@ -107,7 +108,7 @@ query_icustays <- function(table_config, db_config, input, database_type, connec
                        ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   
   if (database_type == "bigquery") {
-    query_exec(query_text, connection) %>% arrange(ROW_ID)
+    query_exec(query_text, connection) %>% arrange(row_id)
   }
   else {
     dbGetQuery(connection, query_text) %>% arrange(row_id)
@@ -124,7 +125,7 @@ query_labevents <- function(table_config, db_config, input, database_type, conne
   
   if (database_type == "bigquery") {
     query_exec(query_text, connection) %>%
-      mutate(LABEL = as.factor(LABEL), CATEGORY = as.factor(CATEGORY)) %>%
+      mutate(LABEL = as.factor(b_LABEL), CATEGORY = as.factor(b_CATEGORY)) %>%
       arrange(CHARTTIME)
   }
   else {
@@ -142,7 +143,7 @@ query_microbiologyevents <- function(table_config, db_config, input, database_ty
   
   if (database_type == "bigquery") {
     query_exec(query_text, connection) %>%
-      arrange(CHARTTIME)
+      arrange(charttime)
   }
   else {
     dbGetQuery(connection, query_text) %>%
@@ -158,14 +159,14 @@ query_noteevent <- function(table_config, db_config, input, database_type, conne
   
   if (database_type == "bigquery") {
     query_exec(query_text, connection) %>%
-      filter(is.na(ISERROR)) %>% 
-      select(-ISERROR) %>% 
-      group_by(CHARTDATE, CHARTTIME, STORETIME, CATEGORY, CGID, TEXT) %>% 
-      arrange(DESCRIPTION) %>% 
-      summarise(DESCRIPTION = paste(DESCRIPTION,collapse = "; ")) %>% 
+      filter(is.na(iserror)) %>% 
+      select(-iserror) %>% 
+      group_by(chartdate, charttime, storetime, category, cgid, text) %>% 
+      arrange(description) %>% 
+      summarise(description = paste(description,collapse = "; ")) %>% 
       ungroup() %>% 
-      mutate(CATEGORY = as.factor(CATEGORY), DESCRIPTION = as.factor(DESCRIPTION)) %>% 
-      arrange(CHARTDATE)
+      mutate(category = as.factor(category), description = as.factor(description)) %>% 
+      arrange(chartdate)
   }
   else {
     dbGetQuery(connection, query_text) %>%
@@ -198,7 +199,8 @@ query_all_patients <- function(table_config, db_config, database_type, connectio
                        format_table_name("patients", table_config, db_config))
   
   if (database_type == "bigquery") {
-    query_exec(query_text, connection)
+    query_exec(query_text, connection) %>%
+      mutate(subject_id = paste0("<a class='row_subject_id' href='#'>", subject_id, "</a>"))
   }
   else {
     dbGetQuery(connection, query_text) %>%
@@ -215,8 +217,8 @@ query_prescriptions <- function(table_config, db_config, input, database_type, c
   
   if (database_type == "bigquery") {
     query_exec(query_text, connection) %>%
-      mutate(DRUG = as.factor(DRUG), FORM_UNIT_DISP = as.factor(FORM_UNIT_DISP), ROUTE = as.factor(ROUTE)) %>%
-      arrange(STARTDATE)
+      mutate(drug = as.factor(drug), form_unit_disp = as.factor(form_unit_disp), route = as.factor(route)) %>%
+      arrange(startdate)
   }
   else {
     dbGetQuery(connection, query_text) %>%
@@ -235,7 +237,7 @@ query_procedureevents_mv <- function(table_config, db_config, input, database_ty
   
   if (database_type == "bigquery") {
     query_exec(query_text, connection) %>%
-      mutate(ORDERCATEGORYNAME = as.factor(ORDERCATEGORYNAME), SECONDARYORDERCATEGORYNAME = as.factor(SECONDARYORDERCATEGORYNAME), ORDERCATEGORYDESCRIPTION = as.factor(ORDERCATEGORYDESCRIPTION)) %>%
+      mutate(ORDERCATEGORYNAME = as.factor(a_ORDERCATEGORYNAME), SECONDARYORDERCATEGORYNAME = as.factor(a_SECONDARYORDERCATEGORYNAME), ORDERCATEGORYDESCRIPTION = as.factor(a_ORDERCATEGORYDESCRIPTION)) %>%
       arrange(STARTTIME)
     
   }
@@ -254,7 +256,7 @@ query_procedures_icd <- function(table_config, db_config, input, database_type, 
                        " b on a.ICD9_CODE = b.ICD9_CODE where SUBJECT_ID = ", as.numeric(input$subject_id), 
                        ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   if (database_type == "bigquery") {
-    query_exec(query_text, connection) %>% arrange(SEQ_NUM)
+    query_exec(query_text, connection) %>% arrange(a_SEQ_NUM)
   }
   else {
     dbGetQuery(connection, query_text) %>% arrange(seq_num)
@@ -270,7 +272,7 @@ query_services <- function(table_config, db_config, input, database_type, connec
                        " where SUBJECT_ID = ",as.numeric(input$subject_id),
                        ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   if (database_type == "bigquery") {
-    query_result = query_exec(query_text, connection) %>% arrange(TRANSFERTIME)
+    query_result = query_exec(query_text, connection) %>% arrange(transfertime)
   }
   else {
     query_result = dbGetQuery(connection, query_text) %>% arrange(transfertime)
@@ -288,7 +290,7 @@ query_transfers <- function(table_config, db_config, input, database_type, conne
                        " where SUBJECT_ID = ",as.numeric(input$subject_id),
                        ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   if (database_type == "bigquery") {
-    query_exec(query_text, connection) %>% arrange(ROW_ID)
+    query_exec(query_text, connection) %>% arrange(row_id)
   }
   else {
     dbGetQuery(connection, query_text) %>% arrange(row_id)
