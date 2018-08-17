@@ -1,4 +1,6 @@
 "key","value"
 "database","postgres"
-"table_map_file","table_map_postgres.csv"
+"data_model","OMOP"
+"table_map_file","table_map_postgres_omop.csv"
 "project_list","test1|test2"
+"review_tables","person|observation_period|specimen|death|visit_detail|visit_occurrence|procedure_diagnosis|drug_exposure|device_exposure|condition_occurrence|measurement|note|note_nlp|observation|fact_relationship"
