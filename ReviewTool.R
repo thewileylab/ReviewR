@@ -160,8 +160,8 @@ server <- function(input, output, session) {
   if ("project_list" %in% names(app_config)) {
     tmp_project_list <- as.list(unlist(strsplit(as.character(app_config["project_list"]), split="|", fixed = TRUE)))
     projects <- do.call(rbind, lapply(tmp_project_list, loadProject))
+    has_projects <- ifelse(length(tmp_project_list) > 0, TRUE, FALSE)
     rm(tmp_project_list)
-    has_projects <- TRUE
   }
   output$has_projects <- reactive({ has_projects })
   
@@ -176,29 +176,29 @@ server <- function(input, output, session) {
   cohort_data <- reactive({ active_cohort_data(input$project_id, projects) })
   abstraction_data <- reactive({ active_abstraction_data(input$project_id, projects) %>% filter(subject_id == input$subject_id)})
   
-  project_list = projects %>%
-    mutate(project_id = paste0("<a class='row_project_id' href='#'>", id, "</a>")) %>%
-    select(id, project_id, name)
+  if (has_projects) {
+    project_list = projects %>%
+      mutate(project_id = paste0("<a class='row_project_id' href='#'>", id, "</a>")) %>%
+      select(id, project_id, name)
+    
+    output$projects_tbl <- DT::renderDataTable(project_list[,c("project_id","name")], options = list(paging=FALSE, searchHighlight = TRUE),
+                                               escape = FALSE, rownames=F,
+                                               callback = JS(
+                                                 'table.on("click", "tr td a.row_project_id", function() {
+                                                 Shiny.onInputChange("project_id", $(this).text());});'))
+    output$cohort_tbl <- DT::renderDataTable(cohort_data(), options = list(paging = FALSE, searchHighlight = TRUE),
+                                             escape = FALSE, rownames=F, selection='none',
+                                             callback = JS(
+                                               'table.on("click", "tr td a.row_subject_id", function() {
+                                               Shiny.onInputChange("subject_id", $(this).text());
+                                               $(".main-sidebar li a").click();});'))
+    output$abstraction_tbl <- DT::renderDataTable(abstraction_data(),
+                                                   options = list(paging = FALSE, searchHighlight = FALSE, dom='t', ordering=FALSE),
+                                                   rownames=F, edit=TRUE, selection='none')
+  }
   
   output$subject_id_output <- renderText({paste("Subject ID - ",input$subject_id)})
   output$subject_id <- renderText({input$subject_id})
-
-  output$projects_tbl <- DT::renderDataTable(project_list[,c("project_id","name")], options = list(paging=FALSE, searchHighlight = TRUE),
-                                             escape = FALSE, rownames=F,
-                                             callback = JS(
-                                               'table.on("click", "tr td a.row_project_id", function() {
-                                               Shiny.onInputChange("project_id", $(this).text());
-                                               });'))
-  output$cohort_tbl <- DT::renderDataTable(cohort_data(), options = list(paging = FALSE, searchHighlight = TRUE),
-                                           escape = FALSE, rownames=F, selection='none',
-                                           callback = JS(
-                                             'table.on("click", "tr td a.row_subject_id", function() {
-                                             Shiny.onInputChange("subject_id", $(this).text());
-                                             $(".main-sidebar li a").click();
-                                             });'))
-   output$abstraction_tbl <- DT::renderDataTable(abstraction_data(),
-                                                options = list(paging = FALSE, searchHighlight = FALSE, dom='t', ordering=FALSE),
-                                                rownames=F, edit=TRUE, selection='none')
   
   # Because we want to use uiOutput for the patient chart panel in multiple locations in the UI,
   # we need to implement the workaround described here (https://github.com/rstudio/shiny/issues/743)
