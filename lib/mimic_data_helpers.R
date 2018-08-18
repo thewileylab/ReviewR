@@ -12,12 +12,10 @@ mimic_query_admissions <- function(table_config, db_config, input, database_type
                        " where SUBJECT_ID = ", as.numeric(input$subject_id),
                        ifelse(length(input$hadm_id) > 0, paste0(" and HADM_ID = ", as.numeric(input$hadm_id)), ""))
   if (database_type == "bigquery") {
-    query_exec(query_text, connection) %>%
-      mutate(hadm_id = paste0("<a class='row_hadm_id' href='#'>", hadm_id, "</a>"))
+    query_exec(query_text, connection)
   }
   else {
-    dbGetQuery(connection, query_text) %>%
-      mutate(hadm_id = paste0("<a class='row_hadm_id' href='#'>", hadm_id, "</a>"))
+    dbGetQuery(connection, query_text)
   }
 }
 
