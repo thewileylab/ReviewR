@@ -2,3 +2,4 @@
 "database","postgres"
 "data_model","MIMIC"
 "table_map_file","table_map_postgres_mimic.csv"
+"project_list","test1|test2"
