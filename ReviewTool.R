@@ -183,7 +183,6 @@ server <- function(input, output, session) {
   output$subject_id_output <- renderText({paste("Subject ID - ",input$subject_id)})
   output$subject_id <- renderText({input$subject_id})
 
-  
   output$projects_tbl <- DT::renderDataTable(project_list[,c("project_id","name")], options = list(paging=FALSE, searchHighlight = TRUE),
                                              escape = FALSE, rownames=F,
                                              callback = JS(
@@ -197,34 +196,27 @@ server <- function(input, output, session) {
                                              Shiny.onInputChange("subject_id", $(this).text());
                                              $(".main-sidebar li a").click();
                                              });'))
-  # output$abstraction_tbl <- DT::renderDataTable(abstraction_data(),
-  #                                              options = list(paging = FALSE, searchHighlight = FALSE, dom='t', ordering=FALSE),
-  #                                              rownames=F, edit=TRUE, selection='none')
+   output$abstraction_tbl <- DT::renderDataTable(abstraction_data(),
+                                                options = list(paging = FALSE, searchHighlight = FALSE, dom='t', ordering=FALSE),
+                                                rownames=F, edit=TRUE, selection='none')
   
   # Because we want to use uiOutput for the patient chart panel in multiple locations in the UI,
   # we need to implement the workaround described here (https://github.com/rstudio/shiny/issues/743)
   # where we actually render multiple outputs for each use.
   patient_chart_panel = reactive({
-    print("Creating panel")
     table_names <- get_review_table_names(app_config["data_model"])
-    #tabs <- unlist(lapply(table_names, function(id) { create_data_panel(id, paste0(id, "_tbl"))}), recursive=FALSE)
     tabs <- lapply(table_names, function(id) { create_data_panel(id, paste0(id, "_tbl"))})
     panel <- div(
       fluidRow(column(12, h2("You are seeing the record of:"))),
       fluidRow(column(12, div(class='parameters', textOutput("subject_id_output")))),
       br(),
-      #fluidRow(column(12, tabsetPanel(id = "data_tabs", tabs)))
       fluidRow(column(12, do.call(tabsetPanel, tabs)))
     ) #div
-    
-    #table_names <- get_review_table_names(app_config["data_model"])
-    #tabs <- lapply(table_names, function(id) { append_data_panel(id, paste0(id, "_tbl")) })
     panel
   })
   output$patient_chart_panel_abstraction <- renderUI({ patient_chart_panel() })
   output$patient_chart_panel_no_abstraction <- renderUI( {patient_chart_panel() })
   
-
   output$selected_project_title <- renderText({
     ifelse(is.null(input$project_id),
            "(No project selected)",

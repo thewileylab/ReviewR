@@ -4,7 +4,7 @@ omop_get_review_table_names <- function() {
     "fact_relationship")
 }
 
-format_table_name <- function(table_key, table_config, db_config) {
+omop_format_table_name <- function(table_key, table_config, db_config) {
   paste0(db_config["schema"], ".", table_config[table_key])
 }
 
@@ -57,9 +57,9 @@ omop_render_data_tables <- function(table_config, db_config, input, output, data
   output
 }
 
-query_condition_occurrence <- function(table_config, db_config, input, database_type, connection) {
+omop_query_condition_occurrence <- function(table_config, db_config, input, database_type, connection) {
   # query_text <- paste0("select * from ",
-  #                      format_table_name("condition_occurrence", table_config, db_config),
+  #                      omop_format_table_name("condition_occurrence", table_config, db_config),
   #                      " where subject_id = ", as.numeric(input$subject_id))
   # if (database_type == "bigquery") {
   #   query_exec(query_text, connection)
@@ -74,9 +74,9 @@ query_condition_occurrence <- function(table_config, db_config, input, database_
              condition_end=c("", "", "", "", ""))
 }
 
-query_condition_era <- function(table_config, db_config, input, database_type, connection) {
+omop_query_condition_era <- function(table_config, db_config, input, database_type, connection) {
   query_text <- paste0("select * from ",
-                       format_table_name("condition_era", table_config, db_config),
+                       omop_format_table_name("condition_era", table_config, db_config),
                        " where subject_id = ", as.numeric(input$subject_id))
   if (database_type == "bigquery") {
     query_exec(query_text, connection)
@@ -86,7 +86,7 @@ query_condition_era <- function(table_config, db_config, input, database_type, c
   }
 }
 
-query_all_people <- function(table_config, db_config, database_type, connection) {
+omop_query_all_people <- function(table_config, db_config, database_type, connection) {
   df <- data.frame(person_id=c(1:18),
              gender=c("Female", "Male", "Male", "Female", "Female", "Male","Female", "Male", "Male", "Female", "Female", "Male","Female", "Male", "Male", "Female", "Female", "Male"),
              birth_datetime=c("1/1/1900", "1/1/1900", "1/1/1900", "1/1/1900", "1/1/1900", "1/1/1900","1/1/1900", "1/1/1900", "1/1/1900", "1/1/1900", "1/1/1900", "1/1/1900","1/1/1900", "1/1/1900", "1/1/1900", "1/1/1900", "1/1/1900", "1/1/1900"),
@@ -96,9 +96,9 @@ query_all_people <- function(table_config, db_config, database_type, connection)
     mutate(person_id = paste0("<a class='row_subject_id' href='#'>", person_id, "</a>"))
 }
 
-query_all_people_tmp <- function(table_config, db_config, database_type, connection) {
+omop_query_all_people_tmp <- function(table_config, db_config, database_type, connection) {
   query_text <- paste0("select * from ",
-                       format_table_name("person", table_config, db_config))
+                       omop_format_table_name("person", table_config, db_config))
   if (database_type == "bigquery") {
     query_exec(query_text, connection)
   }
