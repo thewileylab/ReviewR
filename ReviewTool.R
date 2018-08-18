@@ -40,19 +40,8 @@ ui <- dashboardPage(
     tabItems(
       tabItem(tabName = "home",
               h2("Welcome to ReviewR"),
-              fluidRow(class="home_container",
-                column(6,
-                       div(class="jumbotron home_panel",
-                         h3("Project List"),
-                         div("Conduct chart reviews for your configured projects", class="lead"),
-                         actionLink(inputId = "viewProjects", label = "View Projects", class="btn btn-primary btn-lg"))),
-                column(6,
-                       div(class="jumbotron home_panel",
-                         h3("Browse Patients"),
-                         div("Navigate through the full list of OMOP patients", class="lead"),
-                         actionLink(inputId = "viewPatients", label = "View Patients", class="btn btn-primary btn-lg")))
-              )
-      ),
+              htmlOutput("navigate_links")
+      ), #tabItem
       tabItem(tabName = "projects",
               conditionalPanel(
                 condition = "!(input.project_id)",
@@ -99,7 +88,7 @@ ui <- dashboardPage(
                    ) #div
                 ) #splitLayout
               ) #conditionalPanel
-      )
+      ) #tabItem
     )
   )
 )
@@ -122,6 +111,7 @@ server <- function(input, output, session) {
   rm(app_config_df)
   
   output$title = renderText({ paste0("ReviewR (", app_config["data_model"], ")") })
+  output$data_model = renderText({app_config["data_model"]})
   
   if (app_config["database"] == "bigquery") {
     bq_connection_details_df <- read.csv(file="./conf/bigquery_secrets.csv", stringsAsFactors = FALSE)
@@ -195,6 +185,28 @@ server <- function(input, output, session) {
     output$abstraction_tbl <- DT::renderDataTable(abstraction_data(),
                                                    options = list(paging = FALSE, searchHighlight = FALSE, dom='t', ordering=FALSE),
                                                    rownames=F, edit=TRUE, selection='none')
+    
+    output$navigate_links <- renderUI({fluidRow(class="home_container",
+                                      column(6,
+                                             div(class="jumbotron home_panel",
+                                                 h3("Project List"),
+                                                 div("Conduct chart reviews for your configured projects", class="lead"),
+                                                 actionLink(inputId = "viewProjects", label = "View Projects", class="btn btn-primary btn-lg"))),
+                                      column(6,
+                                             div(class="jumbotron home_panel",
+                                                 h3("Browse Patients"),
+                                                 div(paste0("Navigate through the full list of patients"), class="lead"),
+                                                 actionLink(inputId = "viewPatients", label = "View Patients", class="btn btn-primary btn-lg")))
+                                    )}) #renderUI
+  }
+  else {
+    output$navigate_links <- renderUI({fluidRow(class="home_container",
+             column(8,
+                    div(class="jumbotron home_panel",
+                        h3("Browse Patients"),
+                        div(paste0("Navigate through the full list of patients"), class="lead"),
+                        actionLink(inputId = "viewPatients", label = "View Patients", class="btn btn-primary btn-lg")))
+              )}) #renderUI
   }
   
   output$subject_id_output <- renderText({paste("Subject ID - ",input$subject_id)})
