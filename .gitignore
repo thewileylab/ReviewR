@@ -7,3 +7,4 @@ bigquery_projectid.txt
 conf/*secret*
 .DS_Store
 projects/*
+tmp/
