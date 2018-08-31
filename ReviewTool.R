@@ -62,15 +62,15 @@ ui <- dashboardPage(
       ),
       tabItem(tabName = "chart_review",
               conditionalPanel(
-                condition = "!(input.subject_id)",
+                condition = "input.subject_id == null || input.subject_id == undefined || input.subject_id == ''",
                 h4("Please select a patient from the 'Patient Search' tab")
               ),
               conditionalPanel(
-                condition = "input.subject_id & !output.has_projects",
+                condition = "input.subject_id != '' & !output.has_projects",
                 uiOutput("patient_chart_panel_no_abstraction")
               ), #conditionalPanel
               conditionalPanel(
-                condition = "input.subject_id & output.has_projects",
+                condition = "input.subject_id != '' & output.has_projects",
                 splitLayout(
                   cellWidths = c("70%", "30%"),
                   uiOutput("patient_chart_panel_abstraction"),
