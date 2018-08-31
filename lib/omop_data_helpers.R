@@ -9,6 +9,7 @@ omop_format_table_name <- function(table_key, table_config, db_config) {
 }
 
 omop_render_data_tables <- function(table_config, db_config, input, output, database_type, connection) {
+  if (is.null(connection)) { return(output) }
   condition_occurrence_data <- reactive({query_condition_occurrence(table_config, db_config, input, app_config["database"], connection)})
   #condition_era_data <- reactive({query_condition_era(table_config, db_config, input, app_config["database"], connection)})
   
