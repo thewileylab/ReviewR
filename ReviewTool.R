@@ -113,28 +113,43 @@ server <- function(input, output, session) {
   output$title = renderText({ paste0("ReviewR (", app_config["data_model"], ")") })
   output$data_model = renderText({app_config["data_model"]})
   
-  if (app_config["database"] == "bigquery") {
-    bq_connection_details_df <- read.csv(file="./conf/bigquery_secrets.csv", stringsAsFactors = FALSE)
-    db_config <- as.list(bq_connection_details_df[,"value"])
-    names(db_config) <- bq_connection_details_df[,"key"]
-    rm(bq_connection_details_df)
-
-    connection <- as.character(db_config["project_id"])
-  }
-  else if (app_config["database"] == "postgres") {
-    pg_connection_details_df <- read.csv(file="./conf/postgres_secrets.csv", stringsAsFactors = FALSE)
-    db_config <- as.list(pg_connection_details_df[,"value"])
-    names(db_config) <- pg_connection_details_df[,"key"]
-    rm(pg_connection_details_df)
-    
-    drv <- dbDriver("PostgreSQL")
-    connection <- dbConnect(drv, dbname = db_config["dbname"],
-                     host = db_config["host"], port = as.integer(db_config["port"]),
-                     user = db_config["user"], password = db_config["password"])
-  }
-  else {
-    stop("Currently this application only supports Postgres and BigQuery databases")
-  }
+  db_config <- NULL
+  connection <- NULL
+  tryCatch({
+    if (app_config["database"] == "bigquery") {
+      bq_connection_details_df <- read.csv(file="./conf/bigquery_secrets.csv", stringsAsFactors = FALSE)
+      db_config <- as.list(bq_connection_details_df[,"value"])
+      names(db_config) <- bq_connection_details_df[,"key"]
+      rm(bq_connection_details_df)
+      
+      connection <- as.character(db_config["project_id"])
+    }
+    else if (app_config["database"] == "postgres") {
+      pg_connection_details_df <- read.csv(file="./conf/postgres_secrets.csv", stringsAsFactors = FALSE)
+      db_config <- as.list(pg_connection_details_df[,"value"])
+      names(db_config) <- pg_connection_details_df[,"key"]
+      rm(pg_connection_details_df)
+      
+      drv <- dbDriver("PostgreSQL")
+      connection <- dbConnect(drv, dbname = db_config["dbname"],
+                              host = db_config["host"], port = as.integer(db_config["port"]),
+                              user = db_config["user"], password = db_config["password"])
+    }
+    else {
+      showNotification(
+        paste("Currently this application only supports Postgres and BigQuery databases.\r\n\r\n",
+              "You will need to properly configure the database settings before ReviewR will work.  If you need help configuring ReviewR, please see the README.md file that is packaged with the repository."),
+        duration = NULL, type = "error", closeButton = FALSE)
+    }
+  },
+  error=function(e) {
+    showNotification(
+      paste("There was an error when trying to connect to the database.  Please make sure that you have configured the application correctly, and that the database is running and accessible from your machine.\r\n\r\n",
+            "You will need to resolve the connection issue before ReviewR will work properly.  If you need help configuring ReviewR, please see the README.md file that is packaged with the repository.\r\n\r\nError:\r\n", e),
+                     duration = NULL, type = "error", closeButton = FALSE)
+  },
+  warning=function(w) {})
+  
   
   if (tolower(app_config["data_model"]) == "mimic") {
     render_data_tables = mimic_render_data_tables
@@ -219,8 +234,7 @@ server <- function(input, output, session) {
     table_names <- get_review_table_names(app_config["data_model"])
     tabs <- lapply(table_names, function(id) { create_data_panel(id, paste0(id, "_tbl"))})
     panel <- div(
-      fluidRow(column(12, h2("You are seeing the record of:"))),
-      fluidRow(column(12, div(class='parameters', textOutput("subject_id_output")))),
+      fluidRow(column(12, h2(textOutput("subject_id_output")))),
       br(),
       fluidRow(column(12, do.call(tabsetPanel, tabs)))
     ) #div
@@ -237,7 +251,7 @@ server <- function(input, output, session) {
   output$selected_project_id <- renderText({input$project_id})
   
   session$onSessionEnded(function() {
-    if (app_config["database"] == "postgres") {
+    if (app_config["database"] == "postgres" && !is.null(connection)) {
       dbDisconnect(connection);
     }
   })
