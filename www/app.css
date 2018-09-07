@@ -29,3 +29,11 @@
   padding: 15px;
   text-align: center;
 }
+
+.shiny-notification {
+  position:fixed;
+  top: calc(0%);
+  left: calc(0%);
+  white-space: pre-line;
+  opacity: 1;
+}
