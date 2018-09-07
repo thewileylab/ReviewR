@@ -1,4 +1,4 @@
 "key","value"
-"database","postgres"
+"database","bigquery"
 "data_model","MIMIC"
-"table_map_file","table_map_postgres_mimic.csv"
+"table_map_file","table_map_bigquery_mimic.csv"
