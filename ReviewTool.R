@@ -10,9 +10,7 @@
 
 
 # First time setup for all dependencies:
-# install.packages(c("shiny", "shinyjs", "DT", "bigrquery", "tidyverse"))
-
-# install.packages("RPostgreSQL")
+# install.packages(c("tidyverse", "shiny", "shinyjs", "shinydashboard", "shinycssloaders", "DT", "bigrquery", "RPostgreSQL"), dependencies = TRUE)
 
 library(shiny)
 library(shinyjs)
