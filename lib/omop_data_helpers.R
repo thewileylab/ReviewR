@@ -8,77 +8,24 @@ omop_format_table_name <- function(table_key, table_config, db_config) {
   paste0(db_config["schema"], ".", table_config[table_key])
 }
 
-omop_render_data_tables <- function(table_config, db_config, input, output, database_type, connection) {
-  if (is.null(connection)) { return(output) }
-  condition_occurrence_data <- reactive({query_condition_occurrence(table_config, db_config, input, app_config["database"], connection)})
-  #condition_era_data <- reactive({query_condition_era(table_config, db_config, input, app_config["database"], connection)})
-  
-  output$all_patients_tbl <- DT::renderDataTable(
-    query_all_people(table_config, db_config, app_config["database"], connection),
-    options = list(paging = TRUE, pageLength = 20, searchHighlight = TRUE),
-    escape=FALSE, rownames=F,
-    callback = JS(
-      'table.on("click", "tr td a.row_subject_id", function() {
-      Shiny.onInputChange("subject_id", $(this).text());
-      $(".main-sidebar li a").click();
-});'))
-    
-  output$condition_occurrence_tbl <- DT::renderDataTable(condition_occurrence_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
-  # output$admissions_tbl <- DT::renderDataTable(admissions_data(), options = list(paging = FALSE, searchHighlight = TRUE),
-  #                                              escape=FALSE, rownames=F,
-  #                                              callback = JS(
-  #                                                'table.on("click", "tr td a.row_hadm_id", function() {
-  #                                                Shiny.onInputChange("hadm_id", $(this).text());
-  #                                                });'))
-  # output$callout_tbl <- DT::renderDataTable(callout_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
-  # output$chartevents_tbl <- DT::renderDataTable(chartevents_data(), filter = 'top', options = list(paging = TRUE, searchHighlight = TRUE), rownames=F)
-  # output$cptevents_tbl <- DT::renderDataTable(cptevents_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F) 
-  # output$diagnoses_icd_tbl <- DT::renderDataTable(diagnoses_icd_data(), filter = 'top', options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
-  # output$drgcodes_tbl <- DT::renderDataTable(drgcodes_data(), filter = 'top', options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
-  # output$icustays_tbl <- DT::renderDataTable(icustays_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F) 
-  # output$labevents_tbl <- DT::renderDataTable(labevents_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
-  # output$microbiologyevents_tbl <- DT::renderDataTable(microbiologyevents_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
-  # output$noteevent_tbl <- DT::renderDataTable(noteevent_data(), filter = 'top', options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
-  # output$all_patients_tbl <- DT::renderDataTable(
-  #   query_all_patients(table_config, db_config, app_config["database"], connection),
-  #   options = list(paging = TRUE, pageLength = 20, searchHighlight = TRUE),
-  #   escape=FALSE, rownames=F,
-  #   callback = JS(
-  #     'table.on("click", "tr td a.row_subject_id", function() {
-  #        Shiny.onInputChange("subject_id", $(this).text());
-  #        $(".main-sidebar li a").click();
-  #      });'))
-  # output$patients_tbl <- DT::renderDataTable(patients_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
-  # output$prescriptions_tbl <- DT::renderDataTable(prescriptions_data(), filter = 'top', options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
-  # output$procedureevents_mv_tbl <- DT::renderDataTable(procedureevents_mv_data(), filter = 'top', options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
-  # output$procedures_icd_tbl <- DT::renderDataTable(procedures_icd_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
-  # output$services_labels_tbl <- renderTable(services_labels)
-  # output$services_tbl <-  DT::renderDataTable(services_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
-  # output$transfers_tbl <- DT::renderDataTable(transfers_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
-  output
-}
 
 omop_query_condition_occurrence <- function(table_config, db_config, input, database_type, connection) {
+  query_text <- paste0("select condition_occurrence_id, condition_concept_id, c.concept_name as condition_concept_name, ",
+        "condition_source_value, condition_source_concept_id, cs.concept_name as condition_source_concept_name, ",
+        "condition_start_date, condition_start_datetime, condition_end_date, condition_end_datetime, ",
+        "condition_type_concept_id, ct.concept_name as condition_type_concept_name, stop_reason, ",
+        "condition_occurrence.provider_id as provider_id, provider_name, visit_occurrence_id, ",
+        "condition_status_source_value, condition_status_concept_id, cst.concept_name as condition_status_concept_name ",
+        "from ", omop_format_table_name("condition_occurrence", table_config, db_config), " ",
+        "left outer join ", omop_format_table_name("concept", table_config, db_config), " c on c.concept_id = condition_concept_id ",
+        "left outer join ", omop_format_table_name("concept", table_config, db_config), " ct on ct.concept_id = condition_type_concept_id ",
+        "left outer join ", omop_format_table_name("concept", table_config, db_config), " cs on cs.concept_id = condition_source_concept_id ",
+        "left outer join ", omop_format_table_name("concept", table_config, db_config), " cst on cst.concept_id = condition_status_concept_id ",
+        "left outer join ", omop_format_table_name("provider", table_config, db_config), " p on p.provider_id = condition_occurrence.provider_id",
+        " where person_id = ", as.numeric(input$subject_id))
   # query_text <- paste0("select * from ",
   #                      omop_format_table_name("condition_occurrence", table_config, db_config),
-  #                      " where subject_id = ", as.numeric(input$subject_id))
-  # if (database_type == "bigquery") {
-  #   query_exec(query_text, connection)
-  # }
-  # else {
-  #   dbGetQuery(connection, query_text)
-  # }
-  
-  data.frame(condition_occurrence_id=c(1:5),
-             condition_concept=c("Diabetes mellitus", "Diabetes mellitus", "Hypertension", "Diabetes mellitus", "Hypertension"),
-             condition_start=c("1/1/1900", "5/1/1900", "5/1/1900", "12/1/1900", "12/1/1900"),
-             condition_end=c("", "", "", "", ""))
-}
-
-omop_query_condition_era <- function(table_config, db_config, input, database_type, connection) {
-  query_text <- paste0("select * from ",
-                       omop_format_table_name("condition_era", table_config, db_config),
-                       " where subject_id = ", as.numeric(input$subject_id))
+  #                      " where person_id = ", as.numeric(input$subject_id))
   if (database_type == "bigquery") {
     query_exec(query_text, connection)
   }
@@ -88,22 +35,117 @@ omop_query_condition_era <- function(table_config, db_config, input, database_ty
 }
 
 omop_query_all_people <- function(table_config, db_config, database_type, connection) {
-  df <- data.frame(person_id=c(1:18),
-             gender=c("Female", "Male", "Male", "Female", "Female", "Male","Female", "Male", "Male", "Female", "Female", "Male","Female", "Male", "Male", "Female", "Female", "Male"),
-             birth_datetime=c("1/1/1900", "1/1/1900", "1/1/1900", "1/1/1900", "1/1/1900", "1/1/1900","1/1/1900", "1/1/1900", "1/1/1900", "1/1/1900", "1/1/1900", "1/1/1900","1/1/1900", "1/1/1900", "1/1/1900", "1/1/1900", "1/1/1900", "1/1/1900"),
-             race=c("White", "Unknown", "Native Hawaiian or Other Pacific Islander", "White", "Unknown", "White","White", "Unknown", "Native Hawaiian or Other Pacific Islander", "White", "Unknown", "White","White", "Unknown", "Native Hawaiian or Other Pacific Islander", "White", "Unknown", "White"),
-             ethnicity=c("Hispanic or Latino", "Hispanic or Latino", "Not Hispanic or Latino", "Hispanic or Latino", "Hispanic or Latino", "Not Hispanic or Latino","Hispanic or Latino", "Hispanic or Latino", "Not Hispanic or Latino", "Hispanic or Latino", "Hispanic or Latino", "Not Hispanic or Latino","Hispanic or Latino", "Hispanic or Latino", "Not Hispanic or Latino", "Hispanic or Latino", "Hispanic or Latino", "Not Hispanic or Latino"))
-  df %>%
-    mutate(person_id = paste0("<a class='row_subject_id' href='#'>", person_id, "</a>"))
+  query_text <- paste0("select person_id, person_source_value, person.gender_concept_id as gender_concept_id, gc.concept_name as gender_concept_name, person.gender_source_value as gender_source_value, person.gender_source_concept_id as gender_source_concept_id, person.year_of_birth as year_of_birth, month_of_birth, day_of_birth, birth_datetime, ",
+                       "race_concept_id, rc.concept_name as race_concept_name, race_source_value, race_source_concept_id, ethnicity_concept_id, ec.concept_name as ethnicity_concept_name, ethnicity_source_value, ethnicity_source_concept_id, person.provider_id as provider_id, p.provider_name as provider_name ",
+                       "from ", omop_format_table_name("person", table_config, db_config), " ",
+                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " gc ON gc.concept_id = person.gender_concept_id ",
+                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " rc ON rc.concept_id = person.race_concept_id ",
+                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " ec ON ec.concept_id = person.ethnicity_concept_id ",
+                       "left outer join ", omop_format_table_name("provider", table_config, db_config), " p ON p.provider_id = person.provider_id ")
+  if (database_type == "bigquery") {
+    query_exec(query_text, connection) %>%
+      mutate(person_id = paste0("<a class='row_subject_id' href='#'>", person_id, "</a>"))
+  }
+  else {
+    dbGetQuery(connection, query_text) %>%
+      mutate(person_id = paste0("<a class='row_subject_id' href='#'>", person_id, "</a>"))
+  }
 }
 
-omop_query_all_people_tmp <- function(table_config, db_config, database_type, connection) {
-  query_text <- paste0("select * from ",
-                       omop_format_table_name("person", table_config, db_config))
+omop_query_person <- function(table_config, db_config, input, database_type, connection) {
+  query_text <- paste0("select person_id, person_source_value, person.gender_concept_id as gender_concept_id, gc.concept_name as gender_concept_name, person.gender_source_value as gender_source_value, person.gender_source_concept_id as gender_source_concept_id, person.year_of_birth as year_of_birth, month_of_birth, day_of_birth, birth_datetime, ",
+                       "race_concept_id, rc.concept_name as race_concept_name, race_source_value, race_source_concept_id, ethnicity_concept_id, ec.concept_name as ethnicity_concept_name, ethnicity_source_value, ethnicity_source_concept_id, person.provider_id as provider_id, p.provider_name as provider_name ",
+                       "from ", omop_format_table_name("person", table_config, db_config), " ",
+                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " gc ON gc.concept_id = person.gender_concept_id ",
+                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " rc ON rc.concept_id = person.race_concept_id ",
+                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " ec ON ec.concept_id = person.ethnicity_concept_id ",
+                       "left outer join ", omop_format_table_name("provider", table_config, db_config), " p ON p.provider_id = person.provider_id ",
+                       " where person_id = ", as.numeric(input$subject_id))
   if (database_type == "bigquery") {
     query_exec(query_text, connection)
   }
   else {
     dbGetQuery(connection, query_text)
   }
+}
+
+omop_query_observation_period <- function(table_config, db_config, input, database_type, connection) {
+  query_text <- paste0("select observation_period_id, observation_period_start_date, observation_period_end_date, period_type_concept_id, c.concept_name as period_type_concept_name ",
+                       "from ", omop_format_table_name("observation_period", table_config, db_config), " ",
+                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " c ON c.concept_id = period_type_concept_id ",
+                       " where person_id = ", as.numeric(input$subject_id))
+  if (database_type == "bigquery") {
+    query_exec(query_text, connection)
+  }
+  else {
+    dbGetQuery(connection, query_text)
+  }
+}
+
+omop_query_specimen <- function(table_config, db_config, input, database_type, connection) {
+  query_text <- paste0("select specimen_id, specimen_concept_id, sc.concept_name as specimen_concept_name, specimen_source_id, specimen_source_value, ",
+                      "specimen_type_concept_id, stc.concept_name as specimen_type_concept_name, specimen_date, specimen_datetime, ",
+                      "quantity, unit_concept_id, u.concept_name as unit_concept_name, unit_source_value, ",
+                      "anatomic_site_concept_id, anc.concept_name as anatomic_site_concept_name, anatomic_site_source_value, ",
+                      "disease_status_concept_id, ds.concept_Name as disease_status_concept_name, disease_status_source_value ",
+                      "from ", omop_format_table_name("specimen", table_config, db_config), " ",
+                      "left outer join ", omop_format_table_name("concept", table_config, db_config), " sc on sc.concept_id = specimen_concept_id ",
+                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," stc on stc.concept_id = specimen_type_concept_id ",
+                      "left outer join ", omop_format_table_name("concept", table_config, db_config), " u on u.concept_id = unit_concept_id ", 
+                      "left outer join ", omop_format_table_name("concept", table_config, db_config), " anc on anc.concept_id = anatomic_site_concept_id ",
+                      "left outer join ", omop_format_table_name("concept", table_config, db_config), " ds on ds.concept_id = disease_status_concept_id ",
+                      " where person_id = ", as.numeric(input$subject_id))
+  if (database_type == "bigquery") {
+    query_exec(query_text, connection)
+  }
+  else {
+    dbGetQuery(connection, query_text)
+  }
+}
+
+omop_query_death <- function(table_config, db_config, input, database_type, connection) {
+  query_text <- paste0("select death_date, death_datetime, death_type_concept_id, dt.concept_name as death_type_concept_name, ",
+                      "cause_concept_id, cc.concept_name as cause_concept_name, cause_source_value, ",
+                      "cause_source_concept_id, cs.concept_name as cause_source_concept_name ",
+                      "from ", omop_format_table_name("death", table_config, db_config), " ",
+                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," dt on dt.concept_id = death_type_concept_id ",
+                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," cc on cc.concept_id = cause_concept_id ",
+                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," cs on cs.concept_id = cause_source_concept_id ",
+                      " where person_id = ", as.numeric(input$subject_id))
+  if (database_type == "bigquery") {
+    query_exec(query_text, connection)
+  }
+  else {
+    dbGetQuery(connection, query_text)
+  }
+}
+
+omop_render_data_tables <- function(table_config, db_config, input, output, database_type, connection) {
+  if (is.null(connection)) { return(output) }
+  
+  condition_occurrence_data <- reactive({omop_query_condition_occurrence(table_config, db_config, input, database_type, connection)})
+  condition_era_data <- reactive({omop_query_condition_era(table_config, db_config, input, database_type, connection)})
+  person_data <- reactive({omop_query_person(table_config, db_config, input, database_type, connection)})
+  observation_period_data <- reactive({omop_query_observation_period(table_config, db_config, input, database_type, connection)})
+  specimen_data <- reactive({omop_query_specimen(table_config, db_config, input, database_type, connection)})
+  death_data <- reactive({omop_query_death(table_config, db_config, input, database_type, connection)})
+  #"visit_detail", "visit_occurrence", "procedure_diagnosis",
+  #"drug_exposure", "device_exposure", "measurement", "note", "note_nlp", "observation",
+  #"fact_relationship"
+  
+  output$all_patients_tbl <- DT::renderDataTable(
+    omop_query_all_people(table_config, db_config, database_type, connection),
+    options = list(paging = TRUE, pageLength = 20, searchHighlight = TRUE),
+    escape=FALSE, rownames=F,
+    callback = JS(
+      'table.on("click", "tr td a.row_subject_id", function() {
+      Shiny.onInputChange("subject_id", $(this).text());
+      $(".main-sidebar li a").click();
+    });'))
+  output$person_tbl <- DT::renderDataTable(person_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
+  output$condition_occurrence_tbl <- DT::renderDataTable(condition_occurrence_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
+  output$observation_period_tbl <- DT::renderDataTable(observation_period_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
+  output$specimen_tbl <- DT::renderDataTable(specimen_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
+  output$death_tbl <- DT::renderDataTable(death_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
+  output
 }
