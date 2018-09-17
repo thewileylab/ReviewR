@@ -8,3 +8,5 @@
 "observation_period","observation_period"
 "specimen","specimen"
 "death","death"
+"visit_occurrence","visit_occurrence"
+"procedure_occurrence","procedure_occurrence"
