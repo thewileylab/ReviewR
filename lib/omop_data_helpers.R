@@ -1,13 +1,25 @@
 omop_get_review_table_names <- function() {
-  c("person", "observation_period", "specimen", "death", "visit_detail", "visit_occurrence", "procedure_diagnosis",
-    "drug_exposure", "device_exposure", "condition_occurrence", "measurement", "note", "note_nlp", "observation",
-    "fact_relationship")
+  c("condition_era", "condition_occurrence", "cost", "death", "device_exposure", "dose_era", "drug_era", "drug_exposure", "measurement", 
+    "note", "note_nlp", "observation", "observation_period", "payer_plan_period", "person", "procedure_occurrence", "specimen", "visit_occurrence")
 }
 
 omop_format_table_name <- function(table_key, table_config, db_config) {
   paste0(db_config["schema"], ".", table_config[table_key])
 }
 
+omop_query_condition_era <- function(table_config, db_config, input, database_type, connection) {
+  query_text <- paste0("select condition_era_id, condition_concept_id, cc.concept_name as condition_concept_name, ",
+                       "condition_era_start_date, condition_era_end_date, condition_occurrence_count ",
+                       "from ", omop_format_table_name("condition_era", table_config, db_config), " ",
+                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " cc on cc.concept_id = condition_concept_id ",
+                       " where person_id = ", as.numeric(input$subject_id))
+  if (database_type == "bigquery") {
+    query_exec(query_text, connection)
+  }
+  else {
+    dbGetQuery(connection, query_text)
+  }
+}
 
 omop_query_condition_occurrence <- function(table_config, db_config, input, database_type, connection) {
   query_text <- paste0("select condition_occurrence_id, condition_concept_id, c.concept_name as condition_concept_name, ",
@@ -120,19 +132,74 @@ omop_query_death <- function(table_config, db_config, input, database_type, conn
   }
 }
 
+omop_query_visit_occurrence <- function(table_config, db_config, input, database_type, connection) {
+  query_text <- paste0("select visit_occurrence_id, visit_concept_id, vc.concept_name as visit_concept_name, visit_source_value, visit_source_concept_id, vsc.concept_name as visit_source_concept_name, ",
+                      "visit_start_date, visit_start_datetime, visit_end_date, visit_end_datetime, ",
+                      "visit_type_concept_id, vtc.concept_name as visit_type_concept_name, ",
+                      "p.provider_id, p.provider_name as provider_name, ",
+                      "csn.care_site_id, csn.care_site_name as care_site_name, ",
+                      "admitting_source_concept_id, ads.concept_name as admitting_source_concept_name, admitting_source_value, ",
+                      "discharge_to_concept_id, dtc.concept_name as discharge_to_concept_name, discharge_to_source_value, ",
+                      "preceding_visit_occurrence_id ",
+                      "from ", omop_format_table_name("visit_occurrence", table_config, db_config), " ",
+                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," vc on vc.concept_id = visit_occurrence.visit_concept_id ",
+                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," vsc on vsc.concept_id = visit_occurrence.visit_source_concept_id ",
+                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," vtc on vtc.concept_id = visit_occurrence.visit_type_concept_id ",
+                      "left outer join ", omop_format_table_name("provider", table_config, db_config)," p on p.provider_id = visit_occurrence.provider_id ",
+                      "left outer join ", omop_format_table_name("care_site", table_config, db_config)," csn on csn.care_site_id = visit_occurrence.care_site_id ",
+                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," ads on ads.concept_id = visit_occurrence.admitting_source_concept_id ",
+                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," dtc on dtc.concept_id = visit_occurrence.discharge_to_concept_id ",
+                      " where person_id = ", as.numeric(input$subject_id))
+  if (database_type == "bigquery") {
+    query_exec(query_text, connection)
+  }
+  else {
+    dbGetQuery(connection, query_text)
+  }
+}
+
+omop_query_procedure_occurrence <- function(table_config, db_config, input, database_type, connection) {
+  query_text <- paste0("select procedure_occurrence_id, procedure_concept_id, pc.concept_name as procedure_concept_name, procedure_source_value, procedure_source_concept_id, psc.concept_name as procedure_source_concept_name, ",
+                      "procedure_date, procedure_datetime, procedure_type_concept_id, ptc.concept_name as procedure_type_concept_name, ",
+                      "modifier_concept_id, mc.concept_name as modifier_concept_name, qualifier_source_value, quantity, ",
+                      "p.provider_id, p.provider_name as provider_name, visit_occurrence_id ",
+                      "from ", omop_format_table_name("procedure_occurrence", table_config, db_config), " ",
+                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," pc on pc.concept_id = procedure_concept_id ",
+                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," psc on psc.concept_id = procedure_source_concept_id ",
+                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," ptc on ptc.concept_id = procedure_type_concept_id ",
+                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," mc on mc.concept_id = modifier_concept_id ",
+                      "left outer join ", omop_format_table_name("provider", table_config, db_config)," p on p.provider_id = procedure_occurrence.provider_id ",
+                      " where person_id = ", as.numeric(input$subject_id))
+  if (database_type == "bigquery") {
+    query_exec(query_text, connection)
+  }
+  else {
+    dbGetQuery(connection, query_text)
+  }
+}
+
 omop_render_data_tables <- function(table_config, db_config, input, output, database_type, connection) {
   if (is.null(connection)) { return(output) }
   
-  condition_occurrence_data <- reactive({omop_query_condition_occurrence(table_config, db_config, input, database_type, connection)})
   condition_era_data <- reactive({omop_query_condition_era(table_config, db_config, input, database_type, connection)})
-  person_data <- reactive({omop_query_person(table_config, db_config, input, database_type, connection)})
-  observation_period_data <- reactive({omop_query_observation_period(table_config, db_config, input, database_type, connection)})
-  specimen_data <- reactive({omop_query_specimen(table_config, db_config, input, database_type, connection)})
+  condition_occurrence_data <- reactive({omop_query_condition_occurrence(table_config, db_config, input, database_type, connection)})
+  #cost_data <- reactive({omop_query_cost(table_config, db_config, input, database_type, connection)})
   death_data <- reactive({omop_query_death(table_config, db_config, input, database_type, connection)})
-  #"visit_detail", "visit_occurrence", "procedure_diagnosis",
-  #"drug_exposure", "device_exposure", "measurement", "note", "note_nlp", "observation",
-  #"fact_relationship"
-  
+  #device_exposure
+  #dose_era
+  #drug_era
+  #drug_exposure
+  #measurement
+  #note
+  #note_nlp
+  #observation
+  observation_period_data <- reactive({omop_query_observation_period(table_config, db_config, input, database_type, connection)})
+  #payer_plan_period
+  person_data <- reactive({omop_query_person(table_config, db_config, input, database_type, connection)})
+  procedure_occurrence_data <- reactive({omop_query_procedure_occurrence(table_config, db_config, input, database_type, connection)})
+  specimen_data <- reactive({omop_query_specimen(table_config, db_config, input, database_type, connection)})
+  visit_occurrence_data <- reactive({omop_query_visit_occurrence(table_config, db_config, input, database_type, connection)})
+
   output$all_patients_tbl <- DT::renderDataTable(
     omop_query_all_people(table_config, db_config, database_type, connection),
     options = list(paging = TRUE, pageLength = 20, searchHighlight = TRUE),
@@ -143,9 +210,22 @@ omop_render_data_tables <- function(table_config, db_config, input, output, data
       $(".main-sidebar li a").click();
     });'))
   output$person_tbl <- DT::renderDataTable(person_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
+  output$condition_era_tbl <- DT::renderDataTable(condition_era_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
   output$condition_occurrence_tbl <- DT::renderDataTable(condition_occurrence_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
-  output$observation_period_tbl <- DT::renderDataTable(observation_period_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
-  output$specimen_tbl <- DT::renderDataTable(specimen_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
+  #cost
   output$death_tbl <- DT::renderDataTable(death_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
+  #device_exposure
+  #dose_era
+  #drug_era
+  #drug_exposure
+  #measurement
+  #note
+  #note_nlp
+  #observation
+  output$observation_period_tbl <- DT::renderDataTable(observation_period_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
+  #payer_plan_period
+  output$procedure_occurrence_tbl <- DT::renderDataTable(procedure_occurrence_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
+  output$specimen_tbl <- DT::renderDataTable(specimen_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
+  output$visit_occurrence_tbl <- DT::renderDataTable(visit_occurrence_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F)
   output
 }
