@@ -10,13 +10,12 @@
 
 
 # First time setup for all dependencies:
-# install.packages(c("tidyverse", "shiny", "shinyjs", "shinydashboard", "shinycssloaders", "DT", "bigrquery", "RPostgreSQL"), dependencies = TRUE)
+# install.packages(c("tidyverse", "shiny", "shinyjs", "shinydashboard", "shinycssloaders", "DT", "bigrquery", "RPostgres"), dependencies = TRUE)
 
 library(shiny)
 library(shinyjs)
 library(shinydashboard)
 library(shinycssloaders)
-library(bigrquery)
 source('lib/helpers.R')
 
 # Define UI for application 
@@ -94,7 +93,7 @@ ui <- dashboardPage(
 # Define server logic 
 server <- function(input, output, session) {
   library(bigrquery)
-  library(RPostgreSQL)
+  library(RPostgres)
   
   library(readr)
   library(DT)
@@ -128,10 +127,10 @@ server <- function(input, output, session) {
       names(db_config) <- pg_connection_details_df[,"key"]
       rm(pg_connection_details_df)
       
-      drv <- dbDriver("PostgreSQL")
-      connection <- dbConnect(drv, dbname = db_config["dbname"],
-                              host = db_config["host"], port = as.integer(db_config["port"]),
-                              user = db_config["user"], password = db_config["password"])
+      drv <- RPostgres::Postgres()
+      connection <- dbConnect(drv, dbname = as.character(db_config["dbname"]),
+                             host = as.character(db_config["host"]), port = as.integer(db_config["port"]),
+                             user = as.character(db_config["user"]), password = as.character(db_config["password"]))
     }
     else {
       showNotification(
