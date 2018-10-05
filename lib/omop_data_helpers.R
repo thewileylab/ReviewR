@@ -11,10 +11,11 @@ omop_query_all_people <- function(table_config, db_config, database_type, connec
   query_text <- paste0("select person_id, person_source_value, person.gender_concept_id as gender_concept_id, gc.concept_name as gender_concept_name, person.gender_source_value as gender_source_value, person.gender_source_concept_id as gender_source_concept_id, person.year_of_birth as year_of_birth, month_of_birth, day_of_birth, birth_datetime, ",
                        "race_concept_id, rc.concept_name as race_concept_name, race_source_value, race_source_concept_id, ethnicity_concept_id, ec.concept_name as ethnicity_concept_name, ethnicity_source_value, ethnicity_source_concept_id, person.provider_id as provider_id, p.provider_name as provider_name ",
                        "from ", omop_format_table_name("person", table_config, db_config), " ",
-                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " gc ON gc.concept_id = person.gender_concept_id ",
-                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " rc ON rc.concept_id = person.race_concept_id ",
-                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " ec ON ec.concept_id = person.ethnicity_concept_id ",
-                       "left outer join ", omop_format_table_name("provider", table_config, db_config), " p ON p.provider_id = person.provider_id ")
+                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " gc ON gc.concept_id = gender_concept_id ",
+                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " rc ON rc.concept_id = race_concept_id ",
+                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " ec ON ec.concept_id = ethnicity_concept_id ",
+                       "left outer join ", omop_format_table_name("provider", table_config, db_config), " p ON p.provider_id = ", omop_format_table_name("person", table_config, db_config), ".provider_id ",
+                       "order by person_id")
   if (database_type == "bigquery") {
     query_exec(query_text, connection) %>%
       mutate(person_id = paste0("<a class='row_subject_id' href='#'>", person_id, "</a>"))
@@ -30,7 +31,8 @@ omop_query_condition_era <- function(table_config, db_config, input, database_ty
                        "condition_era_start_date, condition_era_end_date, condition_occurrence_count ",
                        "from ", omop_format_table_name("condition_era", table_config, db_config), " ",
                        "left outer join ", omop_format_table_name("concept", table_config, db_config), " cc on cc.concept_id = condition_concept_id ",
-                       " where person_id = ", as.numeric(input$subject_id))
+                       " where person_id = ", as.numeric(input$subject_id),
+                       " order by condition_era_id")
   if (database_type == "bigquery") {
     query_exec(query_text, connection)
   }
@@ -52,7 +54,8 @@ omop_query_condition_occurrence <- function(table_config, db_config, input, data
         "left outer join ", omop_format_table_name("concept", table_config, db_config), " cs on cs.concept_id = condition_source_concept_id ",
         "left outer join ", omop_format_table_name("concept", table_config, db_config), " cst on cst.concept_id = condition_status_concept_id ",
         "left outer join ", omop_format_table_name("provider", table_config, db_config), " p on p.provider_id = condition_occurrence.provider_id",
-        " where person_id = ", as.numeric(input$subject_id))
+        " where person_id = ", as.numeric(input$subject_id),
+        " order by condition_occurrence_id")
   if (database_type == "bigquery") {
     query_exec(query_text, connection)
   }
@@ -68,11 +71,12 @@ omop_query_cost <- function(table_config, db_config, input, database_type, conne
                        "payer_plan_period_id, amount_allowed, revenue_code_concept_id, rcc.concept_name as revenue_code_concept_name, reveue_code_source_value, ",
                        "drg_concept_id, dc.concept_name as drg_concept_name, drg_source_value ",
                        "from ", omop_format_table_name("cost", table_config, db_config), " ",
-                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " ctc on ctc.concept_id = cost.cost_type_concept_id ",
-                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " cc on cc.concept_id = cost.currency_concept_id ",
-                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " rcc on rcc.concept_id = cost.revenue_code_concept_id ",
+                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " ctc on ctc.concept_id = cost_type_concept_id ",
+                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " cc on cc.concept_id = currency_concept_id ",
+                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " rcc on rcc.concept_id = revenue_code_concept_id ",
                        "left outer join ", omop_format_table_name("concept", table_config, db_config), " dc on dc.concept_id = drg_concept_id ",
-                       " where cost_id = ", as.numeric(input$item_id))
+                       " where cost_id = ", as.numeric(input$item_id),
+                       " order by cost_id")
   if (database_type == "bigquery") {
     query_exec(query_text, connection)
   }
@@ -91,8 +95,9 @@ omop_query_device_exposure <- function(table_config, db_config, input, database_
                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " dc on dc.concept_id = device_concept_id ",
                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " dsc on dsc.concept_id = device_source_concept_id ",
                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " dtc on dtc.concept_id = device_type_concept_id ",
-                      "left outer join ", omop_format_table_name("provider", table_config, db_config), " p on p.provider_id = device_exposure.provider_id ",
-                      " where person_id = ", as.numeric(input$subject_id))
+                      "left outer join ", omop_format_table_name("provider", table_config, db_config), " p on p.provider_id = ", omop_format_table_name("device_exposure", table_config, db_config), ".provider_id ",
+                      " where person_id = ", as.numeric(input$subject_id),
+                      " order by device_exposure_id")
   if (database_type == "bigquery") {
     query_exec(query_text, connection)
   }
@@ -109,7 +114,8 @@ omop_query_death <- function(table_config, db_config, input, database_type, conn
                       "left outer join ", omop_format_table_name("concept", table_config, db_config)," dt on dt.concept_id = death_type_concept_id ",
                       "left outer join ", omop_format_table_name("concept", table_config, db_config)," cc on cc.concept_id = cause_concept_id ",
                       "left outer join ", omop_format_table_name("concept", table_config, db_config)," cs on cs.concept_id = cause_source_concept_id ",
-                      " where person_id = ", as.numeric(input$subject_id))
+                      " where person_id = ", as.numeric(input$subject_id),
+                      " order by death_date")
   if (database_type == "bigquery") {
     query_exec(query_text, connection)
   }
@@ -122,9 +128,10 @@ omop_query_dose_era <- function(table_config, db_config, input, database_type, c
   query_text <- paste0("select dose_era_id, drug_concept_id, dc.concept_name as drug_concept_name, unit_concept_id, uc.concept_name as unit_concept_name, ",
                       "dose_value, dose_era_start_date, dose_era_end_date ",
                       "from ", omop_format_table_name("dose_era", table_config, db_config), " ",
-                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," dc on dc.concept_id = dose_era.drug_concept_id ",
-                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," uc on uc.concept_id = dose_era.unit_concept_id ",
-                      " where person_id = ", as.numeric(input$subject_id))
+                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," dc on dc.concept_id = drug_concept_id ",
+                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," uc on uc.concept_id = unit_concept_id ",
+                      " where person_id = ", as.numeric(input$subject_id),
+                      " order by dose_era_id")
   if (database_type == "bigquery") {
     query_exec(query_text, connection)
   }
@@ -136,8 +143,9 @@ omop_query_dose_era <- function(table_config, db_config, input, database_type, c
 omop_query_drug_era <- function(table_config, db_config, input, database_type, connection) {
   query_text <- paste0("select drug_era_id, drug_concept_id, dc.concept_name as drug_concept_name, drug_era_start_date, drug_era_end_date, drug_exposure_count, gap_days  ",
                        "from ", omop_format_table_name("drug_era", table_config, db_config), " ",
-                       "left outer join ", omop_format_table_name("concept", table_config, db_config)," dc on dc.concept_id = dose_era.drug_concept_id ",
-                       " where person_id = ", as.numeric(input$subject_id))
+                       "left outer join ", omop_format_table_name("concept", table_config, db_config)," dc on dc.concept_id = drug_concept_id ",
+                       " where person_id = ", as.numeric(input$subject_id),
+                       " order by drug_era_id")
   if (database_type == "bigquery") {
     query_exec(query_text, connection)
   }
@@ -157,8 +165,9 @@ omop_query_drug_exposure <- function(table_config, db_config, input, database_ty
                       "left outer join ", omop_format_table_name("concept", table_config, db_config)," dsc on dsc.concept_id = drug_source_concept_id ",
                       "left outer join ", omop_format_table_name("concept", table_config, db_config)," dtc on dtc.concept_id = drug_type_concept_id ",
                       "left outer join ", omop_format_table_name("concept", table_config, db_config)," rc on rc.concept_id = route_concept_id ",
-                      "left outer join ", omop_format_table_name("provider", table_config, db_config)," p on p.provider_id = drug_exposure.provider_id ",
-                      " where person_id = ", as.numeric(input$subject_id))
+                      "left outer join ", omop_format_table_name("provider", table_config, db_config)," p on p.provider_id = ", omop_format_table_name("drug_exposure", table_config, db_config),".provider_id ",
+                      " where person_id = ", as.numeric(input$subject_id),
+                      " order by drug_exposure_id")
   if (database_type == "bigquery") {
     query_exec(query_text, connection)
   }
@@ -179,8 +188,9 @@ omop_query_measurement <- function(table_config, db_config, input, database_type
                       "left outer join ", omop_format_table_name("concept", table_config, db_config)," oc on oc.concept_id = operator_concept_id ",
                       "left outer join ", omop_format_table_name("concept", table_config, db_config)," vc on vc.concept_id = value_as_concept_id ",
                       "left outer join ", omop_format_table_name("concept", table_config, db_config)," uc on uc.concept_id = unit_concept_id ",
-                      "left outer join ", omop_format_table_name("provider", table_config, db_config)," p on p.provider_id = measurement.provider_id ",
-                      " where person_id = ", as.numeric(input$subject_id))
+                      "left outer join ", omop_format_table_name("provider", table_config, db_config)," p on p.provider_id = ", omop_format_table_name("measurement", table_config, db_config), ".provider_id ",
+                      " where person_id = ", as.numeric(input$subject_id),
+                      " order by measurement_id")
   if (database_type == "bigquery") {
     query_exec(query_text, connection)
   }
@@ -199,8 +209,9 @@ omop_query_note <- function(table_config, db_config, input, database_type, conne
                       "left outer join ", omop_format_table_name("concept", table_config, db_config)," ncc on ncc.concept_id = note_class_concept_id ",
                       "left outer join ", omop_format_table_name("concept", table_config, db_config)," ec on ec.concept_id = encoding_concept_id ",
                       "left outer join ", omop_format_table_name("concept", table_config, db_config)," lc on lc.concept_id = language_concept_id ",
-                      "left outer join ", omop_format_table_name("provider", table_config, db_config)," p on p.provider_id = note.provider_id ",
-                      " where person_id = ", as.numeric(input$subject_id))
+                      "left outer join ", omop_format_table_name("provider", table_config, db_config)," p on p.provider_id = ", omop_format_table_name("note", table_config, db_config), ".provider_id ",
+                      " where person_id = ", as.numeric(input$subject_id),
+                      " order by note_id")
   if (database_type == "bigquery") {
     query_exec(query_text, connection)
   }
@@ -218,7 +229,8 @@ omop_query_note_nlp <- function(table_config, db_config, input, database_type, c
                        "left outer join ", omop_format_table_name("concept", table_config, db_config)," sc on sc.concept_id = section_concept_id ",
                        "left outer join ", omop_format_table_name("concept", table_config, db_config)," nc on nc.concept_id = note_nlp_concept_id ",
                        "left outer join ", omop_format_table_name("concept", table_config, db_config)," nsc on nsc.concept_id = note_nlp_source_concept_id ",
-                       " where note.person_id = ", as.numeric(input$subject_id))
+                       " where note.person_id = ", as.numeric(input$subject_id),
+                       " order by note_nlp_id")
   if (database_type == "bigquery") {
     query_exec(query_text, connection)
   }
@@ -231,7 +243,8 @@ omop_query_observation_period <- function(table_config, db_config, input, databa
   query_text <- paste0("select observation_period_id, observation_period_start_date, observation_period_end_date, period_type_concept_id, c.concept_name as period_type_concept_name ",
                        "from ", omop_format_table_name("observation_period", table_config, db_config), " ",
                        "left outer join ", omop_format_table_name("concept", table_config, db_config), " c ON c.concept_id = period_type_concept_id ",
-                       " where person_id = ", as.numeric(input$subject_id))
+                       " where person_id = ", as.numeric(input$subject_id),
+                       " order by observation_period_id")
   if (database_type == "bigquery") {
     query_exec(query_text, connection)
   }
@@ -253,8 +266,9 @@ omop_query_observation <- function(table_config, db_config, input, database_type
                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " osc on osc.concept_id = observation_source_concept_id ",
                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " qc on qc.concept_id = qualifier_concept_id ",
                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " uc on uc.concept_id = unit_concept_id ",
-                      "left outer join ", omop_format_table_name("provider", table_config, db_config), " p on p.provider_id = observation.provider_id ",
-                      " where person_id = ", as.numeric(input$subject_id))
+                      "left outer join ", omop_format_table_name("provider", table_config, db_config), " p on p.provider_id = ", omop_format_table_name("observation", table_config, db_config), ".provider_id ",
+                      " where person_id = ", as.numeric(input$subject_id),
+                      " order by observation_id")
   if (database_type == "bigquery") {
     query_exec(query_text, connection)
   }
@@ -266,7 +280,8 @@ omop_query_observation <- function(table_config, db_config, input, database_type
 omop_query_payer_plan_period <- function(table_config, db_config, input, database_type, connection) {
   query_text <- paste0("select payer_plan_period_id, payer_plan_period_start_date, payer_plan_period_end_date, payer_source_value, plan_source_value, family_source_value ",
                        "from ", omop_format_table_name("payer_plan_period", table_config, db_config), " ",
-                       " where person_id = ", as.numeric(input$subject_id))
+                       " where person_id = ", as.numeric(input$subject_id),
+                       " order by payer_plan_period_id")
   if (database_type == "bigquery") {
     query_exec(query_text, connection)
   }
@@ -279,11 +294,12 @@ omop_query_person <- function(table_config, db_config, input, database_type, con
   query_text <- paste0("select person_id, person_source_value, person.gender_concept_id as gender_concept_id, gc.concept_name as gender_concept_name, person.gender_source_value as gender_source_value, person.gender_source_concept_id as gender_source_concept_id, person.year_of_birth as year_of_birth, month_of_birth, day_of_birth, birth_datetime, ",
                        "race_concept_id, rc.concept_name as race_concept_name, race_source_value, race_source_concept_id, ethnicity_concept_id, ec.concept_name as ethnicity_concept_name, ethnicity_source_value, ethnicity_source_concept_id, person.provider_id as provider_id, p.provider_name as provider_name ",
                        "from ", omop_format_table_name("person", table_config, db_config), " ",
-                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " gc ON gc.concept_id = person.gender_concept_id ",
-                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " rc ON rc.concept_id = person.race_concept_id ",
-                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " ec ON ec.concept_id = person.ethnicity_concept_id ",
-                       "left outer join ", omop_format_table_name("provider", table_config, db_config), " p ON p.provider_id = person.provider_id ",
-                       " where person_id = ", as.numeric(input$subject_id))
+                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " gc ON gc.concept_id = gender_concept_id ",
+                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " rc ON rc.concept_id = race_concept_id ",
+                       "left outer join ", omop_format_table_name("concept", table_config, db_config), " ec ON ec.concept_id = ethnicity_concept_id ",
+                       "left outer join ", omop_format_table_name("provider", table_config, db_config), " p ON p.provider_id = ", omop_format_table_name("person", table_config, db_config), ".provider_id ",
+                       " where person_id = ", as.numeric(input$subject_id),
+                       " order by person_id")
   if (database_type == "bigquery") {
     query_exec(query_text, connection)
   }
@@ -302,8 +318,9 @@ omop_query_procedure_occurrence <- function(table_config, db_config, input, data
                        "left outer join ", omop_format_table_name("concept", table_config, db_config)," psc on psc.concept_id = procedure_source_concept_id ",
                        "left outer join ", omop_format_table_name("concept", table_config, db_config)," ptc on ptc.concept_id = procedure_type_concept_id ",
                        "left outer join ", omop_format_table_name("concept", table_config, db_config)," mc on mc.concept_id = modifier_concept_id ",
-                       "left outer join ", omop_format_table_name("provider", table_config, db_config)," p on p.provider_id = procedure_occurrence.provider_id ",
-                       " where person_id = ", as.numeric(input$subject_id))
+                       "left outer join ", omop_format_table_name("provider", table_config, db_config)," p on p.provider_id = ", omop_format_table_name("procedure_occurrence", table_config, db_config), ".provider_id ",
+                       " where person_id = ", as.numeric(input$subject_id),
+                       " order by procedure_occurrence_id")
   if (database_type == "bigquery") {
     query_exec(query_text, connection)
   }
@@ -324,7 +341,8 @@ omop_query_specimen <- function(table_config, db_config, input, database_type, c
                        "left outer join ", omop_format_table_name("concept", table_config, db_config), " u on u.concept_id = unit_concept_id ", 
                        "left outer join ", omop_format_table_name("concept", table_config, db_config), " anc on anc.concept_id = anatomic_site_concept_id ",
                        "left outer join ", omop_format_table_name("concept", table_config, db_config), " ds on ds.concept_id = disease_status_concept_id ",
-                       " where person_id = ", as.numeric(input$subject_id))
+                       " where person_id = ", as.numeric(input$subject_id),
+                       " order by specimen_id")
   if (database_type == "bigquery") {
     query_exec(query_text, connection)
   }
@@ -343,14 +361,15 @@ omop_query_visit_occurrence <- function(table_config, db_config, input, database
                       "discharge_to_concept_id, dtc.concept_name as discharge_to_concept_name, discharge_to_source_value, ",
                       "preceding_visit_occurrence_id ",
                       "from ", omop_format_table_name("visit_occurrence", table_config, db_config), " ",
-                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," vc on vc.concept_id = visit_occurrence.visit_concept_id ",
-                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," vsc on vsc.concept_id = visit_occurrence.visit_source_concept_id ",
-                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," vtc on vtc.concept_id = visit_occurrence.visit_type_concept_id ",
-                      "left outer join ", omop_format_table_name("provider", table_config, db_config)," p on p.provider_id = visit_occurrence.provider_id ",
-                      "left outer join ", omop_format_table_name("care_site", table_config, db_config)," csn on csn.care_site_id = visit_occurrence.care_site_id ",
-                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," ads on ads.concept_id = visit_occurrence.admitting_source_concept_id ",
-                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," dtc on dtc.concept_id = visit_occurrence.discharge_to_concept_id ",
-                      " where person_id = ", as.numeric(input$subject_id))
+                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," vc on vc.concept_id = visit_concept_id ",
+                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," vsc on vsc.concept_id = visit_source_concept_id ",
+                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," vtc on vtc.concept_id = visit_type_concept_id ",
+                      "left outer join ", omop_format_table_name("provider", table_config, db_config)," p on p.provider_id = ", omop_format_table_name("visit_occurrence", table_config, db_config), ".provider_id ",
+                      "left outer join ", omop_format_table_name("care_site", table_config, db_config)," csn on csn.care_site_id = ", omop_format_table_name("visit_occurrence", table_config, db_config), ".care_site_id ",
+                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," ads on ads.concept_id = admitting_source_concept_id ",
+                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," dtc on dtc.concept_id = discharge_to_concept_id ",
+                      " where person_id = ", as.numeric(input$subject_id),
+                      " order by visit_occurrence_id")
   if (database_type == "bigquery") {
     query_exec(query_text, connection)
   }
