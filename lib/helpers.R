@@ -1,7 +1,7 @@
 source('lib/omop_data_helpers.R')
 #source('lib/mimic_data_helpers.R')
 #source('lib/project_helpers.R')
-#source('lib/ui_helpers.r')
+source('lib/ui_helpers.r')
 
 get_review_table_names <- function(data_model) {
   data_model = tolower(data_model)
@@ -25,20 +25,19 @@ check.packages <- function(pkg){
 }
 
 # Primary initialization function for ReviewR
-initialize <- function(db_engine,...) {
-  params <- list(...)
-  db_engine = tolower(db_engine)
+initialize <- function(config) {
+  db_engine = tolower(config$db_engine)
   connection <- NULL
   if (db_engine == 'postgres' | db_engine == 'postgresql' | db_engine == 'pgsql') {
     check.packages("RPostgreSQL")
     connection = dbConnect(RPostgreSQL::PostgreSQL(),
-                           user=params$user, password=params$password, dbname=params$database,
-                           host=params$host, port=params$port)
+                           user=config$user, password=config$password, dbname=config$database,
+                           host=config$host, port=config$port)
   }
   else if (db_engine == 'bigquery') {
     check.packages("bigrquery")
     connection = dbConnect(bigrquery::bigquery(),
-                           project=params$project, dataset=params$dataset)
+                           project=config$project, dataset=config$dataset)
   }
   connection
 }

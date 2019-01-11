@@ -22,8 +22,8 @@ omop_query_all_people <- function(connection) {
            "birth_datetime", "race_concept_id", "race_concept_name", "race_source_value", "race_source_concept_id",
            "ethnicity_concept_id", "ethnicity_concept_name", "ethnicity_source_value", "ethnicity_source_concept_id",
            "provider_id", "provider_name") %>%
-    collect()
-  #     mutate(person_id = paste0("<a class='row_subject_id' href='#'>", person_id, "</a>"))
+    collect() %>%
+    mutate(person_id = paste0("<a class='row_subject_id' href='#'>", person_id, "</a>"))
   data_table
 }
 
@@ -66,8 +66,8 @@ omop_query_death <- function(input, connection) {
     left_join(tbl(connection, "concept"), by=c("cause_concept_id" = "concept_id")) %>%
     rename("cause_concept_name" = "concept_name") %>%
     left_join(tbl(connection, "concept"), by=c("cause_source_concept_id" = "concept_id")) %>%
-    filter(person_id == input$subject_id) %>%
     rename("cause_source_concept_name" = "concept_name") %>%
+    filter(person_id == input$subject_id) %>%
     select("death_date", "death_datetime", "death_type_concept_id", "death_type_concept_name",
           "cause_concept_id", "cause_concept_name", "cause_source_value",
           "cause_source_concept_id", "cause_source_concept_name") %>%
@@ -76,77 +76,72 @@ omop_query_death <- function(input, connection) {
 }
 
 omop_query_device_exposure <- function(input, connection) {
-  query_text <- paste0("select device_exposure_id device_concept_id, dc.concept_name as device_concept_name, ",
-                      "device_source_value, device_source_concept_id, dsc.concept_name as device_source_concept_name, ",
-                      "device_exposure_start_date, device_exposure_start_datetime, device_exposure_end_date, device_exposure_end_datetime, ",
-                      "device_type_concept_id, dtc.concept_name AS device_type_concept_name, unique_device_id, quantity, ",
-                      "p.provider_id, p.provider_name as provider_name, visit_occurrence_id ",
-                      "from ", omop_format_table_name("device_exposure", table_config, db_config), " ",
-                      "left outer join ", omop_format_table_name("concept", table_config, db_config), " dc on dc.concept_id = device_concept_id ",
-                      "left outer join ", omop_format_table_name("concept", table_config, db_config), " dsc on dsc.concept_id = device_source_concept_id ",
-                      "left outer join ", omop_format_table_name("concept", table_config, db_config), " dtc on dtc.concept_id = device_type_concept_id ",
-                      "left outer join ", omop_format_table_name("provider", table_config, db_config), " p on p.provider_id = ", omop_format_table_name("device_exposure", table_config, db_config), ".provider_id ",
-                      " where person_id = ", as.numeric(input$subject_id),
-                      " order by device_exposure_id")
-  if (database_type == "bigquery") {
-    query_exec(query_text, connection)
-  }
-  else {
-    dbGetQuery(connection, query_text)
-  }
+  data_table <- tbl(connection, "device_exposure") %>%
+    left_join(tbl(connection, "concept"), by=c("device_concept_id" = "concept_id")) %>%
+    rename("device_concept_name" = "concept_name") %>%
+    left_join(tbl(connection, "concept"), by=c("device_source_concept_id" = "concept_id")) %>%
+    rename("device_source_concept_name" = "concept_name") %>%
+    left_join(tbl(connection, "concept"), by=c("device_type_concept_id" = "concept_id")) %>%
+    rename("device_type_concept_name" = "concept_name") %>%
+    left_join(tbl(connection, "provider"), by=c("provider_id" = "provider_id"), suffix = c(".p", ".prv")) %>%
+    filter(person_id == input$subject_id) %>%
+    select("device_exposure_id", "device_concept_id", "device_concept_name",
+          "device_source_value", "device_source_concept_id", "device_source_concept_name",
+          "device_exposure_start_date", "device_exposure_start_datetime", "device_exposure_end_date", "device_exposure_end_datetime",
+          "device_type_concept_id", "device_type_concept_name", "unique_device_id", "quantity",
+          "provider_id", "provider_name", "visit_occurrence_id") %>%
+    collect()
+  data_table
 }
 
 omop_query_dose_era <- function(input, connection) {
-  query_text <- paste0("select dose_era_id, drug_concept_id, dc.concept_name as drug_concept_name, unit_concept_id, uc.concept_name as unit_concept_name, ",
-                      "dose_value, dose_era_start_date, dose_era_end_date ",
-                      "from ", omop_format_table_name("dose_era", table_config, db_config), " ",
-                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," dc on dc.concept_id = drug_concept_id ",
-                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," uc on uc.concept_id = unit_concept_id ",
-                      " where person_id = ", as.numeric(input$subject_id),
-                      " order by dose_era_id")
-  if (database_type == "bigquery") {
-    query_exec(query_text, connection)
-  }
-  else {
-    dbGetQuery(connection, query_text)
-  }
+  data_table <- tbl(connection, "dose_era") %>%
+    left_join(tbl(connection, "concept"), by=c("drug_concept_id" = "concept_id")) %>%
+    rename("drug_concept_name" = "concept_name") %>%
+    left_join(tbl(connection, "concept"), by=c("unit_concept_id" = "concept_id")) %>%
+    rename("unit_concept_name" = "concept_name") %>%
+    filter(person_id == input$subject_id) %>%
+    select("dose_era_id", "drug_concept_id", "drug_concept_name", "unit_concept_id", "unit_concept_name",
+          "dose_value", "dose_era_start_date", "dose_era_end_date") %>%
+    collect()
+  data_table
 }
 
 omop_query_drug_era <- function(input, connection) {
-  query_text <- paste0("select drug_era_id, drug_concept_id, dc.concept_name as drug_concept_name, drug_era_start_date, drug_era_end_date, drug_exposure_count, gap_days  ",
-                       "from ", omop_format_table_name("drug_era", table_config, db_config), " ",
-                       "left outer join ", omop_format_table_name("concept", table_config, db_config)," dc on dc.concept_id = drug_concept_id ",
-                       " where person_id = ", as.numeric(input$subject_id),
-                       " order by drug_era_id")
-  if (database_type == "bigquery") {
-    query_exec(query_text, connection)
-  }
-  else {
-    dbGetQuery(connection, query_text)
-  }
+  data_table <- tbl(connection, "drug_era") %>%
+    left_join(tbl(connection, "concept"), by=c("drug_concept_id" = "concept_id")) %>%
+    rename("drug_concept_name" = "concept_name") %>%
+    filter(person_id == input$subject_id) %>%
+    select("drug_era_id", "drug_concept_id", "drug_concept_name", "drug_era_start_date", "drug_era_end_date",
+           "drug_exposure_count", "gap_days") %>%
+    collect()
+  data_table
 }
 
 omop_query_drug_exposure <- function(input, connection) {
-  query_text <- paste0("select drug_exposure_id, drug_concept_id, dc.concept_name as drug_concept_name, drug_source_value, drug_source_concept_id, dsc.concept_name as drug_source_concept_name, ",
-                      "drug_exposure_start_date, drug_exposure_start_datetime, drug_exposure_end_date, drug_exposure_end_datetime, verbatim_end_date, ",
-                      "drug_type_concept_id, dtc.concept_name as drug_type_concept_name, stop_reason, refills, quantity, days_supply, sig, ",
-                      "route_concept_id, rc.concept_name as route_concept_name, route_source_value, lot_number, p.provider_id, p.provider_name as provider_name, ",
-                      "visit_occurrence_id, dose_unit_source_value ",
-                      "from ", omop_format_table_name("drug_exposure", table_config, db_config), " ",
-                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," dc on dc.concept_id = drug_concept_id ",
-                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," dsc on dsc.concept_id = drug_source_concept_id ",
-                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," dtc on dtc.concept_id = drug_type_concept_id ",
-                      "left outer join ", omop_format_table_name("concept", table_config, db_config)," rc on rc.concept_id = route_concept_id ",
-                      "left outer join ", omop_format_table_name("provider", table_config, db_config)," p on p.provider_id = ", omop_format_table_name("drug_exposure", table_config, db_config),".provider_id ",
-                      " where person_id = ", as.numeric(input$subject_id),
-                      " order by drug_exposure_id")
-  if (database_type == "bigquery") {
-    query_exec(query_text, connection)
-  }
-  else {
-    dbGetQuery(connection, query_text)
-  }
+  data_table <- tbl(connection, "drug_exposure") %>%
+    left_join(tbl(connection, "concept"), by=c("drug_concept_id" = "concept_id")) %>%
+    rename("drug_concept_name" = "concept_name") %>%
+    left_join(tbl(connection, "concept"), by=c("drug_source_concept_id" = "concept_id")) %>%
+    rename("drug_source_concept_name" = "concept_name") %>%
+    left_join(tbl(connection, "concept"), by=c("drug_type_concept_id" = "concept_id")) %>%
+    rename("drug_type_concept_name" = "concept_name") %>%
+    left_join(tbl(connection, "concept"), by=c("route_concept_id" = "concept_id")) %>%
+    rename("route_concept_name" = "concept_name") %>%
+    left_join(tbl(connection, "provider"), by=c("provider_id" = "provider_id"), suffix = c(".p", ".prv")) %>%
+    filter(person_id == input$subject_id) %>%
+    select("drug_exposure_id", "drug_concept_id", "drug_concept_name", "drug_source_value", "drug_source_concept_id", "drug_source_concept_name",
+          "drug_exposure_start_date", "drug_exposure_start_datetime", "drug_exposure_end_date", "drug_exposure_end_datetime", "verbatim_end_date",
+          "drug_type_concept_id", "drug_type_concept_name", "stop_reason", "refills", "quantity", "days_supply", "sig",
+          "route_concept_id", "route_concept_name", "route_source_value", "lot_number", "provider_id", "provider_name",
+          "visit_occurrence_id", "dose_unit_source_value") %>%
+    collect()
+  data_table
 }
+
+######### TO DO ##############
+
+
 
 omop_query_measurement <- function(input, connection) {
   query_text <- paste0("select measurement_id, measurement_concept_id, mc.concept_name as measurement_concept_name, measurement_source_value, measurement_source_concept_id, msc.concept_name as measurement_source_concept_name, ",
@@ -356,10 +351,10 @@ omop_render_data_tables <- function(input, output, connection) {
   condition_era_data <- reactive({omop_query_condition_era(input, connection)})
   condition_occurrence_data <- reactive({omop_query_condition_occurrence(input, connection)})
   death_data <- reactive({omop_query_death(input, connection)})
-  # device_exposure_data <- reactive({omop_query_device_exposure(input, connection)})
-  # dose_era_data <- reactive({omop_query_dose_era(input, connection)})
-  # drug_era_data <- reactive({omop_query_drug_era(input, connection)})
-  # drug_exposure_data <- reactive({omop_query_drug_exposure(input, connection)})
+  device_exposure_data <- reactive({omop_query_device_exposure(input, connection)})
+  dose_era_data <- reactive({omop_query_dose_era(input, connection)})
+  drug_era_data <- reactive({omop_query_drug_era(input, connection)})
+  drug_exposure_data <- reactive({omop_query_drug_exposure(input, connection)})
   # measurement_data <- reactive({omop_query_measurement(input, connection)})
   # note_data <- reactive({omop_query_note(input, connection)})
   # note_nlp_data <- reactive({omop_query_note_nlp(input, connection)})
@@ -383,10 +378,10 @@ omop_render_data_tables <- function(input, output, connection) {
   output$condition_era_tbl <- DT::renderDataTable(condition_era_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
   output$condition_occurrence_tbl <- DT::renderDataTable(condition_occurrence_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
   output$death_tbl <- DT::renderDataTable(death_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
-  # output$device_exposure_tbl <- DT::renderDataTable(device_exposure_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
-  # output$dose_era_tbl <- DT::renderDataTable(dose_era_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
-  # output$drug_era_tbl <- DT::renderDataTable(drug_era_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
-  # output$drug_exposure_tbl <- DT::renderDataTable(drug_exposure_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
+  output$device_exposure_tbl <- DT::renderDataTable(device_exposure_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
+  output$dose_era_tbl <- DT::renderDataTable(dose_era_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
+  output$drug_era_tbl <- DT::renderDataTable(drug_era_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
+  output$drug_exposure_tbl <- DT::renderDataTable(drug_exposure_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
   # output$measurement_tbl <- DT::renderDataTable(measurement_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
   # output$note_tbl <- DT::renderDataTable(note_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
   # output$note_nlp_tbl <- DT::renderDataTable(note_nlp_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')

@@ -12,36 +12,33 @@ source('lib/helpers.R')
 # Make sure all required packages are installed and loaded
 check.packages(c("tidyverse", "shiny", "shinyjs", "shinydashboard", "shinycssloaders", "DT", "dbplyr", "magrittr", "readr"))
 
-#input <- list(subject_id = 1)
-#dat <- omop_query_death(input, connection)
-#dat <- omop_query_all_people(connection)
+## CONFIGURATION
+# Here is where you specify your configuration settings for ReviewR.  Please see Configuration.md for more information.
+app_config <- list(data_model="OMOP",
+                   db_engine="postgres",
+                   database="ohdsi",
+                   host="localhost",
+                   port=5432,
+                   user="ohdsi",
+                   password="ohdsi",
+                   schema="public")
 
-#dbDisconnect(connection)
-
+# app_config <- list(data_model="OMOP",
+#                    db_engine="bigquery",
+#                    project_id="class-coursera-dev",
+#                    dataset="synpuf1k_omop_cdm")
 
 # Define server logic 
 server <- function(input, output, session) {
   options("httr_oob_default" = TRUE)
-  
-  app_config <- list(data_model = "OMOP")
 
-  output$title = renderText({ paste0("ReviewR (", app_config["data_model"], ")") })
-  output$data_model = renderText({app_config["data_model"]})
+  output$title = renderText({ paste0("ReviewR (", app_config$data_model, ")") })
+  output$data_model = renderText({app_config$data_model})
   
   connection <- NULL
   tryCatch({
-    # Initialize the ReviewR application - please see [DOCUMENTATION] on how to configure ReviewR for your
-    # environment.
-    connection <- initialize(db_engine="postgres",
-                             database="ohdsi",
-                             host="localhost",
-                             port=5432,
-                             user="ohdsi",
-                             password="ohdsi",
-                             schema="public")
-    # connection <- initialize(db_engine="bigquery",
-    #                          project_id="class-coursera-dev",
-    #                          dataset="synpuf1k_omop_cdm")
+    # Initialize the ReviewR application
+    connection <- initialize(app_config)
   },
   error=function(e) {
     showNotification(
@@ -51,11 +48,10 @@ server <- function(input, output, session) {
   },
   warning=function(w) {})
   
-  
-  if (tolower(app_config["data_model"]) == "mimic") {
+  if (tolower(app_config$data_model) == "mimic") {
     render_data_tables = mimic_render_data_tables
   }
-  else if (tolower(app_config["data_model"]) == "omop") {
+  else if (tolower(app_config$data_model) == "omop") {
     render_data_tables = omop_render_data_tables
   }
   else {
@@ -81,7 +77,7 @@ server <- function(input, output, session) {
   # we need to implement the workaround described here (https://github.com/rstudio/shiny/issues/743)
   # where we actually render multiple outputs for each use.
   patient_chart_panel = reactive({
-    table_names <- get_review_table_names(app_config["data_model"])
+    table_names <- get_review_table_names(app_config$data_model)
     tabs <- lapply(table_names, function(id) { create_data_panel(id, paste0(id, "_tbl"))})
     panel <- div(
       fluidRow(column(12, h2(textOutput("subject_id_output")))),
