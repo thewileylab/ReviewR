@@ -24,7 +24,8 @@ check.packages <- function(pkg){
   sapply(pkg, library, character.only = TRUE)
 }
 
-# Primary initialization function for ReviewR
+# Primary initialization function for ReviewR.  This will create the database connection, based
+# on the configuration information sent in.
 initialize <- function(config) {
   db_engine = tolower(config$db_engine)
   connection <- NULL
