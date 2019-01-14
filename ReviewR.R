@@ -1,16 +1,19 @@
+# ReviewR: A light-weight, portable tool for reviewing individual patient records
 #
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
+# https://zenodo.org/badge/latestdoi/140004344
 #
-# Find out more about building applications with Shiny here:
+# This is a shiny tool that allows for manual review of the MIMIC-III (https://mimic.physionet.org/) or 
+# OMOP (https://www.ohdsi.org/data-standardization/the-common-data-model/) database.  Current support is
+# for Postgres and Google BigQuery, with more to come in the future. 
 #
-#    http://shiny.rstudio.com/
-#
-## Requires the following packages:  install.packages(c("shiny", "tidyverse", "shinythemes", "DT", "bigrquery"))
+# This is a work in progress and thus there are no guarantees of functionality or accuracy. Use at your own risk.
+
+
 source('lib/helpers.R')
 
-# Make sure all required packages are installed and loaded
-check.packages(c("tidyverse", "shiny", "shinyjs", "shinydashboard", "shinycssloaders", "DT", "dbplyr", "magrittr", "readr"))
+# We will make sure all required packages are installed and loaded
+check.packages(c("shiny", "shinyjs", "shinydashboard", "shinycssloaders",
+                 "tidyverse", "DT", "dbplyr", "magrittr", "readr"))
 
 ## CONFIGURATION
 # Here is where you specify your configuration settings for ReviewR.  Please see Configuration.md for more information.
