@@ -1,7 +1,9 @@
-source('lib/omop_data_helpers.R')
-#source('lib/mimic_data_helpers.R')
+source('lib/omop.R')
+#source('lib/mimic.R')
 #source('lib/project_helpers.R')
 source('lib/ui_helpers.r')
+
+table_case_types <- list(LOWER = "lower", UPPER = "upper", UNKNOWN = "unknown")
 
 get_review_table_names <- function(data_model) {
   data_model = tolower(data_model)
@@ -10,6 +12,18 @@ get_review_table_names <- function(data_model) {
   }
   else if (data_model == "mimic") {
     mimic_get_review_table_names()
+  }
+}
+
+case_string <- function(string, case_type) {
+  if (case_type == table_case_types$LOWER) {
+    tolower(string)
+  }
+  else if (case_type == table_case_types$UPPER) {
+    toupper(string)
+  }
+  else {
+    string
   }
 }
 
@@ -40,5 +54,14 @@ initialize <- function(config) {
     connection = dbConnect(bigrquery::bigquery(),
                            project=config$project, dataset=config$dataset)
   }
-  connection
+  
+  data_model = tolower(config$data_model)
+  case_type <- table_case_types$UNKNOWN
+  if (data_model == "omop") {
+    case_type = omop_get_table_casing(connection)
+  }
+  else if (data_model == "mimic") {
+  }
+  
+  list(dbi_conn = connection, case_type = case_type)
 }

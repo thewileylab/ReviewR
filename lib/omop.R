@@ -1,35 +1,66 @@
+# Determines the casing scheme to use for database tables and columns.
+# Input:
+#   connection - the valid, open DBI connection to a database
+# Output:
+#   Value from table_case_types (see reviewr-core.R for values)
+#
+# We assume consistency - if a schema is mixing table names with some upper and
+# some lower (and the database system cares about the table and column name case, 
+# which isn't always necessary), in the future they are going to have to do their
+# own mapping.
+omop_get_table_casing <- function(connection) {
+  table_casing <- table_case_types$UNKNOWN
+  if (DBI::dbExistsTable(connection, "person")) {
+    table_casing <- table_case_types$LOWER
+  }
+  else if (DBI::dbExistsTable(connection, "PERSON")) {
+    table_casing <- table_case_types$UPPER
+  }
+  table_casing
+}
+
 omop_get_review_table_names <- function() {
-  c("condition_era", "condition_occurrence", "death", "device_exposure", "dose_era", "drug_era", "drug_exposure", "measurement", 
-    "note", "note_nlp", "observation", "observation_period", "payer_plan_period", "person", "procedure_occurrence", "specimen", "visit_occurrence")
+  c("person", "condition_era", "condition_occurrence", "death", "device_exposure", "dose_era", "drug_era", "drug_exposure", "measurement", 
+    "note", "note_nlp", "observation", "observation_period", "payer_plan_period", "procedure_occurrence", "specimen", "visit_occurrence")
 }
 
 omop_format_table_name <- function(table_key, table_config, db_config) {
   paste0(db_config["schema"], ".", table_config[table_key])
 }
 
+omop_get_tbl <- function(connection, canonical_name) {
+  tbl(connection$dbi_conn, case_string(canonical_name, connection$case_type))
+}
+
+omop_case_vector <- function(connection, v) {
+  mapply(v, case_string, MoreArgs=list(case_type=connection$case_type))
+}
+
 omop_query_all_people <- function(connection) {
-  data_table <- tbl(connection, "person") %>%
-    left_join(tbl(connection, "concept"), by=c("gender_concept_id" = "concept_id"), suffix = c(".p", ".gc")) %>%
+  ct <- connection$case_type
+  data_table <- omop_get_tbl(connection, "person") %>%
+    left_join(omop_get_tbl(connection, "concept"), by=setNames(case_string("concept_id", ct), case_string("gender_concept_id", ct)), suffix = c(".p", ".gc")) %>%
     rename("gender_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("race_concept_id" = "concept_id"), suffix = c(".p", ".rc")) %>%
+    left_join(omop_get_tbl(connection, "concept"), by=c("race_concept_id" = "concept_id"), suffix = c(".p", ".rc")) %>%
     rename("race_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("ethnicity_concept_id" = "concept_id"), suffix = c(".p", ".ec")) %>%
+    left_join(omop_get_tbl(connection, "concept"), by=c("ethnicity_concept_id" = "concept_id"), suffix = c(".p", ".ec")) %>%
     rename("ethnicity_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "provider"), by=c("provider_id" = "provider_id"), suffix = c(".p", ".prv")) %>%
+    left_join(omop_get_tbl(connection, "provider"), by=c("provider_id" = "provider_id"), suffix = c(".p", ".prv")) %>%
     select("person_id", "person_source_value", "gender_concept_id" = "gender_concept_id.p", "gender_concept_name",
            "gender_source_value" = "gender_source_value.p", "gender_source_concept_id" = "gender_source_concept_id.p",
            "year_of_birth" = "year_of_birth.p", "month_of_birth", "day_of_birth",
            "birth_datetime", "race_concept_id", "race_concept_name", "race_source_value", "race_source_concept_id",
            "ethnicity_concept_id", "ethnicity_concept_name", "ethnicity_source_value", "ethnicity_source_concept_id",
            "provider_id", "provider_name") %>%
+    arrange(person_id) %>%
     collect() %>%
     mutate(person_id = paste0("<a class='row_subject_id' href='#'>", person_id, "</a>"))
   data_table
 }
 
 omop_query_condition_era <- function(input, connection) {
-  data_table <- tbl(connection, "condition_era") %>%
-    left_join(tbl(connection, "concept"), by=c("condition_concept_id" = "concept_id")) %>%
+  data_table <- tbl(connection$dbi_conn, "condition_era") %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("condition_concept_id" = "concept_id")) %>%
     filter(person_id == input$subject_id) %>%
     select("condition_era_id", "condition_concept_id", "condition_concept_name" = "concept_name",
            "condition_era_start_date", "condition_era_end_date", "condition_occurrence_count") %>%
@@ -38,16 +69,16 @@ omop_query_condition_era <- function(input, connection) {
 }
 
 omop_query_condition_occurrence <- function(input, connection) {
-  data_table <- tbl(connection, "condition_occurrence") %>%
-    left_join(tbl(connection, "concept"), by=c("condition_concept_id" = "concept_id")) %>%
+  data_table <- tbl(connection$dbi_conn, "condition_occurrence") %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("condition_concept_id" = "concept_id")) %>%
     rename("condition_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("condition_type_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("condition_type_concept_id" = "concept_id")) %>%
     rename("condition_type_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("condition_source_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("condition_source_concept_id" = "concept_id")) %>%
     rename("condition_source_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("condition_status_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("condition_status_concept_id" = "concept_id")) %>%
     rename("condition_status_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "provider"), by=c("provider_id" = "provider_id"), suffix = c(".p", ".prv")) %>%
+    left_join(tbl(connection$dbi_conn, "provider"), by=c("provider_id" = "provider_id"), suffix = c(".p", ".prv")) %>%
     filter(person_id == input$subject_id) %>%
     select("condition_occurrence_id", "condition_concept_id", "condition_concept_name",
            "condition_source_value", "condition_source_concept_id", "condition_source_concept_name",
@@ -60,12 +91,12 @@ omop_query_condition_occurrence <- function(input, connection) {
 }
 
 omop_query_death <- function(input, connection) {
-  data_table <- tbl(connection, "death") %>%
-    left_join(tbl(connection, "concept"), by=c("death_type_concept_id" = "concept_id")) %>%
+  data_table <- tbl(connection$dbi_conn, "death") %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("death_type_concept_id" = "concept_id")) %>%
     rename("death_type_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("cause_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("cause_concept_id" = "concept_id")) %>%
     rename("cause_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("cause_source_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("cause_source_concept_id" = "concept_id")) %>%
     rename("cause_source_concept_name" = "concept_name") %>%
     filter(person_id == input$subject_id) %>%
     select("death_date", "death_datetime", "death_type_concept_id", "death_type_concept_name",
@@ -76,14 +107,14 @@ omop_query_death <- function(input, connection) {
 }
 
 omop_query_device_exposure <- function(input, connection) {
-  data_table <- tbl(connection, "device_exposure") %>%
-    left_join(tbl(connection, "concept"), by=c("device_concept_id" = "concept_id")) %>%
+  data_table <- tbl(connection$dbi_conn, "device_exposure") %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("device_concept_id" = "concept_id")) %>%
     rename("device_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("device_source_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("device_source_concept_id" = "concept_id")) %>%
     rename("device_source_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("device_type_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("device_type_concept_id" = "concept_id")) %>%
     rename("device_type_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "provider"), by=c("provider_id" = "provider_id"), suffix = c(".p", ".prv")) %>%
+    left_join(tbl(connection$dbi_conn, "provider"), by=c("provider_id" = "provider_id"), suffix = c(".p", ".prv")) %>%
     filter(person_id == input$subject_id) %>%
     select("device_exposure_id", "device_concept_id", "device_concept_name",
           "device_source_value", "device_source_concept_id", "device_source_concept_name",
@@ -95,10 +126,10 @@ omop_query_device_exposure <- function(input, connection) {
 }
 
 omop_query_dose_era <- function(input, connection) {
-  data_table <- tbl(connection, "dose_era") %>%
-    left_join(tbl(connection, "concept"), by=c("drug_concept_id" = "concept_id")) %>%
+  data_table <- tbl(connection$dbi_conn, "dose_era") %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("drug_concept_id" = "concept_id")) %>%
     rename("drug_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("unit_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("unit_concept_id" = "concept_id")) %>%
     rename("unit_concept_name" = "concept_name") %>%
     filter(person_id == input$subject_id) %>%
     select("dose_era_id", "drug_concept_id", "drug_concept_name", "unit_concept_id", "unit_concept_name",
@@ -108,8 +139,8 @@ omop_query_dose_era <- function(input, connection) {
 }
 
 omop_query_drug_era <- function(input, connection) {
-  data_table <- tbl(connection, "drug_era") %>%
-    left_join(tbl(connection, "concept"), by=c("drug_concept_id" = "concept_id")) %>%
+  data_table <- tbl(connection$dbi_conn, "drug_era") %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("drug_concept_id" = "concept_id")) %>%
     rename("drug_concept_name" = "concept_name") %>%
     filter(person_id == input$subject_id) %>%
     select("drug_era_id", "drug_concept_id", "drug_concept_name", "drug_era_start_date", "drug_era_end_date",
@@ -119,16 +150,16 @@ omop_query_drug_era <- function(input, connection) {
 }
 
 omop_query_drug_exposure <- function(input, connection) {
-  data_table <- tbl(connection, "drug_exposure") %>%
-    left_join(tbl(connection, "concept"), by=c("drug_concept_id" = "concept_id")) %>%
+  data_table <- tbl(connection$dbi_conn, "drug_exposure") %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("drug_concept_id" = "concept_id")) %>%
     rename("drug_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("drug_source_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("drug_source_concept_id" = "concept_id")) %>%
     rename("drug_source_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("drug_type_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("drug_type_concept_id" = "concept_id")) %>%
     rename("drug_type_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("route_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("route_concept_id" = "concept_id")) %>%
     rename("route_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "provider"), by=c("provider_id" = "provider_id"), suffix = c(".p", ".prv")) %>%
+    left_join(tbl(connection$dbi_conn, "provider"), by=c("provider_id" = "provider_id"), suffix = c(".p", ".prv")) %>%
     filter(person_id == input$subject_id) %>%
     select("drug_exposure_id", "drug_concept_id", "drug_concept_name", "drug_source_value", "drug_source_concept_id", "drug_source_concept_name",
           "drug_exposure_start_date", "drug_exposure_start_datetime", "drug_exposure_end_date", "drug_exposure_end_datetime", "verbatim_end_date",
@@ -140,20 +171,20 @@ omop_query_drug_exposure <- function(input, connection) {
 }
 
 omop_query_measurement <- function(input, connection) {
-  data_table <- tbl(connection, "measurement") %>%
-    left_join(tbl(connection, "concept"), by=c("measurement_concept_id" = "concept_id")) %>%
+  data_table <- tbl(connection$dbi_conn, "measurement") %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("measurement_concept_id" = "concept_id")) %>%
     rename("measurement_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("measurement_source_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("measurement_source_concept_id" = "concept_id")) %>%
     rename("measurement_source_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("measurement_type_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("measurement_type_concept_id" = "concept_id")) %>%
     rename("measurement_type_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("operator_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("operator_concept_id" = "concept_id")) %>%
     rename("operator_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("value_as_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("value_as_concept_id" = "concept_id")) %>%
     rename("value_as_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("unit_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("unit_concept_id" = "concept_id")) %>%
     rename("unit_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "provider"), by=c("provider_id" = "provider_id"), suffix = c(".p", ".prv")) %>%
+    left_join(tbl(connection$dbi_conn, "provider"), by=c("provider_id" = "provider_id"), suffix = c(".p", ".prv")) %>%
     filter(person_id == input$subject_id) %>%
     select("measurement_id", "measurement_concept_id", "measurement_concept_name", "measurement_source_value", "measurement_source_concept_id",
            "measurement_source_concept_name", "measurement_date", "measurement_datetime", "measurement_type_concept_id", 
@@ -165,16 +196,16 @@ omop_query_measurement <- function(input, connection) {
 }
 
 omop_query_note <- function(input, connection) {
-  data_table <- tbl(connection, "note") %>%
-    left_join(tbl(connection, "concept"), by=c("note_type_concept_id" = "concept_id")) %>%
+  data_table <- tbl(connection$dbi_conn, "note") %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("note_type_concept_id" = "concept_id")) %>%
     rename("note_type_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("note_class_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("note_class_concept_id" = "concept_id")) %>%
     rename("note_class_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("encoding_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("encoding_concept_id" = "concept_id")) %>%
     rename("encoding_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("language_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("language_concept_id" = "concept_id")) %>%
     rename("language_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "provider"), by=c("provider_id" = "provider_id"), suffix = c(".p", ".prv")) %>%
+    left_join(tbl(connection$dbi_conn, "provider"), by=c("provider_id" = "provider_id"), suffix = c(".p", ".prv")) %>%
     filter(person_id == input$subject_id) %>%
     select("note_id", "note_date", "note_datetime", "note_type_concept_id", "note_type_concept_name",
             "note_class_concept_id", "note_class_concept_name", "note_title", "note_text",
@@ -185,13 +216,13 @@ omop_query_note <- function(input, connection) {
 }
 
 omop_query_note_nlp <- function(input, connection) {
-  data_table <- tbl(connection, "note_nlp") %>%
-    inner_join(tbl(connection, "note"), by=c("note_id" = "note_id")) %>%
-    left_join(tbl(connection, "concept"), by=c("section_concept_id" = "concept_id")) %>%
+  data_table <- tbl(connection$dbi_conn, "note_nlp") %>%
+    inner_join(tbl(connection$dbi_conn, "note"), by=c("note_id" = "note_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("section_concept_id" = "concept_id")) %>%
     rename("section_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("note_nlp_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("note_nlp_concept_id" = "concept_id")) %>%
     rename("note_nlp_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("note_nlp_source_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("note_nlp_source_concept_id" = "concept_id")) %>%
     rename("note_nlp_source_concept_name" = "concept_name") %>%
     filter(person_id == input$subject_id) %>%
     select("note_nlp_id", "note_id", "section_concept_id", "section_concept_name", "snippet", "offset", "lexical_variant",
@@ -202,20 +233,20 @@ omop_query_note_nlp <- function(input, connection) {
 }
 
 omop_query_observation <- function(input, connection) {
-  data_table <- tbl(connection, "observation") %>%
-    left_join(tbl(connection, "concept"), by=c("observation_concept_id" = "concept_id")) %>%
+  data_table <- tbl(connection$dbi_conn, "observation") %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("observation_concept_id" = "concept_id")) %>%
     rename("observation_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("observation_type_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("observation_type_concept_id" = "concept_id")) %>%
     rename("observation_type_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("value_as_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("value_as_concept_id" = "concept_id")) %>%
     rename("value_as_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("observation_source_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("observation_source_concept_id" = "concept_id")) %>%
     rename("observation_source_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("qualifier_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("qualifier_concept_id" = "concept_id")) %>%
     rename("qualifier_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("unit_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("unit_concept_id" = "concept_id")) %>%
     rename("unit_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "provider"), by=c("provider_id" = "provider_id"), suffix = c(".p", ".prv")) %>%
+    left_join(tbl(connection$dbi_conn, "provider"), by=c("provider_id" = "provider_id"), suffix = c(".p", ".prv")) %>%
     filter(person_id == input$subject_id) %>%
     select("observation_id", "observation_concept_id", "observation_concept_name", "observation_date", "observation_datetime",
           "observation_type_concept_id", "observation_type_concept_name", "value_as_number", "value_as_string",
@@ -227,8 +258,8 @@ omop_query_observation <- function(input, connection) {
 }
 
 omop_query_observation_period <- function(input, connection) {
-  data_table <- tbl(connection, "observation_period") %>%
-    left_join(tbl(connection, "concept"), by=c("period_type_concept_id" = "concept_id")) %>%
+  data_table <- tbl(connection$dbi_conn, "observation_period") %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("period_type_concept_id" = "concept_id")) %>%
     rename("period_type_concept_name" = "concept_name") %>%
     filter(person_id == input$subject_id) %>%
     select("observation_period_id", "observation_period_start_date", "observation_period_end_date", "period_type_concept_id", "period_type_concept_name") %>%
@@ -237,7 +268,7 @@ omop_query_observation_period <- function(input, connection) {
 }
 
 omop_query_payer_plan_period <- function(input, connection) {
-  data_table <- tbl(connection, "payer_plan_period") %>%
+  data_table <- tbl(connection$dbi_conn, "payer_plan_period") %>%
     filter(person_id == input$subject_id) %>%
     select("payer_plan_period_id", "payer_plan_period_start_date", "payer_plan_period_end_date", "payer_source_value",
            "plan_source_value", "family_source_value") %>%
@@ -246,14 +277,14 @@ omop_query_payer_plan_period <- function(input, connection) {
 }
 
 omop_query_person <- function(input, connection) {
-  data_table <- tbl(connection, "person") %>%
-    left_join(tbl(connection, "concept"), by=c("gender_concept_id" = "concept_id")) %>%
+  data_table <- tbl(connection$dbi_conn, "person") %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("gender_concept_id" = "concept_id")) %>%
     rename("gender_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("race_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("race_concept_id" = "concept_id")) %>%
     rename("race_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("ethnicity_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("ethnicity_concept_id" = "concept_id")) %>%
     rename("ethnicity_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "provider"), by=c("provider_id" = "provider_id"), suffix = c(".p", ".prv")) %>%
+    left_join(tbl(connection$dbi_conn, "provider"), by=c("provider_id" = "provider_id"), suffix = c(".p", ".prv")) %>%
     filter(person_id == input$subject_id) %>%
     select("person_id", "person_source_value", "gender_concept_id.p", "gender_concept_name", "gender_source_value.p", "gender_source_concept_id.p",
           "year_of_birth.p", "month_of_birth", "day_of_birth", "birth_datetime", "race_concept_id", "race_concept_name", "race_source_value",
@@ -264,16 +295,16 @@ omop_query_person <- function(input, connection) {
 }
 
 omop_query_procedure_occurrence <- function(input, connection) {
-  data_table <- tbl(connection, "procedure_occurrence") %>%
-    left_join(tbl(connection, "concept"), by=c("procedure_concept_id" = "concept_id")) %>%
+  data_table <- tbl(connection$dbi_conn, "procedure_occurrence") %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("procedure_concept_id" = "concept_id")) %>%
     rename("procedure_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("procedure_source_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("procedure_source_concept_id" = "concept_id")) %>%
     rename("procedure_source_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("procedure_type_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("procedure_type_concept_id" = "concept_id")) %>%
     rename("procedure_type_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("modifier_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("modifier_concept_id" = "concept_id")) %>%
     rename("modifier_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "provider"), by=c("provider_id" = "provider_id"), suffix = c(".p", ".prv")) %>%
+    left_join(tbl(connection$dbi_conn, "provider"), by=c("provider_id" = "provider_id"), suffix = c(".p", ".prv")) %>%
     filter(person_id == input$subject_id) %>%
     select("procedure_occurrence_id", "procedure_concept_id", "procedure_concept_name", "procedure_source_value", "procedure_source_concept_id",
           "procedure_source_concept_name", "procedure_date", "procedure_datetime", "procedure_type_concept_id", "procedure_type_concept_name",
@@ -284,16 +315,16 @@ omop_query_procedure_occurrence <- function(input, connection) {
 }
 
 omop_query_specimen <- function(input, connection) {
-  data_table <- tbl(connection, "specimen") %>%
-    left_join(tbl(connection, "concept"), by=c("specimen_concept_id" = "concept_id")) %>%
+  data_table <- tbl(connection$dbi_conn, "specimen") %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("specimen_concept_id" = "concept_id")) %>%
     rename("specimen_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("specimen_type_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("specimen_type_concept_id" = "concept_id")) %>%
     rename("specimen_type_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("unit_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("unit_concept_id" = "concept_id")) %>%
     rename("unit_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("anatomic_site_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("anatomic_site_concept_id" = "concept_id")) %>%
     rename("anatomic_site_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("disease_status_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("disease_status_concept_id" = "concept_id")) %>%
     rename("disease_status_concept_name" = "concept_name") %>%
     filter(person_id == input$subject_id) %>%
     select("specimen_id", "specimen_concept_id", "specimen_concept_name", "specimen_source_id", "specimen_source_value", "specimen_type_concept_id",
@@ -305,19 +336,19 @@ omop_query_specimen <- function(input, connection) {
 }
 
 omop_query_visit_occurrence <- function(input, connection) {
-  data_table <- tbl(connection, "visit_occurrence") %>%
-    left_join(tbl(connection, "concept"), by=c("visit_concept_id" = "concept_id")) %>%
+  data_table <- tbl(connection$dbi_conn, "visit_occurrence") %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("visit_concept_id" = "concept_id")) %>%
     rename("visit_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("visit_source_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("visit_source_concept_id" = "concept_id")) %>%
     rename("visit_source_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("visit_type_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("visit_type_concept_id" = "concept_id")) %>%
     rename("visit_type_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("admitting_source_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("admitting_source_concept_id" = "concept_id")) %>%
     rename("admitting_source_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "concept"), by=c("discharge_to_concept_id" = "concept_id")) %>%
+    left_join(tbl(connection$dbi_conn, "concept"), by=c("discharge_to_concept_id" = "concept_id")) %>%
     rename("discharge_to_concept_name" = "concept_name") %>%
-    left_join(tbl(connection, "care_site"), by=c("care_site_id" = "care_site_id"), suffix = c(".p", ".cs")) %>%
-    left_join(tbl(connection, "provider"), by=c("provider_id" = "provider_id"), suffix = c(".p", ".prv")) %>%
+    left_join(tbl(connection$dbi_conn, "care_site"), by=c("care_site_id" = "care_site_id"), suffix = c(".p", ".cs")) %>%
+    left_join(tbl(connection$dbi_conn, "provider"), by=c("provider_id" = "provider_id"), suffix = c(".p", ".prv")) %>%
     filter(person_id == input$subject_id) %>%
     select("visit_occurrence_id", "visit_concept_id", "visit_concept_name", "visit_source_value", "visit_source_concept_id",
           "visit_source_concept_name", "visit_start_date", "visit_start_datetime", "visit_end_date", "visit_end_datetime",
