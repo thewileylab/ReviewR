@@ -9,7 +9,7 @@
 # This is a work in progress and thus there are no guarantees of functionality or accuracy. Use at your own risk.
 
 
-source('lib/helpers.R')
+source('lib/reviewr-core.R')
 
 # We will make sure all required packages are installed and loaded
 check.packages(c("shiny", "shinyjs", "shinydashboard", "shinycssloaders",
@@ -76,6 +76,16 @@ server <- function(input, output, session) {
   output$subject_id_output <- renderText({paste("Subject ID - ",input$subject_id)})
   output$subject_id <- renderText({input$subject_id})
   
+  patient_nav_previous = tags$div(actionButton("prev_patient",HTML('
+<div class="col-sm-4"><i class="fa fa-angle-double-left"></i> Previous</div>
+')))
+  patient_nav_next = div(actionButton("next_patient",HTML('
+<div class="col-sm-4">Next <i class="fa fa-angle-double-right"></i></div>
+')))
+  output$patient_navigation_list=renderUI({
+    div(column(1,offset=0,patient_nav_previous),column(1,offset=9,patient_nav_next))
+  })
+  
   # Because we want to use uiOutput for the patient chart panel in multiple locations in the UI,
   # we need to implement the workaround described here (https://github.com/rstudio/shiny/issues/743)
   # where we actually render multiple outputs for each use.
@@ -100,8 +110,8 @@ server <- function(input, output, session) {
   output$selected_project_id <- renderText({input$project_id})
   
   session$onSessionEnded(function() {
-    if (!is.null(connection)) {
-      dbDisconnect(connection)
+    if (!is.null(connection) & !is.null(connection$dbi_conn)) {
+      dbDisconnect(connection$dbi_conn)
     }
   })
   
@@ -160,27 +170,9 @@ ui <- dashboardPage(
                 h4("Please select a patient from the 'Patient Search' tab")
               ),
               conditionalPanel(
-                condition = "input.subject_id != '' & !output.has_projects",
+                condition = "input.subject_id != ''",
+                uiOutput("patient_navigation_list"),
                 uiOutput("patient_chart_panel_no_abstraction")
-              ), #conditionalPanel
-              conditionalPanel(
-                condition = "input.subject_id != '' & output.has_projects",
-                splitLayout(
-                  cellWidths = c("70%", "30%"),
-                  uiOutput("patient_chart_panel_abstraction"),
-                  # Chart review row
-                  div(
-                    fluidRow(
-                      column(12, 
-                             div(
-                               id = "abstraction_form",
-                               h4("Abstraction Results"),
-                               withSpinner(DT::dataTableOutput('abstraction_tbl'))
-                             ) #div
-                      ) #column
-                    ) #fluidRow
-                  ) #div
-                ) #splitLayout
               ) #conditionalPanel
       ) #tabItem
     )
