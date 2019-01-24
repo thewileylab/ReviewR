@@ -13,65 +13,22 @@ source('lib/reviewr-core.R')
 
 # We will make sure all required packages are installed and loaded
 check.packages(c("shiny", "shinyjs", "shinydashboard", "shinycssloaders",
-                 "tidyverse", "DT", "dbplyr", "magrittr", "readr"))
+                 "tidyverse", "DT", "dbplyr", "magrittr", "readr", "configr"))
 
-## CONFIGURATION
-# Here is where you specify your configuration settings for ReviewR.  Please see Configuration.md for more information.
-app_config <- list(data_model="OMOP",
-                   db_engine="postgres",
-                   database="ohdsi",
-                   host="localhost",
-                   port=5432,
-                   user="ohdsi",
-                   password="ohdsi",
-                   schema="public")
-
-# app_config <- list(data_model="OMOP",
-#                    db_engine="bigquery",
-#                    project_id="class-coursera-dev",
-#                    dataset="synpuf1k_omop_cdm")
+reviewr_config <- load_reviewr_config()
 
 # Define server logic 
 server <- function(input, output, session) {
   options("httr_oob_default" = TRUE)
 
-  output$title = renderText({ paste0("ReviewR (", app_config$data_model, ")") })
-  output$data_model = renderText({app_config$data_model})
+  output$title = renderText({ paste0("ReviewR (", toupper(input$data_model), ")") })
+  output$data_model = renderText({connection_config$data_model})
   
   connection <- NULL
-  tryCatch({
-    # Initialize the ReviewR application
-    connection <- initialize(app_config)
-  },
-  error=function(e) {
-    showNotification(
-      paste("There was an error when trying to connect to the database.  Please make sure that you have configured the application correctly, and that the database is running and accessible from your machine.\r\n\r\n",
-            "You will need to resolve the connection issue before ReviewR will work properly.  If you need help configuring ReviewR, please see the README.md file that is packaged with the repository.\r\n\r\nError:\r\n", e),
-      duration = NULL, type = "error", closeButton = FALSE)
-  },
-  warning=function(w) {})
-  
-  if (tolower(app_config$data_model) == "mimic") {
-    render_data_tables = mimic_render_data_tables
-  }
-  else if (tolower(app_config$data_model) == "omop") {
-    render_data_tables = omop_render_data_tables
-  }
-  else {
-    stop("Currently this application only supports MIMIC III and OMOP data models")
-  }
+  render_data_tables <- NULL
   
   has_projects = FALSE
   output$has_projects <- reactive({ has_projects })
-
-  output = render_data_tables(input, output, connection)
-  output$navigate_links <- renderUI({fluidRow(class="home_container",
-                                              column(8,
-                                                     div(class="jumbotron home_panel",
-                                                         h3("Browse Patients"),
-                                                         div(paste0("Navigate through the full list of patients"), class="lead"),
-                                                         actionLink(inputId = "viewPatients", label = "View Patients", class="btn btn-primary btn-lg")))
-  )}) #renderUI
 
   output$subject_id_output <- renderText({paste("Subject ID - ",input$subject_id)})
   output$subject_id <- renderText({input$subject_id})
@@ -90,7 +47,7 @@ server <- function(input, output, session) {
   # we need to implement the workaround described here (https://github.com/rstudio/shiny/issues/743)
   # where we actually render multiple outputs for each use.
   patient_chart_panel = reactive({
-    table_names <- get_review_table_names(app_config$data_model)
+    table_names <- get_review_table_names(input$data_model)
     tabs <- lapply(table_names, function(id) { create_data_panel(id, paste0(id, "_tbl"))})
     panel <- div(
       fluidRow(column(12, h2(textOutput("subject_id_output")))),
@@ -109,6 +66,32 @@ server <- function(input, output, session) {
   })
   output$selected_project_id <- renderText({input$project_id})
   
+  output$navigation_links <- renderUI({
+    div(
+      selectInput("data_model", "Select your data model:",
+                  c("OMOP" = "omop",
+                    "MIMIC" = "mimic")),
+      selectInput("db_engine", "Select your database:",
+                  c("PostgreSQL" = "postgres",
+                    "BigQuery" = "bigquery")),
+      conditionalPanel(
+        condition = "(!output.is_connected & input.db_engine == 'postgres')",
+        textInput("user", "User:"),
+        passwordInput("password", "Password:"),
+        textInput("host", "Database Host/Server:", "localhost"),
+        textInput("port", "Port:", "5432"),
+        textInput("dbname", "Database Name:"),
+        actionButton("connect", "Connect")
+      ),
+      conditionalPanel(
+        condition = "(!output.is_connected & input.db_engine == 'bigquery')",
+        textInput("project_id", "Project ID:"),
+        textInput("dataset", "Dataset:"),
+        actionButton("connect", "Connect")
+      )
+    )
+  })
+  
   session$onSessionEnded(function() {
     if (!is.null(connection) & !is.null(connection$dbi_conn)) {
       dbDisconnect(connection$dbi_conn)
@@ -120,6 +103,64 @@ server <- function(input, output, session) {
   })
   observeEvent(input$viewPatients, {
     updateTabsetPanel(session = session, inputId = "tabs", selected = "patient_search")
+  })
+  
+  if (!is.null(reviewr_config)) {
+    connection <- initialize(reviewr_config)
+    render_data_tables = get_render_data_tables(reviewr_config$data_model)
+    output = render_data_tables(input, output, connection)
+    
+    output$navigation_links <- renderUI({
+      fluidRow(class="home_container",
+               column(8,
+                      div(class="jumbotron home_panel",
+                          h3("Browse Patients"),
+                          div(paste0("Navigate through the full list of patients"), class="lead"),
+                          actionLink(inputId = "viewPatients", label = "View Patients", class="btn btn-primary btn-lg"))))
+    })
+  }
+  
+  observeEvent(input$connect, {
+    connection_config <- isolate({ list(
+      data_model=input$data_model,
+      db_engine=input$db_engine,
+      database=input$dbname,
+      host=input$host,
+      port=input$port,
+      user=input$user,
+      password=input$password)
+    })
+    
+    tryCatch({
+      # Initialize the ReviewR application
+      connection <- initialize(connection_config)
+      
+      render_data_tables = get_render_data_tables(connection_config$data_model)
+      
+      # if (tolower(connection_config$data_model) == "mimic") {
+      #   render_data_tables = mimic_render_data_tables
+      # }
+      # else if (tolower(connection_config$data_model) == "omop") {
+      #   render_data_tables = omop_render_data_tables
+      # }
+      
+      output$navigation_links <- renderUI({
+        fluidRow(class="home_container",
+                 column(8,
+                        div(class="jumbotron home_panel",
+                            h3("Browse Patients"),
+                            div(paste0("Navigate through the full list of patients"), class="lead"),
+                            actionLink(inputId = "viewPatients", label = "View Patients", class="btn btn-primary btn-lg"))))
+      })
+      output = render_data_tables(input, output, connection)
+    },
+    error=function(e) {
+      showNotification(
+        paste("There was an error when trying to connect to the database.  Please make sure that you have configured the application correctly, and that the database is running and accessible from your machine.\r\n\r\n",
+              "You will need to resolve the connection issue before ReviewR will work properly.  If you need help configuring ReviewR, please see the README.md file that is packaged with the repository.\r\n\r\nError:\r\n", e),
+        duration = NULL, type = "error", closeButton = TRUE)
+    },
+    warning=function(w) {})
   })
   
   outputOptions(output, "has_projects", suspendWhenHidden = FALSE)
@@ -144,7 +185,7 @@ ui <- dashboardPage(
     tabItems(
       tabItem(tabName = "home",
               h2("Welcome to ReviewR"),
-              htmlOutput("navigate_links")
+              uiOutput("navigation_links")
       ), #tabItem
       tabItem(tabName = "projects",
               conditionalPanel(
