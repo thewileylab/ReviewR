@@ -22,7 +22,7 @@ server <- function(input, output, session) {
   options("httr_oob_default" = TRUE)
 
   output$title = renderText({ paste0("ReviewR (", toupper(input$data_model), ")") })
-  output$data_model = renderText({connection_config$data_model})
+  output$data_model = renderText({input$data_model})
   
   connection <- NULL
   render_data_tables <- NULL
@@ -57,7 +57,7 @@ server <- function(input, output, session) {
     panel
   })
   output$patient_chart_panel_abstraction <- renderUI({ patient_chart_panel() })
-  output$patient_chart_panel_no_abstraction <- renderUI( {patient_chart_panel() })
+  output$patient_chart_panel_no_abstraction <- renderUI({ patient_chart_panel() })
   
   output$selected_project_title <- renderText({
     ifelse(is.null(input$project_id),
@@ -121,7 +121,7 @@ server <- function(input, output, session) {
   }
   
   observeEvent(input$connect, {
-    connection_config <- isolate({ list(
+    reviewr_config = isolate({ list(
       data_model=input$data_model,
       db_engine=input$db_engine,
       database=input$dbname,
@@ -133,17 +133,8 @@ server <- function(input, output, session) {
     
     tryCatch({
       # Initialize the ReviewR application
-      connection <- initialize(connection_config)
-      
-      render_data_tables = get_render_data_tables(connection_config$data_model)
-      
-      # if (tolower(connection_config$data_model) == "mimic") {
-      #   render_data_tables = mimic_render_data_tables
-      # }
-      # else if (tolower(connection_config$data_model) == "omop") {
-      #   render_data_tables = omop_render_data_tables
-      # }
-      
+      connection <- initialize(reviewr_config)
+      render_data_tables = get_render_data_tables(reviewr_config$data_model)
       output$navigation_links <- renderUI({
         fluidRow(class="home_container",
                  column(8,
