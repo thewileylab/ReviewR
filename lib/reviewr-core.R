@@ -3,6 +3,14 @@ source('lib/omop.R')
 #source('lib/project_helpers.R')
 source('lib/ui_helpers.r')
 
+load_reviewr_config <- function() {
+  tryCatch({
+    read.config(file="config.yml")
+  },
+  error=function(e) { print(e); NULL },
+  warning=function(w) { print(w); NULL })
+}
+
 table_case_types <- list(LOWER = "lower", UPPER = "upper", UNKNOWN = "unknown")
 
 get_review_table_names <- function(data_model) {
@@ -13,6 +21,16 @@ get_review_table_names <- function(data_model) {
   else if (data_model == "mimic") {
     mimic_get_review_table_names()
   }
+}
+
+get_render_data_tables <- function(data_model) {
+  if (tolower(data_model) == "mimic") {
+    render_data_tables = mimic_render_data_tables
+  }
+  else if (tolower(data_model) == "omop") {
+    render_data_tables = omop_render_data_tables
+  }
+  render_data_tables
 }
 
 case_string <- function(string, case_type) {
