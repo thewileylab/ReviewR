@@ -71,11 +71,11 @@ server <- function(input, output, session) {
       selectInput("data_model", "Select your data model:",
                   c("OMOP" = "omop",
                     "MIMIC" = "mimic")),
-      selectInput("db_engine", "Select your database:",
+      selectInput("db_type", "Select your database:",
                   c("PostgreSQL" = "postgres",
                     "BigQuery" = "bigquery")),
       conditionalPanel(
-        condition = "(!output.is_connected & input.db_engine == 'postgres')",
+        condition = "(!output.is_connected & input.db_type == 'postgres')",
         textInput("user", "User:"),
         passwordInput("password", "Password:"),
         textInput("host", "Database Host/Server:", "localhost"),
@@ -84,7 +84,7 @@ server <- function(input, output, session) {
         actionButton("connect", "Connect")
       ),
       conditionalPanel(
-        condition = "(!output.is_connected & input.db_engine == 'bigquery')",
+        condition = "(!output.is_connected & input.db_type == 'bigquery')",
         textInput("project_id", "Project ID:"),
         textInput("dataset", "Dataset:"),
         actionButton("connect", "Connect")
@@ -93,9 +93,10 @@ server <- function(input, output, session) {
   })
   
   session$onSessionEnded(function() {
-    if (!is.null(connection) & !is.null(connection$dbi_conn)) {
-      dbDisconnect(connection$dbi_conn)
+    if (!is.null(reviewr_config) & !is.null(reviewr_config$connection)) {
+      dbDisconnect(reviewr_config$connection)
     }
+    rm(list = ls())
   })
   
   observeEvent(input$viewProjects, {
@@ -106,9 +107,9 @@ server <- function(input, output, session) {
   })
   
   if (!is.null(reviewr_config)) {
-    connection <- initialize(reviewr_config)
+    reviewr_config <- initialize(reviewr_config)
     render_data_tables = get_render_data_tables(reviewr_config$data_model)
-    output = render_data_tables(input, output, connection)
+    output = render_data_tables(input, output, reviewr_config)
     
     output$navigation_links <- renderUI({
       fluidRow(class="home_container",
@@ -123,7 +124,7 @@ server <- function(input, output, session) {
   observeEvent(input$connect, {
     reviewr_config = isolate({ list(
       data_model=input$data_model,
-      db_engine=input$db_engine,
+      db_type=input$db_type,
       database=input$dbname,
       host=input$host,
       port=input$port,
@@ -133,7 +134,7 @@ server <- function(input, output, session) {
     
     tryCatch({
       # Initialize the ReviewR application
-      connection <- initialize(reviewr_config)
+      reviewr_config <- initialize(reviewr_config)
       render_data_tables = get_render_data_tables(reviewr_config$data_model)
       output$navigation_links <- renderUI({
         fluidRow(class="home_container",
