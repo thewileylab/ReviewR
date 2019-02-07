@@ -2,6 +2,7 @@ source('lib/omop.R')
 #source('lib/mimic.R')
 #source('lib/project_helpers.R')
 source('lib/ui_helpers.r')
+source('lib/table_map.R')
 
 load_reviewr_config <- function() {
   tryCatch({
@@ -10,8 +11,6 @@ load_reviewr_config <- function() {
   error=function(e) { print(e); NULL },
   warning=function(w) { print(w); NULL })
 }
-
-table_case_types <- list(LOWER = "lower", UPPER = "upper", UNKNOWN = "unknown")
 
 get_review_table_names <- function(data_model) {
   data_model = tolower(data_model)
@@ -31,18 +30,6 @@ get_render_data_tables <- function(data_model) {
     render_data_tables = omop_render_data_tables
   }
   render_data_tables
-}
-
-case_string <- function(string, case_type) {
-  if (case_type == table_case_types$LOWER) {
-    tolower(string)
-  }
-  else if (case_type == table_case_types$UPPER) {
-    toupper(string)
-  }
-  else {
-    string
-  }
 }
 
 # check.packages function: install and load multiple R packages.
@@ -66,6 +53,10 @@ initialize <- function(config) {
     connection = dbConnect(RPostgreSQL::PostgreSQL(),
                            user=config$user, password=config$password, dbname=config$database,
                            host=config$host, port=config$port)
+    
+    # Clear the credentials once we have made a connection
+    config$user = NULL
+    config$password = NULL
   }
   else if (db_engine == 'bigquery') {
     check.packages("bigrquery")
@@ -73,13 +64,7 @@ initialize <- function(config) {
                            project=config$project, dataset=config$dataset)
   }
   
-  data_model = tolower(config$data_model)
-  case_type <- table_case_types$UNKNOWN
-  if (data_model == "omop") {
-    case_type = omop_get_table_casing(connection)
-  }
-  else if (data_model == "mimic") {
-  }
-  
-  list(dbi_conn = connection, case_type = case_type)
+  config$connection = connection
+  config$table_map = table_map(config$db_type, config$data_model, config$connection)
+  config
 }
