@@ -1,6 +1,7 @@
 #' Determine Common Data Model Version
 #' 
-#' \code{determine_model_version} returns a string identifier of the common data model version to use.
+#' \code{find_best_cdm_version} returns a structure containing the best CDM definition to use for the
+#' given database.
 #' 
 #' This function performs a heuristic check between all available common data model (CDM) definitions
 #' and the available table definitions (including columns) for the active connection.  It will
@@ -11,7 +12,7 @@
 #' @param user_data_model The selected data model (OMOP or MIMIC) that the user said to use.
 #' 
 #' @return A string containing the version for the CDM that the user's database is most likely running.
-determine_cdm_version <- function(models, user_tables, user_data_model) {
+find_best_cdm_version <- function(models, user_tables, user_data_model) {
   potential_models <- models %>%
     filter(data_model == user_data_model)
   
@@ -71,27 +72,6 @@ table_map <- function(db_type, user_data_model, connection) {
            user_fields_long = map(.x = user_fields_long,.f = as.tibble)
     )
   
-  user_model = determine_cdm_version(models, user_tables, user_data_model)
+  user_model = find_best_cdm_version(models, user_tables, user_data_model)
   user_model$join[[1]]
-  
-  # # Select the appropriate data_model based on user input
-  # selected_model <- models %>% 
-  #   filter(data_model == user_data_model & model_version == user_model_version) #Select based on user input
-  # rm(models)
-  # 
-  # # Generate table mapping with user data
-  # ## Store expected data model
-  # cdm <- unnest(data = selected_model$cdm[[1]]) %>% 
-  #   select(table,field) %>% 
-  #   nest(field, .key = "fields_long")
-  # 
-  # ## Coerce user tables to match expected data model
-  # user_tables %<>% 
-  #   mutate(clean_table = tolower(user_database_table)) %>% 
-  #   mutate(clean_table = str_replace(string = clean_table, pattern = regex(pattern = '[.!?\\-]'),replacement = '_')) ##Any other string separators?!
-  # 
-  # ## Left Join to create table map
-  # table_map <- cdm %>% 
-  #   left_join(user_tables, by = c("table"="clean_table"))
-  # table_map
 } #End function
