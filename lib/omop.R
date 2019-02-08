@@ -8,37 +8,42 @@ omop_table_name <- function(canonical_name, table_map) {
 }
 
 omop_table <- function(canonical_table, cfg) {
-  browser()
   table_name <- cfg$table_map %>%
     filter(table == canonical_table) %>%
+    slice(1) %>%
     pull(user_database_table)
   tbl(cfg$connection, table_name)
 }
 
-omop_column <- function(canonical_table, canonical_column, cfg) {
-  browser()
+omop_column <- function(canonical_name, cfg) {
+  name_parts <- unlist(strsplit(canonical_name, "\\."))
   column_data <- cfg$table_map %>%
-    filter(table == canonical_table) %>%
-    select(fields_long, user_fields_long)
+    filter(table == name_parts[1] & field == name_parts[2]) %>%
+    slice(1) %>%
+    pull(user_fields)
 }
 
 omop_query_all_people <- function(cfg) {
+  # Cache commonly used tables and column names
+  concept_id_col <- omop_column("concept.concept_id", cfg)
+  concept_tbl <- omop_table("concept", cfg)
+  
   data_table <- omop_table("person", cfg) %>%
-    left_join(omop_table("concept", cfg), by=setNames(omop_column("concept", "concept_id", cfg), omop_column("person", "gender_concept_id", cfg)), suffix = c(".p", ".gc")) %>%
+    left_join(concept_tbl, by=setNames(concept_id_col, omop_column("person.gender_concept_id", cfg)), suffix = c(".p", ".gc")) %>%
     rename("gender_concept_name" = "concept_name") %>%
-    left_join(omop_table("concept", cfg), by=c("race_concept_id" = "concept_id"), suffix = c(".p", ".rc")) %>%
+    left_join(concept_tbl, by=setNames(concept_id_col, omop_column("person.race_concept_id", cfg)), suffix = c(".p", ".rc")) %>%
     rename("race_concept_name" = "concept_name") %>%
-    left_join(omop_table("concept", cfg), by=c("ethnicity_concept_id" = "concept_id"), suffix = c(".p", ".ec")) %>%
+    left_join(concept_tbl, by=setNames(concept_id_col, omop_column("person.ethnicity_concept_id", cfg)), suffix = c(".p", ".ec")) %>%
     rename("ethnicity_concept_name" = "concept_name") %>%
-    left_join(omop_table(cfg, "provider"), by=c("provider_id" = "provider_id"), suffix = c(".p", ".prv")) %>%
-    select("person_id", "person_source_value", "gender_concept_id" = "gender_concept_id.p", "gender_concept_name",
-           "gender_source_value" = "gender_source_value.p", "gender_source_concept_id" = "gender_source_concept_id.p",
+    left_join(omop_table("provider", cfg), by=setNames(omop_column("provider.provider_id", cfg), omop_column("person.provider_id", cfg)), suffix = c(".p", ".prv")) %>%
+    select("person_id", "person_source_value", "gender_concept_name",
+           "gender_source_value" = "gender_source_value.p",
            "year_of_birth" = "year_of_birth.p", "month_of_birth", "day_of_birth",
-           "birth_datetime", "race_concept_id", "race_concept_name", "race_source_value", "race_source_concept_id",
-           "ethnicity_concept_id", "ethnicity_concept_name", "ethnicity_source_value", "ethnicity_source_concept_id",
+           "birth_datetime", "race_concept_name", "race_source_value",
+           "ethnicity_concept_name", "ethnicity_source_value",
            "provider_id", "provider_name") %>%
     arrange(person_id) %>%
-    collect() %>%
+    collect() %>%  
     mutate(person_id = paste0("<a class='row_subject_id' href='#'>", person_id, "</a>"))
   data_table
 }
