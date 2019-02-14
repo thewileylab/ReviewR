@@ -3,10 +3,6 @@ omop_get_review_table_names <- function() {
     "note", "observation", "observation_period", "payer_plan_period", "procedure_occurrence", "specimen", "visit_occurrence")
 }
 
-omop_table_name <- function(canonical_name, table_map) {
-  paste0(db_config["schema"], ".", table_config[table_key])
-}
-
 omop_table <- function(canonical_table, cfg) {
   table_name <- cfg$table_map %>%
     filter(table == canonical_table) %>%
@@ -31,15 +27,16 @@ omop_query_all_people <- function(cfg, cache) {
     left_join(select(cache$concept_tbl, "race_concept_name" = cache$concept_name_col, "rcid" = cache$concept_id_col), by=setNames("rcid", omop_column("person.race_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "ethnicity_concept_name" = cache$concept_name_col, "ecid" = cache$concept_id_col), by=setNames("ecid", omop_column("person.ethnicity_concept_id", cfg))) %>%
     left_join(select(omop_table("provider", cfg), omop_column("provider.provider_name", cfg), "prvid" = omop_column("provider.provider_id", cfg)), by=setNames("prvid", omop_column("person.provider_id", cfg))) %>%
-    select(omop_column("person.person_id", cfg), omop_column("person.person_source_value", cfg),
-            "gender_concept_name", omop_column("person.gender_source_value", cfg),
-            omop_column("person.year_of_birth", cfg), omop_column("person.month_of_birth", cfg), omop_column("person.day_of_birth", cfg),
-            omop_column("person.birth_datetime", cfg), "race_concept_name", omop_column("person.race_source_value", cfg),
-            "ethnicity_concept_name", omop_column("person.ethnicity_source_value", cfg),
+    select(person_id = omop_column("person.person_id", cfg), "SourceVal" = omop_column("person.person_source_value", cfg),
+            "Gender" = "gender_concept_name",
+            "BirthYear" = omop_column("person.year_of_birth", cfg), "BirthMonth" = omop_column("person.month_of_birth", cfg), "BirthDay" = omop_column("person.day_of_birth", cfg),
+            "BirthDateTime" = omop_column("person.birth_datetime", cfg), "Race" = "race_concept_name",
+            "Ethnicity" = "ethnicity_concept_name",
             "Provider" = omop_column("provider.provider_name", cfg)) %>%
     arrange(person_id) %>%
     collect() %>%  
-    mutate(person_id = paste0("<a class='row_subject_id' href='#'>", person_id, "</a>"))
+    mutate(person_id = paste0("<a class='row_subject_id' href='#'>", person_id, "</a>")) %>%
+    rename("ID" = person_id)
   data_table
 }
 
@@ -56,23 +53,23 @@ omop_query_condition_era <- function(input, cfg, cache) {
 
 omop_query_condition_occurrence <- function(input, cfg, cache) {
   data_table <- omop_table("condition_occurrence", cfg) %>%
-    filter(person_id == input$subject_id) %>%
+    filter(person_id == as.integer(input$subject_id)) %>%
     left_join(select(cache$concept_tbl, "condition_concept_name" = cache$concept_name_col, "ccid" = cache$concept_id_col), by=setNames("ccid", omop_column("condition_occurrence.condition_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "condition_type_concept_name" = cache$concept_name_col, "ctcid" = cache$concept_id_col), by=setNames("ctcid", omop_column("condition_occurrence.condition_type_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "condition_status_concept_name" = cache$concept_name_col, "cscid" = cache$concept_id_col), by=setNames("cscid", omop_column("condition_occurrence.condition_status_concept_id", cfg))) %>%
     left_join(select(omop_table("provider", cfg), omop_column("provider.provider_name", cfg), "prvid" = omop_column("provider.provider_id", cfg)), by=setNames("prvid", omop_column("condition_occurrence.provider_id", cfg))) %>%
     select("ID" = omop_column("condition_occurrence.condition_occurrence_id", cfg), "Concept" = "condition_concept_name",
-           "Source Val" = omop_column("condition_occurrence.condition_source_value", cfg), "StartDate" = omop_column("condition_occurrence.condition_start_date", cfg),
-           "Start Date/Time" = omop_column("condition_occurrence.condition_start_datetime", cfg), "EndDate" = omop_column("condition_occurrence.condition_end_date", cfg),
-           "End Date/Time" = omop_column("condition_occurrence.condition_end_datetime", cfg), "Type" = "condition_type_concept_name",
-           "Stop Reason" = omop_column("condition_occurrence.stop_reason", cfg), "Provider" = omop_column("provider.provider_name", cfg), "Visit" = omop_column("condition_occurrence.visit_occurrence_id", cfg)) %>%
+           "SourceVal" = omop_column("condition_occurrence.condition_source_value", cfg), "StartDate" = omop_column("condition_occurrence.condition_start_date", cfg),
+           "StartDateTime" = omop_column("condition_occurrence.condition_start_datetime", cfg), "EndDate" = omop_column("condition_occurrence.condition_end_date", cfg),
+           "EndDateTime" = omop_column("condition_occurrence.condition_end_datetime", cfg), "Type" = "condition_type_concept_name",
+           "StopReason" = omop_column("condition_occurrence.stop_reason", cfg), "Provider" = omop_column("provider.provider_name", cfg), "Visit" = omop_column("condition_occurrence.visit_occurrence_id", cfg)) %>%
     collect()
   data_table
 }
 
 omop_query_death <- function(input, cfg, cache) {
   data_table <- omop_table("death", cfg) %>%
-    filter(person_id == input$subject_id) %>%
+    filter(person_id == as.integer(input$subject_id)) %>%
     left_join(select(cache$concept_tbl, "death_type_concept_name" = cache$concept_name_col, "dtcid" = cache$concept_id_col), by=setNames("dtcid", omop_column("death.death_type_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "cause_concept_name" = cache$concept_name_col, "ccid" = cache$concept_id_col), by=setNames("ccid", omop_column("death.cause_concept_id", cfg))) %>%
     select("Date" = omop_column("death.death_date", cfg), "DateTime" = omop_column("death.death_datetime", cfg),
@@ -84,14 +81,14 @@ omop_query_death <- function(input, cfg, cache) {
 
 omop_query_device_exposure <- function(input, cfg, cache) {
   data_table <- omop_table("device_exposure", cfg) %>%
-    filter(person_id == input$subject_id) %>%
+    filter(person_id == as.integer(input$subject_id)) %>%
     left_join(select(cache$concept_tbl, "device_concept_name" = cache$concept_name_col, "dcid" = cache$concept_id_col), by=setNames("dcid", omop_column("device_exposure.device_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "device_type_concept_name" = cache$concept_name_col, "dtcid" = cache$concept_id_col), by=setNames("dtcid", omop_column("device_exposure.device_type_concept_id", cfg))) %>%
     left_join(select(omop_table("provider", cfg), omop_column("provider.provider_name", cfg), "prvid" = omop_column("provider.provider_id", cfg)), by=setNames("prvid", omop_column("condition_occurrence.provider_id", cfg))) %>%
     select("ID" = omop_column("device_exposure.device_exposure_id", cfg), "Name" = "device_concept_name", "SourceVal" = omop_column("device_exposure.device_source_value", cfg),
            "StartDate" = omop_column("device_exposure.device_exposure_start_date", cfg), "StartDateTime" = omop_column("device_exposure.device_exposure_start_datetime", cfg),
            "EndDate" = omop_column("device_exposure.device_exposure_end_date", cfg), "EndDateTime" = omop_column("device_exposure.device_exposure_end_datetime", cfg),
-           "Type" = "device_type_concept_name", "Device ID" = omop_column("device_exposure.unique_device_id", cfg), "Quantity" = omop_column("device_exposure.quantity", cfg),
+           "Type" = "device_type_concept_name", "DeviceID" = omop_column("device_exposure.unique_device_id", cfg), "Quantity" = omop_column("device_exposure.quantity", cfg),
            "Provider" = omop_column("provider.provider_name", cfg), "Visit" = omop_column("device_exposure.visit_occurrence_id", cfg)) %>%
     collect()
   data_table
@@ -99,7 +96,7 @@ omop_query_device_exposure <- function(input, cfg, cache) {
 
 omop_query_dose_era <- function(input, cfg, cache) {
   data_table <- omop_table("dose_era", cfg) %>%
-    filter(person_id == input$subject_id) %>%
+    filter(person_id == as.integer(input$subject_id)) %>%
     left_join(select(cache$concept_tbl, "drug_concept_name" = cache$concept_name_col, "dcid" = cache$concept_id_col), by=setNames("dcid", omop_column("dose_era.drug_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "unit_concept_name" = cache$concept_name_col, "ucid" = cache$concept_id_col), by=setNames("ucid", omop_column("dose_era.unit_concept_id", cfg))) %>%
     select("ID" = omop_column("dose_era.dose_era_id", cfg), "Drug" = "drug_concept_name", "Unit" = "unit_concept_name",
@@ -111,7 +108,7 @@ omop_query_dose_era <- function(input, cfg, cache) {
 
 omop_query_drug_era <- function(input, cfg, cache) {
   data_table <- omop_table("drug_era", cfg) %>%
-    filter(person_id == input$subject_id) %>%
+    filter(person_id == as.integer(input$subject_id)) %>%
     left_join(select(cache$concept_tbl, "drug_concept_name" = cache$concept_name_col, "dcid" = cache$concept_id_col), by=setNames("dcid", omop_column("drug_era.drug_concept_id", cfg))) %>%
     select("ID" = omop_column("drug_era.drug_era_id", cfg), "Drug" = "drug_concept_name", "StartDate" = omop_column("drug_era.drug_era_start_date", cfg),
            "EndDate" = omop_column("drug_era.drug_era_end_date", cfg), "ExposureCount" = omop_column("drug_era.drug_exposure_count", cfg),
@@ -122,11 +119,11 @@ omop_query_drug_era <- function(input, cfg, cache) {
 
 omop_query_drug_exposure <- function(input, cfg, cache) {
   data_table <- omop_table("drug_exposure", cfg) %>%
-    filter(person_id == input$subject_id) %>%
+    filter(person_id == as.integer(input$subject_id)) %>%
     left_join(select(cache$concept_tbl, "drug_concept_name" = cache$concept_name_col, "dcid" = cache$concept_id_col), by=setNames("dcid", omop_column("drug_exposure.drug_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "drug_type_concept_name" = cache$concept_name_col, "dtcid" = cache$concept_id_col), by=setNames("dtcid", omop_column("drug_exposure.drug_type_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "route_concept_name" = cache$concept_name_col, "rcid" = cache$concept_id_col), by=setNames("rcid", omop_column("drug_exposure.route_concept_id", cfg))) %>%
-    left_join(select(omop_table("provider", cfg), omop_column("provider.provider_name", cfg), "prvid" = omop_column("provider.provider_id", cfg)), by=setNames("prvid", omop_column("condition_occurrence.provider_id", cfg))) %>%
+    left_join(select(omop_table("provider", cfg), omop_column("provider.provider_name", cfg), "prvid" = omop_column("provider.provider_id", cfg)), by=setNames("prvid", omop_column("drug_exposure.provider_id", cfg))) %>%
     select("ID" = omop_column("drug_exposure.drug_exposure_id", cfg), "Drug" = "drug_concept_name", "SourceVal" = omop_column("drug_exposure.drug_source_value", cfg),
            "StartDate" = omop_column("drug_exposure.drug_exposure_start_date", cfg), "StartDateTime" = omop_column("drug_exposure.drug_exposure_start_datetime", cfg),
            "EndDate" = omop_column("drug_exposure.drug_exposure_end_date", cfg), "EndDateTime" = omop_column("drug_exposure.drug_exposure_end_datetime", cfg),
@@ -140,13 +137,13 @@ omop_query_drug_exposure <- function(input, cfg, cache) {
 
 omop_query_measurement <- function(input, cfg, cache) {
   data_table <- omop_table("measurement", cfg) %>%
-    filter(person_id == input$subject_id) %>%
+    filter(person_id == as.integer(input$subject_id)) %>%
     left_join(select(cache$concept_tbl, "measurement_concept_name" = cache$concept_name_col, "mcid" = cache$concept_id_col), by=setNames("mcid", omop_column("measurement.measurement_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "measurement_type_concept_name" = cache$concept_name_col, "mtcid" = cache$concept_id_col), by=setNames("mtcid", omop_column("measurement.measurement_type_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "operator_concept_name" = cache$concept_name_col, "ocid" = cache$concept_id_col), by=setNames("ocid", omop_column("measurement.operator_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "value_as_concept_name" = cache$concept_name_col, "vacid" = cache$concept_id_col), by=setNames("vacid", omop_column("measurement.value_as_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "unit_concept_name" = cache$concept_name_col, "ucid" = cache$concept_id_col), by=setNames("ucid", omop_column("measurement.unit_concept_id", cfg))) %>%
-    left_join(select(omop_table("provider", cfg), omop_column("provider.provider_name", cfg), "prvid" = omop_column("provider.provider_id", cfg)), by=setNames("prvid", omop_column("condition_occurrence.provider_id", cfg))) %>%
+    left_join(select(omop_table("provider", cfg), omop_column("provider.provider_name", cfg), "prvid" = omop_column("provider.provider_id", cfg)), by=setNames("prvid", omop_column("measurement.provider_id", cfg))) %>%
     select("ID" = omop_column("measurement.measurement_id", cfg), "Name" = "measurement_concept_name", "SourceVal" = omop_column("measurement.measurement_source_value", cfg),
            "Date" = omop_column("measurement.measurement_date", cfg), "DateTime" = omop_column("measurement.measurement_datetime", cfg),
            "Type" = "measurement_type_concept_name", "Operator" = "operator_concept_name", "ValueNum" = omop_column("measurement.value_as_number", cfg),
@@ -159,7 +156,7 @@ omop_query_measurement <- function(input, cfg, cache) {
 
 omop_query_note <- function(input, cfg, cache) {
   data_table <- omop_table("note", cfg) %>%
-    filter(person_id == input$subject_id) %>%
+    filter(person_id == as.integer(input$subject_id)) %>%
     left_join(select(cache$concept_tbl, "note_type_concept_name" = cache$concept_name_col, "ntcid" = cache$concept_id_col), by=setNames("ntcid", omop_column("note.note_type_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "note_class_concept_name" = cache$concept_name_col, "nccid" = cache$concept_id_col), by=setNames("nccid", omop_column("note.note_class_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "encoding_concept_name" = cache$concept_name_col, "ecid" = cache$concept_id_col), by=setNames("ecid", omop_column("note.encoding_concept_id", cfg))) %>%
@@ -183,7 +180,7 @@ omop_query_note <- function(input, cfg, cache) {
 #     rename("note_nlp_concept_name" = "concept_name") %>%
 #     left_join(tbl(cfg$dbi_conn, "concept"), by=c("note_nlp_source_concept_id" = "concept_id")) %>%
 #     rename("note_nlp_source_concept_name" = "concept_name") %>%
-#     filter(person_id == input$subject_id) %>%
+#     filter(person_id == as.integer(input$subject_id)) %>%
 #     select("note_nlp_id", "note_id", "section_concept_id", "section_concept_name", "snippet", "offset", "lexical_variant",
 #            "note_nlp_concept_id", "note_nlp_concept_name", "note_nlp_source_concept_id", "note_nlp_source_concept_name",
 #            "nlp_system", "nlp_date", "nlp_datetime", "term_exists", "term_temporal", "term_modifiers") %>%
@@ -193,13 +190,13 @@ omop_query_note <- function(input, cfg, cache) {
 
 omop_query_observation <- function(input, cfg, cache) {
   data_table <- omop_table("observation", cfg) %>%
-    filter(person_id == input$subject_id) %>%
+    filter(person_id == as.integer(input$subject_id)) %>%
     left_join(select(cache$concept_tbl, "observation_concept_name" = cache$concept_name_col, "ocid" = cache$concept_id_col), by=setNames("ocid", omop_column("observation.observation_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "observation_type_concept_name" = cache$concept_name_col, "otcid" = cache$concept_id_col), by=setNames("otcid", omop_column("observation.observation_type_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "value_as_concept_name" = cache$concept_name_col, "vacid" = cache$concept_id_col), by=setNames("vacid", omop_column("observation.value_as_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "qualifier_concept_name" = cache$concept_name_col, "qcid" = cache$concept_id_col), by=setNames("qcid", omop_column("observation.qualifier_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "unit_concept_name" = cache$concept_name_col, "ucid" = cache$concept_id_col), by=setNames("ucid", omop_column("observation.unit_concept_id", cfg))) %>%
-    left_join(select(omop_table("provider", cfg), omop_column("provider.provider_name", cfg), "prvid" = omop_column("provider.provider_id", cfg)), by=setNames("prvid", omop_column("condition_occurrence.provider_id", cfg))) %>%
+    left_join(select(omop_table("provider", cfg), omop_column("provider.provider_name", cfg), "prvid" = omop_column("provider.provider_id", cfg)), by=setNames("prvid", omop_column("observation.provider_id", cfg))) %>%
     select("ID" = omop_column("observation.observation_id", cfg), "Name" = "observation_concept_name", "Date" = omop_column("observation.observation_date", cfg),
            "DateTime" = omop_column("observation.observation_datetime", cfg), "Type" = "observation_type_concept_name", "ValueNum" = omop_column("observation.value_as_number", cfg),
            "ValueString" = omop_column("observation.value_as_string", cfg), "ValueConcept" = "value_as_concept_name", "SourceVal" = omop_column("observation.observation_source_value", cfg),
@@ -210,7 +207,7 @@ omop_query_observation <- function(input, cfg, cache) {
 
 omop_query_observation_period <- function(input, cfg, cache) {
   data_table <- omop_table("observation_period", cfg) %>%
-    filter(person_id == input$subject_id) %>%
+    filter(person_id == as.integer(input$subject_id)) %>%
     left_join(select(cache$concept_tbl, "period_type_concept_name" = cache$concept_name_col, "ptcid" = cache$concept_id_col), by=setNames("ptcid", omop_column("observation_period.period_type_concept_id", cfg))) %>%
     select("ID" = omop_column("observation_period.observation_period_id", cfg), "StartDate" = omop_column("observation_period.observation_period_start_date", cfg),
            "EndDate" = omop_column("observation_period.observation_period_end_date", cfg), "Type" = "period_type_concept_name") %>%
@@ -220,7 +217,7 @@ omop_query_observation_period <- function(input, cfg, cache) {
 
 omop_query_payer_plan_period <- function(input, cfg, cache) {
   data_table <- omop_table("payer_plan_period", cfg) %>%
-    filter(person_id == input$subject_id) %>%
+    filter(person_id == as.integer(input$subject_id)) %>%
     select("ID" = omop_column("payer_plan_period.payer_plan_period_id", cfg), "StartDate" = omop_column("payer_plan_period.payer_plan_period_start_date", cfg),
            "EndDate" = omop_column("payer_plan_period.period_plan_period_end_date", cfg), "Payer" = omop_column("payer_plan_period.payer_source_value", cfg),
            "Plan" = omop_column("payer_plan_period.plan_source_value", cfg), "Family" = omop_column("payer_plan_period.family_source_value", cfg)) %>%
@@ -230,16 +227,16 @@ omop_query_payer_plan_period <- function(input, cfg, cache) {
 
 omop_query_person <- function(input, cfg, cache) {
   data_table <- omop_table("person", cfg) %>%
-    filter(person_id == input$subject_id) %>%
+    filter(person_id == as.integer(input$subject_id)) %>%
     left_join(select(cache$concept_tbl, "gender_concept_name" = cache$concept_name_col, "gcid" = cache$concept_id_col), by=setNames("gcid", omop_column("person.gender_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "race_concept_name" = cache$concept_name_col, "rcid" = cache$concept_id_col), by=setNames("rcid", omop_column("person.race_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "ethnicity_concept_name" = cache$concept_name_col, "ecid" = cache$concept_id_col), by=setNames("ecid", omop_column("person.ethnicity_concept_id", cfg))) %>%
     left_join(select(omop_table("provider", cfg), omop_column("provider.provider_name", cfg), "prvid" = omop_column("provider.provider_id", cfg)), by=setNames("prvid", omop_column("person.provider_id", cfg))) %>%
-    select(omop_column("person.person_id", cfg), omop_column("person.person_source_value", cfg),
-           "gender_concept_name", omop_column("person.gender_source_value", cfg),
-           omop_column("person.year_of_birth", cfg), omop_column("person.month_of_birth", cfg), omop_column("person.day_of_birth", cfg),
-           omop_column("person.birth_datetime", cfg), "race_concept_name", omop_column("person.race_source_value", cfg),
-           "ethnicity_concept_name", omop_column("person.ethnicity_source_value", cfg),
+    select("ID" = omop_column("person.person_id", cfg), "SourceVal" = omop_column("person.person_source_value", cfg),
+           "Gender" = "gender_concept_name",
+           "BirthYear" = omop_column("person.year_of_birth", cfg), "BirthMonth" = omop_column("person.month_of_birth", cfg), "BirthDay" = omop_column("person.day_of_birth", cfg),
+           "BirthDateTime" = omop_column("person.birth_datetime", cfg), "Race" = "race_concept_name",
+           "Ethnicity" = "ethnicity_concept_name",
            "Provider" = omop_column("provider.provider_name", cfg)) %>%
     arrange(person_id) %>%
     collect()
@@ -248,7 +245,7 @@ omop_query_person <- function(input, cfg, cache) {
 
 omop_query_procedure_occurrence <- function(input, cfg, cache) {
   data_table <- omop_table("procedure_occurrence", cfg) %>%
-    filter(person_id == input$subject_id) %>%
+    filter(person_id == as.integer(input$subject_id)) %>%
     left_join(select(cache$concept_tbl, "procedure_concept_name" = cache$concept_name_col, "pcid" = cache$concept_id_col), by=setNames("pcid", omop_column("procedure_occurrence.procedure_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "procedure_type_concept_name" = cache$concept_name_col, "ptcid" = cache$concept_id_col), by=setNames("ptcid", omop_column("procedure_occurrence.procedure_type_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "modifier_concept_name" = cache$concept_name_col, "mcid" = cache$concept_id_col), by=setNames("mcid", omop_column("procedure_occurrence.modifier_concept_id", cfg))) %>%
@@ -263,7 +260,7 @@ omop_query_procedure_occurrence <- function(input, cfg, cache) {
 
 omop_query_specimen <- function(input, cfg, cache) {
   data_table <- omop_table("specimen", cfg) %>%
-    filter(person_id == input$subject_id) %>%
+    filter(person_id == as.integer(input$subject_id)) %>%
     left_join(select(cache$concept_tbl, "specimen_concept_name" = cache$concept_name_col, "scid" = cache$concept_id_col), by=setNames("scid", omop_column("specimen.specimen_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "specimen_type_concept_name" = cache$concept_name_col, "stcid" = cache$concept_id_col), by=setNames("stcid", omop_column("specimen.specimen_type_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "unit_concept_name" = cache$concept_name_col, "ucid" = cache$concept_id_col), by=setNames("ucid", omop_column("specimen.unit_concept_id", cfg))) %>%
@@ -278,12 +275,12 @@ omop_query_specimen <- function(input, cfg, cache) {
 
 omop_query_visit_occurrence <- function(input, cfg, cache) {
   data_table <- omop_table("visit_occurrence", cfg) %>%
-    filter(person_id == input$subject_id) %>%
+    filter(person_id == as.integer(input$subject_id)) %>%
     left_join(select(cache$concept_tbl, "visit_concept_name" = cache$concept_name_col, "vcid" = cache$concept_id_col), by=setNames("vcid", omop_column("visit_occurrence.visit_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "visit_type_concept_name" = cache$concept_name_col, "vtcid" = cache$concept_id_col), by=setNames("vtcid", omop_column("visit_occurrence.visit_type_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "admitting_source_concept_name" = cache$concept_name_col, "ascid" = cache$concept_id_col), by=setNames("ascid", omop_column("visit_occurrence.admitting_source_concept_id", cfg))) %>%
     left_join(select(cache$concept_tbl, "discharge_to_concept_name" = cache$concept_name_col, "dtcid" = cache$concept_id_col), by=setNames("dtcid", omop_column("visit_occurrence.discharge_to_concept_id", cfg))) %>%
-    left_join(select(omop_table("care_site", cfg), omop_column("care_site.care_site_name", cfg), "csid" = omop_column("care_site.care_site_id", cfg)), by=setNames("csid", omop_column("care_site.care_site_id", cfg))) %>%
+    left_join(select(omop_table("care_site", cfg), "care_site_name" = omop_column("care_site.care_site_name", cfg), "csid" = omop_column("care_site.care_site_id", cfg)), by=setNames("csid", omop_column("visit_occurrence.care_site_id", cfg))) %>%
     left_join(select(omop_table("provider", cfg), omop_column("provider.provider_name", cfg), "prvid" = omop_column("provider.provider_id", cfg)), by=setNames("prvid", omop_column("visit_occurrence.provider_id", cfg))) %>%
     select("ID" = omop_column("visit_occurrence.visit_occurrence_id", cfg), "Visit" = "visit_concept_name", "StartDate" = omop_column("visit_occurrence.visit_start_date", cfg),
            "StartDateTime" = omop_column("visit_occurrence.visit_start_datetime", cfg), "EndDate" = omop_column("visit_occurrence.visit_end_date", cfg),
