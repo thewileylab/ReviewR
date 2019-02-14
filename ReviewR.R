@@ -20,8 +20,9 @@ reviewr_config <- load_reviewr_config()
 # Define server logic 
 server <- function(input, output, session) {
   options("httr_oob_default" = TRUE)
-
-  output$title = renderText({ paste0("ReviewR (", toupper(input$data_model), ")") })
+  
+  values <- reactiveValues()
+  output$title = renderText({ paste0("ReviewR (", toupper(values$data_model), ")") })
   output$data_model = renderText({input$data_model})
   
   connection <- NULL
@@ -66,6 +67,10 @@ server <- function(input, output, session) {
   })
   output$selected_project_id <- renderText({input$project_id})
   
+  # This instantiation of the home navigation_links control will only be used if the user
+  # hasn't specified a config.yml within their directory.  Default behavior is to give
+  # them a login screen, but checks below will determine if we can skip this and have a
+  # connection already established.
   output$navigation_links <- renderUI({
     div(
       selectInput("data_model", "Select your data model:",
@@ -75,7 +80,7 @@ server <- function(input, output, session) {
                   c("PostgreSQL" = "postgres",
                     "BigQuery" = "bigquery")),
       conditionalPanel(
-        condition = "(!output.is_connected & input.db_type == 'postgres')",
+        condition = "(input.db_type == 'postgres')",
         textInput("user", "User:"),
         passwordInput("password", "Password:"),
         textInput("host", "Database Host/Server:", "localhost"),
@@ -84,7 +89,7 @@ server <- function(input, output, session) {
         actionButton("connect", "Connect")
       ),
       conditionalPanel(
-        condition = "(!output.is_connected & input.db_type == 'bigquery')",
+        condition = "(input.db_type == 'bigquery')",
         textInput("project_id", "Project ID:"),
         textInput("dataset", "Dataset:"),
         actionButton("connect", "Connect")
@@ -108,6 +113,7 @@ server <- function(input, output, session) {
   
   if (!is.null(reviewr_config)) {
     reviewr_config <- initialize(reviewr_config)
+    values$data_model <- reviewr_config$data_model
     render_data_tables = get_render_data_tables(reviewr_config$data_model)
     output = render_data_tables(input, output, reviewr_config)
     
@@ -132,6 +138,9 @@ server <- function(input, output, session) {
       password=input$password)
     })
     
+    # Set our reactive values based on the input
+    values$data_model <- reviewr_config$data_model
+    
     tryCatch({
       # Initialize the ReviewR application
       reviewr_config <- initialize(reviewr_config)
@@ -151,8 +160,7 @@ server <- function(input, output, session) {
         paste("There was an error when trying to connect to the database.  Please make sure that you have configured the application correctly, and that the database is running and accessible from your machine.\r\n\r\n",
               "You will need to resolve the connection issue before ReviewR will work properly.  If you need help configuring ReviewR, please see the README.md file that is packaged with the repository.\r\n\r\nError:\r\n", e),
         duration = NULL, type = "error", closeButton = TRUE)
-    },
-    warning=function(w) {})
+    })
   })
   
   outputOptions(output, "has_projects", suspendWhenHidden = FALSE)
@@ -204,7 +212,7 @@ ui <- dashboardPage(
               ),
               conditionalPanel(
                 condition = "input.subject_id != ''",
-                uiOutput("patient_navigation_list"),
+                #uiOutput("patient_navigation_list"),
                 uiOutput("patient_chart_panel_no_abstraction")
               ) #conditionalPanel
       ) #tabItem

@@ -46,9 +46,9 @@ check.packages <- function(pkg){
 # Primary initialization function for ReviewR.  This will create the database connection, based
 # on the configuration information sent in.
 initialize <- function(config) {
-  db_engine = tolower(config$db_engine)
+  db_type = tolower(config$db_type)
   connection <- NULL
-  if (db_engine == 'postgres' | db_engine == 'postgresql' | db_engine == 'pgsql') {
+  if (db_type == 'postgres' | db_type == 'postgresql' | db_type == 'pgsql') {
     check.packages("RPostgreSQL")
     connection = dbConnect(RPostgreSQL::PostgreSQL(),
                            user=config$user, password=config$password, dbname=config$database,
@@ -58,13 +58,13 @@ initialize <- function(config) {
     config$user = NULL
     config$password = NULL
   }
-  else if (db_engine == 'bigquery') {
+  else if (db_type == 'bigquery') {
     check.packages("bigrquery")
     connection = dbConnect(bigrquery::bigquery(),
                            project=config$project, dataset=config$dataset)
   }
   
   config$connection = connection
-  config$table_map = table_map(config$db_type, config$data_model, config$connection)
+  config$table_map = table_map(db_type, config$data_model, config$connection)
   config
 }
