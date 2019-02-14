@@ -15,19 +15,22 @@ source('lib/reviewr-core.R')
 check.packages(c("shiny", "shinyjs", "shinydashboard", "shinycssloaders",
                  "tidyverse", "DT", "dbplyr", "magrittr", "readr", "configr"))
 
-reviewr_config <- load_reviewr_config()
-
 # Define server logic 
 server <- function(input, output, session) {
   options("httr_oob_default" = TRUE)
+
+  # Attempt to load the ReviewR connection configuration from config.yml.  If it doesn't exist, the rest of the UI
+  # will render to allow the user to specify the database connection details.
+  reviewr_config <- load_reviewr_config()
   
+  # Initialize a collection of reactive values.  These are going to be used across our two different connection
+  # methods (through config.yml, or from a form) to trigger UI updates.
   values <- reactiveValues()
+  
   output$title = renderText({ paste0("ReviewR (", toupper(values$data_model), ")") })
-  output$data_model = renderText({input$data_model})
   
   connection <- NULL
   render_data_tables <- NULL
-  
   has_projects = FALSE
   output$has_projects <- reactive({ has_projects })
 
@@ -48,7 +51,7 @@ server <- function(input, output, session) {
   # we need to implement the workaround described here (https://github.com/rstudio/shiny/issues/743)
   # where we actually render multiple outputs for each use.
   patient_chart_panel = reactive({
-    table_names <- get_review_table_names(input$data_model)
+    table_names <- get_review_table_names(values$data_model)
     tabs <- lapply(table_names, function(id) { create_data_panel(id, paste0(id, "_tbl"))})
     panel <- div(
       fluidRow(column(12, h2(textOutput("subject_id_output")))),
@@ -95,13 +98,6 @@ server <- function(input, output, session) {
         actionButton("connect", "Connect")
       )
     )
-  })
-  
-  session$onSessionEnded(function() {
-    if (!is.null(reviewr_config) & !is.null(reviewr_config$connection)) {
-      dbDisconnect(reviewr_config$connection)
-    }
-    rm(list = ls())
   })
   
   observeEvent(input$viewProjects, {
@@ -153,7 +149,7 @@ server <- function(input, output, session) {
                             div(paste0("Navigate through the full list of patients"), class="lead"),
                             actionLink(inputId = "viewPatients", label = "View Patients", class="btn btn-primary btn-lg"))))
       })
-      output = render_data_tables(input, output, connection)
+      output = render_data_tables(input, output, reviewr_config)
     },
     error=function(e) {
       showNotification(
@@ -164,6 +160,14 @@ server <- function(input, output, session) {
   })
   
   outputOptions(output, "has_projects", suspendWhenHidden = FALSE)
+  
+  # When the Shiny session ends, perform cleanup (closing connections, removing objects from environment)
+  session$onSessionEnded(function() {
+    if (!is.null(reviewr_config) & !is.null(reviewr_config$connection)) {
+      dbDisconnect(reviewr_config$connection)
+    }
+    rm(list = ls())
+  })
 }
 
 
