@@ -1,0 +1,68 @@
+---
+title: "REDCap API Exploration - Data Extraction"
+author: "David Mayer"
+date: "2/4/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(redcapAPI)
+library(tidyverse)
+library(magrittr)
+```
+
+## Create a REDCap connection
+REDCap Connections take two arguments, your institution' redcap API access url and an API token, which is generated per project.
+```{r}
+api_url <- 'https://redcap.ucdenver.edu/api/'
+api_token <- readline("Enter REDCap Project API Token:")
+rcon <- redcapConnection(url = api_url, token = api_token)
+```
+
+## Did the Connection work?
+```{r}
+exportUsers(rcon)
+```
+Indeed it did.
+
+## What other information can we get from the API?
+```{r}
+exportProjectInformation(rcon)
+
+```
+
+## REDcap Verison?
+```{r}
+exportVersion(rcon)
+```
+This ends up being important. Exporting values from REDcap sliders is not supported in versions 6.5.0+
+
+## Dictionary Info? Question Types for the project?
+Yes, project meta data can be exported. If more than one instrument is defined, supply the `form=` option to only export the information that is relevant to the instrument you are working with.
+```{r}
+meta <- exportMetaData(rcon)
+meta
+```
+
+```{r}
+unique(meta$field_type)
+```
+
+## Are there any records present?
+
+Note: You can break this API call if there are invalid (unexpected?) characters in the`ice_cream_comments` field. See push_to_REDcap_3.csv, participant 6. Entries show up on the web, minus the invalid characters but can no entries can be recieved from the API call. 
+```{r}
+records <-exportRecords(rcon)
+records
+```
+
+### Note on Sliders
+Values cannot be exported when entered using the REDcap instrument. Oddly, you can store information in the slider field when importing records from a data.frame, and they will then be returned from the `exportRecords` command.
+
+## Bundle
+```{r, include=F}
+bundle <- exportBundle(rcon, date = TRUE, label = TRUE, meta_data = TRUE, users = TRUE, instruments = TRUE, events = TRUE, arms = TRUE, mappings = TRUE, version = TRUE)
+```
+If you want to know a lot of things ad don't have a lot of time. This will store most of the project metadata as a list object.
+
