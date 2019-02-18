@@ -1,0 +1,4 @@
+participant_id,redcap_survey_identifier,survey_timestamp,first_name,last_name,date_today,ice_cream_3,ice_cream,ice_cream_2___1,ice_cream_2___2,ice_cream_2___3,ice_cream_comments,slider,number,calc,confirm_name,survey_complete
+2,NA,NA,Fozzy,Bear,2019-02-11T07:00:00Z,Yes,Chocolate,Checked,Checked,Checked,om nom nom,NA,0,,[first_name] [last_name],Complete
+3,NA,NA,Rowlf T,Dog,2019-02-10T07:00:00Z,Yes,Vanilla,,Checked,Checked,I wish it were pizza,I love [ice_cream],4,,[first_name] [last_name],
+4,NA,NA,Rizzo T,Rat,2/10/19,Yes,Strawberry,,,Checked,IT'S DELICIOUS,Hate it,25,,[first_name] [last_name],
