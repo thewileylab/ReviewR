@@ -29,7 +29,6 @@ server <- function(input, output, session) {
   
   output$title = renderText({ paste0("ReviewR (", toupper(values$data_model), ")") })
   
-  connection <- NULL
   render_data_tables <- NULL
   has_projects = FALSE
   output$has_projects <- reactive({ has_projects })
@@ -37,12 +36,10 @@ server <- function(input, output, session) {
   output$subject_id_output <- renderText({paste("Subject ID - ",input$subject_id)})
   output$subject_id <- renderText({input$subject_id})
   
-  patient_nav_previous = tags$div(actionButton("prev_patient",HTML('
-<div class="col-sm-4"><i class="fa fa-angle-double-left"></i> Previous</div>
-')))
-  patient_nav_next = div(actionButton("next_patient",HTML('
-<div class="col-sm-4">Next <i class="fa fa-angle-double-right"></i></div>
-')))
+  patient_nav_previous = tags$div(actionButton("prev_patient",
+    HTML('<div class="col-sm-4"><i class="fa fa-angle-double-left"></i> Previous</div>')))
+  patient_nav_next = div(actionButton("next_patient",
+    HTML('<div class="col-sm-4">Next <i class="fa fa-angle-double-right"></i></div>')))
   output$patient_navigation_list=renderUI({
     div(column(1,offset=0,patient_nav_previous),column(1,offset=9,patient_nav_next))
   })
@@ -88,15 +85,14 @@ server <- function(input, output, session) {
         passwordInput("password", "Password:"),
         textInput("host", "Database Host/Server:", "localhost"),
         textInput("port", "Port:", "5432"),
-        textInput("dbname", "Database Name:"),
-        actionButton("connect", "Connect")
+        textInput("dbname", "Database Name:")
       ),
       conditionalPanel(
         condition = "(input.db_type == 'bigquery')",
         textInput("project_id", "Project ID:"),
-        textInput("dataset", "Dataset:"),
-        actionButton("connect", "Connect")
-      )
+        textInput("dataset", "Dataset:")
+      ),
+      actionButton("connect", "Connect")
     )
   })
   
@@ -131,7 +127,9 @@ server <- function(input, output, session) {
       host=input$host,
       port=input$port,
       user=input$user,
-      password=input$password)
+      password=input$password,
+      project = input$project_id,
+      dataset = input$dataset)
     })
     
     # Set our reactive values based on the input
