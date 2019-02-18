@@ -17,7 +17,6 @@ omop_column <- function(canonical_name, cfg) {
     filter(table == name_parts[1] & field == name_parts[2]) %>%
     slice(1) %>%
     pull(user_fields)
-  #if (length(name_parts) > 2) { column_name <- paste(column_name, name_parts[-(1:2)], sep=".") }
   column_name
 }
 
@@ -34,7 +33,7 @@ omop_query_all_people <- function(cfg, cache) {
             "Ethnicity" = "ethnicity_concept_name",
             "Provider" = omop_column("provider.provider_name", cfg)) %>%
     arrange(person_id) %>%
-    collect() %>%  
+    collect() %>%
     mutate(person_id = paste0("<a class='row_subject_id' href='#'>", person_id, "</a>")) %>%
     rename("ID" = person_id)
   data_table

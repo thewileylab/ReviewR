@@ -8,4 +8,4 @@ conf/*secret*
 .DS_Store
 projects/*
 tmp/
-config.yml
+*config*.yml
