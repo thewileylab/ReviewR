@@ -1,6 +1,6 @@
 # ReviewR: A light-weight, portable tool for reviewing individual patient records
 
-[![DOI](https://zenodo.org/badge/140004344.svg)](https://zenodo.org/badge/latestdoi/140004344)
+This is an internal clone of the public repository used for internal development
 
 This is a shiny tool that allows for manual review of the MIMIC-III (https://mimic.physionet.org/) database when it has been uploaded into a Google Bigquery database. 
 
