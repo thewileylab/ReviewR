@@ -27,8 +27,6 @@ server <- function(input, output, session) {
   # methods (through config.yml, or from a form) to trigger UI updates.
   values <- reactiveValues()
   
-  output$title = renderText({ paste0("ReviewR (", toupper(values$data_model), ")") })
-  
   render_data_tables <- NULL
   has_projects = FALSE
   output$has_projects <- reactive({ has_projects })
@@ -67,35 +65,6 @@ server <- function(input, output, session) {
   })
   output$selected_project_id <- renderText({input$project_id})
   
-  # This instantiation of the home navigation_links control will only be used if the user
-  # hasn't specified a config.yml within their directory.  Default behavior is to give
-  # them a login screen, but checks below will determine if we can skip this and have a
-  # connection already established.
-  output$navigation_links <- renderUI({
-    div(
-      selectInput("data_model", "Select your data model:",
-                  c("OMOP" = "omop",
-                    "MIMIC" = "mimic")),
-      selectInput("db_type", "Select your database:",
-                  c("PostgreSQL" = "postgres",
-                    "BigQuery" = "bigquery")),
-      conditionalPanel(
-        condition = "(input.db_type == 'postgres')",
-        textInput("user", "User:"),
-        passwordInput("password", "Password:"),
-        textInput("host", "Database Host/Server:", "localhost"),
-        textInput("port", "Port:", "5432"),
-        textInput("dbname", "Database Name:")
-      ),
-      conditionalPanel(
-        condition = "(input.db_type == 'bigquery')",
-        textInput("project_id", "Project ID:"),
-        textInput("dataset", "Dataset:")
-      ),
-      actionButton("connect", "Connect")
-    )
-  })
-  
   observeEvent(input$viewProjects, {
     updateTabsetPanel(session = session, inputId = "tabs", selected = "projects")
   })
@@ -103,23 +72,26 @@ server <- function(input, output, session) {
     updateTabsetPanel(session = session, inputId = "tabs", selected = "patient_search")
   })
   
+  shinyjs::hide("db_connected")
+  shinyjs::show("db_connection")
+  
+  # If during initial setup of the server we have configuration data, attempt to use it to initialize
+  # the application, including establishing a connection to the underlying database.
   if (!is.null(reviewr_config)) {
     reviewr_config <- initialize(reviewr_config)
     values$data_model <- reviewr_config$data_model
     render_data_tables = get_render_data_tables(reviewr_config$data_model)
     output = render_data_tables(input, output, reviewr_config)
-    
-    output$navigation_links <- renderUI({
-      fluidRow(class="home_container",
-               column(8,
-                      div(class="jumbotron home_panel",
-                          h3("Browse Patients"),
-                          div(paste0("Navigate through the full list of patients"), class="lead"),
-                          actionLink(inputId = "viewPatients", label = "View Patients", class="btn btn-primary btn-lg"))))
-    })
+    output$connected = "true"
   }
   
+  output$connected_text <- renderText(paste("You have connected to ", "a", input$db_type, "database stored in the", input$data_model, "data model"))
+  
+  # If the user clicks the button to connect to the database, we will perform the initialization and
+  # setup here.  This mimics what's done in the previous block if a config file is present.
   observeEvent(input$connect, {
+    shinyjs::hide("db_connected")
+    
     reviewr_config = isolate({ list(
       data_model=input$data_model,
       db_type=input$db_type,
@@ -132,24 +104,20 @@ server <- function(input, output, session) {
       dataset = input$dataset)
     })
     
-    # Set our reactive values based on the input
-    values$data_model <- reviewr_config$data_model
-    
     tryCatch({
       # Initialize the ReviewR application
       reviewr_config <- initialize(reviewr_config)
       render_data_tables = get_render_data_tables(reviewr_config$data_model)
-      output$navigation_links <- renderUI({
-        fluidRow(class="home_container",
-                 column(8,
-                        div(class="jumbotron home_panel",
-                            h3("Browse Patients"),
-                            div(paste0("Navigate through the full list of patients"), class="lead"),
-                            actionLink(inputId = "viewPatients", label = "View Patients", class="btn btn-primary btn-lg"))))
-      })
       output = render_data_tables(input, output, reviewr_config)
+      
+      # Set our reactive values based on the input
+      values$data_model <- reviewr_config$data_model
+      shinyjs::show("db_connected")
+      shinyjs::hide("db_connection")
     },
     error=function(e) {
+      reviewr_config <- NULL  # Reset the configuration information
+      shinyjs::show("db_connection")
       showNotification(
         paste("There was an error when trying to connect to the database.  Please make sure that you have configured the application correctly, and that the database is running and accessible from your machine.\r\n\r\n",
               "You will need to resolve the connection issue before ReviewR will work properly.  If you need help configuring ReviewR, please see the README.md file that is packaged with the repository.\r\n\r\nError:\r\n", e),
@@ -171,38 +139,91 @@ server <- function(input, output, session) {
 
 # Define UI for application 
 ui <- dashboardPage(
-  dashboardHeader(title = textOutput('title')),
+  dashboardHeader(title = "ReviewR"),
   dashboardSidebar(
     sidebarMenu(
       id = "tabs",
       menuItem("Home", tabName = "home", icon = icon("home")),
+      menuItem("Setup", tabName = "setup", icon = icon("cog")),
       menuItem("Patient Search", tabName = "patient_search", icon = icon("users")),
       menuItem("Chart Review", icon = icon("table"), tabName = "chart_review")
     )
   ),
   dashboardBody(
+    useShinyjs(),
     tags$head(
       tags$link(rel = "stylesheet", type = "text/css", href = "app.css")),
     
     tabItems(
       tabItem(tabName = "home",
-              h2("Welcome to ReviewR"),
-              uiOutput("navigation_links")
+              fluidRow(
+                box(status = "primary", solidHeader = FALSE, width=12, style='padding:0px;',
+                    h2("Welcome to ReviewR", style='text-align: center;')
+                ), #box
+                box(width=12, style="font-size: 12pt;",
+                    div("ReviewR is a portable tool to help you explore data across different data models.  Within ReviewR, you can browse patient data stored in either the OMOP or MIMIC-III data model."),
+                    br(),
+                    div("In addition to viewing patient data, you may also connect to a REDCap project to perform a chart audit."),
+                    br(),
+                    div("To get started, please complete the 'Setup' step (found in the left navigation menu)")
+                ) #box
+              ) #fluidRow
       ), #tabItem
-      tabItem(tabName = "projects",
-              conditionalPanel(
-                condition = "!(input.project_id)",
-                h2("Select a project to work on"),
-                withSpinner(DT::dataTableOutput('projects_tbl'))
-              ),
-              conditionalPanel(
-                condition = "(input.project_id)",
-                h2(textOutput("selected_project_title")),
-                HTML("<a id='reset_project_id' href='#' onclick='Shiny.onInputChange(\"project_id\", null);'>View All Projects</a>"),
-                div(id="active_cohort",
-                    withSpinner(DT::dataTableOutput('cohort_tbl')))
-              )
-      ),
+      tabItem(tabName = "setup",
+              fluidRow(
+                box(status = "primary", solidHeader = FALSE, width=12, style='padding:0px;',
+                    h2("ReviewR Setup", style='text-align: center;')
+                ) #box
+              ), #fluidRow
+              fluidRow(
+                column(width=6, style='padding:0px;',
+                       box(title="Connect to Database", width=12, status='warning',
+                           div(id = "db_connected",
+                               h3("Success!"),
+                               uiOutput("connected_text"),
+                               br(),
+                               div("To conduct a chart review, connect and configure REDCap."),
+                               br(),
+                               div("If you would like to just view patient records, please select 'Patient Search' from the main menu.")
+                           ), #div
+                           div(id = "db_connection",
+                             selectInput("data_model", "Select your data model:",
+                                         c("OMOP" = "omop",
+                                           "MIMIC" = "mimic")),
+                             selectInput("db_type", "Select your database:",
+                                         c("PostgreSQL" = "postgres",
+                                           "BigQuery" = "bigquery")),
+                             conditionalPanel(
+                               condition = "(input.db_type == 'postgres')",
+                               textInput("user", "User:"),
+                               passwordInput("password", "Password:"),
+                               textInput("host", "Database Host/Server:", "localhost"),
+                               textInput("port", "Port:", "5432"),
+                               textInput("dbname", "Database Name:")
+                             ), #conditionalPanel
+                             conditionalPanel(
+                               condition = "(input.db_type == 'bigquery')",
+                               textInput("project_id", "Project ID:"),
+                               textInput("dataset", "Dataset:")
+                             ), #conditionalPanel
+                             actionButton("connect", "Connect")
+                           ) #div
+                        ) #box
+                ), #column
+                column(width=6, style='padding:0px;',
+                       box(title="Connect to REDCap", width=12, status='danger',
+                           textInput("redcap_url", "REDCap URL:"),
+                           textInput("redcap_api_key", "REDCap API Key:"),
+                           actionButton("redcap_connect", "Connect to REDCap")
+                       ), #box
+                       box(title="Configure REDCap", width=12, status='danger',
+                           selectInput("redcap_patient_id", "Which variable contains your patient identifier?", c()),
+                           checkboxInput("redcap_multiple_reviewers", "Multiple reviewers?"),
+                           actionButton("redcap_configure", "Configure REDCap")
+                       ) #box
+                ) #column
+              ) #fluidRow
+      ), #tabItem
       tabItem(tabName = "patient_search",
               h2("Select a patient to view"),
               withSpinner(DT::dataTableOutput('all_patients_tbl'))
