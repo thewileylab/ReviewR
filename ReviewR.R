@@ -82,10 +82,12 @@ server <- function(input, output, session) {
     values$data_model <- reviewr_config$data_model
     render_data_tables = get_render_data_tables(reviewr_config$data_model)
     output = render_data_tables(input, output, reviewr_config)
-    output$connected = "true"
+    
+    shinyjs::show("db_connected")
+    shinyjs::hide("db_connection")
   }
   
-  output$connected_text <- renderText(paste("You have connected to ", "a", input$db_type, "database stored in the", input$data_model, "data model"))
+  output$connected_text <- renderText(paste("You have connected to a", input$db_type, "database stored in the", input$data_model, "data model"))
   
   # If the user clicks the button to connect to the database, we will perform the initialization and
   # setup here.  This mimics what's done in the previous block if a config file is present.
@@ -163,7 +165,7 @@ ui <- dashboardPage(
                 box(width=12, style="font-size: 12pt;",
                     div("ReviewR is a portable tool to help you explore data across different data models.  Within ReviewR, you can browse patient data stored in either the OMOP or MIMIC-III data model."),
                     br(),
-                    div("In addition to viewing patient data, you may also connect to a REDCap project to perform a chart audit."),
+                    div("In addition to viewing patient data, you may also connect to a REDCap project to perform a chart review"),
                     br(),
                     div("To get started, please complete the 'Setup' step (found in the left navigation menu)")
                 ) #box
