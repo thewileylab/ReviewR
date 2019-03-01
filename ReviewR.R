@@ -17,7 +17,7 @@ check.packages(c("shiny", "shinyjs", "shinydashboard", "shinycssloaders",
 
 # Save some lookups for mapping selection values to a display value in the UI
 data_model_display_name = list("omop" = "OMOP", "mimic" = "MIMIC-III")
-database_display_name = list("postgres" = "Postgres", "bigquery" = "BigQuery")
+database_display_name = list("postgres" = "PostgreSQL", "bigquery" = "BigQuery")
 
 # Define server logic 
 server <- function(input, output, session) {
@@ -80,6 +80,13 @@ server <- function(input, output, session) {
   toggleShinyDivs("redcap_configure_status", "redcap_configure_fields")
   toggleShinyDivs("db_connection_fields", "db_connection_status")
   
+  output$menu <- renderMenu({
+    sidebarMenu(
+      menuItem("Home", tabName = "home", icon = icon("home")),
+      menuItem("Setup", tabName = "setup", icon = icon("cog"))
+    )
+  })
+  
   # If during initial setup of the server we have configuration data, attempt to use it to initialize
   # the application, including establishing a connection to the underlying database.
   if (!is.null(reviewr_config)) {
@@ -120,6 +127,16 @@ server <- function(input, output, session) {
       # Set our reactive values based on the input
       values$data_model <- reviewr_config$data_model
       toggleShinyDivs("db_connection_status", "db_connection_fields")
+      
+      output$menu <- renderMenu({
+        sidebarMenu(
+          menuItem("Home", tabName = "home", icon = icon("home")),
+          menuItem("Setup", tabName = "setup", icon = icon("cog")),
+          menuItem("Patient Search", tabName = "patient_search", icon = icon("users")),
+          menuItem("Chart Review", icon = icon("table"), tabName = "chart_review")
+        )
+      })
+      isolate({updateTabItems(session, "tabs", "setup")})
     },
     error=function(e) {
       reviewr_config <- NULL  # Reset the configuration information
@@ -153,11 +170,8 @@ ui <- dashboardPage(
   dashboardSidebar(
     sidebarMenu(
       id = "tabs",
-      menuItem("Home", tabName = "home", icon = icon("home")),
-      menuItem("Setup", tabName = "setup", icon = icon("cog")),
-      menuItem("Patient Search", tabName = "patient_search", icon = icon("users")),
-      menuItem("Chart Review", icon = icon("table"), tabName = "chart_review")
-    )
+      sidebarMenuOutput("menu")
+    ) #sidebarMenu
   ),
   dashboardBody(
     useShinyjs(),
