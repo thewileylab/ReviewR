@@ -6,3 +6,9 @@ append_data_panel <- function(tab_id, data_table_id) {
 create_data_panel <- function(tab_id, data_table_id) {
   tabPanel(tab_id, withSpinner(DT::dataTableOutput(data_table_id)))
 }
+
+
+toggleShinyDivs <- function(showDiv, hideDiv) {
+  shinyjs::hide(hideDiv)
+  shinyjs::show(showDiv)
+}
