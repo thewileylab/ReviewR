@@ -9,3 +9,4 @@ conf/*secret*
 projects/*
 tmp/
 *config*.yml
+dev/
