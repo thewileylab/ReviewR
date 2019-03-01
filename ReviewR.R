@@ -15,6 +15,10 @@ source('lib/reviewr-core.R')
 check.packages(c("shiny", "shinyjs", "shinydashboard", "shinycssloaders",
                  "tidyverse", "DT", "dbplyr", "magrittr", "readr", "configr"))
 
+# Save some lookups for mapping selection values to a display value in the UI
+data_model_display_name = list("omop" = "OMOP", "mimic" = "MIMIC-III")
+database_display_name = list("postgres" = "Postgres", "bigquery" = "BigQuery")
+
 # Define server logic 
 server <- function(input, output, session) {
   options("httr_oob_default" = TRUE)
@@ -72,8 +76,9 @@ server <- function(input, output, session) {
     updateTabsetPanel(session = session, inputId = "tabs", selected = "patient_search")
   })
   
-  shinyjs::hide("db_connected")
-  shinyjs::show("db_connection")
+  toggleShinyDivs("redcap_connection_fields", "redcap_connection_status")
+  toggleShinyDivs("redcap_configure_status", "redcap_configure_fields")
+  toggleShinyDivs("db_connection_fields", "db_connection_status")
   
   # If during initial setup of the server we have configuration data, attempt to use it to initialize
   # the application, including establishing a connection to the underlying database.
@@ -83,16 +88,16 @@ server <- function(input, output, session) {
     render_data_tables = get_render_data_tables(reviewr_config$data_model)
     output = render_data_tables(input, output, reviewr_config)
     
-    shinyjs::show("db_connected")
-    shinyjs::hide("db_connection")
+    toggleShinyDivs("db_connection_status", "db_connection_fields")
   }
   
-  output$connected_text <- renderText(paste("You have connected to a", input$db_type, "database stored in the", input$data_model, "data model"))
+  output$connected_text <- renderText(paste("You have connected to a", database_display_name[input$db_type],
+                                            "database stored in the", data_model_display_name[input$data_model], "data model"))
   
   # If the user clicks the button to connect to the database, we will perform the initialization and
   # setup here.  This mimics what's done in the previous block if a config file is present.
   observeEvent(input$connect, {
-    shinyjs::hide("db_connected")
+    toggleShinyDivs("db_connection_fields", "db_connection_status")
     
     reviewr_config = isolate({ list(
       data_model=input$data_model,
@@ -114,17 +119,20 @@ server <- function(input, output, session) {
       
       # Set our reactive values based on the input
       values$data_model <- reviewr_config$data_model
-      shinyjs::show("db_connected")
-      shinyjs::hide("db_connection")
+      toggleShinyDivs("db_connection_status", "db_connection_fields")
     },
     error=function(e) {
       reviewr_config <- NULL  # Reset the configuration information
-      shinyjs::show("db_connection")
       showNotification(
         paste("There was an error when trying to connect to the database.  Please make sure that you have configured the application correctly, and that the database is running and accessible from your machine.\r\n\r\n",
               "You will need to resolve the connection issue before ReviewR will work properly.  If you need help configuring ReviewR, please see the README.md file that is packaged with the repository.\r\n\r\nError:\r\n", e),
         duration = NULL, type = "error", closeButton = TRUE)
     })
+  })
+  
+  observeEvent(input$redcap_connect, {
+    toggleShinyDivs("redcap_configure_fields", "redcap_configure_status")
+    toggleShinyDivs("redcap_connection_status", "redcap_connection_fields")
   })
   
   outputOptions(output, "has_projects", suspendWhenHidden = FALSE)
@@ -180,7 +188,7 @@ ui <- dashboardPage(
               fluidRow(
                 column(width=6, style='padding:0px;',
                        box(title="Connect to Database", width=12, status='warning',
-                           div(id = "db_connected",
+                           div(id = "db_connection_status",
                                h3("Success!"),
                                uiOutput("connected_text"),
                                br(),
@@ -188,7 +196,7 @@ ui <- dashboardPage(
                                br(),
                                div("If you would like to just view patient records, please select 'Patient Search' from the main menu.")
                            ), #div
-                           div(id = "db_connection",
+                           div(id = "db_connection_fields",
                              selectInput("data_model", "Select your data model:",
                                          c("OMOP" = "omop",
                                            "MIMIC" = "mimic")),
@@ -214,14 +222,25 @@ ui <- dashboardPage(
                 ), #column
                 column(width=6, style='padding:0px;',
                        box(title="Connect to REDCap", width=12, status='danger',
-                           textInput("redcap_url", "REDCap URL:"),
-                           textInput("redcap_api_key", "REDCap API Key:"),
-                           actionButton("redcap_connect", "Connect to REDCap")
+                           div(id="redcap_connection_status",
+                               h3("Success!"),
+                               div("Once connected to a database, you can enter your chart abstractions result in your REDCap form.")
+                           ), #div
+                           div(id="redcap_connection_fields",
+                             textInput("redcap_url", "REDCap URL:"),
+                             textInput("redcap_api_key", "REDCap API Key:"),
+                             actionButton("redcap_connect", "Connect to REDCap")
+                           ) #div
                        ), #box
-                       box(title="Configure REDCap", width=12, status='danger',
-                           selectInput("redcap_patient_id", "Which variable contains your patient identifier?", c()),
-                           checkboxInput("redcap_multiple_reviewers", "Multiple reviewers?"),
-                           actionButton("redcap_configure", "Configure REDCap")
+                       box(id = "redcap_configure", title="Configure REDCap", width=12, status='danger',
+                           div(id="redcap_configure_status",
+                               div("Please connect to a REDCap instance to enable configuration.")
+                           ), #div
+                           div(id="redcap_configure_fields",
+                             selectInput("redcap_patient_id", "Which variable contains your patient identifier?", c()),
+                             checkboxInput("redcap_multiple_reviewers", "Multiple reviewers?"),
+                             actionButton("redcap_configure", "Configure REDCap")
+                           ) #div
                        ) #box
                 ) #column
               ) #fluidRow
@@ -229,7 +248,7 @@ ui <- dashboardPage(
       tabItem(tabName = "patient_search",
               h2("Select a patient to view"),
               withSpinner(DT::dataTableOutput('all_patients_tbl'))
-      ),
+      ), #tabItem
       tabItem(tabName = "chart_review",
               conditionalPanel(
                 condition = "input.subject_id == null || input.subject_id == undefined || input.subject_id == ''",
@@ -248,4 +267,3 @@ ui <- dashboardPage(
 
 # Run the application 
 shinyApp(ui = ui, server = server)
-
