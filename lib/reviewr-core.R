@@ -1,7 +1,7 @@
 source('lib/omop.R')
 #source('lib/mimic.R')
 #source('lib/project_helpers.R')
-source('lib/ui_helpers.r')
+source('lib/ui_helpers.R')
 source('lib/table_map.R')
 
 load_reviewr_config <- function() {
