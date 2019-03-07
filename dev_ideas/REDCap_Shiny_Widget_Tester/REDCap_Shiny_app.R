@@ -41,6 +41,7 @@ ui <- dashboardPage(skin = 'red',
           id = 'instrument_1',
           tabPanel('Text Inputs', uiOutput("text_box"), width = '100%'),
           tabPanel('Note Inputs', uiOutput('note_box'), width = '100%'),
+          tabPanel('Dropdown Inputs', uiOutput('dropdown_box'), width = '100%'),
           tabPanel('Yes/No Inputs', uiOutput('yesno_box'), width = '100%'),
           tabPanel('Radio Inputs', uiOutput("radio_box"), width = '100%'),
           tabPanel('Checkbox Inputs',uiOutput("check_box"), width = '100%')
@@ -82,6 +83,16 @@ server <- function(input, output) {
         numNoteWidgets <- nrow(note_input)
         lapply(1:numNoteWidgets, function(i) {
           textAreaInput(label = paste0(note_input$field_label[i]),inputId = paste0(note_input$field_name[i]),resize = 'vertical',rows = 5, width = '100%', placeholder = 'Enter your response here')
+        })
+      })
+      
+      # Dropdown Instrument UI Rendering
+      output$dropdown_box <- renderUI({ 
+        dropdown_input <- instrument %>% filter(field_type == 'dropdown') %>% 
+          mutate(choices = map(.x = select_choices_or_calculations,.f = str_split, pattern = '\\|',simplify = F))
+        numDropdownWidgets <- nrow(dropdown_input)
+        lapply(1:numDropdownWidgets, function(i) {
+          selectInput(label = paste0(dropdown_input$field_label[i]),inputId = paste0(dropdown_input$field_name[i]), choices = dropdown_input$choices[i][[1]][[1]])
         })
       })
       
