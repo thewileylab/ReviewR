@@ -43,6 +43,7 @@ ui <- dashboardPage(skin = 'red',
           tabPanel('Note Inputs', uiOutput('note_box'), width = '100%'),
           tabPanel('Dropdown Inputs', uiOutput('dropdown_box'), width = '100%'),
           tabPanel('Yes/No Inputs', uiOutput('yesno_box'), width = '100%'),
+          tabPanel('True/False Inputs', uiOutput('truefalse_box'), width = '100%'),
           tabPanel('Radio Inputs', uiOutput("radio_box"), width = '100%'),
           tabPanel('Checkbox Inputs',uiOutput("check_box"), width = '100%')
           ), # tabBox
@@ -102,6 +103,15 @@ server <- function(input, output) {
         numYesNoWidgets <- nrow(yesno_input)
         lapply(1:numYesNoWidgets, function(i) {
           radioButtons(label = paste0(yesno_input$field_label[i]),inputId = paste0(yesno_input$field_name[i]), choiceNames = c('Yes','No'),choiceValues = c(1,0))
+        })
+      })
+      
+      # True False Instrument UI Rendering
+      output$truefalse_box <- renderUI({ 
+        truefalse_input <- instrument %>% filter(field_type == 'truefalse')
+        numTrueFalseWidgets <- nrow(truefalse_input)
+        lapply(1:numTrueFalseWidgets, function(i) {
+          radioButtons(label = paste0(truefalse_input$field_label[i]),inputId = paste0(truefalse_input$field_name[i]), choiceNames = c('True','False'),choiceValues = c(1,0))
         })
       })
       
