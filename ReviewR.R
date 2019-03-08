@@ -92,13 +92,12 @@ server <- function(input, output, session) {
   toggleShinyDivs("db_connection_fields", "db_connection_status")
   
   # Set up our default sidebar menu, which only has a welcome screen and connection/setup
-  output$menu <- renderMenu({
+  initial_menu <- reactive({
     sidebarMenu(
       menuItem("Home", tabName = "home", icon = icon("home")),
       menuItem("Setup", tabName = "setup", icon = icon("cog"))
     )
   })
-  
   # Because there are a few paths by which the full menu can get activated, we're going to save it
   # off here for easy calling (and to avoid duplicating code later)
   full_menu <- reactive({sidebarMenu(
@@ -107,6 +106,8 @@ server <- function(input, output, session) {
     menuItem("Patient Search", tabName = "patient_search", icon = icon("users")),
     menuItem("Chart Review", icon = icon("table"), tabName = "chart_review")
   )})
+  
+  output$menu <- renderMenu({ initial_menu() })
   
   # If during initial setup of the server we have configuration data, attempt to use it to initialize
   # the application, including establishing a connection to the underlying database.
@@ -165,12 +166,26 @@ server <- function(input, output, session) {
     })
   })
   
+  observeEvent(input$database_disconnect, {
+    toggleShinyDivs("db_connection_fields", "db_connection_status")
+    if (!is.null(reviewr_config) & !is.null(reviewr_config$connection)) {
+      dbDisconnect(reviewr_config$connection)
+    }
+    reviewr_config <- NULL
+    output$menu <- renderMenu({ initial_menu() })
+    isolate({updateTabItems(session, "tabs", "setup")})
+  })
+  
   observeEvent(input$redcap_connect, {
     toggleShinyDivs("redcap_configure_fields", "redcap_configure_status")
     toggleShinyDivs("redcap_connection_status", "redcap_connection_fields")
   })
+  observeEvent(input$redcap_disconnect, {
+    toggleShinyDivs("redcap_configure_status", "redcap_configure_fields")
+    toggleShinyDivs("redcap_connection_fields", "redcap_connection_status")
+  })
   
-  outputOptions(output, "has_projects", suspendWhenHidden = FALSE)
+  #outputOptions(output, "has_projects", suspendWhenHidden = FALSE)
   
   # When the Shiny session ends, perform cleanup (closing connections, removing objects from environment)
   session$onSessionEnded(function() {
@@ -245,7 +260,10 @@ ui <- dashboardPage(
                                br(),
                                div("To conduct a chart review, connect and configure REDCap."),
                                br(),
-                               div("If you would like to just view patient records, please select 'Patient Search' from the main menu.")
+                               div("If you would like to just view patient records, please select 'Patient Search' from the main menu."),
+                               br(),
+                               br(),
+                               actionButton("database_disconnect", "Disconnect Database")
                            ), #div
                            div(id = "db_connection_fields",
                              selectInput("data_model", "Select your data model:",
@@ -275,7 +293,10 @@ ui <- dashboardPage(
                        box(title="Connect to REDCap", width=12, status='danger',
                            div(id="redcap_connection_status",
                                h3("Success!"),
-                               div("Once connected to a database, you can enter your chart abstractions result in your REDCap form.")
+                               div("Once connected to a database, you can enter your chart abstractions result in your REDCap form."),
+                               br(),
+                               br(),
+                               actionButton("redcap_disconnect", "Disconnect REDCap")
                            ), #div
                            div(id="redcap_connection_fields",
                              textInput("redcap_url", "REDCap URL:"),
