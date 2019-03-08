@@ -20,6 +20,15 @@ omop_column <- function(canonical_name, cfg) {
   column_name
 }
 
+# This is a different implementation from omop_query_all_people because we are strictly limiting to just
+# the IDs for our patient records
+omop_get_all_people_for_list <- function(cfg) {
+  data_table <- omop_table("person", cfg) %>%
+    select("ID" = omop_column("person.person_id", cfg)) %>%
+    collect()
+  data_table
+}
+
 omop_query_all_people <- function(cfg, cache) {
   data_table <- omop_table("person", cfg) %>%
     left_join(select(cache$concept_tbl, "gender_concept_name" = cache$concept_name_col, "gcid" = cache$concept_id_col), by=setNames("gcid", omop_column("person.gender_concept_id", cfg))) %>%
@@ -34,7 +43,7 @@ omop_query_all_people <- function(cfg, cache) {
             "Provider" = omop_column("provider.provider_name", cfg)) %>%
     arrange(person_id) %>%
     collect() %>%
-    mutate(person_id = paste0("<a class='row_subject_id' href='#'>", person_id, "</a>")) %>%
+    #mutate(person_id = paste0("<a class='row_subject_id' href='#'>", person_id, "</a>")) %>%
     rename("ID" = person_id)
   data_table
 }
@@ -315,8 +324,9 @@ omop_render_data_tables <- function(input, output, cfg) {
   specimen_data <- reactive({omop_query_specimen(input, cfg, table_cache)})
   visit_occurrence_data <- reactive({omop_query_visit_occurrence(input, cfg, table_cache)})
 
+  #all_people <- omop_query_all_people(cfg, table_cache)
   output$all_patients_tbl <- DT::renderDataTable(
-    omop_query_all_people(cfg, table_cache),
+    omop_query_all_people(cfg, table_cache) %>% mutate(ID = paste0("<a class='row_subject_id' href='#'>", ID, "</a>")),
     options = list(paging = TRUE, pageLength = 20, searchHighlight = TRUE),
     escape=FALSE, rownames=F, selection='none',
     callback = JS(
@@ -324,6 +334,8 @@ omop_render_data_tables <- function(input, output, cfg) {
       Shiny.onInputChange("subject_id", $(this).text());
       $(".main-sidebar li a").click();
     });'))
+
+  #output$subject_id <- renderUI({selectInput("subject_id", label = NULL, selectize=TRUE, selected = input$subject_id, choices = all_people$ID)})
   output$condition_era_tbl <- DT::renderDataTable(condition_era_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
   output$condition_occurrence_tbl <- DT::renderDataTable(condition_occurrence_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
   output$death_tbl <- DT::renderDataTable(death_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
