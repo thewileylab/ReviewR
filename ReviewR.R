@@ -30,20 +30,26 @@ server <- function(input, output, session) {
   # Initialize a collection of reactive values.  These are going to be used across our two different connection
   # methods (through config.yml, or from a form) to trigger UI updates.
   values <- reactiveValues()
+  values$all_people_data = NULL
   
   render_data_tables <- NULL
   has_projects = FALSE
   output$has_projects <- reactive({ has_projects })
 
-  output$subject_id_output <- renderText({paste("Subject ID - ",input$subject_id)})
-  output$subject_id <- renderText({input$subject_id})
-  
-  patient_nav_previous = tags$div(actionButton("prev_patient",
-    HTML('<div class="col-sm-4"><i class="fa fa-angle-double-left"></i> Previous</div>')))
-  patient_nav_next = div(actionButton("next_patient",
-    HTML('<div class="col-sm-4">Next <i class="fa fa-angle-double-right"></i></div>')))
-  output$patient_navigation_list=renderUI({
-    div(column(1,offset=0,patient_nav_previous),column(1,offset=9,patient_nav_next))
+  output$subject_id_status <- renderUI({
+    div(class="subject_id_header",
+      span(paste("Subject - ",input$subject_id), class="subject_id_label")
+      #span("[status]")  #TODO - display status image
+    )#div
+  }) #renderUI
+
+  # Create the panel that hosts navigating between patient records
+  output$patient_navigation_list <- renderUI({
+    div(actionButton(inputId = 'prev_patient',label = '<< Previous'),
+        actionButton(inputId = 'next_patient',label = 'Next >>'),
+        br(),
+        selectInput("subject_id", label = NULL, selectize = FALSE, selected = input$subject_id, choices = values$all_people_data$ID)
+    ) #div
   })
   
   # Because we want to use uiOutput for the patient chart panel in multiple locations in the UI,
@@ -53,8 +59,6 @@ server <- function(input, output, session) {
     table_names <- get_review_table_names(values$data_model)
     tabs <- lapply(table_names, function(id) { create_data_panel(id, paste0(id, "_tbl"))})
     panel <- div(
-      fluidRow(column(12, h2(textOutput("subject_id_output")))),
-      br(),
       fluidRow(column(12, do.call(tabsetPanel, tabs)))
     ) #div
     panel
@@ -93,9 +97,19 @@ server <- function(input, output, session) {
     reviewr_config <- initialize(reviewr_config)
     values$data_model <- reviewr_config$data_model
     render_data_tables = get_render_data_tables(reviewr_config$data_model)
+    values$all_people_data = get_all_people_for_list(reviewr_config$data_model)(reviewr_config)
     output = render_data_tables(input, output, reviewr_config)
     
     toggleShinyDivs("db_connection_status", "db_connection_fields")
+    
+    output$menu <- renderMenu({
+      sidebarMenu(
+        menuItem("Home", tabName = "home", icon = icon("home")),
+        menuItem("Setup", tabName = "setup", icon = icon("cog")),
+        menuItem("Patient Search", tabName = "patient_search", icon = icon("users")),
+        menuItem("Chart Review", icon = icon("table"), tabName = "chart_review")
+      )
+    })
   }
   
   output$connected_text <- renderText(paste("You have connected to a", database_display_name[input$db_type],
@@ -122,6 +136,7 @@ server <- function(input, output, session) {
       # Initialize the ReviewR application
       reviewr_config <- initialize(reviewr_config)
       render_data_tables = get_render_data_tables(reviewr_config$data_model)
+      values$all_people_data = get_all_people_for_list(reviewr_config$data_model)(reviewr_config)
       output = render_data_tables(input, output, reviewr_config)
       
       # Set our reactive values based on the input
@@ -177,7 +192,26 @@ ui <- dashboardPage(
     useShinyjs(),
     tags$head(
       tags$link(rel = "stylesheet", type = "text/css", href = "app.css")),
-    
+    tags$script(HTML("$(document).on('click', '#prev_patient', function () {
+                    var myOpts = document.getElementById('subject_id').options;
+                    var index = $('#subject_id').prop('selectedIndex');
+                    if (index == 0) {
+                      return;
+                    }
+
+                    Shiny.onInputChange('subject_id', myOpts[index - 1].value);
+                  });
+                
+                $(document).on('click', '#next_patient', function () {
+                    var myOpts = document.getElementById('subject_id').options;
+                    var index = $('#subject_id').prop('selectedIndex');
+                    if (index == (myOpts.length - 1)) {
+                      return;
+                     }
+                    
+                    Shiny.onInputChange('subject_id', myOpts[index + 1].value);
+                });"
+    )),  #script
     tabItems(
       tabItem(tabName = "home",
               fluidRow(
@@ -270,7 +304,10 @@ ui <- dashboardPage(
               ),
               conditionalPanel(
                 condition = "input.subject_id != ''",
-                #uiOutput("patient_navigation_list"),
+                fluidRow(
+                  column(width=8, uiOutput("subject_id_status")),
+                  column(width=4, uiOutput("patient_navigation_list"))
+                ), #fluidRow
                 uiOutput("patient_chart_panel_no_abstraction")
               ) #conditionalPanel
       ) #tabItem

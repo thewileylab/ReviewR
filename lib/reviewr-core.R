@@ -32,6 +32,16 @@ get_render_data_tables <- function(data_model) {
   render_data_tables
 }
 
+get_all_people_for_list <- function(data_model) {
+  if (tolower(data_model) == "mimic") {
+    all_people_for_list = mimic_get_all_people_for_list
+  }
+  else if (tolower(data_model) == "omop") {
+    all_people_for_list = omop_get_all_people_for_list
+  }
+  all_people_for_list
+}
+
 # check.packages function: install and load multiple R packages.
 # Check to see if packages are installed. Install them if they are not, then load them into the R session.
 # Courtesy of smithdanielle - https://gist.github.com/smithdanielle/9913897
