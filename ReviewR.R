@@ -15,7 +15,7 @@ source('lib/reviewr-core.R')
 check.packages(c("shiny", "shinyjs", "shinydashboard", "shinycssloaders",
                  "tidyverse", "DT", "dbplyr", "magrittr", "readr", "configr"))
 
-# Save some lookups for mapping selection values to a display value in the UI
+# Lookups for mapping selection values to a display value in the UI
 data_model_display_name = list("omop" = "OMOP", "mimic" = "MIMIC-III")
 database_display_name = list("postgres" = "PostgreSQL", "bigquery" = "BigQuery")
 
@@ -63,19 +63,26 @@ server <- function(input, output, session) {
     ) #div
     panel
   })
-  output$patient_chart_panel_abstraction <- renderUI({ patient_chart_panel() })
+  
+  output$patient_chart_panel_abstraction <- renderUI({ 
+    fluidRow(
+      column(width=8, patient_chart_panel()),
+      column(width=4, div())  # TODO - add in REDCap review form here
+    ) #fluidRow
+  })
   output$patient_chart_panel_no_abstraction <- renderUI({ patient_chart_panel() })
   
-  output$selected_project_title <- renderText({
-    ifelse(is.null(input$project_id),
-           "(No project selected)",
-           paste("Project: ", project_list[project_list$id == input$project_id, "name"]))
-  })
-  output$selected_project_id <- renderText({input$project_id})
+  # output$selected_project_title <- renderText({
+  #   ifelse(is.null(input$project_id),
+  #          "(No project selected)",
+  #          paste("Project: ", project_list[project_list$id == input$project_id, "name"]))
+  # })
+  # output$selected_project_id <- renderText({input$project_id})
   
-  observeEvent(input$viewProjects, {
-    updateTabsetPanel(session = session, inputId = "tabs", selected = "projects")
-  })
+  # observeEvent(input$viewProjects, {
+  #   updateTabsetPanel(session = session, inputId = "tabs", selected = "projects")
+  # })
+  
   observeEvent(input$viewPatients, {
     updateTabsetPanel(session = session, inputId = "tabs", selected = "patient_search")
   })
@@ -84,12 +91,22 @@ server <- function(input, output, session) {
   toggleShinyDivs("redcap_configure_status", "redcap_configure_fields")
   toggleShinyDivs("db_connection_fields", "db_connection_status")
   
+  # Set up our default sidebar menu, which only has a welcome screen and connection/setup
   output$menu <- renderMenu({
     sidebarMenu(
       menuItem("Home", tabName = "home", icon = icon("home")),
       menuItem("Setup", tabName = "setup", icon = icon("cog"))
     )
   })
+  
+  # Because there are a few paths by which the full menu can get activated, we're going to save it
+  # off here for easy calling (and to avoid duplicating code later)
+  full_menu <- reactive({sidebarMenu(
+    menuItem("Home", tabName = "home", icon = icon("home")),
+    menuItem("Setup", tabName = "setup", icon = icon("cog")),
+    menuItem("Patient Search", tabName = "patient_search", icon = icon("users")),
+    menuItem("Chart Review", icon = icon("table"), tabName = "chart_review")
+  )})
   
   # If during initial setup of the server we have configuration data, attempt to use it to initialize
   # the application, including establishing a connection to the underlying database.
@@ -102,14 +119,7 @@ server <- function(input, output, session) {
     
     toggleShinyDivs("db_connection_status", "db_connection_fields")
     
-    output$menu <- renderMenu({
-      sidebarMenu(
-        menuItem("Home", tabName = "home", icon = icon("home")),
-        menuItem("Setup", tabName = "setup", icon = icon("cog")),
-        menuItem("Patient Search", tabName = "patient_search", icon = icon("users")),
-        menuItem("Chart Review", icon = icon("table"), tabName = "chart_review")
-      )
-    })
+    output$menu <- renderMenu({ full_menu() })
   }
   
   output$connected_text <- renderText(paste("You have connected to a", database_display_name[input$db_type],
@@ -143,14 +153,7 @@ server <- function(input, output, session) {
       values$data_model <- reviewr_config$data_model
       toggleShinyDivs("db_connection_status", "db_connection_fields")
       
-      output$menu <- renderMenu({
-        sidebarMenu(
-          menuItem("Home", tabName = "home", icon = icon("home")),
-          menuItem("Setup", tabName = "setup", icon = icon("cog")),
-          menuItem("Patient Search", tabName = "patient_search", icon = icon("users")),
-          menuItem("Chart Review", icon = icon("table"), tabName = "chart_review")
-        )
-      })
+      output$menu <- renderMenu({ full_menu() })
       isolate({updateTabItems(session, "tabs", "setup")})
     },
     error=function(e) {
@@ -308,7 +311,7 @@ ui <- dashboardPage(
                   column(width=8, uiOutput("subject_id_status")),
                   column(width=4, uiOutput("patient_navigation_list"))
                 ), #fluidRow
-                uiOutput("patient_chart_panel_no_abstraction")
+                uiOutput("patient_chart_panel_abstraction")
               ) #conditionalPanel
       ) #tabItem
     )
