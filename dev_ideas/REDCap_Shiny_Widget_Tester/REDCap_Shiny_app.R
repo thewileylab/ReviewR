@@ -14,7 +14,7 @@ library(redcapAPI)
 library(tidyverse)
 library(magrittr)
 library(DT)
-source('dev_ideas/REDCap_Shiny_Widget_Tester/lib/render_redcap.R')
+source('lib/render_redcap.R')
 
 # Define UI for application that generates Shiny Widgets based on the Contents of a REDCap Instrument
 ui <- dashboardPage(skin = 'red',
