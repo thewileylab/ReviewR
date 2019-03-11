@@ -14,6 +14,7 @@ library(redcapAPI)
 library(tidyverse)
 library(magrittr)
 library(DT)
+source('dev_ideas/REDCap_Shiny_Widget_Tester/lib/render_redcap.R')
 
 # Define UI for application that generates Shiny Widgets based on the Contents of a REDCap Instrument
 ui <- dashboardPage(skin = 'red',
@@ -52,8 +53,8 @@ ui <- dashboardPage(skin = 'red',
             uiOutput('redcap_instrument')
         ),
         box(title = 'Output Test', collapsible = T, width = '100%', status = 'danger',
-            textOutput("next_participant_id"),
-            textOutput("field_inputs")
+            textOutput("next_participant_id")
+            #textOutput("field_inputs")
         ) # Box
       
         ) # Second column
@@ -88,10 +89,10 @@ server <- function(input, output) {
         paste0("ParticipantID: ",max_participant_id + 1)
       })
       
-      # Access dynamically created variables
-      output$field_inputs <- renderText({
-        input$time_o_day ## schema needed for input variables.
-      })
+      # Access dynamically created variables ##NEEDS WORK
+      #output$field_inputs <- renderText({
+      #  input[[instrument$field_name[1]]] ## schema needed for input variables.
+      #})
       
       # Create widget map
       REDCap_field_type <- c("text","text","text","dropdown","truefalse","yesno","radio","checkbox","notes")
@@ -100,85 +101,16 @@ server <- function(input, output) {
       widget_map <- tibble(REDCap_field_type,REDCap_field_val, reviewr_function)
       
       
-      # Join Instrument with field map
+      # Join REDCap Instrument with widget_map
       instrument %<>% 
         left_join(widget_map, by = c("field_type" = "REDCap_field_type", "text_validation_type_or_show_slider_number" = "REDCap_field_val"))
       
       # Render the REDCap Instrument
       output$redcap_instrument <- renderUI({
-        #text_instrument <- instrument %>% 
-        #  filter(reviewr_function == 'reviewr_text')
         lapply(1:nrow(instrument), function(i) {
           render_redcap(instrument[i,])
           })
       })
-      
-      
-      # # Text Instrument UI Rendering
-      # output$text_box <- renderUI({
-      #   text_input <- instrument %>% filter(field_type  == 'text')
-      #   numTextWidgets <- nrow(text_input)
-      #   lapply(1:numTextWidgets, function(i) {
-      #     textInput(label = paste0(text_input$field_label[i]),inputId = paste0(text_input$field_name[i]),placeholder = text_input$text_validation_type_or_show_slider_number[i])
-      #   })
-      # })
-      # 
-      # # Note Instrument UI Rendering
-      # output$note_box <- renderUI({
-      #   note_input <- instrument %>% filter(field_type  == 'notes')
-      #   numNoteWidgets <- nrow(note_input)
-      #   lapply(1:numNoteWidgets, function(i) {
-      #     textAreaInput(label = paste0(note_input$field_label[i]),inputId = paste0(note_input$field_name[i]),resize = 'vertical',rows = 5, width = '100%', placeholder = 'Enter your response here')
-      #   })
-      # })
-      # 
-      # # Dropdown Instrument UI Rendering
-      # output$dropdown_box <- renderUI({ 
-      #   dropdown_input <- instrument %>% filter(field_type == 'dropdown') %>% 
-      #     mutate(choices = map(.x = select_choices_or_calculations,.f = str_split, pattern = '\\|',simplify = F))
-      #   numDropdownWidgets <- nrow(dropdown_input)
-      #   lapply(1:numDropdownWidgets, function(i) {
-      #     selectInput(label = paste0(dropdown_input$field_label[i]),inputId = paste0(dropdown_input$field_name[i]), choices = dropdown_input$choices[i][[1]][[1]])
-      #   })
-      # })
-      # 
-      # # Yes No Instrument UI Rendering
-      # output$yesno_box <- renderUI({ 
-      #   yesno_input <- instrument %>% filter(field_type == 'yesno')
-      #   numYesNoWidgets <- nrow(yesno_input)
-      #   lapply(1:numYesNoWidgets, function(i) {
-      #     radioButtons(label = paste0(yesno_input$field_label[i]),inputId = paste0(yesno_input$field_name[i]), choiceNames = c('Yes','No'),choiceValues = c(1,0))
-      #   })
-      # })
-      # 
-      # # True False Instrument UI Rendering
-      # output$truefalse_box <- renderUI({ 
-      #   truefalse_input <- instrument %>% filter(field_type == 'truefalse')
-      #   numTrueFalseWidgets <- nrow(truefalse_input)
-      #   lapply(1:numTrueFalseWidgets, function(i) {
-      #     radioButtons(label = paste0(truefalse_input$field_label[i]),inputId = paste0(truefalse_input$field_name[i]), choiceNames = c('True','False'),choiceValues = c(1,0))
-      #   })
-      # })
-      # 
-      # # Radio Instrument UI Rendering
-      # output$radio_box <- renderUI({ 
-      #   radio_input <- instrument %>% filter(field_type == 'radio') %>% 
-      #     mutate(choices = map(.x = select_choices_or_calculations,.f = str_split, pattern = '\\|',simplify = F))
-      #   numRadioWidgets <- nrow(radio_input)
-      #   lapply(1:numRadioWidgets, function(i) {
-      #     radioButtons(label = paste0(radio_input$field_label[i]),inputId = paste0(radio_input$field_name[i]), choices = radio_input$choices[i][[1]][[1]],choiceValues = radio_input$clean_values[i])
-      #   })
-      # })
-      # 
-      # # Checkbox Instrument UI Rendering
-      # output$check_box <- renderUI({ 
-      #   checkbox_input <- instrument %>% filter(field_type == 'checkbox') %>% 
-      #     mutate(choices = map(.x = select_choices_or_calculations,.f = str_split, pattern = '\\|',simplify = F))
-      #   numCheckBoxWidgets <- nrow(checkbox_input)
-      #   lapply(1:numCheckBoxWidgets, function(i) {
-      #     checkboxGroupInput(label = paste0(checkbox_input$field_label[i]),inputId = paste0(checkbox_input$field_name[i]), choices = checkbox_input$choices[i][[1]][[1]])
-      #   })
-      # })
       
    }) # Observe Event
 } # Server
