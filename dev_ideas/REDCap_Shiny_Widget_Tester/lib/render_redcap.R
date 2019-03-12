@@ -49,5 +49,5 @@ render_redcap <- function(dat){
   } else if(dat$reviewr_function[1] == 'reviewr_integer'){
     question <- ifelse(is.na(dat$required_field) == T,dat$field_label[1],paste(dat$field_label[1],'*'))
     numericInput(inputId = dat$field_name, label = question,value = 42, min = dat$text_validation_min,max = dat$text_validation_max)
-  } else {textInput(inputId = 'one',label = "This is an unsupported field type",placeholder = dat$field_type)}
+  } else {textInput(inputId = dat$field_name,label = "This is an unsupported field type",placeholder = dat$field_type)}
 }

@@ -38,26 +38,18 @@ ui <- dashboardPage(skin = 'red',
         box(title = 'Instrument Info',collapsible = T,DT::dataTableOutput("meta_instrument"),width = '100%', status = 'danger')
         ),
        column(width = 4,
-        #tabBox(width = '100%', 
-        #  title ='Dynamic Instrument Inputs', 
-        #  id = 'instrument_1',
-        #  tabPanel('Text Inputs', uiOutput("text_box"), width = '100%'),
-        #  tabPanel('Note Inputs', uiOutput('note_box'), width = '100%'),
-        #  tabPanel('Dropdown Inputs', uiOutput('dropdown_box'), width = '100%'),
-        #  tabPanel('Yes/No Inputs', uiOutput('yesno_box'), width = '100%'),
-        #  tabPanel('True/False Inputs', uiOutput('truefalse_box'), width = '100%'),
-        #  tabPanel('Radio Inputs', uiOutput("radio_box"), width = '100%'),
-        #  tabPanel('Checkbox Inputs',uiOutput("check_box"), width = '100%')
-        #  ), # tabBox
         box(title = 'REDCap Instrument',collapsed = T,width = '100%',status = 'danger',
-            uiOutput('redcap_instrument')
+            uiOutput('redcap_instrument'),
+            radioButtons(inputId = 'survey_complete',label = 'Form Complete?',choiceNames = c('Incomplete','Unverified','Complete'),choiceValues = c(0,1,2)),
+            actionButton(inputId = 'save',label = 'Submit to REDCap')
         ),
-        box(title = 'Output Test', collapsible = T, width = '100%', status = 'danger',
-            textOutput("next_participant_id")
-            #textOutput("field_inputs")
+        box(title = 'REDCap Staging Area', collapsible = T, width = '100%', status = 'danger',
+            textOutput("next_participant_id"),
+            #tableOutput("field_inputs"),
+            #dataTableOutput("test")
+            dataTableOutput("responses", width = '100%')
         ) # Box
-      
-        ) # Second column
+      ) # Second column
     ) # Fluid Row
    ) # Dashboard body
 ) # Dashboard Page
@@ -89,21 +81,21 @@ server <- function(input, output) {
         paste0("ParticipantID: ",max_participant_id + 1)
       })
       
-      # Access dynamically created variables ##NEEDS WORK
-      #output$field_inputs <- renderText({
-      #  input[[instrument$field_name[1]]] ## schema needed for input variables.
-      #})
-      
       # Create widget map
-      REDCap_field_type <- c("text","text","text","dropdown","truefalse","yesno","radio","checkbox","notes")
-      REDCap_field_val <- c(NA,"date_mdy","integer",NA,NA,NA,NA,NA,NA)
-      reviewr_function <- c("reviewr_text","reviewr_date","reviewr_integer","reviewr_dropdown","reviewr_truefalse","reviewr_yesno","reviewr_radio","reviewr_checkbox","reviewr_notes")
-      widget_map <- tibble(REDCap_field_type,REDCap_field_val, reviewr_function)
-      
+        REDCap_field_type <- c("text","text","text","dropdown","truefalse","yesno","radio","checkbox","notes")
+        REDCap_field_val <- c(NA,"date_mdy","integer",NA,NA,NA,NA,NA,NA)
+        reviewr_function <- c("reviewr_text","reviewr_date","reviewr_integer","reviewr_dropdown","reviewr_truefalse","reviewr_yesno","reviewr_radio","reviewr_checkbox","reviewr_notes")
+        widget_map <- tibble(REDCap_field_type,REDCap_field_val, reviewr_function)
       
       # Join REDCap Instrument with widget_map
       instrument %<>% 
         left_join(widget_map, by = c("field_type" = "REDCap_field_type", "text_validation_type_or_show_slider_number" = "REDCap_field_val"))
+      
+      # Determine what variables are needed to store information       
+      temp1 <- instrument %>%
+        filter(is.na(reviewr_function) == F) %>% 
+        select(field_name)
+      fields <- temp1$field_name  
       
       # Render the REDCap Instrument
       output$redcap_instrument <- renderUI({
@@ -112,7 +104,64 @@ server <- function(input, output) {
           })
       })
       
+      # Access dynamically created variables ##NEEDS WORK
+      # output$field_inputs <- renderTable({
+      #   table(lapply(1:nrow(instrument %>% filter(is.na(reviewr_function) == F)), function(i) {
+      #     input[[fields[i]]]
+      #   }),dnn = fields)
+      # })
+      
+      # output$test <- renderTable({
+      #   tibble(sapply(fields, function(i) {
+      #     input[[fields[i]]]
+      #     }))
+      # })
+      
+      # data <- sapply(fields, function(x) input[[x]])
+      # output$test <- renderDataTable({
+      #   datatable(data)
+      # })
+      
+      # })
    }) # Observe Event
+  
+  # Create a data frame called responses, which will collect responses to be sent to REDCap. Lightly process
+  # Lots of help here: https://towardsdatascience.com/get-started-with-examples-of-reactivity-in-in-shiny-apps-db409079dd11
+  
+  saveData <- function(data) {
+    data <- as.data.frame(t(data))
+    if (exists("responses")) {
+      responses <<- rbind(responses, data)
+    } else {
+      responses <<- data
+    }
+  }
+  
+  loadData <- function() {
+    if (exists("responses")) {
+      datatable(responses, options = list(pageLength = 25,scrollX = TRUE, scrollY = TRUE))
+    }
+  }
+  
+  
+  # Collect all of the user entered data
+  #formData is a reactive function
+  formData <- reactive({
+    data <- sapply(fields, function(x) input[[x]])
+    data
+  })
+  
+  # When the Save button is clicked, save the form data
+  observeEvent(input$save, {
+    saveData(formData())
+  })
+  
+  # Show the previous responses and update with current response when save is clicked
+  output$responses <- DT::renderDataTable({
+    input$save
+    loadData()
+  })  
+  
 } # Server
 
 # Run the application, please 
