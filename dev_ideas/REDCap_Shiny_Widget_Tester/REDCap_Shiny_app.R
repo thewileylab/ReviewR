@@ -89,13 +89,14 @@ server <- function(input, output) {
       
       # Join REDCap Instrument with widget_map
       instrument %<>% 
-        left_join(widget_map, by = c("field_type" = "REDCap_field_type", "text_validation_type_or_show_slider_number" = "REDCap_field_val"))
+        left_join(widget_map, by = c("field_type" = "REDCap_field_type", "text_validation_type_or_show_slider_number" = "REDCap_field_val")) %>% 
+        mutate(reviewr_inputID = paste0(field_name,"_", reviewr_function))
       
       # Determine what variables are needed to store information       
       temp1 <- instrument %>%
         filter(is.na(reviewr_function) == F) %>% 
-        select(field_name)
-      fields <<- temp1$field_name
+        select(reviewr_inputID)
+      fields <<- temp1$reviewr_inputID
 
       # Render the REDCap Instrument
       output$redcap_instrument <- renderUI({
@@ -139,7 +140,21 @@ server <- function(input, output) {
   
   loadData <- function() {
     if (exists("responses")) {
-      datatable(responses, options = list(pageLength = 25,scrollX = TRUE, scrollY = TRUE))
+      checkbox_responses <- responses %>% 
+        select(contains("checkbox")) %>% 
+        unnest() %>% 
+        gather() %>% 
+        mutate(temp = "Checked") %>% 
+        unite(col_name, key,value,sep = '___') %>% 
+        spread(col_name, temp, fill = "Unchecked") %>% 
+        rename_all(gsub, pattern = '_reviewr_checkbox', replacement = '')
+      
+      other_responses <- responses %>% 
+        select(-contains("checkbox")) %>% 
+        rename_all(str_remove_all, pattern = regex(pattern = '(_reviewr_).*'))
+      
+      all_responses <- cbind(other_responses,checkbox_responses)
+      datatable(all_responses, options = list(pageLength = 25, scrollX = TRUE, scrollY = TRUE))
     }
   }
   
