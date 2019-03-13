@@ -95,8 +95,8 @@ server <- function(input, output) {
       temp1 <- instrument %>%
         filter(is.na(reviewr_function) == F) %>% 
         select(field_name)
-      fields <- temp1$field_name  
-      
+      fields <<- temp1$field_name
+
       # Render the REDCap Instrument
       output$redcap_instrument <- renderUI({
         lapply(1:nrow(instrument), function(i) {
