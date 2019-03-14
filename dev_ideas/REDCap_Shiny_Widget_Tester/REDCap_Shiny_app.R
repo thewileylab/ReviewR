@@ -150,7 +150,7 @@ server <- function(input, output) {
         spread(col_name, temp, fill = 0) %>% 
         rename_all(str_remove_all, pattern = regex(pattern = '_reviewr_checkbox'))
       
-    other_responses <- responses %>% 
+      other_responses <- responses %>% 
         select(-contains("checkbox")) %>% 
         unnest() %>% 
         rename_all(str_remove_all, pattern = regex(pattern = '(_reviewr_).*'))
