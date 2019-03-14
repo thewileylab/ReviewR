@@ -54,7 +54,7 @@ ui <- dashboardPage(skin = 'red',
 ) # Dashboard Page
 
 # Define server logic required ingest REDCap Instrument and render Shiny Widgets
-server <- function(input, output) {
+server <- function(input, output, session) {
    # Watch for the button press
     observeEvent(input$red_connect,{
      # Create REDCap Connection
@@ -111,7 +111,7 @@ server <- function(input, output) {
   saveData <- function(data) {
     data <- as.data.frame(t(data))
     if (exists("responses")) {
-      responses <<- rbind(responses, data)
+      responses <<- data #responses <<- rbind(responses, data)
     } else {
       responses <<- data
     }
@@ -123,11 +123,13 @@ server <- function(input, output) {
         select(contains('checkbox')) %>% 
         mutate_if(is.list, unname) %>% 
         gather() %>% 
+        mutate(value = ifelse(value == 'NULL', NA, value)) %>% 
         unnest() %>% 
         mutate(temp = 1) %>% 
         unite(col_name, key, value, sep = '___') %>% 
         spread(col_name, temp, fill = 0) %>% 
-        rename_all(str_remove_all, pattern = regex(pattern = '_reviewr_checkbox'))
+        rename_all(str_remove_all, pattern = regex(pattern = '_reviewr_checkbox')) %>% 
+        select(-contains('___NA'))
       
       other_responses <- responses %>% 
         select(-contains("checkbox")) %>% 
