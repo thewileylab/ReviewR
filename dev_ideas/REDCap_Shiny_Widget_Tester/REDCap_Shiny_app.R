@@ -40,14 +40,13 @@ ui <- dashboardPage(skin = 'red',
        column(width = 4,
         box(title = 'REDCap Instrument',collapsed = T,width = '100%',status = 'danger',
             uiOutput('redcap_instrument'),
-            radioButtons(inputId = 'survey_complete',label = 'Form Complete?',choiceNames = c('Incomplete','Unverified','Complete'),choiceValues = c(0,1,2)),
-            actionButton(inputId = 'save',label = 'Submit to REDCap')
+            actionButton(inputId = 'save',label = 'Save Responses')
         ),
         box(title = 'REDCap Staging Area', collapsible = T, width = '100%', status = 'danger',
             textOutput("next_participant_id"),
-            #tableOutput("field_inputs"),
-            #dataTableOutput("test")
-            dataTableOutput("responses", width = '100%')
+            dataTableOutput("responses", width = '100%'),
+            radioButtons(inputId = 'survey_complete',label = 'Form Complete?',choiceNames = c('Incomplete','Unverified','Complete'),choiceValues = c(0,1,2)),
+            actionButton(inputId ='upload',label = 'Upload to REDCap')
         ) # Box
       ) # Second column
     ) # Fluid Row
@@ -59,7 +58,7 @@ server <- function(input, output) {
    # Watch for the button press
     observeEvent(input$red_connect,{
      # Create REDCap Connection
-      red_con <- redcapConnection(url = input$red_url,token = input$red_api)
+      red_con <<- redcapConnection(url = input$red_url,token = input$red_api)
      # Extract Instrument metadata
       instrument <- exportMetaData(red_con) %>% 
         filter(!field_type %in% c('slider','calc','descriptive'))
@@ -104,26 +103,6 @@ server <- function(input, output) {
           render_redcap(instrument[i,])
           })
       })
-      
-      # Access dynamically created variables ##NEEDS WORK
-      # output$field_inputs <- renderTable({
-      #   table(lapply(1:nrow(instrument %>% filter(is.na(reviewr_function) == F)), function(i) {
-      #     input[[fields[i]]]
-      #   }),dnn = fields)
-      # })
-      
-      # output$test <- renderTable({
-      #   tibble(sapply(fields, function(i) {
-      #     input[[fields[i]]]
-      #     }))
-      # })
-      
-      # data <- sapply(fields, function(x) input[[x]])
-      # output$test <- renderDataTable({
-      #   datatable(data)
-      # })
-      
-      # })
    }) # Observe Event
   
   # Create a data frame called responses, which will collect responses to be sent to REDCap. Lightly process
@@ -155,20 +134,16 @@ server <- function(input, output) {
         unnest() %>% 
         rename_all(str_remove_all, pattern = regex(pattern = '(_reviewr_).*'))
       
-      all_responses <- cbind(other_responses,checkbox_responses)
-      datatable(all_responses, options = list(pageLength = 25, scrollX = TRUE, scrollY = TRUE))
+      all_responses <<- cbind(other_responses,checkbox_responses)
+      datatable(t(all_responses), options = list(pageLength = 25, scrollX = TRUE, scrollY = TRUE))
     }
   }
-  
-  
+
   # Collect all of the user entered data
   #formData is a reactive function
   formData <- reactive({
     data <- sapply(fields, function(x) input[[x]])
     data
-    #data <- map_df(.x = fields, .f = ~as.list(input[[.x]]),.id = ~.x)
-    #data
-  
   })
   
   # When the Save button is clicked, save the form data
@@ -180,7 +155,15 @@ server <- function(input, output) {
   output$responses <- DT::renderDataTable({
     input$save
     loadData()
-  })  
+  })
+  
+  #Watch for Upload button press, do some stuff if pressed
+  observeEvent(input$upload, {
+    # Is the survey complete
+    is_complete <- tibble(survey_complete = input$survey_complete)
+    red_complete <<- cbind(all_responses, is_complete)
+    importRecords(rcon = red_con, data = red_complete)
+  })
   
 } # Server
 
