@@ -300,7 +300,7 @@ ui <- dashboardPage(
                            ), #div
                            div(id="redcap_connection_fields",
                              textInput("redcap_url", "REDCap URL:"),
-                             textInput("redcap_api_key", "REDCap API Key:"),
+                             passwordInput("redcap_api_key", "REDCap API Key:"),
                              actionButton("redcap_connect", "Connect to REDCap")
                            ) #div
                        ), #box
