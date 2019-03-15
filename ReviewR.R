@@ -52,6 +52,23 @@ server <- function(input, output, session) {
     ) #div
   })
   
+  output$redcap_patient_id_field <- renderUI({
+    selectInput("redcap_patient_id", label = "Which variable contains your patient identifier?", selected = input$redcap_patient_id,
+                choices = append("", values$redcap_text_fields$field_name))
+  })
+  
+  output$redcap_reviewer_id_field <- renderUI({
+    selectInput("redcap_reviewer_id", label = "Which variable contains your reviewer identifier?", selected = input$redcap_reviewer_id,
+                choices = append("(Not applicable)", values$redcap_text_fields$field_name))
+  })
+  
+  # Handle the rendering of our mapped REDCap fields to the appropriate UI widgets
+  output$redcap_instrument <- renderUI({
+    lapply(1:nrow(values$redcap_instrument), function(i) {
+      render_redcap(values$redcap_instrument[i,])
+    })
+  })
+  
   # Because we want to use uiOutput for the patient chart panel in multiple locations in the UI,
   # we need to implement the workaround described here (https://github.com/rstudio/shiny/issues/743)
   # where we actually render multiple outputs for each use.
@@ -67,22 +84,11 @@ server <- function(input, output, session) {
   output$patient_chart_panel_abstraction <- renderUI({ 
     fluidRow(
       column(width=8, patient_chart_panel()),
-      column(width=4, div())  # TODO - add in REDCap review form here
+      column(width=4, uiOutput('redcap_instrument'))
     ) #fluidRow
   })
   output$patient_chart_panel_no_abstraction <- renderUI({ patient_chart_panel() })
-  
-  # output$selected_project_title <- renderText({
-  #   ifelse(is.null(input$project_id),
-  #          "(No project selected)",
-  #          paste("Project: ", project_list[project_list$id == input$project_id, "name"]))
-  # })
-  # output$selected_project_id <- renderText({input$project_id})
-  
-  # observeEvent(input$viewProjects, {
-  #   updateTabsetPanel(session = session, inputId = "tabs", selected = "projects")
-  # })
-  
+
   observeEvent(input$viewPatients, {
     updateTabsetPanel(session = session, inputId = "tabs", selected = "patient_search")
   })
@@ -121,6 +127,16 @@ server <- function(input, output, session) {
     toggleShinyDivs("db_connection_status", "db_connection_fields")
     
     output$menu <- renderMenu({ full_menu() })
+    
+    # Optionally, there may be REDCap connection information included.  If so, we will go ahead and
+    # get that all loaded as well.
+    if (!is.null(reviewr_config$redcap_api_token)) {
+      reviewr_config <- initialize_redcap(reviewr_config)
+      toggleShinyDivs("redcap_connection_status", "redcap_connection_fields")
+      toggleShinyDivs("redcap_configure_fields", "redcap_configure_status")
+      values$redcap_instrument <- reviewr_config$redcap_instrument
+      values$redcap_text_fields <- reviewr_config$redcap_text_fields
+    }
   }
   
   output$connected_text <- renderText(paste("You have connected to a", database_display_name[input$db_type],
@@ -177,17 +193,51 @@ server <- function(input, output, session) {
   })
   
   observeEvent(input$redcap_connect, {
-    toggleShinyDivs("redcap_configure_fields", "redcap_configure_status")
-    toggleShinyDivs("redcap_connection_status", "redcap_connection_fields")
+    toggleShinyDivs("redcap_connection_fields", "redcap_connection_status")
+    toggleShinyDivs("redcap_configure_status", "redcap_configure_fields")
+    
+    redcap_config = isolate({ list(
+      redcap_api_url=input$redcap_api_url,
+      redcap_api_token=input$redcap_api_token)
+    })
+    reviewr_config$redcap_api_url <- redcap_config$redcap_api_url
+    reviewr_config$redcap_api_token <- redcap_config$redcap_api_token
+    
+    tryCatch({
+      # Initialize the ReviewR application for our REDCap connection
+      reviewr_config <- initialize_redcap(reviewr_config)
+      values$redcap_text_fields <- reviewr_config$redcap_text_fields
+      values$redcap_instrument <- reviewr_config$redcap_instrument
+      values$redcap_text_fields <- reviewr_config$redcap_text_fields
+
+      toggleShinyDivs("redcap_configure_fields", "redcap_configure_status")
+      toggleShinyDivs("redcap_connection_status", "redcap_connection_fields")
+    },
+    error=function(e) {
+      reviewr_config <- NULL  # Reset the configuration information
+      showNotification(
+        paste("There was an error when trying to connect to REDCap.  Please make sure that you have configured the application correctly, and that you have access to the REDCap API.\r\n\r\n",
+              "If you need help configuring ReviewR, please see the README.md file that is packaged with the repository.\r\n\r\nError:\r\n", e),
+        duration = NULL, type = "error", closeButton = TRUE)
+    })
   })
+  
   observeEvent(input$redcap_disconnect, {
     toggleShinyDivs("redcap_configure_status", "redcap_configure_fields")
     toggleShinyDivs("redcap_connection_fields", "redcap_connection_status")
+    reviewr_config$redcap_api_url <- NULL
+    reviewr_config$redcap_api_token <- NULL
+    reviewr_config$redcap_patient_id_field <- NULL
+    reviewr_config$redcap_reviewer_id_field <- NULL
   })
   
-  #outputOptions(output, "has_projects", suspendWhenHidden = FALSE)
+  observeEvent(input$redcap_configure, {
+    reviewr_config$redcap_patient_id_field <- input$redcap_patient_id_field
+    reviewr_config$redcap_reviewer_id_field <- input$redcap_reviewr_id_field
+  })
   
-  # When the Shiny session ends, perform cleanup (closing connections, removing objects from environment)
+  # When the Shiny session ends, perform cleanup (closing connections, removing objects from environment).
+  # Note that there is no cleanup function for the REDCap API, so the fact we're not cleaning it up is by design.
   session$onSessionEnded(function() {
     if (!is.null(reviewr_config) & !is.null(reviewr_config$connection)) {
       dbDisconnect(reviewr_config$connection)
@@ -299,18 +349,18 @@ ui <- dashboardPage(
                                actionButton("redcap_disconnect", "Disconnect REDCap")
                            ), #div
                            div(id="redcap_connection_fields",
-                             textInput("redcap_url", "REDCap URL:"),
-                             passwordInput("redcap_api_key", "REDCap API Key:"),
+                             textInput("redcap_api_url", "REDCap URL:"),
+                             passwordInput("redcap_api_token", "REDCap API Token:"),
                              actionButton("redcap_connect", "Connect to REDCap")
                            ) #div
                        ), #box
-                       box(id = "redcap_configure", title="Configure REDCap", width=12, status='danger',
+                       box(title="Configure REDCap", width=12, status='danger',
                            div(id="redcap_configure_status",
                                div("Please connect to a REDCap instance to enable configuration.")
                            ), #div
                            div(id="redcap_configure_fields",
-                             selectInput("redcap_patient_id", "Which variable contains your patient identifier?", c()),
-                             checkboxInput("redcap_multiple_reviewers", "Multiple reviewers?"),
+                             uiOutput("redcap_patient_id_field"),
+                             uiOutput("redcap_reviewer_id_field"),
                              actionButton("redcap_configure", "Configure REDCap")
                            ) #div
                        ) #box

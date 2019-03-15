@@ -3,6 +3,14 @@ source('lib/omop.R')
 #source('lib/project_helpers.R')
 source('lib/ui_helpers.r')
 source('lib/table_map.R')
+source('lib/render_redcap.R')
+
+# Create widget map - used by REDCap initialization process
+redcap_field_type <- c("text","text","text","dropdown","truefalse","yesno","radio","checkbox","notes")
+redcap_field_val <- c(NA,"date_mdy","integer",NA,NA,NA,NA,NA,NA)
+reviewr_redcap_widget_function <- c("reviewr_text","reviewr_date","reviewr_integer","reviewr_dropdown","reviewr_truefalse","reviewr_yesno","reviewr_radio","reviewr_checkbox","reviewr_notes")
+redcap_widget_map <- tibble(redcap_field_type, redcap_field_val, reviewr_redcap_widget_function)
+
 
 load_reviewr_config <- function() {
   tryCatch({
@@ -76,5 +84,38 @@ initialize <- function(config) {
   
   config$connection = connection
   config$table_map = table_map(db_type, config$data_model, config$connection)
+  config
+}
+
+# config
+#   $redcap_api_url
+#   $redcap_api_token
+#
+# Modifications
+#   $redcap_connection
+initialize_redcap <- function(config) {
+  connection <- redcapConnection(url = config$redcap_api_url, token = config$redcap_api_token)
+  # Extract Instrument metadata
+  instrument <- exportMetaData(connection) %>% 
+    filter(!field_type %in% c('slider','calc','descriptive'))
+  
+  # Further filter to give the list of text fields - this is our candidate list of patient_id fields
+  # to choose from
+  text_fields <- instrument %>%
+    filter(field_type == 'text') %>%
+    select(field_name, field_label)
+
+  # Join REDCap Instrument with redcap_widget_map to get our UI widgets
+  instrument %<>% 
+    # If some information is not defined within REDCap, it will convert those to logical types by default.  We are
+    # assuming that they will be all character values, so we need to perform explicit casting to continue with that
+    # assumption.
+    mutate_if(is.logical, as.character) %>%
+    left_join(redcap_widget_map, by = c("field_type" = "redcap_field_type", "text_validation_type_or_show_slider_number" = "redcap_field_val")) %>% 
+    mutate(reviewr_inputID = paste0(field_name,"_", reviewr_redcap_widget_function))
+  
+  config$redcap_instrument <- instrument
+  config$redcap_connection <- connection
+  config$redcap_text_fields <- text_fields
   config
 }
