@@ -16,6 +16,10 @@ library(magrittr)
 library(DT)
 source('lib/render_redcap.R')
 
+## Survey complete choices
+sc_values <- c(0,1,2)
+names(sc_values) <- c('Incomplete', 'Unverified','Complete')
+
 # Define UI for application that generates Shiny Widgets based on the Contents of a REDCap Instrument
 ui <- dashboardPage(skin = 'red',
    
@@ -45,7 +49,7 @@ ui <- dashboardPage(skin = 'red',
         box(title = 'REDCap Staging Area', collapsible = T, width = '100%', status = 'danger',
             textOutput("next_participant_id"),
             dataTableOutput("responses", width = '100%'),
-            radioButtons(inputId = 'survey_complete',label = 'Form Complete?',choiceNames = c('Incomplete','Unverified','Complete'),choiceValues = c(0,1,2)),
+            selectInput(inputId = 'survey_complete',label = 'Form Complete?',choices = sc_values),
             actionButton(inputId ='upload',label = 'Upload to REDCap')
         ) # Box
       ) # Second column
