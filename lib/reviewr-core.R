@@ -5,6 +5,8 @@ source('lib/ui_helpers.r')
 source('lib/table_map.R')
 source('lib/render_redcap.R')
 
+library(tidyverse)
+
 # Create widget map - used by REDCap initialization process
 redcap_field_type <- c("text","text","text","dropdown","truefalse","yesno","radio","checkbox","notes")
 redcap_field_val <- c(NA,"date_mdy","integer",NA,NA,NA,NA,NA,NA)
