@@ -30,7 +30,7 @@ ui <- dashboardPage(skin = 'red',
    dashboardSidebar(width = 350,
      sidebarMenu(
        textInput(inputId = 'red_url',label = 'REDCap URL',value = 'https://redcap.ucdenver.edu/api/', width = 350),
-       passwordInput(inputId = 'red_api',label = 'REDCap API Key',placeholder = 'Your API Key Here', width = 350,value = 'F3531A8BF589D54CEFDB5241BE5FCCC9'),
+       passwordInput(inputId = 'red_api',label = 'REDCap API Key',placeholder = 'Your API Key Here', width = 350),
        actionButton(inputId = 'red_connect',label = 'Connect!',icon = icon('user-astronaut'))
         )
    ),
