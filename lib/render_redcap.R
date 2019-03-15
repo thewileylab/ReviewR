@@ -1,4 +1,5 @@
 library(shiny)
+library(redcapAPI)
 
 #' Creates the appropriate shiny control given a REDCap field
 #' 
