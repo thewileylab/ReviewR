@@ -100,12 +100,11 @@ initialize_redcap <- function(config) {
   # Extract Instrument metadata
   instrument <- exportMetaData(connection) %>% 
     filter(!field_type %in% c('slider','calc','descriptive'))
-  
   # Further filter to give the list of text fields - this is our candidate list of patient_id fields
   # to choose from
   text_fields <- instrument %>%
     filter(field_type == 'text') %>%
-    select(field_name, field_label)
+    select(field_label, field_name)
 
   # Join REDCap Instrument with redcap_widget_map to get our UI widgets
   instrument %<>% 
