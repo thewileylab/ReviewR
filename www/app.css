@@ -38,15 +38,26 @@
   opacity: 1;
 }
 
+.subject_id_label, .subject_id_label_value {
+  font-size: 1.5em;
+  vertical-align: middle;
+}
+
 .subject_id_label {
   font-weight: bold;
-  font-size: 1.5em;
 }
 
 .subject_id_header {
   margin-bottom: 10px;
 }
 
+#subject_review_status {
+  width: 16px;
+  height: 16px;
+  margin-left: 15px;
+  vertical-align: middle;
+}
+
 #prev_patient, #next_patient {
-  width: 100px;
+  width: 100%;
 }
