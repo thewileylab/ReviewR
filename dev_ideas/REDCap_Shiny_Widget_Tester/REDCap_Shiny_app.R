@@ -31,7 +31,9 @@ ui <- dashboardPage(skin = 'red',
      sidebarMenu(
        textInput(inputId = 'red_url',label = 'REDCap URL',value = 'https://redcap.ucdenver.edu/api/', width = 350),
        passwordInput(inputId = 'red_api',label = 'REDCap API Key',placeholder = 'Your API Key Here', width = 350),
-       actionButton(inputId = 'red_connect',label = 'Connect!',icon = icon('user-astronaut'))
+       actionButton(inputId = 'red_connect',label = 'Connect!',icon = icon('user-astronaut')),
+       selectInput(inputId = 'which_field', label = 'Select Identifier Field', choices = NULL),
+       selectInput(inputId = 'which_patient',label = 'Select Patient', choices = NULL)
         )
    ),
    # Show a datatable of what is currently present in the instrument
@@ -42,7 +44,13 @@ ui <- dashboardPage(skin = 'red',
         box(title = 'Instrument Info',collapsible = T,DT::dataTableOutput("meta_instrument"),width = '100%', status = 'danger')
         ),
        column(width = 4,
-        box(title = 'REDCap Instrument',collapsed = T,width = '100%',status = 'danger',
+        box(title = 'REDCap Instrument',collapsed = T,width = '100%', status = 'danger',
+            tags$style(HTML("
+                            #redcap_instrument {
+                            height:676px;
+                            overflow-y:scroll
+                            }
+                            ")),
             uiOutput('redcap_instrument'),
             actionButton(inputId = 'save',label = 'Save Responses')
         ),
@@ -68,21 +76,47 @@ server <- function(input, output, session) {
         filter(!field_type %in% c('slider','calc','descriptive'))
     # Download previous REDCap Entries
       redcap_records <-exportRecords(red_con) 
+    # Populate identifier dropdown
+      redcap_choices <- reactive({
+        redcap_choices <- instrument %>% 
+          select(field_name) %>% 
+          slice(-1) #The first row will always be the auto incremented field (or at least we will tell people that.)
+      })
+      observe({
+        updateSelectInput(session = session, inputId = "which_field", choices = redcap_choices()$field_name)
+      })
+      test <<- input$which_field
+    # Populate patient dropdown
+      patient_choices <- reactive({
+        #redcap_choices %<>% 
+        #add_row(!!(input$which_field) := "new patient",.before = 1)
+        patient_choices <- redcap_records[[input$which_field]]
+        patient_choices <- rbind("new", patient_choices)
+        #patient_choices %<>% 
+        #  add_row(!!input$which_field := "new")
+        #redcap_records %>%
+          #{if (input$which_field == '') . else select(input$which_field)}
+      })
+      observe({
+        updateSelectInput(session = session, inputId = "which_patient",choices = patient_choices())
+      })
      # Rendder metadata table
       output$meta_instrument <- renderDataTable(
-       datatable(instrument,options = list(pageLength = 25,scrollX = TRUE, scrollY = TRUE))
+       datatable(instrument,options = list(pageLength = 10,scrollX = TRUE, scrollY = TRUE))
         )
       # Render previous entries
       output$redcap_records <- renderDataTable(
-        datatable(redcap_records,options = list(pageLength = 25,scrollX = TRUE, scrollY = TRUE))
+        datatable(redcap_records,options = list(pageLength = 10,scrollX = TRUE, scrollY = TRUE))
         )
       # Determine the next patricipantID
-      max_participant_id <- max(as.numeric(redcap_records$participant_id))  
+      max_participant_id <<- max(as.numeric(redcap_records[,1]))  #First column will be the auto incrementing field
       
       # Next participantID
       output$next_participant_id <- renderText({
         paste0("ParticipantID: ",max_participant_id + 1)
       })
+      # Determine the participantID field
+      participantID <<- instrument[1,1]
       
       # Create widget map
         REDCap_field_type <- c("text","text","text","dropdown","truefalse","yesno","radio","checkbox","notes")
@@ -98,12 +132,13 @@ server <- function(input, output, session) {
       # Determine what variables are needed to store information       
       temp1 <- instrument %>%
         filter(is.na(reviewr_function) == F) %>% 
-        select(reviewr_inputID)
+        select(reviewr_inputID) %>% 
+        slice(-1)
       fields <<- temp1$reviewr_inputID
 
       # Render the REDCap Instrument
       output$redcap_instrument <- renderUI({
-        lapply(1:nrow(instrument), function(i) {
+        lapply(2:nrow(instrument), function(i) {  #Start with the second element, the first will always be the auto incrementing field.
           render_redcap(instrument[i,])
           })
       })
@@ -140,7 +175,9 @@ server <- function(input, output, session) {
         unnest() %>% 
         rename_all(str_remove_all, pattern = regex(pattern = '(_reviewr_).*'))
       
-      all_responses <<- cbind(other_responses,checkbox_responses)
+      participant_id <- tibble(!! participantID := max_participant_id + 1)
+      
+      all_responses <<- cbind(participant_id,other_responses,checkbox_responses)
       datatable(t(all_responses), options = list(pageLength = 25, scrollX = TRUE, scrollY = TRUE))
     }
   }

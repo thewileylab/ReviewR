@@ -48,6 +48,6 @@ render_redcap <- function(dat){
     textAreaInput(inputId = dat$reviewr_inputID[1], label = question, placeholder = dat$text_validation_type_or_show_slider_number[1],rows = 5,resize = 'vertical')
   } else if(dat$reviewr_function[1] == 'reviewr_integer'){
     question <- ifelse(is.na(dat$required_field[1]) == T,dat$field_label[1],paste(dat$field_label[1],'*'))
-    numericInput(inputId = dat$reviewr_inputID[1], label = question,value = 42, min = dat$text_validation_min[1], max = dat$text_validation_max[1])
+    numericInput(inputId = dat$reviewr_inputID[1], label = question,value = NULL, min = dat$text_validation_min[1], max = dat$text_validation_max[1])
   } else {textInput(inputId = dat$reviewr_inputID[1],label = "This is an unsupported field type",placeholder = dat$field_type[1])}
 }
