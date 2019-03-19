@@ -433,14 +433,6 @@ ui <- dashboardPage(
                 condition = "input.subject_id == null || input.subject_id == undefined || input.subject_id == ''",
                 h4("Please select a patient from the 'Patient Search' tab")
               ),
-              # conditionalPanel(
-              #   condition = "(input.subject_id != null && input.subject_id != undefined && input.subject_id != '') && output.redcap_patient_id_field != null",
-              #   fluidRow(class="unpadded",
-              #            column(width=9, class="unpadded", box(width=12, class="marginless", status="primary", uiOutput("subject_id_status_redcap"))),
-              #            column(width=3, class="unpadded", box(width=12, class="marginless", status="primary", uiOutput("patient_navigation_list_redcap")))
-              #   ), #fluidRow
-              #   uiOutput("patient_chart_panel_abstraction")
-              # ), #conditionalPanel - with abstraction
               conditionalPanel(class="full_box marginless unpadded",
                  condition = "(input.subject_id != null && input.subject_id != undefined && input.subject_id != '') && output.redcap_patient_id_field != null",
                  box(width=12, class="marginless", status="primary", 
@@ -449,15 +441,7 @@ ui <- dashboardPage(
                               column(width=3, uiOutput("patient_navigation_list_redcap"))
                      )), #fluidRow
                  uiOutput("patient_chart_panel_abstraction")
-              ), #conditionalPanel - no abstraction
-              # conditionalPanel(
-              #   condition = "input.subject_id != null && output.redcap_patient_id_field == null",
-              #   fluidRow(class="unpadded",
-              #     column(width=9, class="unpadded", box(width=12, class="marginless", status="primary", uiOutput("subject_id_status"))),
-              #     column(width=3, class="unpadded", box(width=12, class="marginless", status="primary", uiOutput("patient_navigation_list")))
-              #   ), #fluidRow
-              #   uiOutput("patient_chart_panel_no_abstraction")
-              # ) #conditionalPanel - no abstraction
+              ), #conditionalPanel - with abstraction
               conditionalPanel(class="full_box marginless unpadded",
                 condition = "input.subject_id != null && output.redcap_patient_id_field == null",
                 box(width=12, class="marginless", status="primary", 
