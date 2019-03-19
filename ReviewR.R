@@ -157,6 +157,7 @@ server <- function(input, output, session) {
       values$redcap_instrument <- reviewr_config$redcap_instrument
       values$redcap_text_fields <- reviewr_config$redcap_text_fields
       values$redcap_text_fields_selection_list <- reviewr_config$redcap_text_fields %>% deframe() # Specifically set up for use in select control
+      output$redcap_connection_error <- renderText({""})
     },
     error=function(e) {
       output$redcap_connection_error <- renderUI({
@@ -171,19 +172,40 @@ server <- function(input, output, session) {
     })
   }
   
+  # Helper function to handle connecting to the database, including error handling
+  open_database_connection <- function(reviewr_config) {
+    tryCatch({
+      # Initialize the ReviewR application
+      reviewr_config <- initialize(reviewr_config)
+      render_data_tables = get_render_data_tables(reviewr_config$data_model)
+      values$all_people_data = get_all_people_for_list(reviewr_config$data_model)(reviewr_config)
+      output = render_data_tables(input, output, reviewr_config)
+      
+      # Set our reactive values based on the input
+      values$data_model <- reviewr_config$data_model
+      toggleShinyDivs("db_connection_status", "db_connection_fields")
+      
+      output$menu <- renderMenu({ full_menu() })
+      output$database_connection_error <- renderText({""})
+    },
+    error=function(e) {
+      output$database_connection_error <- renderUI({
+        div(class="status error",
+            span("There was an error when trying to connect to the database.  Please make sure that you have configured the application correctly, and that the database is running and accessible from your machine."),
+            br(),
+            span("If you need help configuring ReviewR, please see the README.md file that is packaged with the repository.)"),
+            br(),br(),
+            span(paste("Error: ", e))
+        ) #div
+      }) #renderUI database_connection_error
+    })
+  }
+  
   # If during initial setup of the server we have configuration data, attempt to use it to initialize
   # the application, including establishing a connection to the underlying database.
   if (!is.null(reviewr_config) && length(reviewr_config) > 0) {
-    reviewr_config <- initialize(reviewr_config)
-    values$data_model <- reviewr_config$data_model
-    render_data_tables = get_render_data_tables(reviewr_config$data_model)
-    values$all_people_data = get_all_people_for_list(reviewr_config$data_model)(reviewr_config)
-    output = render_data_tables(input, output, reviewr_config)
-    
-    toggleShinyDivs("db_connection_status", "db_connection_fields")
-    
-    output$menu <- renderMenu({ full_menu() })
-    
+    open_database_connection(reviewr_config)
+
     # Optionally, there may be REDCap connection information included.  If so, we will go ahead and
     # get that all loaded as well.
     if (!is.null(reviewr_config$redcap_api_token)) {
@@ -211,27 +233,8 @@ server <- function(input, output, session) {
       dataset = input$dataset)
     })
     
-    tryCatch({
-      # Initialize the ReviewR application
-      reviewr_config <- initialize(reviewr_config)
-      render_data_tables = get_render_data_tables(reviewr_config$data_model)
-      values$all_people_data = get_all_people_for_list(reviewr_config$data_model)(reviewr_config)
-      output = render_data_tables(input, output, reviewr_config)
-      
-      # Set our reactive values based on the input
-      values$data_model <- reviewr_config$data_model
-      toggleShinyDivs("db_connection_status", "db_connection_fields")
-      
-      output$menu <- renderMenu({ full_menu() })
-      isolate({updateTabItems(session, "tabs", "setup")})
-    },
-    error=function(e) {
-      reviewr_config <- NULL  # Reset the configuration information
-      showNotification(
-        paste("There was an error when trying to connect to the database.  Please make sure that you have configured the application correctly, and that the database is running and accessible from your machine.\r\n\r\n",
-              "You will need to resolve the connection issue before ReviewR will work properly.  If you need help configuring ReviewR, please see the README.md file that is packaged with the repository.\r\n\r\nError:\r\n", e),
-        duration = NULL, type = "error", closeButton = TRUE)
-    })
+    open_database_connection(reviewr_config)
+    isolate({updateTabItems(session, "tabs", "setup")})
   })
   
   observeEvent(input$database_disconnect, {
@@ -343,6 +346,7 @@ ui <- dashboardPage(
               fluidRow(
                 column(width=6, style='padding:0px;',
                        box(title="Connect to Database", width=12, status='warning',
+                           uiOutput("database_connection_error"),
                            div(id = "db_connection_status",
                                h3("Success!"),
                                uiOutput("connected_text"),
