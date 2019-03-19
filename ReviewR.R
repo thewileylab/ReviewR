@@ -63,7 +63,7 @@ server <- function(input, output, session) {
   })
   
   output$redcap_patient_id_field <- renderUI({
-    selectInput("redcap_patient_id", label = "Which variable contains your record identifier?", selected = input$redcap_patient_id,
+    selectInput("redcap_patient_id", label = "Which variable contains your record identifier (e.g., MRN, subject ID)?", selected = input$redcap_patient_id,
                 choices = append("", values$redcap_text_fields))
   })
   
@@ -375,7 +375,20 @@ ui <- dashboardPage(
                            div(id="redcap_configure_fields",
                              uiOutput("redcap_patient_id_field"),
                              uiOutput("redcap_reviewer_id_field"),
-                             actionButton("redcap_configure", "Configure REDCap")
+                             conditionalPanel(
+                               condition = "input.redcap_reviewer_id != '(Not applicable)'",
+                               textInput("redcap_reviewer_name", "Reviewer name:", placeholder = "Your name")
+                             ), #conditionalPanel
+                             
+                             # We have two conditionalPanels that will display the current configuration state
+                             conditionalPanel(
+                               condition = "input.redcap_patient_id == null || input.redcap_patient_id == undefined || input.redcap_patient_id == ''",
+                               div(class="redcap_configure redcap_configure_needed", "Please select the record identifier field")
+                             ), #conditionalPanel
+                             conditionalPanel(
+                               condition = "input.redcap_patient_id != null && input.redcap_patient_id != undefined && input.redcap_patient_id != ''",
+                               div(class="redcap_configure redcap_configure_complete", "REDCap is configured!")
+                             ) #conditionalPanel
                            ) #div
                        ) #box
                 ) #column

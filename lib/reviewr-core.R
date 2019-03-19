@@ -99,6 +99,7 @@ initialize_redcap <- function(config) {
   connection <- redcapConnection(url = config$redcap_api_url, token = config$redcap_api_token)
   # Extract Instrument metadata
   instrument <- exportMetaData(connection) %>% 
+    slice(-1) %>%   # We drop the first row, as it most likely is the auto-increment field used in REDCap
     filter(!field_type %in% c('slider','calc','descriptive'))
   # Further filter to give the list of text fields - this is our candidate list of patient_id fields
   # to choose from

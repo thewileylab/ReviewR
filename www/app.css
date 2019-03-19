@@ -59,5 +59,22 @@
 }
 
 #prev_patient, #next_patient {
-  width: 100%;
+  width: 90%;
+}
+
+.redcap_configure {
+  text-align: center;
+  padding: 10px 5px;
+}
+
+.redcap_configure_needed {
+  color: #a94442;
+  background-color: #f2dede;
+  border-color: #ebccd1;
+}
+
+.redcap_configure_complete {
+  color: #3c763d;
+  background-color: #dff0d8;
+  border-color: #d6e9c6;
 }
