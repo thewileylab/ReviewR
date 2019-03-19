@@ -57,7 +57,7 @@ server <- function(input, output, session) {
 
   # Create the panel that hosts navigating between patient records
   output$patient_navigation_list_redcap <- renderUI({
-    div(style="min-width: 300px",
+    div(style="min-width: 150px",
       div(column(style="padding: 0px; text-align: left;",width=6, actionButton(inputId = 'prev_patient',label = '<< Previous')),
           column(style="padding: 0px; text-align: right;",width=6, actionButton(inputId = 'next_patient',label = 'Next >>'))),
       div(style="padding: 0px; text-align: left;",
@@ -68,7 +68,7 @@ server <- function(input, output, session) {
     ) #div
   })
   output$patient_navigation_list <- renderUI({
-    div(style="min-width: 300px",
+    div(style="min-width: 150px",
         div(column(style="padding: 0px; text-align: left;",width=6, actionButton(inputId = 'prev_patient',label = '<< Previous')),
             column(style="padding: 0px; text-align: right;",width=6, actionButton(inputId = 'next_patient',label = 'Next >>'))),
         div(style="padding: 0px; text-align: left;",span("Record ID"), br(),
