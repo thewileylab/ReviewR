@@ -62,12 +62,15 @@
   width: 95%;
 }
 
-.redcap_configure {
-  text-align: center;
+.status {
   padding: 10px 5px;
 }
 
-.redcap_configure_needed {
+.redcap_configure {
+  text-align: center;
+}
+
+.redcap_configure_needed, .error {
   color: #a94442;
   background-color: #f2dede;
   border-color: #ebccd1;

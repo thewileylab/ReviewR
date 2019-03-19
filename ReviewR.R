@@ -125,6 +125,7 @@ server <- function(input, output, session) {
     updateTabsetPanel(session = session, inputId = "tabs", selected = "patient_search")
   })
   
+  # Initialize our UI to hide/show our pairs of "status" and "field" displays (under Setup)
   toggleShinyDivs("redcap_connection_fields", "redcap_connection_status")
   toggleShinyDivs("redcap_configure_status", "redcap_configure_fields")
   toggleShinyDivs("db_connection_fields", "db_connection_status")
@@ -147,6 +148,29 @@ server <- function(input, output, session) {
   
   output$menu <- renderMenu({ initial_menu() })
   
+  # Helper function to handle connection to REDCap, including error handling
+  open_redcap_connection <- function(reviewr_config) {
+    tryCatch({
+      reviewr_config <- initialize_redcap(reviewr_config)
+      toggleShinyDivs("redcap_connection_status", "redcap_connection_fields")
+      toggleShinyDivs("redcap_configure_fields", "redcap_configure_status")
+      values$redcap_instrument <- reviewr_config$redcap_instrument
+      values$redcap_text_fields <- reviewr_config$redcap_text_fields
+      values$redcap_text_fields_selection_list <- reviewr_config$redcap_text_fields %>% deframe() # Specifically set up for use in select control
+    },
+    error=function(e) {
+      output$redcap_connection_error <- renderUI({
+        div(class="status error",
+            span("There was an error when trying to connect to REDCap.  Please make sure that you have configured the application correctly, and that you have access to the REDCap API."),
+            br(),
+            span("If you need help configuring ReviewR, please see the README.md file that is packaged with the repository.)"),
+            br(),br(),
+            span(paste("Error: ", e))
+        ) #div
+      }) #renderUI redcap_connection_error
+    })
+  }
+  
   # If during initial setup of the server we have configuration data, attempt to use it to initialize
   # the application, including establishing a connection to the underlying database.
   if (!is.null(reviewr_config) && length(reviewr_config) > 0) {
@@ -163,12 +187,7 @@ server <- function(input, output, session) {
     # Optionally, there may be REDCap connection information included.  If so, we will go ahead and
     # get that all loaded as well.
     if (!is.null(reviewr_config$redcap_api_token)) {
-      reviewr_config <- initialize_redcap(reviewr_config)
-      toggleShinyDivs("redcap_connection_status", "redcap_connection_fields")
-      toggleShinyDivs("redcap_configure_fields", "redcap_configure_status")
-      values$redcap_instrument <- reviewr_config$redcap_instrument
-      values$redcap_text_fields <- reviewr_config$redcap_text_fields
-      values$redcap_text_fields_selection_list <- reviewr_config$redcap_text_fields %>% deframe() # Specifically set up for use in select control
+      open_redcap_connection(reviewr_config)
     }
   }
   
@@ -237,22 +256,9 @@ server <- function(input, output, session) {
     reviewr_config$redcap_api_token <- redcap_config$redcap_api_token
     values$redcap_text_fields <- NULL
     
-    tryCatch({
-      # Initialize the ReviewR application for our REDCap connection
-      reviewr_config = initialize_redcap(reviewr_config)
-      values$redcap_text_fields <- reviewr_config$redcap_text_fields
-      values$redcap_instrument <- reviewr_config$redcap_instrument
-      values$redcap_text_fields_selection_list <- reviewr_config$redcap_text_fields %>% deframe() # Specifically set up for use in select control
-      toggleShinyDivs("redcap_configure_fields", "redcap_configure_status")
-      toggleShinyDivs("redcap_connection_status", "redcap_connection_fields")
-    },
-    error=function(e) {
-      reviewr_config <- NULL  # Reset the configuration information
-      showNotification(
-        paste("There was an error when trying to connect to REDCap.  Please make sure that you have configured the application correctly, and that you have access to the REDCap API.\r\n\r\n",
-              "If you need help configuring ReviewR, please see the README.md file that is packaged with the repository.\r\n\r\nError:\r\n", e),
-        duration = NULL, type = "error", closeButton = TRUE)
-    })
+    if (!is.null(reviewr_config$redcap_api_token) && reviewr_config$redcap_api_token != '') {
+      open_redcap_connection(reviewr_config)
+    }
   })
   
   observeEvent(input$redcap_disconnect, {
@@ -374,6 +380,7 @@ ui <- dashboardPage(
                 ), #column
                 column(width=6, style='padding:0px;',
                        box(title="Connect to REDCap", width=12, status='danger',
+                           uiOutput("redcap_connection_error"),
                            div(id="redcap_connection_status",
                                h3("Success!"),
                                div("Once connected to a database, you can enter your chart abstractions result in your REDCap form."),
@@ -402,11 +409,11 @@ ui <- dashboardPage(
                              # We have two conditionalPanels that will display the current configuration state
                              conditionalPanel(
                                condition = "input.redcap_patient_id == null || input.redcap_patient_id == undefined || input.redcap_patient_id == ''",
-                               div(class="redcap_configure redcap_configure_needed", "Please select the record identifier field")
+                               div(class="status redcap_configure redcap_configure_needed", "Please select the record identifier field")
                              ), #conditionalPanel
                              conditionalPanel(
                                condition = "input.redcap_patient_id != null && input.redcap_patient_id != undefined && input.redcap_patient_id != ''",
-                               div(class="redcap_configure redcap_configure_complete", "REDCap is configured!")
+                               div(class="status redcap_configure redcap_configure_complete", "REDCap is configured!")
                              ) #conditionalPanel
                            ) #div
                        ) #box
