@@ -37,39 +37,53 @@ server <- function(input, output, session) {
   values$all_people_data = NULL
   
   render_data_tables <- NULL
-  has_projects = FALSE
-  output$has_projects <- reactive({ has_projects })
 
-  output$subject_id_status <- renderUI({
+  output$subject_id_status_redcap <- renderUI({
     div(class="subject_id_header",
-      span(paste(reviewr_config$redcap_text_fields %>% filter(field_name == input$redcap_patient_id) %>% select(field_label), " - "), class="subject_id_label"),
+      span(paste(values$redcap_text_fields %>% filter(field_name == input$redcap_patient_id) %>% select(field_label), " - "), class="subject_id_label"),
       span(input$subject_id, class="subject_id_label_value"),
       img(id="subject_review_status", src = if (input$redcap_survey_status == 0) { "inprogress.png" }
                                             else if (input$redcap_survey_status == 1) { "incomplete.png" }
                                             else { "complete.png" })
     )#div
-  }) #renderUI
+  }) #renderUI subject_id_status_redcap
+  
+  output$subject_id_status <- renderUI({
+    div(class="subject_id_header",
+        span("Record ID - ", class="subject_id_label"),
+        span(input$subject_id, class="subject_id_label_value")
+    )#div
+  }) #renderUI subject_id_status
 
   # Create the panel that hosts navigating between patient records
-  output$patient_navigation_list <- renderUI({
+  output$patient_navigation_list_redcap <- renderUI({
     div(style="min-width: 300px",
       div(column(style="padding: 0px; text-align: left;",width=6, actionButton(inputId = 'prev_patient',label = '<< Previous')),
           column(style="padding: 0px; text-align: right;",width=6, actionButton(inputId = 'next_patient',label = 'Next >>'))),
-      
-      div(style="padding: 0px; text-align: left;",span(
-        reviewr_config$redcap_text_fields %>% filter(field_name == input$redcap_patient_id) %>% select(field_label)), br(),
-        selectInput("subject_id", label = NULL, selectize = FALSE, selected = input$subject_id, choices = values$all_people_data$ID))
+      div(style="padding: 0px; text-align: left;",
+          span(values$redcap_text_fields %>% filter(field_name == input$redcap_patient_id) %>% select(field_label)),
+          br(),
+          selectInput("subject_id", label = NULL, selectize = FALSE, selected = input$subject_id, choices = values$all_people_data$ID)
+      ) #div
+    ) #div
+  })
+  output$patient_navigation_list <- renderUI({
+    div(style="min-width: 300px",
+        div(column(style="padding: 0px; text-align: left;",width=6, actionButton(inputId = 'prev_patient',label = '<< Previous')),
+            column(style="padding: 0px; text-align: right;",width=6, actionButton(inputId = 'next_patient',label = 'Next >>'))),
+        div(style="padding: 0px; text-align: left;",span("Record ID"), br(),
+          selectInput("subject_id", label = NULL, selectize = FALSE, selected = input$subject_id, choices = values$all_people_data$ID))
     ) #div
   })
   
   output$redcap_patient_id_field <- renderUI({
     selectInput("redcap_patient_id", label = "Which variable contains your record identifier (e.g., MRN, subject ID)?", selected = input$redcap_patient_id,
-                choices = append("", values$redcap_text_fields))
+                choices = append("", values$redcap_text_fields_selection_list))
   })
   
   output$redcap_reviewer_id_field <- renderUI({
     selectInput("redcap_reviewer_id", label = "Which variable contains your reviewer identifier?", selected = input$redcap_reviewer_id,
-                choices = append("(Not applicable)", values$redcap_text_fields))
+                choices = append("(Not applicable)", values$redcap_text_fields_selection_list))
   })
   
   # Handle the rendering of our mapped REDCap fields to the appropriate UI widgets
@@ -101,7 +115,11 @@ server <- function(input, output, session) {
       ) #box
     ) #fluidRow
   })
-  output$patient_chart_panel_no_abstraction <- renderUI({ patient_chart_panel() })
+  output$patient_chart_panel_no_abstraction <- renderUI({
+    fluidRow(
+      box(width=12, status = "primary", solidHeader = FALSE, patient_chart_panel())
+    ) #fluidRow
+  })
 
   observeEvent(input$viewPatients, {
     updateTabsetPanel(session = session, inputId = "tabs", selected = "patient_search")
@@ -131,7 +149,7 @@ server <- function(input, output, session) {
   
   # If during initial setup of the server we have configuration data, attempt to use it to initialize
   # the application, including establishing a connection to the underlying database.
-  if (!is.null(reviewr_config)) {
+  if (!is.null(reviewr_config) && length(reviewr_config) > 0) {
     reviewr_config <- initialize(reviewr_config)
     values$data_model <- reviewr_config$data_model
     render_data_tables = get_render_data_tables(reviewr_config$data_model)
@@ -149,7 +167,8 @@ server <- function(input, output, session) {
       toggleShinyDivs("redcap_connection_status", "redcap_connection_fields")
       toggleShinyDivs("redcap_configure_fields", "redcap_configure_status")
       values$redcap_instrument <- reviewr_config$redcap_instrument
-      values$redcap_text_fields <- reviewr_config$redcap_text_fields %>% deframe()
+      values$redcap_text_fields <- reviewr_config$redcap_text_fields
+      values$redcap_text_fields_selection_list <- reviewr_config$redcap_text_fields %>% deframe() # Specifically set up for use in select control
     }
   }
   
@@ -216,14 +235,14 @@ server <- function(input, output, session) {
     })
     reviewr_config$redcap_api_url <- redcap_config$redcap_api_url
     reviewr_config$redcap_api_token <- redcap_config$redcap_api_token
+    values$redcap_text_fields <- NULL
     
     tryCatch({
       # Initialize the ReviewR application for our REDCap connection
-      reviewr_config <- initialize_redcap(reviewr_config)
+      reviewr_config = initialize_redcap(reviewr_config)
       values$redcap_text_fields <- reviewr_config$redcap_text_fields
       values$redcap_instrument <- reviewr_config$redcap_instrument
-      values$redcap_text_fields <- reviewr_config$redcap_text_fields
-
+      values$redcap_text_fields_selection_list <- reviewr_config$redcap_text_fields %>% deframe() # Specifically set up for use in select control
       toggleShinyDivs("redcap_configure_fields", "redcap_configure_status")
       toggleShinyDivs("redcap_connection_status", "redcap_connection_fields")
     },
@@ -404,13 +423,21 @@ ui <- dashboardPage(
                 h4("Please select a patient from the 'Patient Search' tab")
               ),
               conditionalPanel(
-                condition = "input.subject_id != ''",
+                condition = "(input.subject_id != null && input.subject_id != undefined && input.subject_id != '') && output.redcap_patient_id_field != null",
+                fluidRow(
+                  column(width=9, uiOutput("subject_id_status_redcap")),
+                  column(width=3, uiOutput("patient_navigation_list_redcap"))
+                ), #fluidRow
+                uiOutput("patient_chart_panel_abstraction")
+              ), #conditionalPanel - with abstraction
+              conditionalPanel(
+                condition = "input.subject_id != null && output.redcap_patient_id_field == null",
                 fluidRow(
                   column(width=9, uiOutput("subject_id_status")),
                   column(width=3, uiOutput("patient_navigation_list"))
                 ), #fluidRow
-                uiOutput("patient_chart_panel_abstraction")
-              ) #conditionalPanel
+                uiOutput("patient_chart_panel_no_abstraction")
+              ) #conditionalPanel - no abstraction
       ) #tabItem
     )
   )
