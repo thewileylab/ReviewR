@@ -325,7 +325,7 @@ ui <- dashboardPage(
     tabItems(
       tabItem(tabName = "home",
               fluidRow(
-                box(status = "primary", solidHeader = FALSE, width=12, style='padding:0px;',
+                box(status = "primary", solidHeader = FALSE, width=12, class="unpadded",
                     h2("Welcome to ReviewR", style='text-align: center;')
                 ), #box
                 box(width=12, style="font-size: 12pt;",
@@ -339,7 +339,7 @@ ui <- dashboardPage(
       ), #tabItem
       tabItem(tabName = "setup",
               fluidRow(
-                box(status = "primary", solidHeader = FALSE, width=12, style='padding:0px;',
+                box(status = "primary", solidHeader = FALSE, width=12, class="unpadded",
                     h2("ReviewR Setup", style='text-align: center;')
                 ) #box
               ), #fluidRow
@@ -433,20 +433,38 @@ ui <- dashboardPage(
                 condition = "input.subject_id == null || input.subject_id == undefined || input.subject_id == ''",
                 h4("Please select a patient from the 'Patient Search' tab")
               ),
-              conditionalPanel(
-                condition = "(input.subject_id != null && input.subject_id != undefined && input.subject_id != '') && output.redcap_patient_id_field != null",
-                fluidRow(
-                  column(width=9, uiOutput("subject_id_status_redcap")),
-                  column(width=3, uiOutput("patient_navigation_list_redcap"))
-                ), #fluidRow
-                uiOutput("patient_chart_panel_abstraction")
-              ), #conditionalPanel - with abstraction
-              conditionalPanel(
+              # conditionalPanel(
+              #   condition = "(input.subject_id != null && input.subject_id != undefined && input.subject_id != '') && output.redcap_patient_id_field != null",
+              #   fluidRow(class="unpadded",
+              #            column(width=9, class="unpadded", box(width=12, class="marginless", status="primary", uiOutput("subject_id_status_redcap"))),
+              #            column(width=3, class="unpadded", box(width=12, class="marginless", status="primary", uiOutput("patient_navigation_list_redcap")))
+              #   ), #fluidRow
+              #   uiOutput("patient_chart_panel_abstraction")
+              # ), #conditionalPanel - with abstraction
+              conditionalPanel(class="full_box marginless unpadded",
+                 condition = "(input.subject_id != null && input.subject_id != undefined && input.subject_id != '') && output.redcap_patient_id_field != null",
+                 box(width=12, class="marginless", status="primary", 
+                     fluidRow(class="unpadded",
+                              column(width=9, uiOutput("subject_id_status_redcap")),
+                              column(width=3, uiOutput("patient_navigation_list_redcap"))
+                     )), #fluidRow
+                 uiOutput("patient_chart_panel_abstraction")
+              ), #conditionalPanel - no abstraction
+              # conditionalPanel(
+              #   condition = "input.subject_id != null && output.redcap_patient_id_field == null",
+              #   fluidRow(class="unpadded",
+              #     column(width=9, class="unpadded", box(width=12, class="marginless", status="primary", uiOutput("subject_id_status"))),
+              #     column(width=3, class="unpadded", box(width=12, class="marginless", status="primary", uiOutput("patient_navigation_list")))
+              #   ), #fluidRow
+              #   uiOutput("patient_chart_panel_no_abstraction")
+              # ) #conditionalPanel - no abstraction
+              conditionalPanel(class="full_box marginless unpadded",
                 condition = "input.subject_id != null && output.redcap_patient_id_field == null",
-                fluidRow(
-                  column(width=9, uiOutput("subject_id_status")),
-                  column(width=3, uiOutput("patient_navigation_list"))
-                ), #fluidRow
+                box(width=12, class="marginless", status="primary", 
+                fluidRow(class="unpadded",
+                         column(width=9, uiOutput("subject_id_status")),
+                         column(width=3, uiOutput("patient_navigation_list"))
+                )), #fluidRow
                 uiOutput("patient_chart_panel_no_abstraction")
               ) #conditionalPanel - no abstraction
       ) #tabItem
