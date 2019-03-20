@@ -330,7 +330,7 @@ mimic_render_data_tables <- function(table_config, db_config, input, output, dat
   output$noteevent_tbl <- DT::renderDataTable(noteevent_data(), filter = 'top', options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
   output$all_patients_tbl <- DT::renderDataTable(
     mimic_query_all_patients(table_config, db_config, database_type, connection),
-    options = list(paging = TRUE, pageLength = 20, searchHighlight = TRUE),
+    options = list(paging = TRUE, pageLength = 20, searchHighlight = TRUE,scrollY = '100%'),
     escape=FALSE, rownames=F, selection='none',
     callback = JS(
       'table.on("click", "tr td a.row_subject_id", function() {
