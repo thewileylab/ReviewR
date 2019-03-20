@@ -14,6 +14,7 @@ library(redcapAPI)
 library(tidyverse)
 library(magrittr)
 library(DT)
+library(shinyjs)
 source('lib/render_redcap.R')
 
 ## Survey complete choices
@@ -32,8 +33,11 @@ ui <- dashboardPage(skin = 'red',
        textInput(inputId = 'red_url',label = 'REDCap URL',value = 'https://redcap.ucdenver.edu/api/', width = 350),
        passwordInput(inputId = 'red_api',label = 'REDCap API Key',placeholder = 'Your API Key Here', width = 350),
        actionButton(inputId = 'red_connect',label = 'Connect!',icon = icon('user-astronaut')),
-       selectInput(inputId = 'which_field', label = 'Select Identifier Field', choices = NULL),
-       selectInput(inputId = 'which_patient',label = 'Select Patient', choices = NULL)
+       selectInput(inputId = 'which_field', label = 'Select Identifier Field', choices = NULL, width = 350),
+       selectInput(inputId = 'which_patient',label = 'Select Patient', choices = NULL, width = 350),
+       splitLayout(cellWidths = c('47%','47%'),
+       actionButton(inputId = 'prev',label = '<<Previous',width = '100%'),
+       actionButton(inputId = 'next',label = 'Next>>',width = '100%'))
         )
    ),
    # Show a datatable of what is currently present in the instrument
@@ -44,7 +48,9 @@ ui <- dashboardPage(skin = 'red',
         box(title = 'Instrument Info',collapsible = T,DT::dataTableOutput("meta_instrument"),width = '100%', status = 'danger')
         ),
        column(width = 4,
-        box(title = 'REDCap Instrument',collapsed = T,width = '100%', status = 'danger',
+        box(useShinyjs(),
+            id = "rc_instrument",
+            title = 'REDCap Instrument',collapsed = T,width = '100%', status = 'danger',
             tags$style(HTML("
                             #redcap_instrument {
                             height:676px;
@@ -52,12 +58,12 @@ ui <- dashboardPage(skin = 'red',
                             }
                             ")),
             uiOutput('redcap_instrument'),
+            selectInput(inputId = 'survey_complete',label = 'Form Complete?',choices = sc_values),
             actionButton(inputId = 'save',label = 'Save Responses')
         ),
         box(title = 'REDCap Staging Area', collapsible = T, width = '100%', status = 'danger',
             textOutput("next_participant_id"),
             dataTableOutput("responses", width = '100%'),
-            selectInput(inputId = 'survey_complete',label = 'Form Complete?',choices = sc_values),
             actionButton(inputId ='upload',label = 'Upload to REDCap')
         ) # Box
       ) # Second column
@@ -206,6 +212,11 @@ server <- function(input, output, session) {
     is_complete <- tibble(survey_complete = input$survey_complete)
     red_complete <<- cbind(all_responses, is_complete)
     importRecords(rcon = red_con, data = red_complete)
+  })
+  
+  #Reset inputs
+  observeEvent(input$save, {
+    shinyjs::reset("rc_instrument")
   })
   
 } # Server
