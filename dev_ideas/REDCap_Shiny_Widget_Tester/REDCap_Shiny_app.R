@@ -133,7 +133,8 @@ server <- function(input, output, session) {
       # Join REDCap Instrument with widget_map
       instrument %<>% 
         left_join(widget_map, by = c("field_type" = "REDCap_field_type", "text_validation_type_or_show_slider_number" = "REDCap_field_val")) %>% 
-        mutate(reviewr_inputID = paste0(field_name,"_", reviewr_function))
+        mutate(reviewr_inputID = paste0(field_name,"_", reviewr_function)) %>% 
+        rownames_to_column()
       
       # Determine what variables are needed to store information       
       temp1 <- instrument %>%
