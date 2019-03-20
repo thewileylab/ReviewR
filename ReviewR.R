@@ -345,7 +345,7 @@ ui <- dashboardPage(
               ), #fluidRow
               fluidRow(
                 column(width=6, style='padding:0px;',
-                       box(title="Connect to Database", width=12, status='warning',
+                       box(title="Connect to Database", width=12, status='primary',
                            uiOutput("database_connection_error"),
                            div(id = "db_connection_status",
                                h3("Success!"),
@@ -425,8 +425,9 @@ ui <- dashboardPage(
               ) #fluidRow
       ), #tabItem
       tabItem(tabName = "patient_search",
-              h2("Select a patient to view"),
+              box(title = h2("Select a patient to view"), status = 'primary',width = '100%', height = '100%',
               withSpinner(DT::dataTableOutput('all_patients_tbl'))
+              )
       ), #tabItem
       tabItem(tabName = "chart_review",
               conditionalPanel(
