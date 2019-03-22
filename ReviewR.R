@@ -42,8 +42,8 @@ server <- function(input, output, session) {
     div(class="subject_id_header",
       span(paste(values$redcap_text_fields %>% filter(field_name == input$redcap_patient_id) %>% select(field_label), " - "), class="subject_id_label"),
       span(input$subject_id, class="subject_id_label_value"),
-      img(id="subject_review_status", src = if (input$redcap_survey_status == 0) { "inprogress.png" }
-                                            else if (input$redcap_survey_status == 1) { "incomplete.png" }
+      img(id="subject_review_status", src = if (input$redcap_survey_status == 0) { "incomplete.png" }
+                                            else if (input$redcap_survey_status == 1) { "inprogress.png" }
                                             else { "complete.png" })
     )#div
   }) #renderUI subject_id_status_redcap
