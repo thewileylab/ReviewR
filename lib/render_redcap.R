@@ -84,8 +84,19 @@ render_redcap <- function(redcap_field, current_subject_data, other_default_data
     checkbox_choices <- temp$Values
     names(checkbox_choices) <- temp$Names
     field_note <- ifelse(is.na(redcap_field$field_note) !=T, redcap_field$field_note[1],'')
+    if (nrow(current_subject_data) == 1) {
+      checked_boxes = current_subject_data %>%
+                      select(contains("checkbox_test")) %>%
+                      gather() %>%
+                      separate(key, c("name", "index"), sep="___") %>%
+                      filter(value == 'Checked') %>%
+                      select(index)
+    }
+    else {
+      checked_boxes <- character(0)
+    }
     renderUI({tagList(
-      checkboxGroupInput(inputId = redcap_field$reviewr_inputID,label = question, choices = checkbox_choices),
+      checkboxGroupInput(inputId = redcap_field$reviewr_inputID,label = question, choices = checkbox_choices, selected = unlist(checked_boxes)),
       renderUI({div(field_note, style = "color: grey;font-style: italic;font-size:.80em;")}))})
   } else if(redcap_field$reviewr_redcap_widget_function[1] == 'reviewr_notes'){
     question <- ifelse(is.na(redcap_field$required_field[1]) == T,paste0(as.numeric(redcap_field$rowname[1]),'.) ',redcap_field$field_label[1]),paste0(as.numeric(redcap_field$rowname[1]),'.) ',redcap_field$field_label[1],' *'))
