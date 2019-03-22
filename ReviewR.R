@@ -217,8 +217,7 @@ server <- function(input, output, session) {
   }
   
   saveData <- function(data) {
-    data <- as.data.frame(t(data))
-    responses <<- data
+    responses <<- as.data.frame(t(data))
 
     # checkbox_responses <- responses %>% 
     #   select(contains('checkbox')) %>% 
@@ -244,7 +243,7 @@ server <- function(input, output, session) {
                                                                               values$redcap_next_record_id))
     all_responses <<- cbind(record_id, other_responses)#, checkbox_responses)
     is_complete <- tibble(!!as.name(values$redcap_status_field) := input$redcap_survey_status)
-    redcap_data <- cbind(all_responses, is_complete)
+    redcap_data <- cbind(all_responses, is_complete) %>% mutate_if(is.factor, as.character)
     importRecords(rcon = values$redcap_connection, data = redcap_data)
     
     values$redcap_records <- exportRecords(values$redcap_connection)
@@ -254,7 +253,7 @@ server <- function(input, output, session) {
   # Collect all of the user entered data
   #formData is a reactive function
   formData <- reactive({
-    data <- sapply(values$redcap_form_fields, function(x) { input[[x]] })
+    data <- sapply(values$redcap_form_fields, function(x) { as.character(format(input[[x]])) })
     data
   })
   
