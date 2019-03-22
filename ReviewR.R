@@ -87,8 +87,18 @@ server <- function(input, output, session) {
   
   # Handle the rendering of our mapped REDCap fields to the appropriate UI widgets
   output$redcap_instrument <- renderUI({
+    # Load the REDCap data for the current subject in context
+    values$current_subject_data = values$redcap_records %>%
+      filter(input$subject_id == !!as.name(input$redcap_patient_id)) %>%
+      slice(1)
+    # If no REDCap data was found, load another default structure to hold data from
+    # our current session's configuration.
+    if (nrow(values$current_subject_data) == 0) {
+      other_default_data = tibble(!!as.name(input$redcap_patient_id) := input$subject_id,
+                                  !!as.name(input$redcap_reviewer_id) := input$redcap_reviewer_name)
+    }
     lapply(1:nrow(values$redcap_instrument), function(i) {
-      render_redcap(values$redcap_instrument[i,])
+      render_redcap(values$redcap_instrument[i,], values$current_subject_data, other_default_data)
     })
   })
   
@@ -226,14 +236,18 @@ server <- function(input, output, session) {
       unnest() %>% 
       rename_all(str_remove_all, pattern = regex(pattern = '(_reviewr_).*'))
 
-    browser()    
-    record_id <- tibble(!! values$redcap_record_id_field$field_name := values$redcap_next_record_id)
-    
+    # If this is an existing record, use the same record id.  Otherwise, use the
+    # next ID in the sequence.
+    record_id <- tibble(!! values$redcap_record_id_field$field_name := ifelse(nrow(values$current_subject_data) == 1,
+                                                                              values$current_subject_data[,1],
+                                                                              values$redcap_next_record_id))
     all_responses <<- cbind(record_id, other_responses)#, checkbox_responses)
     is_complete <- tibble(my_first_instrument_complete = input$redcap_survey_status)
     redcap_data <- cbind(all_responses, is_complete)
     importRecords(rcon = values$redcap_connection, data = redcap_data)
-    values$redcap_next_record_id = values$redcap_next_record_id + 1
+    
+    values$redcap_records <- exportRecords(values$redcap_connection)
+    values$redcap_next_record_id <- max(as.numeric(values$redcap_records[,1])) + 1
   }
   
   # Collect all of the user entered data
@@ -314,11 +328,6 @@ server <- function(input, output, session) {
     reviewr_config$redcap_patient_id_field <- NULL
     reviewr_config$redcap_reviewer_id_field <- NULL
   })
-  # 
-  # observeEvent(input$redcap_configure, {
-  #   reviewr_config$redcap_patient_id_field <- input$redcap_patient_id_field
-  #   reviewr_config$redcap_reviewer_id_field <- input$redcap_reviewr_id_field
-  # })
   
   # When the Save button is clicked, save the form data
   observeEvent(input$redcap_upload_survey, {
