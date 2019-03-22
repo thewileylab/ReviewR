@@ -21,7 +21,7 @@ database_display_name = list("postgres" = "PostgreSQL", "bigquery" = "BigQuery")
 
 ## Survey complete choices
 redcap_survey_complete_values <- c(0,1,2)
-names(redcap_survey_complete_values) <- c('Incomplete', 'Unverified','Complete')
+names(redcap_survey_complete_values) <- c('Incomplete', 'Unverified', 'Complete')
 
 # Define server logic 
 server <- function(input, output, session) {
@@ -114,12 +114,18 @@ server <- function(input, output, session) {
     panel
   })
   
-  output$patient_chart_panel_abstraction <- renderUI({ 
+  output$patient_chart_panel_abstraction <- renderUI({
+    # Convert the selected status (either from the saved value, or a default) to the numeric value which
+    # will select it in the combo box.
+    selected_status <- ifelse(!is.null(values$current_subject_data) && nrow(values$current_subject_data) == 1,
+                              unlist(values$current_subject_data %>% select(values$redcap_status_field) %>% unnest()), 'Incomplete')
+    selected_status <- redcap_survey_complete_values[[selected_status]]
+
     fluidRow(
       box(width=9, status = "primary", solidHeader = FALSE, patient_chart_panel()),
       box(width=3, status = "danger", solidHeader = FALSE,
           uiOutput('redcap_instrument'),
-          selectInput(inputId = 'redcap_survey_status',label = 'Form Complete?',choices = redcap_survey_complete_values),
+          selectInput(inputId = 'redcap_survey_status',label = 'Form Complete?', choices = redcap_survey_complete_values, selected = selected_status),
           actionButton(inputId ='redcap_upload_survey',label = 'Upload to REDCap')
       ) #box
     ) #fluidRow
