@@ -219,20 +219,21 @@ server <- function(input, output, session) {
   saveData <- function(data) {
     responses <<- as.data.frame(t(data))
 
-    # checkbox_responses <- responses %>% 
-    #   select(contains('checkbox')) %>% 
-    #   mutate_if(is.list, unname) %>% 
-    #   gather() %>% 
-    #   mutate(value = ifelse(value == 'NULL', NA, value)) %>% 
-    #   unnest() %>% 
-    #   mutate(temp = 1) %>% 
-    #   unite(col_name, key, value, sep = '___') %>% 
-    #   spread(col_name, temp, fill = 0) %>% 
-    #   rename_all(str_remove_all, pattern = regex(pattern = '_reviewr_checkbox')) %>% 
-    #   select(-contains('___NA'))
+    checkbox_responses <- responses %>%
+      select(contains('checkbox')) %>%
+      mutate_if(is.list, unname) %>%
+      gather() %>%
+      mutate(value = ifelse(value == 'NULL', NA, value)) %>%
+      unnest() %>%
+      mutate(temp = 1) %>%
+      unite(col_name, key, value, sep = '___') %>%
+      spread(col_name, temp, fill = 0) %>%
+      rename_all(str_remove_all, pattern = regex(pattern = '_reviewr_checkbox')) %>%
+      select(-contains('___NA'))
     
     other_responses <- responses %>% 
-      select(-contains("checkbox")) %>% 
+      select(-contains("checkbox")) %>%
+      mutate_if(is.list, unname) %>%   # Thank you https://github.com/tidyverse/tidyr/issues/460#issuecomment-395256360 !!!
       unnest() %>% 
       rename_all(str_remove_all, pattern = regex(pattern = '(_reviewr_).*'))
 
@@ -241,7 +242,7 @@ server <- function(input, output, session) {
     record_id <- tibble(!! values$redcap_record_id_field$field_name := ifelse(nrow(values$current_subject_data) == 1,
                                                                               values$current_subject_data[,1],
                                                                               values$redcap_next_record_id))
-    all_responses <<- cbind(record_id, other_responses)#, checkbox_responses)
+    all_responses <<- cbind(record_id, other_responses, checkbox_responses)
     is_complete <- tibble(!!as.name(values$redcap_status_field) := input$redcap_survey_status)
     redcap_data <- cbind(all_responses, is_complete) %>% mutate_if(is.factor, as.character)
     importRecords(rcon = values$redcap_connection, data = redcap_data)
