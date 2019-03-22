@@ -98,7 +98,10 @@ initialize <- function(config) {
 initialize_redcap <- function(config) {
   connection <- redcapConnection(url = config$redcap_api_url, token = config$redcap_api_token)
   # Extract Instrument metadata
-  instrument <- exportMetaData(connection) %>% 
+  instrument <- exportMetaData(connection)
+  record_id_field <- instrument %>% slice(1)
+  
+  instrument %<>% 
     slice(-1) %>%   # We drop the first row, as it most likely is the auto-increment field used in REDCap
     filter(!field_type %in% c('slider','calc','descriptive'))
   # Further filter to give the list of text fields - this is our candidate list of patient_id fields
@@ -114,10 +117,28 @@ initialize_redcap <- function(config) {
     # assumption.
     mutate_if(is.logical, as.character) %>%
     left_join(redcap_widget_map, by = c("field_type" = "redcap_field_type", "text_validation_type_or_show_slider_number" = "redcap_field_val")) %>% 
-    mutate(reviewr_inputID = paste0(field_name,"_", reviewr_redcap_widget_function))
+    mutate(reviewr_inputID = paste0(field_name,"_", reviewr_redcap_widget_function)) %>% 
+    rownames_to_column()
   
+  # Retrieve all of the REDCap data saved so far.  This will be cached locally (note that it's one time, as we're assuming single reviewer
+  # at a time).
+  redcap_records <- exportRecords(connection)
+  
+  # Determine the next auto-incrementing record ID, since we are expected to provide it for the API
+  next_record_id <<- max(as.numeric(redcap_records[,1])) + 1  #First column will be the auto incrementing field
+  
+  # Determine what variables are needed to store information       
+  temp1 <- instrument %>%
+    filter(is.na(reviewr_redcap_widget_function) == F) %>% 
+    select(reviewr_inputID)
+  form_fields <<- temp1$reviewr_inputID
+
   config$redcap_instrument <- instrument
   config$redcap_connection <- connection
   config$redcap_text_fields <- text_fields
+  config$redcap_records <- redcap_records
+  config$redcap_next_record_id <- next_record_id
+  config$redcap_record_id_field <- record_id_field
+  config$redcap_form_fields <- form_fields
   config
 }

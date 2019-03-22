@@ -61,8 +61,7 @@ server <- function(input, output, session) {
       div(column(style="padding: 0px; text-align: left;",width=6, actionButton(inputId = 'prev_patient',label = '<< Previous')),
           column(style="padding: 0px; text-align: right;",width=6, actionButton(inputId = 'next_patient',label = 'Next >>'))),
       div(style="padding: 0px; text-align: left;",
-          span(values$redcap_text_fields %>% filter(field_name == input$redcap_patient_id) %>% select(field_label)),
-          br(),
+          tags$label(values$redcap_text_fields %>% filter(field_name == input$redcap_patient_id) %>% select(field_label)),
           selectInput("subject_id", label = NULL, selectize = FALSE, selected = input$subject_id, choices = values$all_people_data$ID)
       ) #div
     ) #div
@@ -71,7 +70,7 @@ server <- function(input, output, session) {
     div(style="min-width: 150px",
         div(column(style="padding: 0px; text-align: left;",width=6, actionButton(inputId = 'prev_patient',label = '<< Previous')),
             column(style="padding: 0px; text-align: right;",width=6, actionButton(inputId = 'next_patient',label = 'Next >>'))),
-        div(style="padding: 0px; text-align: left;",span("Record ID"), br(),
+        div(style="padding: 0px; text-align: left;",tags$label("Record ID"), br(),
           selectInput("subject_id", label = NULL, selectize = FALSE, selected = input$subject_id, choices = values$all_people_data$ID))
     ) #div
   })
@@ -157,6 +156,11 @@ server <- function(input, output, session) {
       values$redcap_instrument <- reviewr_config$redcap_instrument
       values$redcap_text_fields <- reviewr_config$redcap_text_fields
       values$redcap_text_fields_selection_list <- reviewr_config$redcap_text_fields %>% deframe() # Specifically set up for use in select control
+      values$redcap_records <- reviewr_config$redcap_records
+      values$redcap_record_id_field <- reviewr_config$redcap_record_id_field
+      values$redcap_form_fields <- reviewr_config$redcap_form_fields
+      values$redcap_next_record_id <- reviewr_config$redcap_next_record_id
+      values$redcap_connection <- reviewr_config$redcap_connection
       output$redcap_connection_error <- renderText({""})
     },
     error=function(e) {
@@ -201,6 +205,44 @@ server <- function(input, output, session) {
     })
   }
   
+  saveData <- function(data) {
+    data <- as.data.frame(t(data))
+    responses <<- data
+
+    # checkbox_responses <- responses %>% 
+    #   select(contains('checkbox')) %>% 
+    #   mutate_if(is.list, unname) %>% 
+    #   gather() %>% 
+    #   mutate(value = ifelse(value == 'NULL', NA, value)) %>% 
+    #   unnest() %>% 
+    #   mutate(temp = 1) %>% 
+    #   unite(col_name, key, value, sep = '___') %>% 
+    #   spread(col_name, temp, fill = 0) %>% 
+    #   rename_all(str_remove_all, pattern = regex(pattern = '_reviewr_checkbox')) %>% 
+    #   select(-contains('___NA'))
+    
+    other_responses <- responses %>% 
+      select(-contains("checkbox")) %>% 
+      unnest() %>% 
+      rename_all(str_remove_all, pattern = regex(pattern = '(_reviewr_).*'))
+
+    browser()    
+    record_id <- tibble(!! values$redcap_record_id_field$field_name := values$redcap_next_record_id)
+    
+    all_responses <<- cbind(record_id, other_responses)#, checkbox_responses)
+    is_complete <- tibble(my_first_instrument_complete = input$redcap_survey_status)
+    redcap_data <- cbind(all_responses, is_complete)
+    importRecords(rcon = values$redcap_connection, data = redcap_data)
+    values$redcap_next_record_id = values$redcap_next_record_id + 1
+  }
+  
+  # Collect all of the user entered data
+  #formData is a reactive function
+  formData <- reactive({
+    data <- sapply(values$redcap_form_fields, function(x) { input[[x]] })
+    data
+  })
+  
   # If during initial setup of the server we have configuration data, attempt to use it to initialize
   # the application, including establishing a connection to the underlying database.
   if (!is.null(reviewr_config) && length(reviewr_config) > 0) {
@@ -218,7 +260,7 @@ server <- function(input, output, session) {
   
   # If the user clicks the button to connect to the database, we will perform the initialization and
   # setup here.  This mimics what's done in the previous block if a config file is present.
-  observeEvent(input$connect, {
+  observeEvent(input$database_connect, {
     toggleShinyDivs("db_connection_fields", "db_connection_status")
     
     reviewr_config = isolate({ list(
@@ -272,10 +314,16 @@ server <- function(input, output, session) {
     reviewr_config$redcap_patient_id_field <- NULL
     reviewr_config$redcap_reviewer_id_field <- NULL
   })
+  # 
+  # observeEvent(input$redcap_configure, {
+  #   reviewr_config$redcap_patient_id_field <- input$redcap_patient_id_field
+  #   reviewr_config$redcap_reviewer_id_field <- input$redcap_reviewr_id_field
+  # })
   
-  observeEvent(input$redcap_configure, {
-    reviewr_config$redcap_patient_id_field <- input$redcap_patient_id_field
-    reviewr_config$redcap_reviewer_id_field <- input$redcap_reviewr_id_field
+  # When the Save button is clicked, save the form data
+  observeEvent(input$redcap_upload_survey, {
+    saveData(formData())
+    shinyjs::reset("rc_instrument")
   })
   
   # When the Shiny session ends, perform cleanup (closing connections, removing objects from environment).
@@ -378,7 +426,7 @@ ui <- dashboardPage(
                                textInput("project_id", "Project ID:"),
                                textInput("dataset", "Dataset:")
                              ), #conditionalPanel
-                             actionButton("connect", "Connect")
+                             actionButton("database_connect", "Connect")
                            ) #div
                         ) #box
                 ), #column
@@ -425,7 +473,7 @@ ui <- dashboardPage(
               ) #fluidRow
       ), #tabItem
       tabItem(tabName = "patient_search",
-              box(title = h2("Select a patient to view"), status = 'primary',width = '100%', height = '100%',
+              box(title = h2("Select a patient to view"), status = 'primary', width = '100%', height = '100%',
               withSpinner(DT::dataTableOutput('all_patients_tbl'))
               )
       ), #tabItem
