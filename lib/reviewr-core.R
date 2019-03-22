@@ -139,6 +139,7 @@ initialize_redcap <- function(config) {
   config$redcap_records <- redcap_records
   config$redcap_next_record_id <- next_record_id
   config$redcap_record_id_field <- record_id_field
+  config$redcap_status_field <- paste0(record_id_field$form_name, '_complete')
   config$redcap_form_fields <- form_fields
   config
 }

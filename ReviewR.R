@@ -168,6 +168,7 @@ server <- function(input, output, session) {
       values$redcap_text_fields_selection_list <- reviewr_config$redcap_text_fields %>% deframe() # Specifically set up for use in select control
       values$redcap_records <- reviewr_config$redcap_records
       values$redcap_record_id_field <- reviewr_config$redcap_record_id_field
+      values$redcap_status_field <- reviewr_config$redcap_status_field
       values$redcap_form_fields <- reviewr_config$redcap_form_fields
       values$redcap_next_record_id <- reviewr_config$redcap_next_record_id
       values$redcap_connection <- reviewr_config$redcap_connection
@@ -242,7 +243,7 @@ server <- function(input, output, session) {
                                                                               values$current_subject_data[,1],
                                                                               values$redcap_next_record_id))
     all_responses <<- cbind(record_id, other_responses)#, checkbox_responses)
-    is_complete <- tibble(my_first_instrument_complete = input$redcap_survey_status)
+    is_complete <- tibble(!!as.name(values$redcap_status_field) := input$redcap_survey_status)
     redcap_data <- cbind(all_responses, is_complete)
     importRecords(rcon = values$redcap_connection, data = redcap_data)
     
