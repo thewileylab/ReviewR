@@ -47,7 +47,7 @@ render_redcap <- function(redcap_field, current_subject_data, other_default_data
     names(radio_choices) <- c('True','False')
     field_note <- ifelse(is.na(redcap_field$field_note) !=T, redcap_field$field_note[1],'')
     default_value <- ifelse(nrow(current_subject_data) == 1,
-                            current_subject_data %>% select(!!as.name(redcap_field$field_name[1])) %>% unnest() %>% pluck(1), '')
+                            ifelse(current_subject_data %>% select(!!as.name(redcap_field$field_name[1])) %>% unnest() %>% pluck(1), 1, 0), '')
     renderUI({tagList(
       radioButtons(inputId = redcap_field$reviewr_inputID[1],label = question,choices = radio_choices, selected = default_value),
       renderUI({div(field_note, style = "color: grey;font-style: italic;font-size:.80em;")}))})
@@ -57,7 +57,7 @@ render_redcap <- function(redcap_field, current_subject_data, other_default_data
     names(radio_choices) <- c('Yes','No')
     field_note <- ifelse(is.na(redcap_field$field_note) !=T, redcap_field$field_note[1],'')
     default_value <- ifelse(nrow(current_subject_data) == 1,
-                            current_subject_data %>% select(!!as.name(redcap_field$field_name[1])) %>% unnest() %>% pluck(1), '')
+                            ifelse(current_subject_data %>% select(!!as.name(redcap_field$field_name[1])) %>% unnest() %>% pluck(1) == 'Yes', 1, 0), '')
     renderUI({tagList(
       radioButtons(inputId = redcap_field$reviewr_inputID[1],label = question,choices = radio_choices, selected = default_value),
       renderUI({div(field_note, style = "color: grey;font-style: italic;font-size:.80em;")}))})
