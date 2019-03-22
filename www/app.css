@@ -76,7 +76,7 @@
   border-color: #ebccd1;
 }
 
-.redcap_configure_complete {
+.redcap_configure_complete, .success {
   color: #3c763d;
   background-color: #dff0d8;
   border-color: #d6e9c6;
