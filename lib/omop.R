@@ -327,7 +327,7 @@ omop_render_data_tables <- function(input, output, cfg) {
   #all_people <- omop_query_all_people(cfg, table_cache)
   output$all_patients_tbl <- DT::renderDataTable(
     omop_query_all_people(cfg, table_cache) %>% mutate(ID = paste0("<a class='row_subject_id' href='#'>", ID, "</a>")),
-    options = list(paging = TRUE, pageLength = 20, searchHighlight = TRUE,scrollY = '100%'),
+    options = list(paging = TRUE, pageLength = 20, searchHighlight = TRUE,scrollY = TRUE,search = list(regex = TRUE, caseInsensitive = TRUE)),
     escape=FALSE, rownames=F, selection='none',
     callback = JS(
       'table.on("click", "tr td a.row_subject_id", function() {
