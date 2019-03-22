@@ -35,6 +35,7 @@ render_redcap <- function(redcap_field, current_subject_data, other_default_data
     question <- ifelse(is.na(redcap_field$required_field[1]) == T,paste0(as.numeric(redcap_field$rowname[1]),') ',redcap_field$field_label[1]),paste0(as.numeric(redcap_field$rowname[1]),') ',redcap_field$field_label[1],' *'))
     dropdown_choices <- temp$Values
     names(dropdown_choices) <- temp$Names
+    dropdown_choices = append("",dropdown_choices)
     default_value <- ifelse(nrow(current_subject_data) == 1,
                             current_subject_data %>% select(!!as.name(redcap_field$field_name[1])) %>% unnest() %>% pluck(1), '')
     field_note <- ifelse(is.na(redcap_field$field_note) !=T, redcap_field$field_note[1],'')
