@@ -126,6 +126,7 @@ server <- function(input, output, session) {
       box(width=3, status = "danger", solidHeader = FALSE,
           uiOutput('redcap_instrument'),
           selectInput(inputId = 'redcap_survey_status',label = 'Form Complete?', choices = redcap_survey_complete_values, selected = selected_status),
+          uiOutput("redcap_save_status"),
           actionButton(inputId ='redcap_upload_survey',label = 'Upload to REDCap')
       ) #box
     ) #fluidRow
@@ -179,6 +180,7 @@ server <- function(input, output, session) {
       values$redcap_next_record_id <- reviewr_config$redcap_next_record_id
       values$redcap_connection <- reviewr_config$redcap_connection
       output$redcap_connection_error <- renderText({""})
+      output$redcap_save_status <- renderText({""})
     },
     error=function(e) {
       output$redcap_connection_error <- renderUI({
@@ -192,6 +194,11 @@ server <- function(input, output, session) {
       }) #renderUI redcap_connection_error
     })
   }
+  
+  # Whenever the subject/patient changes, reset our save status
+  observeEvent(input$subject_id,{
+    output$redcap_save_status <- renderText({""})
+  })
   
   # Helper function to handle connecting to the database, including error handling
   open_database_connection <- function(reviewr_config) {
@@ -223,38 +230,51 @@ server <- function(input, output, session) {
   }
   
   saveData <- function(data) {
-    responses <<- as.data.frame(t(data))
-
-    checkbox_responses <- responses %>%
-      select(contains('checkbox')) %>%
-      mutate_if(is.list, unname) %>%
-      gather() %>%
-      mutate(value = ifelse(value == 'NULL', NA, value)) %>%
-      unnest() %>%
-      mutate(temp = 1) %>%
-      unite(col_name, key, value, sep = '___') %>%
-      spread(col_name, temp, fill = 0) %>%
-      rename_all(str_remove_all, pattern = regex(pattern = '_reviewr_checkbox')) %>%
-      select(-contains('___NA'))
-    
-    other_responses <- responses %>% 
-      select(-contains("checkbox")) %>%
-      mutate_if(is.list, unname) %>%   # Thank you https://github.com/tidyverse/tidyr/issues/460#issuecomment-395256360 !!!
-      unnest() %>% 
-      rename_all(str_remove_all, pattern = regex(pattern = '(_reviewr_).*'))
-
-    # If this is an existing record, use the same record id.  Otherwise, use the
-    # next ID in the sequence.
-    record_id <- tibble(!! values$redcap_record_id_field$field_name := ifelse(nrow(values$current_subject_data) == 1,
-                                                                              values$current_subject_data[,1],
-                                                                              values$redcap_next_record_id))
-    all_responses <<- cbind(record_id, other_responses, checkbox_responses)
-    is_complete <- tibble(!!as.name(values$redcap_status_field) := input$redcap_survey_status)
-    redcap_data <- cbind(all_responses, is_complete) %>% mutate_if(is.factor, as.character)
-    importRecords(rcon = values$redcap_connection, data = redcap_data)
-    
-    values$redcap_records <- exportRecords(values$redcap_connection)
-    values$redcap_next_record_id <- max(as.numeric(values$redcap_records[,1])) + 1
+    tryCatch({
+      responses <<- as.data.frame(t(data))
+      
+      checkbox_responses <- responses %>%
+        select(contains('checkbox')) %>%
+        mutate_if(is.list, unname) %>%
+        gather() %>%
+        mutate(value = ifelse(value == 'NULL', NA, value)) %>%
+        unnest() %>%
+        mutate(temp = 1) %>%
+        unite(col_name, key, value, sep = '___') %>%
+        spread(col_name, temp, fill = 0) %>%
+        rename_all(str_remove_all, pattern = regex(pattern = '_reviewr_checkbox')) %>%
+        select(-contains('___NA'))
+      
+      other_responses <- responses %>% 
+        select(-contains("checkbox")) %>%
+        mutate_if(is.list, unname) %>%   # Thank you https://github.com/tidyverse/tidyr/issues/460#issuecomment-395256360 !!!
+        unnest() %>% 
+        rename_all(str_remove_all, pattern = regex(pattern = '(_reviewr_).*'))
+      
+      # If this is an existing record, use the same record id.  Otherwise, use the
+      # next ID in the sequence.
+      record_id <- tibble(!! values$redcap_record_id_field$field_name := ifelse(nrow(values$current_subject_data) == 1,
+                                                                                values$current_subject_data[,1],
+                                                                                values$redcap_next_record_id))
+      all_responses <<- cbind(record_id, other_responses, checkbox_responses)
+      is_complete <- tibble(!!as.name(values$redcap_status_field) := input$redcap_survey_status)
+      redcap_data <- cbind(all_responses, is_complete) %>% mutate_if(is.factor, as.character)
+      importRecords(rcon = values$redcap_connection, data = redcap_data)
+      
+      values$redcap_records <- exportRecords(values$redcap_connection)
+      values$redcap_next_record_id <- max(as.numeric(values$redcap_records[,1])) + 1
+      
+      output$redcap_save_status <- renderUI({ div(class="status success", "Saved") })
+    },
+    error = function(e) {
+      output$redcap_save_status <- renderUI({
+        div(class="status error",
+            span("Failed to save the record to REDCap - make sure you have a connection, and all required fields are filled in."),
+            br(),br(),
+            span(paste("Error: ", e))
+        ) #div
+      }) #renderUI redcap_save_status
+    })
   }
   
   # Collect all of the user entered data
