@@ -13,7 +13,8 @@ source('lib/reviewr-core.R')
 
 # We will make sure all required packages are installed and loaded
 check.packages(c("shiny", "shinyjs", "shinydashboard", "shinycssloaders",
-                 "tidyverse", "DT", "dbplyr", "magrittr", "readr", "configr"))
+                 "tidyverse", "DT", "dbplyr", "magrittr", "readr", "configr",
+                 "snakecase"))
 
 # Lookups for mapping selection values to a display value in the UI
 data_model_display_name = list("omop" = "OMOP", "mimic" = "MIMIC-III")
