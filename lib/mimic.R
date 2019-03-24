@@ -318,31 +318,31 @@ mimic_render_data_tables <- function(table_config, db_config, input, output, dat
   services_data <- reactive({mimic_query_services(table_config, db_config, input, database_type, connection)})
   transfers_data <- reactive({mimic_query_transfers(table_config, db_config, input, database_type, connection)})
   
-  output$admissions_tbl <- DT::renderDataTable(admissions_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
-  output$callout_tbl <- DT::renderDataTable(callout_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
-  output$chartevents_tbl <- DT::renderDataTable(chartevents_data(), filter = 'top', options = list(paging = TRUE, searchHighlight = TRUE), rownames=F, selection='none')
-  output$cptevents_tbl <- DT::renderDataTable(cptevents_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
-  output$diagnoses_icd_tbl <- DT::renderDataTable(diagnoses_icd_data(), filter = 'top', options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
-  output$drgcodes_tbl <- DT::renderDataTable(drgcodes_data(), filter = 'top', options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
-  output$icustays_tbl <- DT::renderDataTable(icustays_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
-  output$labevents_tbl <- DT::renderDataTable(labevents_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
-  output$microbiologyevents_tbl <- DT::renderDataTable(microbiologyevents_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
-  output$noteevent_tbl <- DT::renderDataTable(noteevent_data(), filter = 'top', options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
+  output$admissions_tbl <- DT::renderDataTable(admissions_data(), options = list(paging = FALSE, searchHighlight = TRUE, search = list(regex = TRUE, caseInsensitive = TRUE)), rownames=F, selection='none')
+  output$callout_tbl <- DT::renderDataTable(callout_data(), options = list(paging = FALSE, searchHighlight = TRUE, search = list(regex = TRUE, caseInsensitive = TRUE)), rownames=F, selection='none')
+  output$chartevents_tbl <- DT::renderDataTable(chartevents_data(), filter = 'top', options = list(paging = TRUE, searchHighlight = TRUE, search = list(regex = TRUE, caseInsensitive = TRUE)), rownames=F, selection='none')
+  output$cptevents_tbl <- DT::renderDataTable(cptevents_data(), options = list(paging = FALSE, searchHighlight = TRUE, search = list(regex = TRUE, caseInsensitive = TRUE)), rownames=F, selection='none')
+  output$diagnoses_icd_tbl <- DT::renderDataTable(diagnoses_icd_data(), filter = 'top', options = list(paging = FALSE, searchHighlight = TRUE, search = list(regex = TRUE, caseInsensitive = TRUE)), rownames=F, selection='none')
+  output$drgcodes_tbl <- DT::renderDataTable(drgcodes_data(), filter = 'top', options = list(paging = FALSE, searchHighlight = TRUE, search = list(regex = TRUE, caseInsensitive = TRUE)), rownames=F, selection='none')
+  output$icustays_tbl <- DT::renderDataTable(icustays_data(), options = list(paging = FALSE, searchHighlight = TRUE, search = list(regex = TRUE, caseInsensitive = TRUE)), rownames=F, selection='none')
+  output$labevents_tbl <- DT::renderDataTable(labevents_data(), options = list(paging = FALSE, searchHighlight = TRUE, search = list(regex = TRUE, caseInsensitive = TRUE)), rownames=F, selection='none')
+  output$microbiologyevents_tbl <- DT::renderDataTable(microbiologyevents_data(), options = list(paging = FALSE, searchHighlight = TRUE), search = list(regex = TRUE, caseInsensitive = TRUE), rownames=F, selection='none')
+  output$noteevent_tbl <- DT::renderDataTable(noteevent_data(), filter = 'top', options = list(paging = FALSE, searchHighlight = TRUE, search = list(regex = TRUE, caseInsensitive = TRUE)), rownames=F, selection='none')
   output$all_patients_tbl <- DT::renderDataTable(
     mimic_query_all_patients(table_config, db_config, database_type, connection),
-    options = list(paging = TRUE, pageLength = 20, searchHighlight = TRUE,scrollY = '100%'),
+    options = list(paging = TRUE, pageLength = 20, searchHighlight = TRUE,scrollY = TRUE, search = list(regex = TRUE, caseInsensitive = TRUE)),
     escape=FALSE, rownames=F, selection='none',
     callback = JS(
       'table.on("click", "tr td a.row_subject_id", function() {
          Shiny.onInputChange("subject_id", $(this).text());
          $(".main-sidebar li a").click();
        });'))
-  output$patients_tbl <- DT::renderDataTable(patients_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
-  output$prescriptions_tbl <- DT::renderDataTable(prescriptions_data(), filter = 'top', options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
-  output$procedureevents_mv_tbl <- DT::renderDataTable(procedureevents_mv_data(), filter = 'top', options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
-  output$procedures_icd_tbl <- DT::renderDataTable(procedures_icd_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
+  output$patients_tbl <- DT::renderDataTable(patients_data(), options = list(paging = FALSE, searchHighlight = TRUE, search = list(regex = TRUE, caseInsensitive = TRUE)), rownames=F, selection='none')
+  output$prescriptions_tbl <- DT::renderDataTable(prescriptions_data(), filter = 'top', options = list(paging = FALSE, searchHighlight = TRUE), search = list(regex = TRUE, caseInsensitive = TRUE), rownames=F, selection='none')
+  output$procedureevents_mv_tbl <- DT::renderDataTable(procedureevents_mv_data(), filter = 'top', options = list(paging = FALSE, searchHighlight = TRUE, search = list(regex = TRUE, caseInsensitive = TRUE)), rownames=F, selection='none')
+  output$procedures_icd_tbl <- DT::renderDataTable(procedures_icd_data(), options = list(paging = FALSE, searchHighlight = TRUE, search = list(regex = TRUE, caseInsensitive = TRUE)), rownames=F, selection='none')
   output$services_labels_tbl <- renderTable(services_labels)
-  output$services_tbl <-  DT::renderDataTable(services_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
-  output$transfers_tbl <- DT::renderDataTable(transfers_data(), options = list(paging = FALSE, searchHighlight = TRUE), rownames=F, selection='none')
+  output$services_tbl <-  DT::renderDataTable(services_data(), options = list(paging = FALSE, searchHighlight = TRUE, search = list(regex = TRUE, caseInsensitive = TRUE)), rownames=F, selection='none')
+  output$transfers_tbl <- DT::renderDataTable(transfers_data(), options = list(paging = FALSE, searchHighlight = TRUE, search = list(regex = TRUE, caseInsensitive = TRUE)), rownames=F, selection='none')
   output
 }
