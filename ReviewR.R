@@ -249,6 +249,7 @@ server <- function(input, output, session) {
       other_responses <- responses %>% 
         select(-contains("checkbox")) %>%
         mutate_if(is.list, unname) %>%   # Thank you https://github.com/tidyverse/tidyr/issues/460#issuecomment-395256360 !!!
+        mutate_all(funs(str_replace(., 'NULL', ''))) %>% 
         unnest() %>% 
         rename_all(str_remove_all, pattern = regex(pattern = '(_reviewr_).*'))
       
