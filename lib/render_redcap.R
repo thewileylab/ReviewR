@@ -87,7 +87,7 @@ render_redcap <- function(redcap_field, current_subject_data, other_default_data
     field_note <- ifelse(is.na(redcap_field$field_note) !=T, redcap_field$field_note[1],'')
     if (nrow(current_subject_data) == 1) {
       checked_boxes = current_subject_data %>%
-                      select(contains("checkbox_test")) %>%
+                      select(contains("___")) %>%
                       gather() %>%
                       separate(key, c("name", "index"), sep="___") %>%
                       filter(value == 'Checked') %>%
@@ -111,7 +111,7 @@ render_redcap <- function(redcap_field, current_subject_data, other_default_data
     question <- ifelse(is.na(redcap_field$required_field[1]) == T,paste0(as.numeric(redcap_field$rowname[1]),') ',redcap_field$field_label[1]),paste0(as.numeric(redcap_field$rowname[1]),') ',redcap_field$field_label[1],' *'))
     field_note <- ifelse(is.na(redcap_field$field_note) !=T, redcap_field$field_note[1],'')
     default_value <- ifelse(nrow(current_subject_data) == 1,
-                            current_subject_data %>% select(!!as.numeric(as.names(redcap_field$field_name[1]))) %>% unnest(), '')
+                            current_subject_data %>% select(!!as.name(redcap_field$field_name[1])) %>% unnest(), '')
     renderUI({tagList(
       numericInput(inputId = redcap_field$reviewr_inputID[1], label = question, min = redcap_field$text_validation_min[1], max = redcap_field$text_validation_max[1], value = default_value),
       renderUI({div(field_note, style = "color: grey;font-style: italic;font-size:.80em;")}))})
