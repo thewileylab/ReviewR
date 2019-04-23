@@ -89,9 +89,10 @@ server <- function(input, output, session) {
   # Handle the rendering of our mapped REDCap fields to the appropriate UI widgets
   output$redcap_instrument <- renderUI({
     # Load the REDCap data for the current subject in context
-    values$current_subject_data = values$redcap_records %>%
+    if(nrow(values$redcap_records) == 0){values$current_subject_data <- tibble(.rows = 0)
+    } else {values$current_subject_data <- values$redcap_records %>%
       filter(input$subject_id == !!as.name(input$redcap_patient_id)) %>%
-      slice(1)
+      slice(1)}
     # If no REDCap data was found, load another default structure to hold data from
     # our current session's configuration.
     if (nrow(values$current_subject_data) == 0) {
@@ -234,6 +235,7 @@ server <- function(input, output, session) {
     tryCatch({
       responses <<- as.data.frame(t(data))
       
+      if(ncol(responses %>% select(contains('checkbox'))) > 0){
       checkbox_responses <- responses %>%
         select(contains('checkbox')) %>%
         mutate_if(is.list, unname) %>%
@@ -245,6 +247,7 @@ server <- function(input, output, session) {
         spread(col_name, temp, fill = 0) %>%
         rename_all(str_remove_all, pattern = regex(pattern = '_reviewr_checkbox')) %>%
         select(-contains('___NA'))
+      } else{checkbox_responses <-tibble('Empty')}
       
       other_responses <- responses %>% 
         select(-contains("checkbox")) %>%
@@ -258,14 +261,14 @@ server <- function(input, output, session) {
       record_id <- tibble(!! values$redcap_record_id_field$field_name := ifelse(nrow(values$current_subject_data) == 1,
                                                                                 values$current_subject_data[,1],
                                                                                 values$redcap_next_record_id))
-      all_responses <<- cbind(record_id, other_responses, checkbox_responses)
+      all_responses <<- cbind(record_id, other_responses, checkbox_responses) %>% select(-contains('Empty'))
       is_complete <- tibble(!!as.name(values$redcap_status_field) := input$redcap_survey_status)
       redcap_data <- cbind(all_responses, is_complete) %>% mutate_if(is.factor, as.character)
       importRecords(rcon = values$redcap_connection, data = redcap_data)
       
-      values$redcap_records <- exportRecords(values$redcap_connection)
-      values$redcap_next_record_id <- max(as.numeric(values$redcap_records[,1])) + 1
       
+      values$redcap_next_record_id <- exportNextRecordName(values$redcap_connection)
+      values$redcap_records <- exportRecords(values$redcap_connection)
       output$redcap_save_status <- renderUI({ div(class="status success", "Saved") })
     },
     error = function(e) {

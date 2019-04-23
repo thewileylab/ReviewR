@@ -87,7 +87,7 @@ render_redcap <- function(redcap_field, current_subject_data, other_default_data
     field_note <- ifelse(is.na(redcap_field$field_note) !=T, redcap_field$field_note[1],'')
     if (nrow(current_subject_data) == 1) {
       checked_boxes = current_subject_data %>%
-                      select(contains("___")) %>%
+                      select(contains(paste0(redcap_field$field_name,"___"))) %>%
                       gather() %>%
                       separate(key, c("name", "index"), sep="___") %>%
                       filter(value == 'Checked') %>%
