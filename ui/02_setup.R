@@ -47,16 +47,18 @@
     })
     
     available_datasets <- eventReactive(input$project_id, {
-      if (input$project_id == '')
+      if (is.null(input$project_id))
         return(NULL)
       available_datasets <- bigrquery::bq_project_datasets(input$project_id) %>%
         unlist() %>%
         tibble() %>%
-        filter(. != input$project_id)
+        filter(. != input$project_id) %>% 
+        deframe()
     })
     observe({
-      updateSelectInput(session = session, inputId = 'dataset', choices = available_datasets()$.)
+      updateSelectInput(session = session, inputId = 'dataset', choices = available_datasets())
     })
+    
 
 # BigQuery UI----------
   select_project_ui <- reactive({
@@ -69,7 +71,8 @@
       selectInput(inputId = 'project_id',label = 'Select from Available Projects:',
                   choices = available_projects()),
       selectInput(inputId = 'dataset',label = 'Select from Available Datasets:',
-                  choices = NULL)
+                  choices = NULL),
+      actionButton(inputId = 'bigquery_connect',label = 'Connect')
       )
     })
     
