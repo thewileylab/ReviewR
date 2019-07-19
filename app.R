@@ -16,7 +16,6 @@ library(shinycssloaders)
 library(tidyverse)
 library(magrittr)
 options(shiny.port = 8100)
-options(gargle_quiet = FALSE)
 
 # Define a reactive UI for ReviewR
 ui <- dashboardPage(skin = 'red',
