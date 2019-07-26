@@ -4,7 +4,8 @@
 
 source('modules/db_setup_module.R')
 db_type <- callModule(db_setup_logic, 'db_setup_ns')
-callModule(db_connect_logic, 'db_connect_ns', db_type$db_selection)
+db_connection_vars <- callModule(db_connect_logic, 'db_connect_ns', db_type$db_selection )
+db_connection <- callModule(db_initialize, 'db_connect_ns', db_type$db_selection, db_connection_vars$bq_project)
 
 
 tagList(fluidRow(box(
