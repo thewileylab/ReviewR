@@ -21,7 +21,7 @@ options(shiny.reactlog=TRUE)
 
 # Define a reactive UI for ReviewR
 ui <- dashboardPage(skin = 'red',
-                    dashboardHeader(title = 'ReviewR v2.0'),
+                    dashboardHeader(title = 'ReviewR v0.1'),
                     dashboardSidebar(
                         sidebarMenu(id = 'main_tabs',
                         sidebarMenuOutput('application_menu')
