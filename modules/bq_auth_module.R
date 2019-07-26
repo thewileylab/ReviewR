@@ -24,7 +24,8 @@
 bq_auth_ui <- function(id) {
   ns <- NS(id)
   tagList(
-    uiOutput(ns('bq_connect_ui'))
+    uiOutput(ns('bq_connect_project_ui')),
+    uiOutput(ns('bq_connect_dataset_ui'))
     )
 }
 
@@ -53,8 +54,9 @@ bq_auth_ui <- function(id) {
 #' }
 #' shinyApp(ui = ui, server = server)
 
-bq_auth_logic <- function(input, output, session) {
+bq_project_auth_logic <- function(input, output, session) {
   # Load Module Libraries
+  library(dplyr)
   library(bigrquery)
   library(httr)
   # Pull the namespace function from the session info to assist in updating selectInputs
@@ -110,15 +112,6 @@ bq_auth_logic <- function(input, output, session) {
     suppressWarnings(bigrquery::bq_auth(token = token()))
     bigrquery::bq_projects()
   })
-  available_datasets <- eventReactive(input$bq_project_id, {
-    # if(input$bq_project_id == '')
-    #   return(NULL)
-    bigrquery::bq_project_datasets(input$bq_project_id) %>%
-      unlist() %>%
-      tibble() %>%
-      filter(. != input$bq_project_id) %>% 
-      deframe()
-  })
   
   # Create project/dataset selectInputs, using the namespace function extracted from the session info
   select_project_ui <- reactive({
@@ -127,15 +120,9 @@ bq_auth_logic <- function(input, output, session) {
     selectInput(inputId = ns('bq_project_id'),label = 'Select from Available Google Projects:',choices = available_projects())
   })
   
-  select_dataset_ui <- reactive({
-    if(is.null(input$bq_project_id) )
-      return(NULL)
-    selectInput(inputId = ns('bq_project_dataset'),label = 'Select from Available BigQuery Datasets:',choices = available_datasets())
-  })
   
   # Collect the user inputs to pass to other elements of the application
   bq_project <- reactive({input$bq_project_id})
-  bq_dataset <- reactive({input$bq_project_dataset})
   
   # Define the reactive BQ Setup UI
   bq_setup_ui <- reactive({
@@ -163,14 +150,13 @@ bq_auth_logic <- function(input, output, session) {
           icon = icon(name = 'sign-out-alt'),
           onclick = HTML(redirect_home)
         ),
-        ## Otherwise, walk the user through selecting a project and dataset, using reactive selectInputs
-        select_project_ui(),
-        select_dataset_ui()
+        ## Otherwise, walk the user through selecting a project using reactive selectInput
+        select_project_ui()
       )
     }
     })
   # Create the output UI
-  output$bq_connect_ui <- renderUI({ bq_setup_ui() })
+  output$bq_connect_project_ui <- renderUI({ bq_setup_ui() })
   
   # Also Return a list of objects for use in other parts of the app. Keep the dataset separate so that bigrquery joins can be performed across datasets.
   return(
@@ -180,4 +166,39 @@ bq_auth_logic <- function(input, output, session) {
       'bq_dataset'= bq_dataset
       )
     )
-  }
+}
+
+bq_dataset_auth_logic <- function(input, output, session, bq_project) {
+  library(dplyr)
+  library(tibble)
+  library(bigrquery)
+  
+  ns <- session$ns
+  
+  available_datasets <- eventReactive(bq_project(), {
+    # if( is.null(bq_project) )
+    #   return(NULL)
+    bigrquery::bq_project_datasets(bq_project()) %>%
+      unlist() %>%
+      tibble() %>%
+      filter(. != bq_project()) %>% 
+      deframe()
+  })
+  
+  select_dataset_ui <- reactive({
+    if(is.null(bq_project()) )
+      return(NULL)
+    selectInput(inputId = ns('bq_project_dataset'),label = 'Select from Available BigQuery Datasets:',choices = available_datasets())
+  })
+  
+  bq_dataset <- reactive({input$bq_project_dataset})
+  
+  output$bq_connect_dataset_ui <- renderUI({ select_dataset_ui() })
+  
+  return(
+    list(
+      'bq_dataset' = bq_dataset
+    )
+  )
+  
+}

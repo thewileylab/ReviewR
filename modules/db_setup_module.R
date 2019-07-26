@@ -10,8 +10,12 @@ db_setup_ui <- function(id) {
 
 db_connect_ui <- function(id) {
   ns <- NS(id)
-  uiOutput(ns('db_connect_ui'))
-}
+  tagList(
+    uiOutput(ns('db_connect_ui')),
+    uiOutput(ns('db_init_ui'))
+  )
+
+  }
 
 # Setup Logic----------
   db_setup_logic <- function(input, output, session) {
@@ -70,22 +74,58 @@ db_connect_logic <- function(input, output, session, db_type){
   
 # Load BigQuery Auth Module
   source('modules/bq_auth_module.R')
-  bq_connect_vars <- callModule(bq_auth_logic, id = 'bq_setup_ns')
+  bq_prj_connect_vars <- callModule(bq_project_auth_logic, id = 'bq_setup_ns')
+  bq_ds_connect_vars <- callModule(bq_dataset_auth_logic, id = 'bq_setup_ns', bq_prj_connect_vars$bq_project)
   
-# Create a connection UI based on the database type
   db_connection_ui <- reactive({
     if(is.null(db_type())) {
       return(NULL)
     } else if(db_type() == 'bigquery') {
-      bq_auth_ui(ns('bq_setup_ns'))
-  } else {
-    actionButton(inputId = 'action_jackson',label = 'Postgres Placeholder') }
+      tagList(
+        bq_auth_ui(ns('bq_setup_ns'))
+      )
+  } else { 
+    tagList(
+      actionButton(inputId = 'action_jackson',label = 'Postgres Placeholder')
+    )
+    }
   })
   
-  output$db_connect_ui <- renderUI({ tagList(
-    renderText(db_type()),
-    db_connection_ui()
-    ) 
+  output$db_connect_ui <- renderUI({ 
+    tagList(
+      db_connection_ui()
+      ) 
     })
+  return(list(
+    'bq_project' = bq_prj_connect_vars$bq_project
+  ))
 }
+
+db_initialize <- function(input, output, session, db_type, bq_project) {
+  ns <- session$ns
+  # Create a connection UI based on the database type, add logic for postgres to hide connect button until required information is present.
+  connect_button <- reactive({
+    if( is.null(bq_project() )) {
+      return(NULL)
+    } else {actionButton(inputId = ns('db_connect'),label = 'Connect')}
+  })
+  
+  output$db_init_ui <- renderUI({ connect_button() })
+  
+  # Using information from the connection UI Create and return a connection variable  
+  db_connection <- eventReactive(input$db_connect, {
+    if(is.null(db_type())) {
+      return(NULL)
+    } else if(db_type() == 'bigquery') {
+      DBI::dbConnect(drv = bigrquery::bigquery(), 
+                     project = db_project())
+    } else {
+      DBI::dbConnect(drv = RPostgreSQL::PostgreSQL())}
+  })
+  
+  return(list(
+    'db_connection' = db_connection
+  ))
+}
+
 
