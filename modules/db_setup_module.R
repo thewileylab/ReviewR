@@ -5,17 +5,12 @@
 # Define Database Setup UI Elements----------
 db_setup_ui <- function(id) {
   ns <- NS(id)
-  uiOutput(ns('db_select_ui'))
-}
-
-db_connect_ui <- function(id) {
-  ns <- NS(id)
   tagList(
+    uiOutput(ns('db_select_ui')),
     uiOutput(ns('db_connect_ui')),
     uiOutput(ns('db_init_ui'))
-  )
-
-  }
+    )
+}
 
 # Setup Logic----------
   db_setup_logic <- function(input, output, session) {
@@ -26,18 +21,20 @@ db_connect_ui <- function(id) {
     tibble(filename = list.files(path = 'data_models/')) %>%
       mutate(
         data_model = str_remove_all(string = filename, pattern = regex(pattern = '.csv')),
+        # Replace first underscore with a '|'
         data_model = str_replace(
           string = data_model,
           pattern = '_',
           replacement = '|'
-        )
-      ) %>%  # Replace first underscore with a '|'
-      separate(
+          )
+        ) %>%  
+    # Separate based on '|"
+    separate(
         col = data_model,
         into = c('data_model', 'version'),
         sep = '\\|',
         fill = 'right'
-      ) %>% # Separate based on '|"
+      ) %>% 
       select(data_model) %>%
       unique() %>%
       arrange() %>%
@@ -61,9 +58,11 @@ db_connect_ui <- function(id) {
     )
 
   db_selection <- reactive({input$db_type})
+  data_model <- reactive({input$data_model})
   output$db_select_ui <- renderUI({ db_ui })
   
   return(list(
+    'data_model' = data_model,
     'db_selection' = db_selection
     )
   )
@@ -97,11 +96,15 @@ db_connect_logic <- function(input, output, session, db_type){
       ) 
     })
   return(list(
-    'bq_project' = bq_prj_connect_vars$bq_project
+    'bq_project' = bq_prj_connect_vars$bq_project,
+    'bq_dataset' = bq_ds_connect_vars$bq_dataset
   ))
 }
 
 db_initialize <- function(input, output, session, db_type, bq_project) {
+  library(DBI)
+  library(pool) #https://www.r-bloggers.com/pool-package-on-cran/
+  
   ns <- session$ns
   # Create a connection UI based on the database type, add logic for postgres to hide connect button until required information is present.
   connect_button <- reactive({
@@ -114,18 +117,21 @@ db_initialize <- function(input, output, session, db_type, bq_project) {
   
   # Using information from the connection UI Create and return a connection variable  
   db_connection <- eventReactive(input$db_connect, {
-    if(is.null(db_type())) {
+    if(is.null( db_type() )) {
       return(NULL)
     } else if(db_type() == 'bigquery') {
-      DBI::dbConnect(drv = bigrquery::bigquery(), 
-                     project = db_project())
+      pool::dbPool(drv = bigrquery::bigquery(), 
+                     project = bq_project())
     } else {
-      DBI::dbConnect(drv = RPostgreSQL::PostgreSQL())}
+      pool::dbPool(drv = RPostgreSQL::PostgreSQL(),
+                   other,
+                   postgres,
+                   variables
+      )
+      }
   })
   
   return(list(
     'db_connection' = db_connection
   ))
 }
-
-
