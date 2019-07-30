@@ -14,7 +14,6 @@ library(shinydashboard)
 library(shinycssloaders)
 library(tidyverse)
 library(magrittr)
-library(pool)
 
 options(shiny.port = 8100)
 options(shiny.reactlog=TRUE)
@@ -44,16 +43,16 @@ server <- function(input, output, session) {
         })
     
     ## Source Sidebar Menu Contents
-    output$welcome_tab <- renderUI({source('ui/01_welcome.R', local = T)[1]})
-    output$setup_tab <- renderUI({source('ui/02_setup.R', local = T)[1]})
-    #output$patient_search_tab <- renderUI({source('ui/03_patient_search.R', local = T)[1]})
+    output$welcome_tab <- renderUI({source('ui/01_welcome.R')[1]})
+    output$setup_tab <- renderUI({source('ui/02_setup.R')[1]})
+    output$patient_search_tab <- renderUI({source('ui/03_patient_search.R')[1]})
     
     ## Render the main UI
     output$main_ui <- renderUI({
         tabItems(
             tabItem(tabName = 'welcome', uiOutput('welcome_tab')),
-            tabItem(tabName = 'setup', uiOutput('setup_tab'))
-            #tabItem(tabName = 'patient_search', uiOutput('patient_search_tab'))
+            tabItem(tabName = 'setup', uiOutput('setup_tab')),
+            tabItem(tabName = 'patient_search', uiOutput('patient_search_tab'))
             )
         })
 
