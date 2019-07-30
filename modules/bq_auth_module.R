@@ -108,8 +108,8 @@ bq_project_auth_logic <- function(input, output, session) {
   available_projects <- reactive({
     if (is.null(params$code))
       return(NULL)
-    # Authenticate session with Google, Gargle is unnessecarily verbose at it's current version, hence suppressWarnings()
-    suppressWarnings(bigrquery::bq_auth(token = token()))
+    # Authenticate session with Google
+    bigrquery::bq_auth(token = token())
     bigrquery::bq_projects()
   })
   
