@@ -25,7 +25,8 @@ bq_auth_ui <- function(id) {
   ns <- NS(id)
   tagList(
     uiOutput(ns('bq_connect_project_ui')),
-    uiOutput(ns('bq_connect_dataset_ui'))
+    uiOutput(ns('bq_connect_dataset_ui')),
+    uiOutput(ns('bq_init_connection_ui'))
     )
 }
 
@@ -108,7 +109,8 @@ bq_project_auth_logic <- function(input, output, session) {
   available_projects <- reactive({
     if (is.null(params$code))
       return(NULL)
-    # Authenticate session with Google
+    # Authenticate session with Google, Gargle is unnessecarily verbose at it's current version, hence suppressWarnings()
+    #suppressWarnings(bigrquery::bq_auth(token = token()))
     bigrquery::bq_auth(token = token())
     bigrquery::bq_projects()
   })
@@ -162,8 +164,7 @@ bq_project_auth_logic <- function(input, output, session) {
   return(
     list(
       'token'= token,
-      'bq_project' = bq_project,
-      'bq_dataset'= bq_dataset
+      'bq_project' = bq_project
       )
     )
 }
@@ -200,5 +201,37 @@ bq_dataset_auth_logic <- function(input, output, session, bq_project) {
       'bq_dataset' = bq_dataset
     )
   )
-  
 }
+
+bq_initialize <- function(input, output, session, bq_project, bq_dataset) {
+  library(DBI)
+  library(pool) #https://www.r-bloggers.com/pool-package-on-cran/
+  
+  ns <- session$ns
+  # Create a connection UI based on the database type, add logic for postgres to hide connect button until required information is present.
+  connect_button <- reactive({
+    if( is.null( bq_project() ) | is.null( bq_dataset() )) {
+      return(NULL)
+    } else {actionButton(inputId = ns('bq_connect'),label = 'Connect')}
+  })
+  
+  output$bq_init_connection_ui <- renderUI({ connect_button() })
+  
+  # Using information from the connection UI Create and return a connection variable  
+  db_connection <- eventReactive(input$bq_connect, {
+    if(is.null( bq_project() ) | is.null( bq_dataset() )) {
+      return(NULL)
+    } else {
+      pool::dbPool(drv = bigrquery::bigquery(), 
+                   project = bq_project(),
+                   dataset = bq_dataset()
+                   )
+      } 
+  })
+  
+  return(list(
+    'db_connection' = db_connection
+  ))
+}
+  
+
