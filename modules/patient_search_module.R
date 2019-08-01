@@ -7,7 +7,7 @@ patient_search_ui <- function(id) {
   )
 }
 
-patient_search_logic <- function(input, output, session, db_connection, data_model, dataset) {
+patient_search_logic <- function(input, output, session, db_connection) {
   library(tibble)
   library(DT)
   ns <- session$ns
@@ -16,8 +16,8 @@ patient_search_logic <- function(input, output, session, db_connection, data_mod
   patient_search_tbl <- reactive({
     if(is.null( db_connection() )) {
       return(NULL)
-    } else if (!is.null( db_connection() ) & data_model() == 'OMOP') {
-      patients <- paste0(dataset(), '.person')
+    } else if (!is.null( db_connection() )) {
+      patients <- 'person'
       tbl(db_connection(), patients) %>% 
         collect()
     }
