@@ -211,7 +211,7 @@ bq_initialize <- function(input, output, session, bq_project, bq_dataset) {
   connect_button <- reactive({
     if( is.null( bq_project() ) | is.null( bq_dataset() )) {
       return(NULL)
-    } else {actionButton(inputId = ns('bq_connect'),label = 'Connect')}
+    } else {actionButton(inputId = ns('bq_connect'),label = 'Connect', icon = icon('cloud'))}
   })
   
   output$bq_init_connection_ui <- renderUI({ connect_button() })
