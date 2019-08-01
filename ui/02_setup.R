@@ -4,8 +4,10 @@
 
 # Source required setup modules----------
 source('modules/db_setup_module.R')
-db_setup_vars <- callModule(db_setup_logic, 'db_setup_ns')
-db_connection_vars <- callModule(db_connect_logic, 'db_setup_ns', db_setup_vars$db_selection )
+source('modules/data_model_detection_module.R')
+db_type <- callModule(db_select_logic, 'db_setup_ns')
+db_connection_vars <- callModule(db_connect_logic, 'db_setup_ns', db_type$db_selection )
+table_map <- callModule(data_model_detection_logic, 'model_ns', db_connection_vars$db_connection)
 
 # Define Setup Tab UI ----------
 tagList(
@@ -27,7 +29,8 @@ fluidRow(
       status = 'primary',
       solidHeader = F,
       #Box Contents
-      db_setup_ui('db_setup_ns')
+       db_setup_ui('db_setup_ns'),
+       data_model_detection_ui('model_ns')
       )
     ),
   column(
