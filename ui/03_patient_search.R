@@ -4,7 +4,7 @@
 
 # Source Patient Search Modules
 source('modules/patient_search_module.R')
-callModule(patient_search_logic, 'patient_search_ns', db_connection$db_connection, db_setup_vars$data_model, db_connection_vars$bq_dataset)
+callModule(patient_search_logic, 'patient_search_ns', db_connection_vars$db_connection)
 
 # Define Patient Search Tab UI
 tagList(
