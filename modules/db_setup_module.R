@@ -7,52 +7,33 @@ db_setup_ui <- function(id) {
   ns <- NS(id)
   tagList(
     uiOutput(ns('db_select_ui')),
-    uiOutput(ns('db_connect_ui')),
-    uiOutput(ns('db_init_ui'))
+    uiOutput(ns('db_connect_ui'))
     )
+}
+
+db_success_ui <- function(id){
+  ns <- NS(id)
+  tagList(
+    uiOutput()
+  )
 }
 
 # Setup Logic----------
   db_setup_logic <- function(input, output, session) {
   ns <- session$ns
 
-# Load available data model selections from previously uploaded CDM templates
-  data_model_selections <-
-    tibble(filename = list.files(path = 'data_models/')) %>%
-      mutate(
-        data_model = str_remove_all(string = filename, pattern = regex(pattern = '.csv')),
-        # Replace first underscore with a '|'
-        data_model = str_replace(
-          string = data_model,
-          pattern = '_',
-          replacement = '|'
-          )
-        ) %>%  
-    # Separate based on '|"
-    separate(
-        col = data_model,
-        into = c('data_model', 'version'),
-        sep = '\\|',
-        fill = 'right'
-      ) %>% 
-      select(data_model) %>%
-      unique() %>%
-      arrange() %>%
-      deframe()
+
   
 # Supported databases
   db_choices <- c('BigQuery' = 'bigquery',
                   'PostgreSQL' = 'pg_sql')
   db_ui <- 
     tagList(
-      selectInput(
-        inputId = ns('data_model'),
-        label = 'Select your data model:',
-        choices = data_model_selections
-      ),
+      div("Please select a database type from the list of supported databases."),
+      br(),
       selectInput(
         inputId = ns('db_type'),
-        label = 'Select your database:',
+        label = 'Database type:',
         choices = db_choices,
         selected = 'bigquery')
     )
@@ -62,7 +43,7 @@ db_setup_ui <- function(id) {
   output$db_select_ui <- renderUI({ db_ui })
   
   return(list(
-    'data_model' = data_model,
+    # 'data_model' = data_model,
     'db_selection' = db_selection
     )
   )
@@ -75,6 +56,7 @@ db_connect_logic <- function(input, output, session, db_type){
   source('modules/bq_auth_module.R')
   bq_prj_connect_vars <- callModule(bq_project_auth_logic, id = 'bq_setup_ns')
   bq_ds_connect_vars <- callModule(bq_dataset_auth_logic, id = 'bq_setup_ns', bq_prj_connect_vars$bq_project)
+  db_connection <- callModule(bq_initialize, id = 'bq_setup_ns', bq_prj_connect_vars$bq_project, bq_ds_connect_vars$bq_dataset)
   
   db_connection_ui <- reactive({
     if(is.null(db_type())) {
@@ -97,41 +79,8 @@ db_connect_logic <- function(input, output, session, db_type){
     })
   return(list(
     'bq_project' = bq_prj_connect_vars$bq_project,
-    'bq_dataset' = bq_ds_connect_vars$bq_dataset
+    'bq_dataset' = bq_ds_connect_vars$bq_dataset, 
+    'db_connection' = db_connection$db_connection
   ))
 }
 
-db_initialize <- function(input, output, session, db_type, bq_project) {
-  library(DBI)
-  library(pool) #https://www.r-bloggers.com/pool-package-on-cran/
-  
-  ns <- session$ns
-  # Create a connection UI based on the database type, add logic for postgres to hide connect button until required information is present.
-  connect_button <- reactive({
-    if( is.null(bq_project() )) {
-      return(NULL)
-    } else {actionButton(inputId = ns('db_connect'),label = 'Connect')}
-  })
-  
-  output$db_init_ui <- renderUI({ connect_button() })
-  
-  # Using information from the connection UI Create and return a connection variable  
-  db_connection <- eventReactive(input$db_connect, {
-    if(is.null( db_type() )) {
-      return(NULL)
-    } else if(db_type() == 'bigquery') {
-      pool::dbPool(drv = bigrquery::bigquery(), 
-                     project = bq_project())
-    } else {
-      pool::dbPool(drv = RPostgreSQL::PostgreSQL(),
-                   other,
-                   postgres,
-                   variables
-      )
-      }
-  })
-  
-  return(list(
-    'db_connection' = db_connection
-  ))
-}
