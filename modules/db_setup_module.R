@@ -19,11 +19,9 @@ db_success_ui <- function(id){
 }
 
 # Setup Logic----------
-  db_setup_logic <- function(input, output, session) {
+  db_select_logic <- function(input, output, session) {
   ns <- session$ns
 
-
-  
 # Supported databases
   db_choices <- c('BigQuery' = 'bigquery',
                   'PostgreSQL' = 'pg_sql')
