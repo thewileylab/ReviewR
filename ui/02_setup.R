@@ -6,7 +6,6 @@
 source('modules/db_setup_module.R')
 db_setup_vars <- callModule(db_setup_logic, 'db_setup_ns')
 db_connection_vars <- callModule(db_connect_logic, 'db_setup_ns', db_setup_vars$db_selection )
-db_connection <- callModule(db_initialize, 'db_setup_ns', db_setup_vars$db_selection, db_connection_vars$bq_project)
 
 # Define Setup Tab UI ----------
 tagList(
