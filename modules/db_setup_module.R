@@ -37,11 +37,9 @@ db_success_ui <- function(id){
     )
 
   db_selection <- reactive({input$db_type})
-  data_model <- reactive({input$data_model})
   output$db_select_ui <- renderUI({ db_ui })
   
   return(list(
-    # 'data_model' = data_model,
     'db_selection' = db_selection
     )
   )
