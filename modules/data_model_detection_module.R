@@ -65,7 +65,7 @@ data_model_detection_logic <- function(input, output, session, db_connection) {
     if(is.null( table_map() )) {
       return(NULL)
       } else if (!is.null( table_map() ) & table_map()$count_filtered !=0) {
-        paste(table_map()$data_model,table_map()$model_version)
+        paste('<b>Data Model:</b>',table_map()$data_model,'<br>','<b>Version:</b>', table_map()$model_version)
         } else {paste('The selected database does not appear to be in OMOP or MIMIC III format. Please disconnect and select another database.')}
   })
   
