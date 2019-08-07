@@ -7,7 +7,6 @@ data_model_detection_ui <- function(id) {
 
 data_model_detection_logic <- function(input, output, session, db_connection) {
   library(tidyverse)
-  library(pool)
   library(DBI)
   ns <- session$ns
   
