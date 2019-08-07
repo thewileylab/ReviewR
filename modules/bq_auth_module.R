@@ -95,8 +95,7 @@ bq_project_auth_logic <- function(input, output, session) {
   
   # Create an authorization token and authenticate with google
   token <- reactive({
-    if (is.null(params$code))
-      return(NULL)
+    req(params$code)
     token <- oauth2.0_token(
       app = app,
       endpoint = api,
@@ -107,17 +106,14 @@ bq_project_auth_logic <- function(input, output, session) {
   
   # Create choices for project/dataset selectInputs
   available_projects <- reactive({
-    if (is.null(params$code))
-      return(NULL)
-    # Authenticate session with Google.
+    # Authenticate session with Google, Gargle is unnessecarily verbose at it's current version, hence suppressWarnings()
+    #suppressWarnings(bigrquery::bq_auth(token = token()))
     bigrquery::bq_auth(token = token())
     bigrquery::bq_projects()
   })
   
   # Create project/dataset selectInputs, using the namespace function extracted from the session info
   select_project_ui <- reactive({
-    if(is.null(params$code))
-      return(NULL)
     selectInput(inputId = ns('bq_project_id'),label = 'Select from Available Google Projects:',choices = available_projects())
   })
   
@@ -176,8 +172,6 @@ bq_dataset_auth_logic <- function(input, output, session, bq_project) {
   ns <- session$ns
   
   available_datasets <- eventReactive(bq_project(), {
-    # if( is.null(bq_project) )
-    #   return(NULL)
     bigrquery::bq_project_datasets(bq_project()) %>%
       unlist() %>%
       tibble() %>%
@@ -186,8 +180,7 @@ bq_dataset_auth_logic <- function(input, output, session, bq_project) {
   })
   
   select_dataset_ui <- reactive({
-    if(is.null(bq_project()) )
-      return(NULL)
+    req( bq_project() )
     selectInput(inputId = ns('bq_project_dataset'),label = 'Select from Available BigQuery Datasets:',choices = available_datasets())
   })
   
@@ -204,21 +197,20 @@ bq_dataset_auth_logic <- function(input, output, session, bq_project) {
 
 bq_initialize <- function(input, output, session, bq_project, bq_dataset) {
   library(DBI)
-  # library(pool) #https://www.r-bloggers.com/pool-package-on-cran/
-  
+
   ns <- session$ns
   # Create a connection UI based on the database type, add logic for postgres to hide connect button until required information is present.
   connect_button <- reactive({
     if( is.null( bq_project() ) | is.null( bq_dataset() )) {
       return(NULL)
-    } else {actionButton(inputId = ns('bq_connect'),label = 'Connect', icon = icon('cloud'))}
+    } else {actionButton(inputId = ns('bq_connect'),label = 'Connect',icon = icon('cloud'))}
   })
   
   output$bq_init_connection_ui <- renderUI({ connect_button() })
   
   # Using information from the connection UI Create and return a connection variable  
   db_connection <- eventReactive(input$bq_connect, {
-    DBI::dbConnect(drv = bigrquery::bigquery(), 
+      DBI::dbConnect(drv = bigrquery::bigquery(), 
                    project = bq_project(),
                    dataset = bq_dataset()
                    )
