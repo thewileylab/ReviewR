@@ -11,13 +11,6 @@ db_setup_ui <- function(id) {
     )
 }
 
-db_success_ui <- function(id){
-  ns <- NS(id)
-  tagList(
-    uiOutput()
-  )
-}
-
 # Setup Logic----------
   db_select_logic <- function(input, output, session) {
   ns <- session$ns
