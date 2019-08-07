@@ -204,7 +204,7 @@ bq_dataset_auth_logic <- function(input, output, session, bq_project) {
 
 bq_initialize <- function(input, output, session, bq_project, bq_dataset) {
   library(DBI)
-  library(pool) #https://www.r-bloggers.com/pool-package-on-cran/
+  # library(pool) #https://www.r-bloggers.com/pool-package-on-cran/
   
   ns <- session$ns
   # Create a connection UI based on the database type, add logic for postgres to hide connect button until required information is present.
@@ -218,14 +218,10 @@ bq_initialize <- function(input, output, session, bq_project, bq_dataset) {
   
   # Using information from the connection UI Create and return a connection variable  
   db_connection <- eventReactive(input$bq_connect, {
-    if(is.null( bq_project() ) | is.null( bq_dataset() )) {
-      return(NULL)
-    } else {
-      pool::dbPool(drv = bigrquery::bigquery(), 
+    DBI::dbConnect(drv = bigrquery::bigquery(), 
                    project = bq_project(),
                    dataset = bq_dataset()
                    )
-      } 
   })
   
   return(list(
