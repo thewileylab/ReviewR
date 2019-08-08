@@ -3,11 +3,23 @@
 #
 
 # Source required setup modules----------
+
+## Patient Database Setup
 source('modules/db_setup_module.R')
-source('modules/data_model_detection_module.R')
 db_type <- callModule(db_select_logic, 'db_setup_ns')
+### Database
 db_connection_vars <- callModule(db_connect_logic, 'db_setup_ns', db_type$db_selection )
+### DB Detection
+source('modules/data_model_detection_module.R',keep.source = F)
 table_map <- callModule(data_model_detection_logic, 'model_ns', db_connection_vars$db_connection)
+
+## Chart Abstraction Setup
+source('modules/chart_abstraction_setup_module.R')
+abstraction <- callModule(chart_abstraction_select_logic, 'abstraction_ns')
+### REDCap
+source('modules/02_chart_abstraction/redcap_module.R')
+rc_vars <- callModule(redcap_connect_logic, 'abstraction_ns', abstraction$abstraction_selection)
+rc_con <- callModule(redcap_initialize_logic, 'abstraction_ns', rc_vars$rc_url, rc_vars$rc_token)
 
 # Define Setup Tab UI ----------
 tagList(
@@ -37,11 +49,13 @@ fluidRow(
     width = 6,
     box(
       #Box Setup
-      title = 'Connect to REDCap Instrument',
+      title = 'Configure Patient Chart Abstraction',
       width = '100%',
       status = 'danger',
-      solidHeader = F
+      solidHeader = F,
       #Box Contents
+      chart_abstraction_select_ui('abstraction_ns'),
+      redcap_connect_ui('abstraction_ns')
       ),
     box(
       #Box Setup
