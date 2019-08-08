@@ -4,7 +4,9 @@
 
 # Source Patient Search Modules
 source('modules/patient_search_module.R')
-callModule(patient_search_logic, 'patient_search_ns', db_connection_vars$db_connection)
+callModule(patient_search_logic, 'patient_search_ns', table_map$table_map, db_connection_vars$db_connection)
+#callModule(patient_search_error_logic, 'patient_search_ns', table_map$table_map, db_connection_vars$db_connection)
+callModule(data_model_detection_logic, 'patient_search_ns', db_connection_vars$db_connection)
 
 # Define Patient Search Tab UI
 tagList(
@@ -16,7 +18,8 @@ tagList(
       status = 'success', 
       solidHeader = F,
       #Box Contents
-      patient_search_ui('patient_search_ns')
+      patient_search_ui('patient_search_ns'),
+      data_model_detection_ui('patient_search_ns')
       )
   )
 )
