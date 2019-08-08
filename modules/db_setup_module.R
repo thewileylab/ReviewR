@@ -42,23 +42,26 @@ db_connect_logic <- function(input, output, session, db_type){
   ns <- session$ns
   
 # Load BigQuery Auth Module
-  source('modules/bq_auth_module.R')
+  source('modules/01_database/bigquery_module.R')
   bq_prj_connect_vars <- callModule(bq_project_auth_logic, id = 'bq_setup_ns')
   bq_ds_connect_vars <- callModule(bq_dataset_auth_logic, id = 'bq_setup_ns', bq_prj_connect_vars$bq_project)
   db_connection <- callModule(bq_initialize, id = 'bq_setup_ns', bq_prj_connect_vars$bq_project, bq_ds_connect_vars$bq_dataset)
   
   db_connection_ui <- reactive({
-    if(is.null(db_type())) {
-      return(NULL)
-    } else if(db_type() == 'bigquery') {
+  req(db_type() )
+    if(db_type() == 'bigquery') {
       tagList(
         bq_auth_ui(ns('bq_setup_ns'))
       )
-  } else { 
-    tagList(
-      actionButton(inputId = 'action_jackson',label = 'Postgres Placeholder')
-    )
-    }
+  } else if(db_type() == 'pg_sql') {
+    renderUI({
+      tagList(
+        div('Error!!!'),
+        br(),
+        div('PostgreSQL Module is imaginary at this time. Do something about that eventually.') 
+      )
+    })
+    } else { return(NULL)}
   })
   
   output$db_connect_ui <- renderUI({ 
@@ -72,4 +75,3 @@ db_connect_logic <- function(input, output, session, db_type){
     'db_connection' = db_connection$db_connection
   ))
 }
-
