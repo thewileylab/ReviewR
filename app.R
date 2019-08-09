@@ -40,7 +40,7 @@ server <- function(input, output, session) {
         sidebarMenu(id = 'main_tabs',
             menuItem(tabName = 'welcome', text = 'Welcome',icon = icon('home')),
             menuItem(tabName = 'setup', text = 'Setup', icon = icon('cog')),
-            menuItem(tabName = 'patient_search', text = 'Patient Serach', icon = icon('users'))
+            menuItem(tabName = 'patient_search', text = 'Patient Search', icon = icon('users'))
             )
         })
     
