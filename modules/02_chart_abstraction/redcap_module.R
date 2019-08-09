@@ -6,19 +6,15 @@ redcap_connect_ui <- function(id) {
   )
 }
 
-redcap_connect_logic <- function(input, output, session, selection) { 
+redcap_connect_logic <- function(input, output, session) { 
   ns <- session$ns
   
   redcap_setup <- reactive({
-    req(selection() )
-    if( selection() == 'redcap') {
       tagList(
         textInput(inputId = ns('redcap_url'),label = 'REDCap URL:',value = 'https://'),
         passwordInput(inputId = ns('redcap_token'),label = 'REDCap API Token:')
-        
       )
-    } else {return(NULL)}
-  })
+        })
   
   output$redcap_setup <- renderUI({ redcap_setup() })
   
