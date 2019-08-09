@@ -16,10 +16,7 @@ table_map <- callModule(data_model_detection_logic, 'model_ns', db_connection_va
 ## Chart Abstraction Setup
 source('modules/chart_abstraction_setup_module.R')
 abstraction <- callModule(chart_abstraction_select_logic, 'abstraction_ns')
-### REDCap
-source('modules/02_chart_abstraction/redcap_module.R')
-rc_vars <- callModule(redcap_connect_logic, 'abstraction_ns', abstraction$abstraction_selection)
-rc_con <- callModule(redcap_initialize_logic, 'abstraction_ns', rc_vars$rc_url, rc_vars$rc_token)
+abstraction_vars <- callModule(chart_abstraction_setup_logic, 'abstraction_ns', abstraction$abstraction_selection)
 
 # Define Setup Tab UI ----------
 tagList(
@@ -54,8 +51,7 @@ fluidRow(
       status = 'danger',
       solidHeader = F,
       #Box Contents
-      chart_abstraction_select_ui('abstraction_ns'),
-      redcap_connect_ui('abstraction_ns')
+      chart_abstraction_setup_ui('abstraction_ns')
       ),
     box(
       #Box Setup
