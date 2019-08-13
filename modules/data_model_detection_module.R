@@ -72,6 +72,7 @@ data_model_detection_logic <- function(input, output, session, db_connection) {
     
     
   return(list(
-    'table_map' = table_map
+    'table_map' = table_map,
+    'data_model_text' = data_model_text
   ))
 }
