@@ -70,6 +70,7 @@ db_connect_logic <- function(input, output, session, db_type){
       ) 
     })
   return(list(
+    'bq_token' = bq_prj_connect_vars$token,
     'bq_project' = bq_prj_connect_vars$bq_project,
     'bq_dataset' = bq_ds_connect_vars$bq_dataset, 
     'db_connection' = db_connection$db_connection
