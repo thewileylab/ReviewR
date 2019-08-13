@@ -7,12 +7,14 @@ source('modules/patient_search_module.R', keep.source = F)
 patient_info <- callModule(patient_search_logic, 'patient_search_ns', table_map$table_map, db_connection_vars$db_connection)
 callModule(data_model_detection_logic, 'patient_search_ns', db_connection_vars$db_connection)
 
-## Patient Search Data Table Observer
+## Patient Search Data Table Observer: open chart review tab when patient id is clicked.
 observeEvent(patient_info$selected_patient(), {
     patient_id <- patient_info$selected_patient
-    if (is.null(patient_id()$value ) || patient_id()$col != 0) {
+    if (is.null(patient_id()$value ) || patient_id()$col != 0) { # Only redirect if cell contains value and is in column 0 (ID)
         return(NULL)
-    } else {updateTabItems(session, 'main_tabs', selected = 'chart_review')}
+    } else {
+      updateTabItems(session, 'main_tabs', selected = 'chart_review')
+      }
 })
 
 # Define Patient Search Tab UI
