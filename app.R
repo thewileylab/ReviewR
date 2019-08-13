@@ -12,6 +12,7 @@
 library(shiny)
 library(shinydashboard)
 library(shinycssloaders)
+library(shinyjs)
 library(tidyverse)
 library(magrittr)
 
@@ -22,19 +23,27 @@ options(shiny.reactlog=TRUE)
 ui <- dashboardPage(title = 'ReviewR',
                     skin = 'red',
                     dashboardHeader(title = tags$a(href='https://github.com/orgs/thewileylab', target='_blank',
-                                                   tags$img(src='logo.png', width = '125px', height = '50px'))),
+                                                   tags$img(src='logo.png', width = '125px', height = '50px')),
+                                    tags$li(class = 'dropdown', actionButton(inputId = 'quit',label = 'Leave ReviewR',icon = icon('suitcase-rolling')))
+                                    ),
                     dashboardSidebar(
                         sidebarMenu(id = 'main_tabs',
                         sidebarMenuOutput('application_menu')
                         )
                         ),
                     dashboardBody(
+                        useShinyjs(),
                         uiOutput('main_ui')
                         )
                     )
 
 # Define server logic required to make ReviewR magic happen. 
 server <- function(input, output, session) {
+    
+    ## Close Application when button is clicked
+    observeEvent(input$quit, {
+        stopApp()
+        })
     
     ## Define a dynamic application menu
     output$application_menu <- renderMenu({
