@@ -1,4 +1,6 @@
-
+#
+# This file contains all elements that are needed to render the Welcome Tab
+#
 
 output$welcome_tab <- renderUI({
 fluidRow(
