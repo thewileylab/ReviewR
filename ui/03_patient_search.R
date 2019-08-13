@@ -7,7 +7,7 @@ source('modules/patient_search_module.R', keep.source = F)
 patient_info <- callModule(patient_search_logic, 'patient_search_ns', table_map$table_map, db_connection_vars$db_connection)
 callModule(data_model_detection_logic, 'patient_search_ns', db_connection_vars$db_connection)
 
-## Test UI Observer
+## Patient Search Data Table Observer
 observeEvent(patient_info$selected_patient(), {
     patient_id <- patient_info$selected_patient
     if (is.null(patient_id()$value ) || patient_id()$col != 0) {
