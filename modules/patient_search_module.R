@@ -66,6 +66,7 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
   output$patient_search_dt <- renderDataTable({
     req(patient_search_tbl())
     patient_search_tbl() %>% 
+      rename('Subject ID' = ID) %>% 
       datatable(options = list(searchHighlight = TRUE, 
                                scrollX = TRUE, 
                                scrollY = '600px', 
@@ -79,7 +80,7 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
                 filter = 'top',
                 class = 'cell-border strip hover'
                 ) %>% 
-      formatStyle('ID', color = '#0000EE', cursor = 'pointer') # Format the ID column to appear blue and change the mouse to a pointer
+      formatStyle('Subject ID', color = '#0000EE', cursor = 'pointer') # Format the ID column to appear blue and change the mouse to a pointer
     })
   ## Extract the selected patient id from the patient data table when clicked and store as a reactive
   selected_patient <- reactive({ input$patient_search_dt_cell_clicked })

@@ -12,7 +12,7 @@ tagList(
         width = 9,
         box(
           #Box Setup
-          title = h2('Record ID -'),
+          title = h2(paste('Subject ID -',patient_info$selected_patient()$value)),
           width = '100%',
           height = '130px',
           status = 'success', 
@@ -31,7 +31,7 @@ tagList(
           solidHeader = F,
           #Box Contents
           selectInput(inputId = 'subject_id',
-                      label = 'Record ID', 
+                      label = 'Subject ID', 
                       choices = patient_info$patient_table() %>% 
                         select(ID) %>% 
                         deframe(),
