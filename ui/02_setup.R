@@ -9,7 +9,7 @@ source('modules/db_setup_module.R')
 db_type <- callModule(db_select_logic, 'db_setup_ns')
 ### Database
 db_connection_vars <- callModule(db_connect_logic, 'db_setup_ns', db_type$db_selection )
-### DB Detection
+### Data Model Detection
 source('modules/data_model_detection_module.R',keep.source = F)
 table_map <- callModule(data_model_detection_logic, 'model_ns', db_connection_vars$db_connection)
 
