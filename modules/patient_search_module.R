@@ -64,7 +64,6 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
   output$patient_search_dt <- renderDataTable({
     req(patient_search_tbl())
     patient_search_tbl() %>% 
-      #mutate(ID = paste0("<a class='row_subject_id' href='#'>", ID, "</a>")) %>% 
       datatable(extensions = 'FixedColumns',
                 options = list(dom = 't',
                                searchHighlight = TRUE, 
@@ -80,7 +79,6 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
                 escape = F,
                 filter = 'top',
                 class = 'cell-border strip hover'
-                #callback = JS('table.on("click", "tr td a.row_subject_id", function() {Shiny.onInputChange("subject_id", $(this).text());$(".main-sidebar li a").click();});')
                 ) %>% 
       formatStyle('ID', color = '#0000EE', cursor = 'pointer')
     })
