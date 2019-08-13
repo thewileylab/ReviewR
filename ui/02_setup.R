@@ -18,6 +18,8 @@ source('modules/chart_abstraction_setup_module.R')
 abstraction <- callModule(chart_abstraction_select_logic, 'abstraction_ns')
 abstraction_vars <- callModule(chart_abstraction_setup_logic, 'abstraction_ns', abstraction$abstraction_selection)
 
+
+output$setup_tab <- renderUI({
 # Define Setup Tab UI ----------
 tagList(
   fluidRow(
@@ -64,3 +66,4 @@ fluidRow(
     )
   )
 )
+})

@@ -1,3 +1,6 @@
+
+
+output$welcome_tab <- renderUI({
 fluidRow(
   box(status = 'primary', solidHeader = F, width = 12,
       h2("Welcome to ReviewR", style='text-align: center;')
@@ -10,3 +13,4 @@ fluidRow(
       div("To get started, please complete the 'Setup' step (found in the left navigation menu)")
       )
   )
+})
