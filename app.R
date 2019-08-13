@@ -35,29 +35,33 @@ ui <- dashboardPage(title = 'ReviewR',
 
 # Define server logic required to make ReviewR magic happen. 
 server <- function(input, output, session) {
+    
     ## Define a dynamic application menu
     output$application_menu <- renderMenu({
         sidebarMenu(id = 'main_tabs',
             menuItem(tabName = 'welcome', text = 'Welcome',icon = icon('home')),
             menuItem(tabName = 'setup', text = 'Setup', icon = icon('cog')),
-            menuItem(tabName = 'patient_search', text = 'Patient Search', icon = icon('users'))
+            menuItem(tabName = 'patient_search', text = 'Patient Search', icon = icon('users')),
+            menuItem(tabName = 'chart_review', text ='Chart Review', icon = icon('table'))
             )
         })
     
     ## Source Sidebar Menu Contents
-    output$welcome_tab <- renderUI({source('ui/01_welcome.R')[1]})
-    output$setup_tab <- renderUI({source('ui/02_setup.R')[1]})
-    output$patient_search_tab <- renderUI({source('ui/03_patient_search.R')[1]})
+    source('ui/01_welcome.R', local = T)$value
+    source('ui/02_setup.R', local = T)$value
+    source('ui/03_patient_search.R', local = T)$value
+    source('ui/04_chart_review.R', local = T)$value
     
     ## Render the main UI
     output$main_ui <- renderUI({
         tabItems(
             tabItem(tabName = 'welcome', uiOutput('welcome_tab')),
             tabItem(tabName = 'setup', uiOutput('setup_tab')),
-            tabItem(tabName = 'patient_search', uiOutput('patient_search_tab'))
+            tabItem(tabName = 'patient_search', uiOutput('patient_search_tab')),
+            tabItem(tabName = 'chart_review', uiOutput('chart_review_tab'))
             )
         })
-
+    
 }
 
 # Run the application 
