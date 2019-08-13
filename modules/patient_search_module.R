@@ -34,6 +34,7 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
       tbl(db_connection(), patients_table) %>% 
         rename(ID = subject_field) %>% 
         select(ID, everything()) %>% 
+        arrange(ID) %>% 
         collect()
     } else if(table_map()$count_filtered != 0 & table_map()$data_model == 'mimic3') {
       ## MIMIC Patient Search
@@ -53,7 +54,8 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
       ## Connect to table
       tbl(db_connection(), patients_table) %>%
         rename(ID = subject_field) %>% 
-        select(ID, everything()) %>% 
+        select(ID, everything()) %>%
+        arrange(ID) %>% 
         collect()
     } else {
       return(NULL)
@@ -64,25 +66,22 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
   output$patient_search_dt <- renderDataTable({
     req(patient_search_tbl())
     patient_search_tbl() %>% 
-      datatable(extensions = 'FixedColumns',
-                options = list(dom = 't',
-                               searchHighlight = TRUE, 
+      datatable(options = list(searchHighlight = TRUE, 
                                scrollX = TRUE, 
                                scrollY = '600px', 
                                search = list(regex = TRUE, 
                                              caseInsensitive = TRUE),
-                               pageLength = 25,
-                               fixedColumns = TRUE
+                               pageLength = 25
                                ),
                 rownames = F, 
-                selection = 'none',
+                selection = 'single',
                 escape = F,
                 filter = 'top',
                 class = 'cell-border strip hover'
                 ) %>% 
-      formatStyle('ID', color = '#0000EE', cursor = 'pointer')
+      formatStyle('ID', color = '#0000EE', cursor = 'pointer') # Format the ID column to appear blue and change the mouse to a pointer
     })
-  ## Extract the selected patient id from the patient data table
+  ## Extract the selected patient id from the patient data table when clicked and store as a reactive
   selected_patient <- reactive({ input$patient_search_dt_cell_clicked })
   
   return(list(
