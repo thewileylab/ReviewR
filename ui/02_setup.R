@@ -18,7 +18,8 @@ source('modules/chart_abstraction_setup_module.R')
 abstraction <- callModule(chart_abstraction_select_logic, 'abstraction_ns')
 abstraction_vars <- callModule(chart_abstraction_setup_logic, 'abstraction_ns', abstraction$abstraction_selection)
 
-## Redirect Observer. When leaving the application after authenticating with BigQuery, take the user back to the Setup Tab to complete setup.
+## BigQuery Redirect Observer. When leaving the application after authenticating
+## with BigQuery, take the user back to the Setup Tab to complete setup.
 observeEvent(db_connection_vars$bq_token(), {
   if (is.null(db_connection_vars$bq_token() ) ) { # Only redirect when the authorization token initializes
     return(NULL)
