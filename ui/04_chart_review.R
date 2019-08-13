@@ -14,7 +14,7 @@ tagList(
           #Box Setup
           title = h2('Record ID -'),
           width = '100%',
-          height = '125px',
+          height = '130px',
           status = 'success', 
           solidHeader = F
           #Box Contents
@@ -26,7 +26,7 @@ tagList(
         box(
           #Box Setup
           width = '100%',
-          height = '125px',
+          height = '130px',
           status = 'success', 
           solidHeader = F,
           #Box Contents
@@ -34,8 +34,11 @@ tagList(
                       label = 'Record ID', 
                       choices = patient_info$patient_table() %>% 
                         select(ID) %>% 
-                        deframe()
-                      )
+                        deframe(),
+                      selected = patient_info$selected_patient()$value
+                      ),
+          actionButton(inputId = 'previous',label = '<--Previous',width = '155px'),
+          actionButton(inputId = 'next',label = 'Next-->',width = '155px')
           )
         )
       )
