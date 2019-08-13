@@ -67,12 +67,14 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
     req(patient_search_tbl())
     patient_search_tbl() %>% 
       rename('Subject ID' = ID) %>% 
-      datatable(options = list(searchHighlight = TRUE, 
+      datatable(extensions = 'Scroller',
+                options = list(deferRender = TRUE,
+                               searchHighlight = TRUE, 
                                scrollX = TRUE, 
-                               scrollY = '600px', 
+                               scrollY = '600px',
+                               scroller = TRUE,
                                search = list(regex = TRUE, 
-                                             caseInsensitive = TRUE),
-                               pageLength = 25
+                                             caseInsensitive = TRUE)
                                ),
                 rownames = F, 
                 selection = 'single',

@@ -30,7 +30,6 @@ tagList(
       solidHeader = F,
       #Box Contents
       div('To select a patient, please click the desired Subject ID in the table below:'),
-      br(),
       patient_search_ui('patient_search_ns'),
       data_model_detection_ui('patient_search_ns')
       )
