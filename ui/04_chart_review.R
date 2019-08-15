@@ -3,8 +3,8 @@
 #
 
 source('modules/chart_review_module.R')
-test <- callModule(patient_nav_logic, 'chart_review', subject_info$patient_table, subject_info$dt_selection_info, parent = session)
-callModule(subject_info_logic, 'chart_review', test$subject_id)
+subject_id <- callModule(patient_nav_logic, 'chart_review', subject_info$patient_table, subject_info$dt_selection_info, parent = session)
+callModule(subject_info_logic, 'chart_review', subject_id$subject_id)
 
 # Define Chart Review Tab UI
 output$chart_review_tab <- renderUI({
@@ -42,3 +42,4 @@ tagList(
     )
   )
 })
+outputOptions(output, 'chart_review_tab', suspendWhenHidden = F)

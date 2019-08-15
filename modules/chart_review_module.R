@@ -8,9 +8,8 @@ patient_nav_ui <- function(id) {
 patient_nav_logic <- function(input, output, session, patient_table, selected_patient, parent) {
   ns <- session$ns
   
-  observe({
+  observeEvent(selected_patient(), {
     req(patient_table())
-    message('patient_nav_logic noticed a change in selected_patient()')
     updateSelectizeInput(session=parent,
                          inputId = ns('subject_id'),
                          choices = patient_table() %>% 
@@ -32,6 +31,7 @@ patient_nav_logic <- function(input, output, session, patient_table, selected_pa
       actionButton(inputId = 'next', label = 'Next-->',width = '150px')
   )
   })
+  outputOptions(output, 'patient_nav_ui', suspendWhenHidden = F)
   
   subject_id_val <- reactive({ input$subject_id })
   return(list(
