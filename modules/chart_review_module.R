@@ -27,15 +27,20 @@ patient_nav_logic <- function(input, output, session, patient_table, selected_pa
                      selected = NULL,
                      size = 20
       ),
-      actionButton(inputId = 'previous', label = '<--Previous',width = '150px'),
-      actionButton(inputId = 'next', label = 'Next-->',width = '150px')
+      actionButton(inputId = 'previous_sub', label = '<--Previous',width = '150px'),
+      actionButton(inputId = 'next_sub', label = 'Next-->',width = '150px')
   )
   })
   outputOptions(output, 'patient_nav_ui', suspendWhenHidden = F)
   
   subject_id_val <- reactive({ input$subject_id })
+  previous_sub <- reactive({ input$previous_sub })
+  next_sub <- reactive({ input$next_sub })
+  
   return(list(
-    'subject_id' = subject_id_val
+    'subject_id' = subject_id_val,
+    'previous_sub' = previous_sub,
+    'next_sub' = next_sub
   ))
 }
 
