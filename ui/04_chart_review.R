@@ -3,7 +3,7 @@
 #
 
 source('modules/chart_review_module.R')
-subject_selection_vars <- callModule(patient_nav_logic, 'chart_review', subject_info$patient_table, subject_info$dt_selection_info, parent = session)
+subject_selection_vars <- callModule(patient_nav_logic, 'chart_review', subject_info$patient_table, subject_info$dt_selection_info, subject_info$selected_patient, parent = session)
 callModule(subject_info_logic, 'chart_review', subject_selection_vars$subject_id)
 
 # Define Chart Review Tab UI
@@ -16,9 +16,9 @@ tagList(
         width = 9,
         box(
           #Box Setup
-          title = h2('Subject Information'),
+          title = h3('Subject Information'),
           width = '100%',
-          height = '130px',
+          #height = '130px',
           status = 'success', 
           solidHeader = F,
           #Box Contents
@@ -31,7 +31,7 @@ tagList(
         box(
           #Box Setup
           width = '100%',
-          height = '130px',
+          #height = '130px',
           status = 'success', 
           solidHeader = F,
           #Box Contents

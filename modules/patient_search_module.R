@@ -7,7 +7,7 @@ patient_search_ui <- function(id) {
   )
 }
 
-patient_search_logic <- function(input, output, session, table_map, db_connection) {
+patient_search_logic <- function(input, output, session, table_map, db_connection, prev_sub, next_sub, parent) {
   library(tibble)
   library(DT)
   ns <- session$ns
@@ -84,12 +84,40 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
                 ) %>% 
       formatStyle('Subject ID', color = '#0000EE', cursor = 'pointer') # Format the ID column to appear blue and change the mouse to a pointer
     })
+  
+  ## Create a DT Proxy to keep DT selection up to date with Patient Nav on Chart Review Tab
+  patient_search_proxy <- DT::dataTableProxy(outputId = ns('patient_search_dt'),session = parent)
+  ## On Previous Subject Button Press, update selected row in DT
+  observeEvent(prev_sub(), {
+    req(prev_sub(), input$patient_search_dt_rows_selected )
+    if(input$patient_search_dt_rows_selected == 1){ ## Special case when at the beginning of the list, cycle to last
+      DT::selectRows(patient_search_proxy, nrow(patient_search_tbl() ))
+    } else { DT::selectRows(patient_search_proxy, input$patient_search_dt_rows_selected - 1)
+        }
+  })
+  ## On Next Subject Button Press, updated selected row in DT
+  observeEvent(next_sub(), {
+    req(next_sub(), input$patient_search_dt_rows_selected )
+    if(input$patient_search_dt_rows_selected == nrow(patient_search_tbl() )){ ## Special case when at the end of the list, cycle to beginning
+      DT::selectRows(patient_search_proxy, 1)
+    } else { DT::selectRows(patient_search_proxy, input$patient_search_dt_rows_selected + 1)
+    }
+  })
+  outputOptions(output, 'patient_search_dt', suspendWhenHidden = F)
+  
   ## Extract the selected patient id from the patient data table when clicked and store as a reactive
-  selected_patient <- reactive({ input$patient_search_dt_cell_clicked })
+  select_patient_click <- reactive({ input$patient_search_dt_cell_clicked })
+  selected_patient <- eventReactive(input$patient_search_dt_rows_selected, { 
+    req(patient_search_tbl() )
+    patient_search_tbl() %>% 
+      select(ID) %>% 
+      slice(input$patient_search_dt_rows_selected)
+    })
   
   return(list(
     'patient_table' = patient_search_tbl,
-    'dt_selection_info' = selected_patient
+    'dt_selection_info' = select_patient_click,
+    'selected_patient' = selected_patient
   ))
 }
 

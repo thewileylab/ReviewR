@@ -5,18 +5,22 @@ patient_nav_ui <- function(id) {
   )
 }
 
-patient_nav_logic <- function(input, output, session, patient_table, selected_patient, parent) {
+patient_nav_logic <- function(input, output, session, patient_table, selected_patient_info, selected_patient, parent) {
   ns <- session$ns
   
-  observeEvent(selected_patient(), {
+  observeEvent(c(selected_patient_info(),selected_patient()), {
     req(patient_table())
-    updateSelectizeInput(session=parent,
-                         inputId = ns('subject_id'),
-                         choices = patient_table() %>% 
-                           select(ID) %>% 
-                           deframe(),
-                         selected = selected_patient()$value,
-                         server = TRUE )
+    if (is.null(selected_patient_info()$value ) || selected_patient_info()$col != 0) { # Only update subject list if a non null value from column 0 is selected 
+      return(NULL) 
+    } else {
+      updateSelectizeInput(session = parent,
+                           inputId = ns('subject_id'),
+                           choices = patient_table() %>% 
+                             select(ID) %>% 
+                             deframe(),
+                           selected = selected_patient(),
+                           server = TRUE )
+    }
   })
   output$patient_nav_ui <- renderUI({
     tagList(
@@ -24,14 +28,13 @@ patient_nav_logic <- function(input, output, session, patient_table, selected_pa
                      width = '100%',
                      label = 'Jump to Subject ID:',
                      choices = NULL,
-                     selected = NULL,
-                     size = 20
-      ),
-      actionButton(inputId = 'previous_sub', label = '<--Previous',width = '150px'),
-      actionButton(inputId = 'next_sub', label = 'Next-->',width = '150px')
+                     selected = NULL
+                     ),
+      actionButton(inputId = ns('previous_sub'), label = '<--Previous', width = '150px'),
+      actionButton(inputId = ns('next_sub'), label = 'Next-->', width = '150px')
   )
   })
-  outputOptions(output, 'patient_nav_ui', suspendWhenHidden = F)
+  outputOptions(output, 'patient_nav_ui', suspendWhenHidden = F) #This output needs to run all the time, so that it can receive data from the Patient Search tab
   
   subject_id_val <- reactive({ input$subject_id })
   previous_sub <- reactive({ input$previous_sub })
@@ -54,7 +57,7 @@ subject_info <- function(id) {
 subject_info_logic <- function(input, output, session, subject) {
   subject_info_text <- reactive({ 
     req(subject() )
-    paste('the selected subject is: ', subject() )
+    paste('Subject ID: ', subject() )
     })
   output$subject_info_ui <- renderText({ subject_info_text() })
 }
