@@ -7,7 +7,7 @@ patient_search_ui <- function(id) {
   )
 }
 
-patient_search_logic <- function(input, output, session, table_map, db_connection, prev_sub, next_sub, parent) {
+patient_search_logic <- function(input, output, session, table_map, db_connection, prev_sub, next_sub, selected_sub, parent) {
   library(tibble)
   library(DT)
   ns <- session$ns
@@ -88,11 +88,13 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
   ## Create a DT Proxy to keep DT selection up to date with Patient Nav on Chart Review Tab
   patient_search_proxy <- reactive({
     req(patient_search_tbl() )
-    DT::dataTableProxy(outputId = ns('patient_search_dt'),session = parent) 
+    DT::dataTableProxy(outputId = ns('patient_search_dt'), session = parent)
     })
+  # patient_search_proxy <- DT::dataTableProxy(outputId = ns('patient_search_dt'), session = parent, deferUntilFlush = FALSE)
+  
   ## On Previous Subject Button Press, update selected row in DT
   observeEvent(prev_sub(), {
-    req(prev_sub(), input$patient_search_dt_rows_selected )
+    req(patient_search_tbl(), input$patient_search_dt_rows_selected )
     if(input$patient_search_dt_rows_selected == 1){ ## Special case when at the beginning of the list, cycle to last
       DT::selectRows(patient_search_proxy(), nrow(patient_search_tbl() ))
     } else { DT::selectRows(patient_search_proxy(), input$patient_search_dt_rows_selected - 1)
@@ -100,13 +102,24 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
   })
   ## On Next Subject Button Press, updated selected row in DT
   observeEvent(next_sub(), {
-    req(next_sub(), input$patient_search_dt_rows_selected )
+    req(patient_search_tbl(), input$patient_search_dt_rows_selected )
     if(input$patient_search_dt_rows_selected == nrow(patient_search_tbl() )){ ## Special case when at the end of the list, cycle to beginning
       DT::selectRows(patient_search_proxy(), 1)
     } else { DT::selectRows(patient_search_proxy(), input$patient_search_dt_rows_selected + 1)
     }
   })
   outputOptions(output, 'patient_search_dt', suspendWhenHidden = F)
+  
+  ## When a choice is made from the patient nav dropdown, update the selected row in DT
+  observeEvent(selected_sub(), {
+    req(patient_search_tbl(), selected_sub(), input$patient_search_dt_rows_selected )
+    sub_row_id <- patient_search_tbl() %>%
+      rowid_to_column(var = 'row_id') %>%
+      filter(ID == selected_sub() ) %>%
+      select(row_id) %>%
+      slice(1)
+    DT::selectRows(patient_search_proxy(), sub_row_id)
+    })
   
   ## Extract the selected patient id from the patient data table when clicked and store as a reactive
   select_patient_click <- reactive({ input$patient_search_dt_cell_clicked })

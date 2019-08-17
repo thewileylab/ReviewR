@@ -5,22 +5,18 @@ patient_nav_ui <- function(id) {
   )
 }
 
-patient_nav_logic <- function(input, output, session, patient_table, selected_patient_info, selected_patient, parent) {
+patient_nav_logic <- function(input, output, session, patient_table, selected_patient, parent) {
   ns <- session$ns
   
-  observeEvent(c(selected_patient_info(),selected_patient()), {
-    req(patient_table())
-    if (is.null(selected_patient_info()$value ) || selected_patient_info()$col != 0) { # Only update subject list if a non null value from column 0 is selected 
-      return(NULL) 
-    } else {
-      updateSelectizeInput(session = parent,
-                           inputId = ns('subject_id'),
-                           choices = patient_table() %>% 
-                             select(ID) %>% 
-                             deframe(),
-                           selected = selected_patient(),
-                           server = TRUE )
-    }
+  observeEvent(c(patient_table(),selected_patient()), {
+    req(patient_table(), selected_patient() )
+    updateSelectizeInput(session = parent,
+                         inputId = ns('subject_id'),
+                         choices = patient_table() %>% 
+                           select(ID) %>% 
+                           deframe(),
+                         selected = selected_patient(),
+                         server = TRUE )
   })
   output$patient_nav_ui <- renderUI({
     tagList(
