@@ -2,7 +2,7 @@
 # This file contains all elements that are needed to render the Chart Review Tab
 #
 
-source('modules/chart_review_module.R')
+source('modules/patient_nav_module.R')
 subject_selection_vars <- callModule(patient_nav_logic, 'chart_review', subject_info$patient_table, subject_info$selected_patient, parent = session)
 callModule(subject_info_logic, 'chart_review', subject_selection_vars$subject_id)
 
