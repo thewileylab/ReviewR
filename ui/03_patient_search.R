@@ -9,7 +9,7 @@ subject_info <- callModule(patient_search_logic, 'patient_search_ns', table_map$
 ## Patient Search Data Table Observer: open chart review tab when patient id is clicked.
 observeEvent(subject_info$dt_selection_info(), {
     selection <- subject_info$dt_selection_info
-    if (is.null(selection()$value ) || selection()$col != 0) { # Only redirect if cell contains value and is in column 0 (ID)
+    if (is.null(selection()$value ) || selection()$col != 1) { # Only redirect if cell contains value and is in column 1 (Subject ID)
         return(NULL)
     } else {
       updateTabItems(session, 'main_tabs', selected = 'chart_review')
