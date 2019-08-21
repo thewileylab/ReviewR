@@ -11,7 +11,7 @@ user_table <- function(table_map, connection_info, desired_omop_table) {
 user_field <- function(table_map, desired_omop_table, desired_omop_field){
   req(table_map())
   table_map()$model_match[[1]] %>% 
-    filter(table == desired_table & field == desired_omop_field) %>% 
+    filter(table == desired_omop_table & field == desired_omop_field) %>% 
     select(user_fields) %>% 
     pluck(1)
 }
