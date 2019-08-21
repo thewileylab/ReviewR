@@ -5,10 +5,10 @@ patient_nav_ui <- function(id) {
   )
 }
 
-patient_nav_logic <- function(input, output, session, patient_table, selected_patient, parent) {
+patient_nav_logic <- function(input, output, session, patient_table, selected_patient, dt_proxy, parent) {
   ns <- session$ns
   
-  observeEvent(c(patient_table(),selected_patient()), {
+  observeEvent(c(patient_table(),selected_patient(), dt_proxy()), {
     req(patient_table(), selected_patient() )
     updateSelectizeInput(session = parent,
                          inputId = ns('subject_id'),

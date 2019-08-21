@@ -14,7 +14,7 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
   ns <- session$ns
   
   # Extract patients based on presence of connection info and data model
-  patient_search_tbl <- reactive({
+  patient_search_tbl <- eventReactive(db_connection(), {
     req(table_map(), db_connection() )
     if (table_map()$count_filtered != 0 & table_map()$data_model == 'omop') {
       source('lib/all_patients_table_omop.R',keep.source = F)
@@ -69,7 +69,7 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
     })
   
   ## Create a DT Proxy to keep DT selection up to date with Patient Nav on Chart Review Tab
-  patient_search_proxy <- reactive({
+  patient_search_proxy <- eventReactive(patient_search_tbl(), {
     req(patient_search_tbl() )
     DT::dataTableProxy(outputId = ns('patient_search_dt'), session = parent)
     })
@@ -116,6 +116,7 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
   return(list(
     'patient_table' = patient_search_tbl,
     'dt_selection_info' = select_patient_click,
+    'dt_proxy' = patient_search_proxy, 
     'selected_patient' = selected_patient
   ))
 }

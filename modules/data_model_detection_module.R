@@ -1,7 +1,7 @@
 data_model_detection_ui <- function(id) {
   ns <- NS(id)
   tagList(
-    uiOutput(ns('data_model_ui')) %>% withSpinner()
+    uiOutput(ns('data_model_ui'))%>% withSpinner(type = 6)
     )
 }
 
