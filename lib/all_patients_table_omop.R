@@ -1,131 +1,73 @@
 
 all_patients_table_omop <- function(table_map, db_connection) {
 ## OMOP All Patient Table
-### Needed Table Names
-patients_omop <- 'person'
-concept_omop <- 'concept'
-provider_omop <- 'provider'
-## Determine patient table from table map
-patients_table <- table_map()$model_match[[1]] %>% 
-  filter(table == patients_omop) %>% 
-  distinct(table, .keep_all = T) %>% 
-  select(user_database_table) %>% 
-  pluck(1)
-patients_tbl <- tbl(db_connection(), patients_table)
-## Determine concept table from table map
-concept_table <- table_map()$model_match[[1]] %>%
-  filter(table == concept_omop) %>% 
-  distinct(table, .keep_all = T) %>% 
-  select(user_database_table) %>% 
-  pluck(1)
-concept_tbl <- tbl(db_connection(), concept_table)
-## Determine provider table from table map
-provider_table <- table_map()$model_match[[1]] %>%
-  filter(table == provider_omop) %>% 
-  distinct(table, .keep_all = T) %>% 
-  select(user_database_table) %>% 
-  pluck(1)
-provider_tbl <- tbl(db_connection(), provider_table)
 
-### Needed Fields (OMOP CDM)
-id_omop <- 'person_id'
-concept_id_omop <- 'concept_id'
-concept_name_omop <- 'concept_name'
-gender_id_omop <- 'gender_concept_id'
-race_id_omop <- 'race_concept_id'
-ethnicity_id_omop <- 'ethnicity_concept_id'
-provider_id_omop <- 'provider_id'
-provider_name_omop <- 'provider_name'
-## Determine concept id field from table map
-concept_id_field <- table_map()$model_match[[1]] %>% 
-  filter(table == concept_omop & field == concept_id_omop) %>% 
-  select(user_fields) %>% 
-  pluck(1)
-## Determine concept name field from table map
-concept_name_field <- table_map()$model_match[[1]] %>% 
-  filter(table == concept_omop & field == concept_name_omop) %>% 
-  select(user_fields) %>% 
-  pluck(1)
-## Determine petient id field from table map
-subject_field <- table_map()$model_match[[1]] %>% 
-  filter(table == patients_omop & field == id_omop) %>% 
-  select(user_fields) %>% 
-  pluck(1)
-## Determine gender id field from table map
-gender_id_field <- table_map()$model_match[[1]] %>% 
-  filter(table == patients_table & field == gender_id_omop) %>% 
-  select(user_fields) %>% 
-  pluck(1)
-## Determine race id field from table map
-race_id_field <- table_map()$model_match[[1]] %>% 
-  filter(table == patients_table & field == race_id_omop) %>% 
-  select(user_fields) %>% 
-  pluck(1)
-## Determine ethnicity id field from table map
-ethnicity_id_field <- table_map()$model_match[[1]] %>% 
-  filter(table == patients_table & field == ethnicity_id_omop) %>% 
-  select(user_fields) %>% 
-  pluck(1)
-## Determine provider id field from the table map (patients table)
-patient_provider_id_field <- table_map()$model_match[[1]] %>% 
-  filter(table == patients_table & field == provider_id_omop) %>% 
-  select(user_fields) %>% 
-  pluck(1)
-## Determine provider id field from table map (provider table)
-provider_id_field <- table_map()$model_match[[1]] %>% 
-  filter(table == provider_omop & field == provider_id_omop) %>% 
-  select(user_fields) %>% 
-  pluck(1)
-## Determine provider name field from table map (provider table)
-provider_name_field <- table_map()$model_match[[1]] %>% 
-  filter(table == provider_omop & field == provider_name_omop) %>% 
-  select(user_fields) %>% 
-  pluck(1)
+  ## Source function to extract tables and field names from table_map
+  source('lib/map_user_db.R',keep.source = F)
 
 ## Retrieve Concepts
-gender_concepts <- concept_tbl %>% 
-  select(concept_id_field, concept_name_field) %>% 
-  inner_join(patients_tbl %>% 
-               select(id_omop,gender_id_field), 
-             by=setNames(gender_id_field, concept_id_omop)
-  ) %>% 
-  rename('Gender' = concept_name_field) %>% 
-  select(-contains(concept_id_omop,ignore.case = T))
+gender_concepts <- user_table(table_map, db_connection, 'concept') %>% 
+  select(user_field(table_map, 'concept', 'concept_id'), 
+         user_field(table_map, 'concept', 'concept_name')
+         ) %>% 
+  inner_join(user_table(table_map, db_connection, 'person') %>% 
+               select(user_field(table_map, 'person', 'person_id'), 
+                      user_field(table_map, 'person', 'gender_concept_id')
+                      ), 
+             by=setNames(user_field(table_map, 'person', 'gender_concept_id'), user_field(table_map, 'concept', 'concept_id'))
+             ) %>% 
+  rename('Gender' = user_field(table_map, 'concept', 'concept_name')) %>% 
+  select(-contains('concept_id',ignore.case = T))
 
-race_concepts <- concept_tbl %>% 
-  select(concept_id_field, concept_name_field) %>% 
-  inner_join(patients_tbl %>% 
-               select(id_omop,race_id_field), 
-             by=setNames(race_id_field, concept_id_omop)) %>% 
-  rename('Race' = concept_name_field) %>% 
-  select(-contains(concept_id_omop, ignore.case = T))
+race_concepts <- user_table(table_map, db_connection, 'concept') %>% 
+  select(user_field(table_map, 'concept', 'concept_id'), 
+         user_field(table_map, 'concept', 'concept_name')
+         ) %>% 
+  inner_join(user_table(table_map, db_connection, 'person') %>% 
+               select(user_field(table_map, 'person', 'person_id'),
+                      user_field(table_map, 'person', 'race_concept_id')
+                      ), 
+             by=setNames(user_field(table_map, 'person', 'race_concept_id'), user_field(table_map, 'concept', 'concept_id'))
+             ) %>% 
+  rename('Race' = user_field(table_map, 'concept', 'concept_name')) %>% 
+  select(-contains('concept_id', ignore.case = T))
 
-ethnicity_concepts <- concept_tbl %>% 
-  select(concept_id_field, concept_name_field) %>% 
-  inner_join(patients_tbl %>% 
-               select(id_omop,ethnicity_id_field), 
-             by=setNames(ethnicity_id_omop, concept_id_omop)) %>% 
-  rename('Ethnicity' = concept_name_field) %>% 
-  select(-contains(concept_id_omop, ignore.case = T))
+ethnicity_concepts <- user_table(table_map, db_connection, 'concept') %>% 
+  select(user_field(table_map, 'concept', 'concept_id'), 
+         user_field(table_map, 'concept', 'concept_name')
+         ) %>% 
+  inner_join(user_table(table_map, db_connection, 'person') %>% 
+               select(user_field(table_map, 'person', 'person_id'),
+                      user_field(table_map, 'person', 'ethnicity_concept_id')
+                      ), 
+             by=setNames(user_field(table_map, 'person', 'ethnicity_concept_id'), user_field(table_map, 'concept', 'concept_id'))
+             ) %>% 
+  rename('Ethnicity' = user_field(table_map, 'concept', 'concept_name')) %>% 
+  select(-contains('concept_id', ignore.case = T))
 
-provider_concepts <- provider_tbl %>% 
-  select(provider_id_field, provider_name_field) %>% 
-  inner_join(patients_tbl %>% 
-               select(id_omop,patient_provider_id_field), 
-             by=setNames(patient_provider_id_field, provider_id_field)) %>% 
-  rename('Provider' = provider_name_field) %>% 
-  select(-contains(provider_id_omop, ignore.case = T))
+provider_concepts <- user_table(table_map, db_connection, 'provider') %>% 
+  select(user_field(table_map, 'provider','provider_id'), 
+         user_field(table_map, 'provider', 'provider_name')
+         ) %>% 
+  inner_join(user_table(table_map, db_connection, 'person') %>% 
+               select(user_field(table_map, 'person', 'person_id'),
+                      user_field(table_map, 'person', 'provider_id')
+                      ), 
+             by=setNames(user_field(table_map, 'person', 'provider_id'), user_field(table_map, 'provider','provider_id'))
+             ) %>% 
+  rename('Provider' = user_field(table_map, 'provider', 'provider_name')) %>% 
+  select(-contains('provider_id', ignore.case = T))
 
-## Connect to table
-patients_tbl %>% 
+## Return All Patients Table Representation
+user_table(table_map, db_connection, 'person') %>% 
   select(-matches('gender*|race*|ethnicity*|provider*|location*|care*',ignore.case = T)) %>% 
   left_join(gender_concepts) %>% 
   left_join(race_concepts) %>% 
   left_join(ethnicity_concepts) %>% 
   left_join(provider_concepts) %>% 
   collect() %>% 
-  unite(col = 'Birth_Date', c('year_of_birth','month_of_birth','day_of_birth','birth_datetime')) %>% 
-  mutate(Birth_Date = as_datetime(Birth_Date)) %>% 
+  unite(col = 'Birth_Date', c('year_of_birth','month_of_birth','day_of_birth')) %>% 
+  mutate(Birth_Date = as_date(Birth_Date)) %>% 
   select('ID' = person_id, Gender, 'SourceVal' = person_source_value, everything()) %>% 
   arrange(ID)
 }
