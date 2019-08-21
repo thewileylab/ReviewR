@@ -3,7 +3,7 @@ all_patients_table_omop <- function(table_map, db_connection) {
 ## OMOP All Patient Table
 
   ## Source function to extract tables and field names from table_map
-  source('lib/map_user_db.R',keep.source = F)
+  source('lib/omop_helper.R.R',keep.source = F)
 
 ## Retrieve Concepts
 gender_concepts <- user_table(table_map, db_connection, 'concept') %>% 
