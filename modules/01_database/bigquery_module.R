@@ -36,7 +36,7 @@ bq_auth_ui <- function(id) {
 #' @param output Required by Shiny for module operation 
 #' @param session Required by Shiny for module operation
 #'
-#' @return A list of reactive reactive objects containing a an authorization token, the user selected project, and the user selected dataset
+#' @return A list of reactive reactive objects containing a an authorization token, the user selected project,the user selected dataset, and a DBI connection to a BigQuery Dataset
 #'
 #' @examples
 #' ui <- fluidPage(

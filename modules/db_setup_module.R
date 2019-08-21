@@ -3,6 +3,14 @@
 #
 
 # Define Database Setup UI Elements----------
+#' db_setup_ui
+#'
+#' @param id The namespace id for the UI output
+#'
+#' @return A Shiny outputUI to step a user through the process of selecting a database, calling the appropriate module based on selection
+#' @export
+#'
+#' @examples
 db_setup_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -12,6 +20,16 @@ db_setup_ui <- function(id) {
 }
 
 # Setup Logic----------
+#' db_select_logic
+#'
+#' @param input Required by Shiny for module operation
+#' @param output Required by Shiny for module operation
+#' @param session Required by Shiny for module operation
+#'
+#' @return Database specific variables AND a DBI connection to be used elsewhere in the Application.
+#' @export 
+#'
+#' @examples 
   db_select_logic <- function(input, output, session) {
   ns <- session$ns
 

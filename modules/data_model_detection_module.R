@@ -5,6 +5,17 @@ data_model_detection_ui <- function(id) {
     )
 }
 
+#' data_model_detection_logic
+#'
+#' @param input Required by Shiny for module operation
+#' @param output Required by Shiny for module operation
+#' @param session Required by Shiny for module operation
+#' @param db_connection Connection info received from the database setup module
+#'
+#' @return tibble containing a the cdm that most closely matches the user's database and a map of standard tables to user tables
+#' @export
+#'
+#' @examples
 data_model_detection_logic <- function(input, output, session, db_connection) {
   library(tidyverse)
   library(DBI)
