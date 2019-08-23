@@ -195,29 +195,36 @@ bq_dataset_auth_logic <- function(input, output, session, bq_project) {
   )
 }
 
-bq_initialize <- function(input, output, session, bq_project, bq_dataset) {
+bq_initialize <- function(input, output, session, bq_project, bq_dataset, disconnect) {
   library(DBI)
 
   ns <- session$ns
   # Create a connection UI based on the database type, add logic for postgres to hide connect button until required information is present.
   connect_button <- reactive({
-    if( is.null( bq_project() ) | is.null( bq_dataset() )) {
-      return(NULL)
-    } else {actionButton(inputId = ns('bq_connect'),label = 'Connect',icon = icon('cloud'))}
+    req(bq_project(), bq_dataset() )
+    actionButton(inputId = ns('bq_connect'),label = 'Connect',icon = icon('cloud'))
+  })
+  
+  observeEvent(disconnect(), {
+    db_connection <- NULL
   })
   
   output$bq_init_connection_ui <- renderUI({ connect_button() })
   
   # Using information from the connection UI Create and return a connection variable  
-  db_connection <- eventReactive(input$bq_connect, {
+  db_connection <- reactive({
+    req(bq_project(), bq_dataset())
       DBI::dbConnect(drv = bigrquery::bigquery(), 
                    project = bq_project(),
                    dataset = bq_dataset()
                    )
   })
   
+  connect_press <- reactive({ input$bq_connect })
+  
   return(list(
-    'db_connection' = db_connection
+    'db_connection' = db_connection,
+    'connect_press' = connect_press
   ))
 }
   

@@ -56,14 +56,14 @@ db_setup_ui <- function(id) {
   )
 }
 
-db_connect_logic <- function(input, output, session, db_type){
+db_connect_logic <- function(input, output, session, db_type, db_disconnect){
   ns <- session$ns
   
 # Load BigQuery Auth Module
   source('modules/01_database/bigquery_module.R')
   bq_prj_connect_vars <- callModule(bq_project_auth_logic, id = 'bq_setup_ns')
   bq_ds_connect_vars <- callModule(bq_dataset_auth_logic, id = 'bq_setup_ns', bq_prj_connect_vars$bq_project)
-  db_connection <- callModule(bq_initialize, id = 'bq_setup_ns', bq_prj_connect_vars$bq_project, bq_ds_connect_vars$bq_dataset)
+  db_connection <- callModule(bq_initialize, id = 'bq_setup_ns', bq_prj_connect_vars$bq_project, bq_ds_connect_vars$bq_dataset, db_disconnect)
   
   db_connection_ui <- reactive({
   req(db_type() )
@@ -87,10 +87,12 @@ db_connect_logic <- function(input, output, session, db_type){
       db_connection_ui()
       ) 
     })
+
   return(list(
     'bq_token' = bq_prj_connect_vars$token,
     'bq_project' = bq_prj_connect_vars$bq_project,
     'bq_dataset' = bq_ds_connect_vars$bq_dataset, 
-    'db_connection' = db_connection$db_connection
+    'db_connection' = db_connection$db_connection,
+    'connect_press' = db_connection$connect_press
   ))
 }

@@ -8,10 +8,10 @@
 source('modules/db_setup_module.R')
 db_type <- callModule(db_select_logic, 'db_setup_ns')
 ### Database
-db_connection_vars <- callModule(db_connect_logic, 'db_setup_ns', db_type$db_selection )
+db_connection_vars <- callModule(db_connect_logic, 'db_setup_ns', db_type$db_selection, table_map$db_disconnect )
 ### Data Model Detection
 source('modules/data_model_detection_module.R',keep.source = F)
-table_map <- callModule(data_model_detection_logic, 'model_ns', db_connection_vars$db_connection)
+table_map <- callModule(data_model_detection_logic, 'model_ns', db_connection_vars$db_connection, db_connection_vars$connect_press)
 
 ## Chart Abstraction Setup
 source('modules/chart_abstraction_setup_module.R')
@@ -27,6 +27,19 @@ observeEvent(db_connection_vars$bq_token(), {
     updateTabItems(session, 'main_tabs', selected = 'setup')
   }
 })
+
+## Hide/show the db_setup ui 
+observeEvent(db_connection_vars$connect_press(), {
+  jqui_hide('#db_setup',effect = 'blind')
+})
+
+observeEvent(table_map$db_disconnect(), {
+  jqui_show('#db_setup',effect = 'drop')
+})
+
+## Outputs
+output$db_setup <- renderUI({ db_setup_ui('db_setup_ns') })
+output$model <- renderUI({ data_model_detection_ui('model_ns') })
 
 output$setup_tab <- renderUI({
 # Define Setup Tab UI ----------
@@ -49,8 +62,10 @@ fluidRow(
       status = 'primary',
       solidHeader = F,
       #Box Contents
-       db_setup_ui('db_setup_ns'),
-       data_model_detection_ui('model_ns')
+       #db_setup_ui('db_setup_ns'),
+        uiOutput('db_setup'),
+        uiOutput('model')
+        #data_model_detection_ui('model_ns')
       )
     ),
   column(

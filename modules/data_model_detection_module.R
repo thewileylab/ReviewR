@@ -1,7 +1,7 @@
 data_model_detection_ui <- function(id) {
   ns <- NS(id)
   tagList(
-    uiOutput(ns('data_model_ui'))%>% withSpinner(type = 6)
+    uiOutput(ns('data_model_ui')) %>% withSpinner(type = 6)
     )
 }
 
@@ -16,12 +16,12 @@ data_model_detection_ui <- function(id) {
 #' @export
 #'
 #' @examples
-data_model_detection_logic <- function(input, output, session, db_connection) {
+data_model_detection_logic <- function(input, output, session, db_connection, connect) {
   library(tidyverse)
   library(DBI)
   ns <- session$ns
   
-  table_map <- eventReactive(db_connection(), {
+  table_map <- eventReactive(connect(), {
     # Load all the models we support. Process the file path and file name to determine model type and version (hopefully) 
     supported_models <- list.files(path = file.path('data_models/'),full.names = T,recursive = T) %>% 
     tibble(file_path = .) %>% 
@@ -72,18 +72,34 @@ data_model_detection_logic <- function(input, output, session, db_connection) {
     })
   
   data_model_text <- reactive({
-    if(is.null( table_map() )) {
-      return(NULL)
-      } else if (!is.null( table_map() ) & table_map()$count_filtered !=0) {
-        paste('<b>Data Model:</b>',table_map()$data_model,'<br>','<b>Version:</b>', table_map()$model_version)
-        } else {paste('The selected database does not appear to be in OMOP or MIMIC III format. Please disconnect and select another database.')}
+    req(db_connection() )
+    if (table_map()$count_filtered !=0) {
+        HTML(paste('<b>Data Model:</b>',table_map()$data_model,
+                   '<br>',
+                   '<b>Version:</b>', table_map()$model_version,
+                   '<br><br>'))
+    } else {HTML(paste('The selected database does not appear to be in OMOP or MIMIC III format. Please disconnect and select another database.',
+                       '<br><br>'))
+      }
+  })
+  observeEvent(connect(), {
+    shinyjs::show('db_disconnect')
+  })
+  observeEvent(input$db_disconnect, {
+    shinyjs::hide('db_disconnect')
   })
   
-  output$data_model_ui <- renderText({ data_model_text() })
-    
-    
+  output$data_model_ui <- renderUI({
+    tagList(
+      data_model_text(),
+      actionButton(inputId = ns('db_disconnect'),label = 'Disconnect')
+      )
+  })
+  db_disconnect <- reactive({ input$db_disconnect })  
+
   return(list(
     'table_map' = table_map,
-    'data_model_text' = data_model_text
+    'data_model_text' = data_model_text, 
+    'db_disconnect' = db_disconnect
   ))
 }

@@ -12,6 +12,7 @@
 library(shiny)
 library(shinydashboard)
 library(shinycssloaders)
+library(shinyjqui)
 library(shinyjs)
 library(tidyverse)
 library(magrittr)
