@@ -3,7 +3,7 @@
 #
 
 source('modules/patient_nav_module.R')
-subject_selection_vars <- callModule(patient_nav_logic, 'chart_review', subject_info$patient_table, subject_info$selected_patient, subject_info$dt_proxy, parent = session)
+subject_selection_vars <- callModule(patient_nav_logic, 'chart_review', subject_info$patient_table, subject_info$selected_patient, parent = session)
 callModule(subject_info_logic, 'chart_review', subject_selection_vars$subject_id)
 
 # Define Chart Review Tab UI
