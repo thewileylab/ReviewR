@@ -13,6 +13,7 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
   library(lubridate)
   ns <- session$ns
   
+  #Replace Patient Search Table when table map changes
   observeEvent(table_map(), {
     reloadData(proxy = patient_search_proxy,
                resetPaging = T,
@@ -54,32 +55,34 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
   ## Render Patient Search Data Table
   output$patient_search_dt <- renderDataTable({
     req(patient_search_tbl())
+    # The next time you think about implementing FixedColumns, check the status of this issue first: https://github.com/rstudio/DT/issues/275
     patient_search_tbl() %>% 
       rename('Subject ID' = ID) %>% 
-      datatable(extensions = 'Scroller',
-                options = list(deferRender = TRUE,
-                               searchHighlight = TRUE, 
-                               scrollX = TRUE, 
+      datatable(extensions = list('Scroller' = NULL
+                                  ),
+                options = list(scrollX = TRUE,
+                               deferRender = TRUE,
                                scrollY = '600px',
                                scroller = TRUE,
+                               searchHighlight = TRUE, 
                                search = list(regex = TRUE, 
                                              caseInsensitive = TRUE)
                                ),
-                rownames = T, 
+                rownames = F, 
                 selection = 'single',
                 escape = F,
                 filter = 'top',
                 class = 'cell-border strip hover'
                 ) %>% 
-      formatStyle('Subject ID', color = '#0000EE', cursor = 'pointer') # Format the ID column to appear blue and change the mouse to a pointer
+      formatStyle('Subject ID', 
+                  color = '#0000EE', 
+                  cursor = 'pointer',  # Format the ID column to appear blue and change the mouse to a pointer
+                  textAlign = 'left'
+                  )
     })
   outputOptions(output, 'patient_search_dt', suspendWhenHidden = F) #This output needs to run all the time, so that it can receive data from the Setup tab
   
   ## Create a DT Proxy to keep DT selection up to date with Patient Nav on Chart Review Tab
-  # patient_search_proxy <- reactive({
-  #   req(patient_search_tbl() )
-  #   DT::dataTableProxy(outputId = ns('patient_search_dt'), session = parent)
-  #   })
   patient_search_proxy <- DT::dataTableProxy(outputId = ns('patient_search_dt'), session = parent)
   
   ## On Previous Subject Button Press, update selected row in DT
