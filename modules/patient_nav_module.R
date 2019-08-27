@@ -9,7 +9,7 @@ patient_nav_logic <- function(input, output, session, patient_table, selected_pa
   ns <- session$ns
   
   observeEvent(c(patient_table(),selected_patient()), {
-    req(patient_table() )
+    req(patient_table(), selected_patient() )
     updateSelectizeInput(session = parent,
                          inputId = ns('subject_id'),
                          choices = patient_table() %>% 
@@ -18,6 +18,7 @@ patient_nav_logic <- function(input, output, session, patient_table, selected_pa
                          selected = selected_patient(),
                          server = TRUE )
   })
+  
   output$patient_nav_ui <- renderUI({
     tagList(
       selectizeInput(inputId = ns('subject_id'),

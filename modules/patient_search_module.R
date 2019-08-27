@@ -15,6 +15,7 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
   
   #Replace Patient Search Table when table map changes
   observeEvent(table_map(), {
+    req(table_map() )
     reloadData(proxy = patient_search_proxy,
                resetPaging = T,
                clearSelection = T)
@@ -80,6 +81,7 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
                   textAlign = 'left'
                   )
     })
+  outputOptions(output, 'patient_search_dt', suspendWhenHidden = F)
 
   ## Create a DT Proxy to keep DT selection up to date with Patient Nav on Chart Review Tab
   patient_search_proxy <- DT::dataTableProxy(outputId = ns('patient_search_dt'), session = parent)
@@ -117,8 +119,8 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
   selected_patient <- reactive({ 
     req(patient_search_tbl(), input$patient_search_dt_rows_selected )
     patient_search_tbl() %>% 
-      select(ID) %>% 
-      slice(input$patient_search_dt_rows_selected)
+      slice(input$patient_search_dt_rows_selected) %>% 
+      pull(ID)
     })
   
   return(list(
