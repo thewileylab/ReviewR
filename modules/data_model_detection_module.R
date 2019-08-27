@@ -96,6 +96,7 @@ data_model_detection_logic <- function(input, output, session, db_connection, co
       actionButton(inputId = ns('db_disconnect'),label = 'Disconnect')
       )
   })
+
   db_disconnect <- reactive({ input$db_disconnect })  
 
   return(list(
