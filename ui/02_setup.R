@@ -21,7 +21,7 @@ abstraction_vars <- callModule(chart_abstraction_setup_logic, 'abstraction_ns', 
 ## BigQuery Redirect Observer. When leaving the application after authenticating
 ## with BigQuery, take the user back to the Setup Tab to complete setup.
 observeEvent(db_connection_vars$bq_token(), {
-  if (is.null(db_connection_vars$bq_token() ) ) { # Only redirect when the authorization token initializes
+  if (is.null(db_connection_vars$bq_token() ) ) { # Only redirect when the authorization token is present
     return(NULL)
   } else {
     updateTabItems(session, 'main_tabs', selected = 'setup')
@@ -62,10 +62,8 @@ fluidRow(
       status = 'primary',
       solidHeader = F,
       #Box Contents
-       #db_setup_ui('db_setup_ns'),
         uiOutput('db_setup'),
         uiOutput('model')
-        #data_model_detection_ui('model_ns')
       )
     ),
   column(
@@ -77,7 +75,7 @@ fluidRow(
       status = 'danger',
       solidHeader = F,
       #Box Contents
-      chart_abstraction_setup_ui('abstraction_ns')
+        chart_abstraction_setup_ui('abstraction_ns')
       ),
     box(
       #Box Setup

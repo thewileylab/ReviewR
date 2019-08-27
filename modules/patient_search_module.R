@@ -80,8 +80,7 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
                   textAlign = 'left'
                   )
     })
-  outputOptions(output, 'patient_search_dt', suspendWhenHidden = F) #This output needs to run all the time, so that it can receive data from the Setup tab
-  
+
   ## Create a DT Proxy to keep DT selection up to date with Patient Nav on Chart Review Tab
   patient_search_proxy <- DT::dataTableProxy(outputId = ns('patient_search_dt'), session = parent)
   
@@ -101,8 +100,7 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
     } else { DT::selectRows(patient_search_proxy, input$patient_search_dt_rows_selected + 1)
     }
   })
-  outputOptions(output, 'patient_search_dt', suspendWhenHidden = F)
-  
+
   ## When a choice is made from the patient nav dropdown, update the selected row in DT
   observeEvent(selected_sub(), {
     req(patient_search_tbl(), selected_sub(), input$patient_search_dt_rows_selected )

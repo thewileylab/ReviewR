@@ -23,7 +23,7 @@ observeEvent(subject_info$dt_selection_info(), {
 # })
 ## Create UI element from data detection module on setup tab
 output$data_model <- renderText(table_map$data_model_text() )
-outputOptions(output, 'data_model', suspendWhenHidden = F)
+#outputOptions(output, 'data_model', suspendWhenHidden = F)
 
 # Define Patient Search Tab UI
 
@@ -44,4 +44,3 @@ tagList(
   )
 )
 })
-outputOptions(output, 'patient_search_tab', suspendWhenHidden = F)

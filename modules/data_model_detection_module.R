@@ -22,6 +22,7 @@ data_model_detection_logic <- function(input, output, session, db_connection, co
   ns <- session$ns
   
   table_map <- eventReactive(connect(), {
+    req(db_connection())
     # Load all the models we support. Process the file path and file name to determine model type and version (hopefully) 
     supported_models <- list.files(path = file.path('data_models/'),full.names = T,recursive = T) %>% 
     tibble(file_path = .) %>% 
@@ -82,7 +83,7 @@ data_model_detection_logic <- function(input, output, session, db_connection, co
                        '<br><br>'))
       }
   })
-  observeEvent(connect(), {
+  observeEvent(db_connection(), {
     shinyjs::show('db_disconnect')
   })
   observeEvent(input$db_disconnect, {
