@@ -2,8 +2,8 @@ chart_review_ui <- function(id) {
   ns <- NS(id)
   tagList(
     tabsetPanel(id = 'patient_chart',type = 'tabs',
-                tabPanel(title = 'Condition Era', dataTableOutput(ns('condition_era_dt')) %>% withSpinner()),
-                tabPanel(title = 'Condition Occurrence', dataTableOutput(ns('condition_occurrence_dt')) %>% withSpinner())
+                tabPanel(title = 'Condition Era', dataTableOutput(ns('condition_era_dt')) %>% withSpinner(type = 6)),
+                tabPanel(title = 'Condition Occurrence', dataTableOutput(ns('condition_occurrence_dt')) %>% withSpinner(type = 6))
                 )
   )
 }

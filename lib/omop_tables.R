@@ -158,7 +158,7 @@ condition_occurrence_omop <- function(table_map, db_connection, subject_id) {
                ) %>% 
     rename('Provider' = user_field(table_map, 'provider','provider_name')) %>% 
     select(-contains('provider_id',ignore.case = T))
-  
+## Return Condition Occurrence Table Representation  
   user_table(table_map, db_connection, 'condition_occurrence') %>% 
     filter(!!as.name(user_field(table_map, 'condition_occurrence','person_id')) == subject ) %>% 
     select(-matches('person*|condition_concept*|condition_status*|provider_id|condition_type*|condition_source_concept*',ignore.case = T)) %>% 
