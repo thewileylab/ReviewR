@@ -47,7 +47,7 @@ patient_nav_logic <- function(input, output, session, patient_table, selected_pa
 subject_info <- function(id) {
   ns <- NS(id)
   tagList(
-    uiOutput(ns('subject_info_ui'))
+    uiOutput(ns('subject_info_ui')) %>% withSpinner(type = 7, proxy.height = 10, size = .25)
   )
 }
 

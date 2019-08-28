@@ -3,8 +3,10 @@
 #
 
 source('modules/patient_nav_module.R')
+source('modules/patient_chart_module.R')
 subject_selection_vars <- callModule(patient_nav_logic, 'chart_review', subject_info$patient_table, subject_info$selected_patient, parent = session)
-callModule(subject_info_logic, 'chart_review', subject_selection_vars$subject_id)
+callModule(subject_info_logic, 'chart_review', subject_info$selected_patient)
+callModule(chart_review_logic, 'chart_review', table_map$table_map, db_connection_vars$db_connection, subject_info$selected_patient)
 
 # Define Chart Review Tab UI
 output$chart_review_tab <- renderUI({
@@ -40,7 +42,10 @@ tagList(
         )
       ),
     fluidRow(
-      box(title = 'Patient Stuff Here!')
+      box(title = 'Patient Stuff Here!',
+          width = '100%',
+          chart_review_ui('chart_review')
+          )
     )
     )
   )
