@@ -1,9 +1,11 @@
+## Source function to extract tables and field names from table_map
+source('lib/user_table_helper.R',keep.source = F)
+source('lib/omop_get_concept.R')
+library(snakecase)
+
 ## OMOP All Patient Table -----
 all_patients_table_omop <- function(table_map, db_connection) {
   req(table_map(), db_connection() )
-## Source function to extract tables and field names from table_map
-  source('lib/user_table_helper.R',keep.source = F)
-  library(snakecase)
 
 ## Build Concepts
   gender_concepts <- user_table(table_map, db_connection, 'concept') %>% 
@@ -57,7 +59,7 @@ all_patients_table_omop <- function(table_map, db_connection) {
                ) %>% 
     rename('Provider' = user_field(table_map, 'provider', 'provider_name')) %>% 
     select(-contains('provider_id', ignore.case = T))
-  
+
 ## Return All Patients Table Representation
   user_table(table_map, db_connection, 'person') %>% 
     select(-matches('gender*|race*|ethnicity*|provider*|location*|care*',ignore.case = T)) %>% 
@@ -79,6 +81,7 @@ condition_era_omop <- function(table_map, db_connection, subject_id) {
   req(table_map(), db_connection(), subject_id() )
   message('Running Condition ERA')
   subject <- as.integer(subject_id() )
+  
   user_table(table_map, db_connection, 'concept') %>% 
     select(user_field(table_map, 'concept', 'concept_id'),
            user_field(table_map, 'concept', 'concept_name')
@@ -172,3 +175,60 @@ condition_occurrence_omop <- function(table_map, db_connection, subject_id) {
     rename_at(vars(-contains('ID',ignore.case = F)), to_title_case)
 }
 
+## OMOP Death -----
+
+death_omop <- function(table_map, db_connection, subject_id) {
+  req(table_map(), db_connection(), subject_id() )
+  message('Running Death')
+  subject <- as.integer(subject_id() )
+## Build Concepts
+  death_type_concepts <- user_table(table_map, db_connection, 'concept') %>% 
+    select(user_field(table_map, 'concept', 'concept_id'), 
+           user_field(table_map, 'concept', 'concept_name') 
+           ) %>% 
+    inner_join(user_table(table_map, db_connection, 'death') %>% 
+                 filter(!!as.name(user_field(table_map, 'death','person_id')) == subject ) %>% 
+                 select(user_field(table_map, 'death', 'person_id'),
+                        user_field(table_map, 'death', 'death_type_concept_id')
+                 ),
+               by = setNames(user_field(table_map, 'death', 'death_type_concept_id'), user_field(table_map, 'concept', 'concept_id'))
+               ) %>% 
+    rename('Type' = user_field(table_map, 'concept', 'concept_name')) %>% 
+    select(-contains('concept_id', ignore.case = T))
+  
+  death_cause_concepts <- user_table(table_map, db_connection, 'concept') %>% 
+    select(user_field(table_map, 'concept', 'concept_id'), 
+           user_field(table_map, 'concept', 'concept_name') 
+           ) %>% 
+    inner_join(user_table(table_map, db_connection, 'death') %>% 
+                 filter(!!as.name(user_field(table_map, 'death','person_id')) == subject ) %>% 
+                 select(user_field(table_map, 'death', 'person_id'),
+                        user_field(table_map, 'death', 'cause_concept_id')
+                 ),
+               by = setNames(user_field(table_map, 'death', 'cause_concept_id'), user_field(table_map, 'concept', 'concept_id')) 
+               ) %>% 
+    rename('Cause' = user_field(table_map, 'concept', 'concept_name')) %>% 
+    select(-contains('concept_id', ignore.case = T))
+## Return Death Table Representation 
+  user_table(table_map, db_connection, 'death') %>% 
+    filter(!!as.name(user_field(table_map, 'death','person_id')) == subject ) %>% 
+    select(-matches('death_type_concept*|cause_concept*|cause_source_concept*', ignore.case = T)) %>% 
+    left_join(death_cause_concepts) %>% 
+    left_join(death_type_concepts) %>% 
+    select('ID' = person_id, 'SourceVal' = user_field(table_map, 'death', 'cause_source_value'), everything()) %>% 
+    collect() %>% 
+    rename_at(vars(-contains('ID',ignore.case = F)), to_title_case)
+}
+
+## Device Exposure -----
+## Dose Era -----
+## Drug Era -----
+## Drug Exposure -----
+## Measurement -----
+## Note -----
+## Observation -----
+## Observation Period -----
+## Payer Plan Period -----
+## Procedure Occurrence -----
+## Specimen -----
+## Visit Occurrence -----
