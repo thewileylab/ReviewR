@@ -9,16 +9,9 @@
 # Making manual record review fun since 2019!
 #
 
-library(shiny)
-library(shinydashboard)
-library(shinycssloaders)
-library(shinyjqui)
-library(shinyjs)
-library(tidyverse)
-library(magrittr)
-
-options(shiny.port = 8100)
-options(shiny.reactlog=TRUE)
+# Initialize the application
+source('lib/initialize_reviewr.R')
+supported_data_models <- initialize_reviewr()
 
 # Define a reactive UI for ReviewR
 ui <- dashboardPage(title = 'ReviewR',

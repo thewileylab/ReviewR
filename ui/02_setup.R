@@ -11,7 +11,7 @@ db_type <- callModule(db_select_logic, 'db_setup_ns')
 db_connection_vars <- callModule(db_connect_logic, 'db_setup_ns', db_type$db_selection, table_map$db_disconnect )
 ### Data Model Detection
 source('modules/data_model_detection_module.R',keep.source = F)
-table_map <- callModule(data_model_detection_logic, 'model_ns', db_connection_vars$db_connection, db_connection_vars$connect_press)
+table_map <- callModule(data_model_detection_logic, 'model_ns', db_connection_vars$db_connection, db_connection_vars$connect_press, supported_data_models)
 
 ## Chart Abstraction Setup
 source('modules/chart_abstraction_setup_module.R')
