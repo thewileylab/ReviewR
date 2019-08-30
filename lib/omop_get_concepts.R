@@ -1,4 +1,4 @@
-#' Title
+#' OMOP Get Concepts
 #'
 #' @param table_map tibble containing standard CDM mapped to user tables
 #' @param db_connection DBI connection object
