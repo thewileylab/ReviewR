@@ -84,35 +84,9 @@ omop_table_death <- function(table_map, db_connection, subject_id) {
   subject <- as.integer(subject_id() )
 
 ## Build Concepts
-  death_type_concepts <- user_table(table_map, db_connection, 'concept') %>% 
-    select(user_field(table_map, 'concept', 'concept_id'), 
-           user_field(table_map, 'concept', 'concept_name') 
-           ) %>% 
-    inner_join(user_table(table_map, db_connection, 'death') %>% 
-                 filter(!!as.name(user_field(table_map, 'death','person_id')) == subject ) %>% 
-                 select(user_field(table_map, 'death', 'person_id'),
-                        user_field(table_map, 'death', 'death_type_concept_id')
-                 ),
-               by = setNames(user_field(table_map, 'death', 'death_type_concept_id'), user_field(table_map, 'concept', 'concept_id'))
-               ) %>% 
-    rename('Type' = user_field(table_map, 'concept', 'concept_name')) %>% 
-    select(-contains('concept_id', ignore.case = T))
   death_type_concepts <- get_subject_concept(table_map, db_connection, 'concept','concept_id','concept_name','death','person_id','death_type_concept_id','Type','person_id', subject)
+  death_cause_concepts <- get_subject_concept(table_map, db_connection, 'concept','concept_id','concept_name','death','person_id','cause_concept_id','Cause','person_id', subject)
   
-  
-  death_cause_concepts <- user_table(table_map, db_connection, 'concept') %>% 
-    select(user_field(table_map, 'concept', 'concept_id'), 
-           user_field(table_map, 'concept', 'concept_name') 
-           ) %>% 
-    inner_join(user_table(table_map, db_connection, 'death') %>% 
-                 filter(!!as.name(user_field(table_map, 'death','person_id')) == subject ) %>% 
-                 select(user_field(table_map, 'death', 'person_id'),
-                        user_field(table_map, 'death', 'cause_concept_id')
-                 ),
-               by = setNames(user_field(table_map, 'death', 'cause_concept_id'), user_field(table_map, 'concept', 'concept_id')) 
-               ) %>% 
-    rename('Cause' = user_field(table_map, 'concept', 'concept_name')) %>% 
-    select(-contains('concept_id', ignore.case = T))
 ## Return Death Table Representation 
   user_table(table_map, db_connection, 'death') %>% 
     filter(!!as.name(user_field(table_map, 'death','person_id')) == subject ) %>% 
