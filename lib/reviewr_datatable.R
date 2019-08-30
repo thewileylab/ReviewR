@@ -1,10 +1,8 @@
-
 #' ReviewR Datatable
 #'
-#' @return
-#' @export
+#' @return return a DT with custom options
 #'
-#' @examples
+#' @examples condition_era() %>% reviewr_datatable()
 
 reviewr_datatable <- function(.data) {
   library(DT)
