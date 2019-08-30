@@ -54,14 +54,3 @@ get_subject_concept <- function(table_map, db_connection, concept_table, concept
     select(-contains(!!concept_id,ignore.case = T))
 }
 
-# condition_concepts <- get_subject_concept(table_map = table_map, 
-#                                           db_connection = db_connection, 
-#                                           concept_table = 'concept',
-#                                           concept_id = 'concept_id',
-#                                           concept_name = 'concept_name',
-#                                           table = 'condition_occurrence',
-#                                           joinable_id = 'condition_occurrence_id',
-#                                           table_concept_id = 'condition_concept_id',
-#                                           col_name = 'Condition',
-#                                           subject_id_field = 'person_id', 
-#                                           selected_subject = subject)
