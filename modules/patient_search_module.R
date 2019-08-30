@@ -26,7 +26,7 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
     req(db_connection() )
     if (table_map()$count_filtered != 0 & table_map()$data_model == 'omop') {
       source('lib/omop_tables.R',keep.source = F)
-      all_patients_table_omop(table_map, db_connection)
+      omop_table_all_patients(table_map, db_connection)
     } else if(table_map()$count_filtered != 0 & table_map()$data_model == 'mimic3') {
       ## MIMIC Patient Search
       patients_mimic <- 'patients'

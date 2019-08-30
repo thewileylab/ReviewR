@@ -16,17 +16,17 @@ chart_review_logic <- function(input, output, session, table_map, db_connection,
   ## Define Reactive tibbles which update every time the subject_id() variable changes
   condition_era <- reactive({
     req(subject_id() )
-    condition_era_omop(table_map, db_connection, subject_id)
+    omop_table_condition_era(table_map, db_connection, subject_id)
     })
   
   condition_occurrence <- reactive({
     req(subject_id() )
-    condition_occurrence_omop(table_map, db_connection, subject_id)
+    omop_table_condition_occurrence(table_map, db_connection, subject_id)
   })
   
   death <- reactive({
     req(subject_id() )
-    death_omop(table_map, db_connection, subject_id)
+    omop_table_death(table_map, db_connection, subject_id)
   })
   
   ## Render the tibbles as datatables
