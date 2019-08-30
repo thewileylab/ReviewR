@@ -1,3 +1,8 @@
+#' Initialize ReviewR
+#' Run this once at the outset to prep for manual review. Sources all libraries, libs, and functions needed to run the application.
+#' @return supported data models
+#'
+#' @examples
 initialize_reviewr <- function() {
   message('Clear the mechanism... initializing ReviewR')
   options(shiny.port = 8100)
@@ -12,7 +17,8 @@ initialize_reviewr <- function() {
                             'shinyjqui',
                             'shinyjs',
                             'tidyverse',
-                            'magrittr')
+                            'magrittr',
+                            'DT')
                  )
   # Load All necessary libraries
   library(shiny)
@@ -22,6 +28,7 @@ initialize_reviewr <- function() {
   library(shinyjs)
   library(tidyverse)
   library(magrittr)
+  library(DT)
   
   # Load Supported data models
   message('Loading supported data models.')
