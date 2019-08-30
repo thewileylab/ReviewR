@@ -10,7 +10,7 @@ chart_review_ui <- function(id) {
 }
 
 chart_review_logic <- function(input, output, session, table_map, db_connection, subject_id) {
-  library(DT)
+  source('lib/reviewr_datatable.R')
   ns <- session$ns
   
   ## Define Reactive tibbles which update every time the subject_id() variable changes
@@ -33,63 +33,18 @@ chart_review_logic <- function(input, output, session, table_map, db_connection,
   output$condition_era_dt <- renderDataTable({
     req(condition_era())
     condition_era() %>% 
-      datatable(extensions = list('Scroller' = NULL
-      ),
-      options = list(scrollX = TRUE,
-                     deferRender = TRUE,
-                     scrollY = '600px',
-                     scroller = TRUE,
-                     searchHighlight = TRUE, 
-                     search = list(regex = TRUE, 
-                                   caseInsensitive = TRUE)
-      ),
-      rownames = F, 
-      selection = 'single',
-      escape = F,
-      filter = 'top',
-      class = 'cell-border strip hover'
-      )
+      reviewr_datatable()
   })
   
   output$condition_occurrence_dt <- renderDataTable({
     req(condition_occurrence() )
     condition_occurrence() %>% 
-      datatable(extensions = list('Scroller' = NULL
-      ),
-      options = list(scrollX = TRUE,
-                     deferRender = TRUE,
-                     scrollY = '600px',
-                     scroller = TRUE,
-                     searchHighlight = TRUE, 
-                     search = list(regex = TRUE, 
-                                   caseInsensitive = TRUE)
-      ),
-      rownames = F, 
-      selection = 'single',
-      escape = F,
-      filter = 'top',
-      class = 'cell-border strip hover'
-      )
+      reviewr_datatable()
   })
   
   output$death_dt <- renderDataTable({
     req(death() )
     death() %>% 
-      datatable(extensions = list('Scroller' = NULL
-      ),
-      options = list(scrollX = TRUE,
-                     deferRender = TRUE,
-                     scrollY = '600px',
-                     scroller = TRUE,
-                     searchHighlight = TRUE, 
-                     search = list(regex = TRUE, 
-                                   caseInsensitive = TRUE)
-      ),
-      rownames = F, 
-      selection = 'single',
-      escape = F,
-      filter = 'top',
-      class = 'cell-border strip hover'
-      )
+      reviewr_datatable()
   })
 }

@@ -8,8 +8,8 @@ patient_search_ui <- function(id) {
 }
 
 patient_search_logic <- function(input, output, session, table_map, db_connection, disconnect, prev_sub, next_sub, selected_sub, parent) {
+  source('lib/reviewr_datatable.R')
   library(tibble)
-  library(DT)
   library(lubridate)
   ns <- session$ns
   
@@ -59,22 +59,7 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
     # The next time you think about implementing FixedColumns, check the status of this issue first: https://github.com/rstudio/DT/issues/275
     patient_search_tbl() %>% 
       rename('Subject ID' = ID) %>% 
-      datatable(extensions = list('Scroller' = NULL
-                                  ),
-                options = list(scrollX = TRUE,
-                               deferRender = TRUE,
-                               scrollY = '600px',
-                               scroller = TRUE,
-                               searchHighlight = TRUE, 
-                               search = list(regex = TRUE, 
-                                             caseInsensitive = TRUE)
-                               ),
-                rownames = F, 
-                selection = 'single',
-                escape = F,
-                filter = 'top',
-                class = 'cell-border strip hover'
-                ) %>% 
+      reviewr_datatable() %>% 
       formatStyle('Subject ID', 
                   color = '#0000EE', 
                   cursor = 'pointer',  # Format the ID column to appear blue and change the mouse to a pointer
