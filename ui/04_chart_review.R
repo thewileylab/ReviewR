@@ -3,7 +3,7 @@
 #
 
 source('modules/patient_nav_module.R')
-source('modules/patient_chart_module.R')
+source('modules/patient_chart_module.R', keep.source = F)
 subject_selection_vars <- callModule(patient_nav_logic, 'chart_review', subject_info$patient_table, subject_info$selected_patient, parent = session)
 callModule(subject_info_logic, 'chart_review', subject_info$selected_patient)
 callModule(chart_review_logic, 'chart_review', table_map$table_map, db_connection_vars$db_connection, subject_info$selected_patient)
