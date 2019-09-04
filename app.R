@@ -9,6 +9,10 @@
 # Making manual record review fun since 2019!
 #
 
+#
+# authors:  Laura Wiley, Luke Rasmussen, David Mayer
+#
+
 # Initialize the application
 source('lib/initialize_reviewr.R')
 supported_data_models <- initialize_reviewr()

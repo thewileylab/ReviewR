@@ -31,6 +31,7 @@ initialize_reviewr <- function() {
   library(DT)
   
   # Load Supported data models
+  ## This isn't a large dataset by any means, but it can be made available across all R sessions upon App initialization. 
   message('Loading supported data models.')
   supported_models <- list.files(path = file.path('data_models/'),full.names = T,recursive = T) %>% 
     tibble(file_path = .) %>% 
@@ -48,6 +49,6 @@ initialize_reviewr <- function() {
            field = tolower(field)) %>% 
     group_by(file_path,data_model,model_version) %>% 
     nest(.key = cdm)
-  message('Proceeding to manual Review!')
+  message('Proceeding to manual record review!')
   return(supported_models)
 }
