@@ -26,78 +26,110 @@ chart_review_logic <- function(input, output, session, table_map, db_connection,
   ns <- session$ns
   
   ## Define Reactive tibbles which update every time the subject_id() variable changes -----
+  ## Code MIMIC Representation functions someday!
   condition_era <- reactive({
     req(subject_id() )
+    if(table_map()$data_model == 'omop'){
     omop_table_condition_era(table_map, db_connection, subject_id)
+    } else { return(NULL) }
     })
   
   condition_occurrence <- reactive({
     req(subject_id() )
+    if(table_map()$data_model == 'omop') {
     omop_table_condition_occurrence(table_map, db_connection, subject_id)
+    } else { return(NULL) }
   })
   
   death <- reactive({
     req(subject_id() )
+    if(table_map()$data_model == 'omop') {
     omop_table_death(table_map, db_connection, subject_id)
+    } else { return(NULL) }
   })
   
   device_exposure <- reactive({
     req(subject_id() )
+    if(table_map()$data_model == 'omop') {
     omop_table_device_exposure(table_map, db_connection, subject_id)
+    } else { return(NULL) }
   })
   
   dose_era <- reactive({
     req(subject_id() )
+    if(table_map()$data_model == 'omop') {
     omop_table_dose_era(table_map, db_connection, subject_id)
+    } else { return(NULL) }
   })
   
   drug_era <- reactive({
     req(subject_id() )
+    if(table_map()$data_model == 'omop') {
     omop_table_drug_era(table_map, db_connection, subject_id)
+    } else { return(NULL) }
   })
   
   drug_exposure <- reactive({
     req(subject_id() )
+    if(table_map()$data_model == 'omop') {
     omop_table_drug_exposure(table_map, db_connection, subject_id)
+    } else { return(NULL) }
   })
   
   measurement <- reactive({
     req(subject_id() )
+    if(table_map()$data_model == 'omop') {
     omop_table_measurement(table_map, db_connection, subject_id)
+    } else { return(NULL) }
   })
   
   note <- reactive({
     req(subject_id() )
+    if(table_map()$data_model == 'omop') {
     omop_table_note(table_map, db_connection, subject_id)
+    } else { return(NULL) }
   })
   
   observation <- reactive({
     req(subject_id() )
+    if(table_map()$data_model == 'omop') {
     omop_table_observation(table_map, db_connection, subject_id)
+    } else { return(NULL) }
   })
   
   observation_period <- reactive({
     req(subject_id() )
+    if(table_map()$data_model == 'omop') {
     omop_table_observation_period(table_map, db_connection, subject_id)
+    } else { return(NULL) }
   })
   
   payer_plan_period <- reactive({
     req(subject_id() )
+    if(table_map()$data_model == 'omop') {
     omop_table_payer_plan_period(table_map, db_connection, subject_id)
+    } else { return(NULL) }
   })
   
   procedure_occurrence <- reactive({
     req(subject_id() )
+    if(table_map()$data_model == 'omop') {
     omop_table_procedure_occurrence(table_map, db_connection, subject_id)
+    } else { return(NULL) }
   })
   
   specimen <- reactive({
     req(subject_id() )
+    if(table_map()$data_model == 'omop') {
     omop_table_specimen(table_map, db_connection, subject_id)
+    } else { return(NULL) }
   })
   
   visit_occurrence <- reactive({
+    req(subject_id() )
+    if(table_map()$data_model == 'omop') {
     omop_table_visit_occurrence(table_map, db_connection, subject_id)
+    } else { return(NULL) }
   })
   
   ## Render the tibbles as datatables -----
