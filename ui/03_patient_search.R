@@ -18,7 +18,10 @@ observeEvent(subject_info$dt_selection_info(), {
 
 
 ## Create UI element from data detection module on setup tab
-output$data_model <- renderText(table_map$data_model_text() )
+output$data_model <- renderText({
+  req(table_map$data_model_text() )
+  table_map$data_model_text() 
+  })
 
 # Define Patient Search Tab UI
 
