@@ -8,6 +8,9 @@ subject_selection_vars <- callModule(patient_nav_logic, 'chart_review', subject_
 callModule(subject_info_logic, 'chart_review', subject_info$selected_patient)
 callModule(chart_review_logic, 'chart_review', table_map$table_map, db_connection_vars$db_connection, subject_info$selected_patient)
 
+output$chart_review <- renderUI({ chart_review_ui('chart_review') })
+
+
 # Define Chart Review Tab UI
 output$chart_review_tab <- renderUI({
 tagList(
@@ -44,7 +47,8 @@ tagList(
     fluidRow(
       box(title = 'Patient Stuff Here!',
           width = '100%',
-          chart_review_ui('chart_review')
+          #chart_review_ui('chart_review')
+          uiOutput('chart_review')
           )
     )
     )
