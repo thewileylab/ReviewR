@@ -1,6 +1,6 @@
 ## Source function to extract tables and field names from table_map
 source('lib/user_table_helper.R',keep.source = F)
-source('lib/omop_get_concepts.R')
+source('lib/omop_get_concepts.R',keep.source = F)
 library(snakecase)
 
 ## OMOP All Patient Table -----
