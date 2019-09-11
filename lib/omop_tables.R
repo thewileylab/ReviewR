@@ -103,6 +103,7 @@ omop_table_device_exposure <- function(table_map, db_connection, subject_id) {
   req(table_map(), db_connection(), subject_id() )
   message('Running Device Exposure')
   subject <- as.integer(subject_id() )
+  
   ## Build Concepts
   device_concepts <- get_subject_concept(table_map, db_connection, 'concept','concept_id','concept_name','device_exposure','device_exposure_id','device_concept_id','Device','person_id', subject)
   device_type_concepts <- get_subject_concept(table_map, db_connection, 'concept','concept_id','concept_name','device_exposure','device_exposure_id','device_type_concept_id','Type','person_id', subject)
