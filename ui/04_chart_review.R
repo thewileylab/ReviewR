@@ -2,6 +2,7 @@
 # This file contains all elements that are needed to render the Chart Review Tab
 #
 
+# Source Chart Review Modules ----
 source('modules/patient_nav_module.R')
 source('modules/patient_chart_module.R', keep.source = F)
 subject_selection_vars <- callModule(patient_nav_logic, 'chart_review', subject_info$patient_table, subject_info$selected_patient, parent = session)
@@ -11,7 +12,7 @@ callModule(chart_review_logic, 'chart_review', table_map$table_map, db_connectio
 output$chart_review <- renderUI({ chart_review_ui('chart_review') })
 
 
-# Define Chart Review Tab UI
+# Define Chart Review Tab UI ----
 output$chart_review_tab <- renderUI({
 tagList(
   fluidPage(

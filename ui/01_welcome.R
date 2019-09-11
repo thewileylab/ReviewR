@@ -2,6 +2,8 @@
 # This file contains all elements that are needed to render the Welcome Tab
 #
 
+# Define Welcome Tab UI ----
+
 output$welcome_tab <- renderUI({
 fluidRow(
   box(status = 'primary', solidHeader = F, width = 12,
