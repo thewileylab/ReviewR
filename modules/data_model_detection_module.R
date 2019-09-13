@@ -30,7 +30,7 @@ data_model_detection_logic <- function(input, output, session, db_connection, co
              user_fields_long = map(.x = user_fields_long,.f = as.tibble)
              ) %>% 
       ## Unnest user tables and coerce to match cdm standards
-      unnest() %>% 
+      unnest(cols = c(user_fields_long)) %>% 
       rename(user_fields = value) %>% 
       mutate(clean_user_fields = tolower(user_fields),
              clean_user_fields = str_replace(string = clean_user_fields, pattern = regex(pattern = '[.!?\\-]'),replacement = '_'),
@@ -40,15 +40,16 @@ data_model_detection_logic <- function(input, output, session, db_connection, co
     
     # Join user tables with supported data models, determine which one the user is likely running
     user_joined <- supported_models %>% 
-      mutate(model_match = map(.x = cdm,.f = left_join, user_tables, by = c('table'='clean_table', 'field'='clean_user_fields')))%>% 
+      mutate(model_match = map(.x = data,.f = left_join, user_tables, by = c('table'='clean_table', 'field'='clean_user_fields')))%>% 
       mutate(filtered = map(.x = model_match,.f = filter, is.na(user_fields)!=T),
              count_filtered = map(.x = filtered,.f = nrow), 
              count_filtered = unlist(count_filtered)
              )
     
     table_map <- user_joined %>% 
+      ungroup() %>% 
       filter(count_filtered == max(count_filtered)) %>% 
-      select(data_model, model_version, cdm, model_match, count_filtered) %>%
+      select(data_model, model_version, data, model_match, count_filtered) %>%
       arrange(desc(model_version)) %>%
       slice(1)
     return(table_map)

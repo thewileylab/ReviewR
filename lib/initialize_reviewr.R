@@ -61,11 +61,11 @@ initialize_reviewr <- function() {
            cdm = map(.x = file_path,.f = read_csv)
     ) %>% 
     ## Process the supported data models slightly, turning table names and fields to lowercase. Re-group.
-    unnest() %>% 
+    unnest(cols = c(cdm)) %>% 
     mutate(table = tolower(table),
            field = tolower(field)) %>% 
     group_by(file_path,data_model,model_version) %>% 
-    nest(.key = cdm)
+    nest()
   )
   data_model_message <- paste('Discovered and imported', nrow(supported_models), 'supported data model versions.')
   message(data_model_message)
