@@ -13,11 +13,11 @@
 # authors:  Laura Wiley, Luke Rasmussen, David Mayer
 #
 
-# Initialize the application
+# Initialize the application ----
 source('lib/initialize_reviewr.R')
 supported_data_models <- initialize_reviewr()
 
-# Define a reactive UI for ReviewR
+# Define a reactive UI for ReviewR ----
 ui <- dashboardPage(title = 'ReviewR',
                     skin = 'red',
                     dashboardHeader(title = tags$a(href='https://github.com/orgs/thewileylab', target='_blank',
@@ -40,7 +40,7 @@ ui <- dashboardPage(title = 'ReviewR',
                         )
                     )
 
-# Define server logic required to make ReviewR magic happen. 
+# Define server logic required to make ReviewR magic happen. ----
 server <- function(input, output, session) {
     
     ## Close Application when button is clicked
@@ -76,5 +76,5 @@ server <- function(input, output, session) {
     
 }
 
-# Run the application 
+# Run the application ----
 shinyApp(ui = ui, server = server)
