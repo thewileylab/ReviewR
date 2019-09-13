@@ -41,14 +41,18 @@ redcap_initialize_logic <- function(input, output, session, rc_url, rc_token) {
       }
   })
   
-  rc_con <- eventReactive(input$rc_connect, {
+  rc_con <- reactive({
+    req(rc_url(), rc_token())
     redcapAPI::redcapConnection(url = rc_url(), token = rc_token() )
   })
   
   output$redcap_connect <- renderUI({ rc_connect() })
   
+  rc_connect_press <- reactive({ input$rc_connect })
+  
   return(list(
-    'rc_con' = rc_con
+    'rc_con' = rc_con,
+    'rc_connect_press' = rc_connect_press
   ))
   
 }

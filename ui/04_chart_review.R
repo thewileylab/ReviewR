@@ -10,7 +10,34 @@ callModule(subject_info_logic, 'chart_review', subject_info$selected_patient)
 callModule(chart_review_logic, 'chart_review', table_map$table_map, db_connection_vars$db_connection, subject_info$selected_patient)
 
 ## Outputs ----
-output$chart_review <- renderUI({ chart_review_ui('chart_review') })
+## Change layout based on presence or absence of abstraction connection info
+output$chart_review <- renderUI({
+  req(abstraction_vars$rc_url(), abstraction_vars$rc_url() )
+  if(abstraction_vars$rc_url() == '' | abstraction_vars$rc_token() == '' ) { ## Revisit -- conditions should be dependent on valid information being provided.
+    box(title = 'No Abstraction',
+        width = '100%',
+        chart_review_ui('chart_review')
+        ) 
+    } else {
+      fluidRow(
+        column(
+          width = 9,
+          box(
+            title = 'Chart Review',
+            width = '100%',
+            chart_review_ui('chart_review')
+            )
+          ),
+        column(
+          width = 3,
+          box(
+            title = 'Chart Abstraction',
+            width = '100%'
+            )
+          )
+        )
+      }
+  })
 
 # Define Chart Review Tab UI ----
 output$chart_review_tab <- renderUI({
@@ -46,11 +73,7 @@ tagList(
         )
       ),
     fluidRow(
-      box(title = 'Patient Stuff Here!',
-          width = '100%',
-          #chart_review_ui('chart_review')
           uiOutput('chart_review')
-          )
     )
     )
   )

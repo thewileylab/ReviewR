@@ -55,6 +55,7 @@ chart_abstraction_setup_logic <- function(input, output, session, abstraction_se
   return(list(
     'rc_url' = rc_vars$rc_url,
     'rc_token' = rc_vars$rc_token,
-    'rc_con' = rc_con$rc_con
+    'rc_con' = rc_con$rc_con,
+    'rc_press' = rc_con$rc_connect_press
   ))
 }
