@@ -15,7 +15,7 @@
 
 # Initialize the application ----
 source('lib/initialize_reviewr.R')
-supported_data_models <- initialize_reviewr()
+init_data <- initialize_reviewr()
 
 # Define a reactive UI for ReviewR ----
 ui <- dashboardPage(title = 'ReviewR',

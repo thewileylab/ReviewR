@@ -100,7 +100,7 @@ redcap_instrument_select_logic <- function(input, output, session, rc_connect_pr
   
 }
 
-redcap_instrument_config_logic <- function(input, output, session, rc_connection, instruments, instrument_selection) {
+redcap_instrument_config_logic <- function(input, output, session, rc_connection, instruments, instrument_selection, redcap_widget_map) {
   ns <- session$ns
   
   instrument <- reactive({
@@ -110,7 +110,10 @@ redcap_instrument_config_logic <- function(input, output, session, rc_connection
       select(instrument_name) %>% 
       pluck(1)
     redcapAPI::exportMetaData(rcon = rc_connection()) %>%
-      filter(str_to_lower(form_name) == instrument_filter )
+      filter(str_to_lower(form_name) == instrument_filter ) %>% 
+      left_join(redcap_widget_map, 
+                by = c('field_type' = 'redcap_field_type', 'text_validation_type_or_show_slider_number' = 'redcap_field_val')
+                )
     })
   
   rc_project_info <- reactive({

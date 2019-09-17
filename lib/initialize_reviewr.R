@@ -69,6 +69,17 @@ initialize_reviewr <- function() {
   )
   data_model_message <- paste('Discovered and imported', nrow(supported_models), 'supported data model versions.')
   message(data_model_message)
+  
+  message('Importing supported REDCap widgets...')
+  # Create widget map - used by REDCap initialization process
+  redcap_field_type <- c('text','text','text','dropdown','truefalse','yesno','radio','checkbox','notes')
+  redcap_field_val <- c(NA,'date_mdy','integer',NA,NA,NA,NA,NA,NA)
+  reviewr_redcap_widget_function <- c('reviewr_text','reviewr_date','reviewr_integer','reviewr_dropdown','reviewr_truefalse','reviewr_yesno','reviewr_radio','reviewr_checkbox','reviewr_notes')
+  redcap_widget_map <- tibble(redcap_field_type, redcap_field_val, reviewr_redcap_widget_function)
+  redcap_message <- paste('Discovered and imported', nrow(redcap_widget_map), 'supported REDCap widgets.')
+  
   message('Proceeding to manual record review!')
-  return(supported_models)
+  return(list(
+    'supported_models' = supported_models,
+    'redcap_widget_map' = redcap_widget_map))
 }
