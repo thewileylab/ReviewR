@@ -112,6 +112,11 @@ redcap_instrument_config_logic <- function(input, output, session, rc_connection
     redcapAPI::exportMetaData(rcon = rc_connection()) %>%
       filter(str_to_lower(form_name) == instrument_filter )
     })
+  
+  rc_project_info <- reactive({
+    req(rc_connection() )
+    redcapAPI::exportProjectInformation(rc_connection())
+    })
     
   redcap_instrument_patient_id <- reactive({
     req(instrument() )
@@ -127,11 +132,11 @@ redcap_instrument_config_logic <- function(input, output, session, rc_connection
   })
   rc_identifier <- reactive({ input$rc_identifier_field })
   
-  
   output$rc_configure <- renderUI({redcap_instrument_patient_id() })
   
   return(list(
     'rc_instrument' = instrument,
+    'rc_project_info' = rc_project_info,
     'rc_identifier' = rc_identifier
   ))
 
@@ -153,5 +158,11 @@ redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_i
               )
   })
   rc_reviewer <- reactive({ input$rc_reviewer_field })
+  
   output$rc_reviewer <- renderUI({rc_reviewer_id() })
+  
+  return(list(
+    'rc_identifier' = rc_identifier,
+    'rc_reviewer' = rc_reviewer
+  ))
 }
