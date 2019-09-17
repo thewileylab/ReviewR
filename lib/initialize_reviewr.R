@@ -46,6 +46,7 @@ initialize_reviewr <- function() {
   library(snakecase)
   library(redcapAPI)
   
+  message('Done.')
   # Load Supported data models
   ## This isn't a large dataset by any means, but it can be made available across all R sessions upon App initialization. 
   message('Loading supported data models...')
@@ -77,6 +78,7 @@ initialize_reviewr <- function() {
   reviewr_redcap_widget_function <- c('reviewr_text','reviewr_date','reviewr_integer','reviewr_dropdown','reviewr_truefalse','reviewr_yesno','reviewr_radio','reviewr_checkbox','reviewr_notes')
   redcap_widget_map <- tibble(redcap_field_type, redcap_field_val, reviewr_redcap_widget_function)
   redcap_message <- paste('Discovered and imported', nrow(redcap_widget_map), 'supported REDCap widgets.')
+  message(redcap_message)
   
   message('Proceeding to manual record review!')
   return(list(
