@@ -3,7 +3,7 @@ redcap_connect_ui <- function(id) {
   tagList(
     uiOutput(ns('redcap_setup')),
     uiOutput(ns('redcap_connect'))
-  )
+    )
 }
 
 redcap_connect_logic <- function(input, output, session) { 
@@ -55,4 +55,103 @@ redcap_initialize_logic <- function(input, output, session, rc_url, rc_token) {
     'rc_connect_press' = rc_connect_press
   ))
   
+}
+
+redcap_instrument_config_ui <- function(id) {
+  ns <- NS(id)
+  tagList(
+    uiOutput(ns('rc_select')),
+    uiOutput(ns('rc_configure')),
+    uiOutput(ns('rc_reviewer'))
+  )
+}
+
+redcap_instrument_select_logic <- function(input, output, session, rc_connect_press, rc_connection) {
+  ns <- session$ns
+  
+  # List the available instruments
+  instruments <- reactive({
+    req(rc_connect_press(), rc_connection() )
+    redcapAPI::exportInstruments(rc_connection() )
+  })
+  
+  redcap_instrument_select <- reactive({
+    tagList(
+      selectInput(inputId = ns('rc_instrument'),
+                  label = 'Available Instruments:',
+                  choices = instruments() %>% 
+                    select(instrument_label) %>% 
+                    deframe()
+                  )
+      )
+  })
+  instrument_selection <- reactive({ input$rc_instrument })
+
+  output$rc_select <- renderUI({ 
+    tagList(
+      redcap_instrument_select()
+      )
+    })
+  
+  return(list(
+    'rc_instruments' = instruments,
+    'rc_instrument_selection' = instrument_selection
+  ))
+  
+}
+
+redcap_instrument_config_logic <- function(input, output, session, rc_connection, instruments, instrument_selection) {
+  ns <- session$ns
+  
+  instrument <- reactive({
+    req(instruments(), instrument_selection() )
+    instrument_filter <- instruments() %>% 
+      filter(instrument_label == instrument_selection() ) %>% 
+      select(instrument_name) %>% 
+      pluck(1)
+    redcapAPI::exportMetaData(rcon = rc_connection()) %>%
+      filter(str_to_lower(form_name) == instrument_filter )
+    })
+    
+  redcap_instrument_patient_id <- reactive({
+    req(instrument() )
+    tagList(
+      selectInput(inputId = ns('rc_identifier_field'),
+                  label = 'Which variable contains your record identifier (e.g., MRN, subject ID)?',
+                  choices = instrument() %>%
+                    filter(field_type == 'text') %>% 
+                    select(field_label) %>%
+                    deframe()
+                  )
+      )
+  })
+  rc_identifier <- reactive({ input$rc_identifier_field })
+  
+  
+  output$rc_configure <- renderUI({redcap_instrument_patient_id() })
+  
+  return(list(
+    'rc_instrument' = instrument,
+    'rc_identifier' = rc_identifier
+  ))
+
+}
+
+redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_instrument, rc_identifier) {
+  ns <- session$ns
+  
+  rc_reviewer_id <- reactive({
+    req(rc_instrument(), rc_identifier() )
+    selectInput(inputId = ns('rc_reviewer_field'), 
+              label = 'Which variable contains your reviewer identifier?',
+              choices = append('(Not Applicable)', 
+                               rc_instrument() %>%
+                                 filter(field_type == 'text' & field_label != rc_identifier() ) %>% 
+                                 select(field_label) %>%
+                                 deframe()
+                               )
+              )
+  })
+  rc_reviewer <- reactive({ input$rc_reviewer_field })
+  output$rc_reviewer <- renderUI({rc_reviewer_id() })
 }

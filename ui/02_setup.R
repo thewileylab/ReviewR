@@ -18,6 +18,11 @@ source('modules/chart_abstraction_setup_module.R')
 abstraction <- callModule(chart_abstraction_select_logic, 'abstraction_ns')
 abstraction_vars <- callModule(chart_abstraction_setup_logic, 'abstraction_ns', abstraction$abstraction_selection)
 
+## REDCap Configuration
+instrument_selection <- callModule(redcap_instrument_select_logic, 'abstraction_ns', abstraction_vars$rc_press, abstraction_vars$rc_con)
+rc_instrument_vars <- callModule(redcap_instrument_config_logic, 'abstraction_ns', abstraction_vars$rc_con, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection)
+callModule(redcap_instrument_config_reviewer_logic, 'abstraction_ns', rc_instrument_vars$rc_instrument, rc_instrument_vars$rc_identifier)
+
 ## BigQuery Redirect Observer. When leaving the application after authenticating with BigQuery, take the user back to the Setup Tab to complete setup. ----
 observeEvent(db_connection_vars$bq_token(), {
   if (is.null(db_connection_vars$bq_token() ) ) { # Only redirect when the authorization token is present
@@ -81,7 +86,8 @@ fluidRow(
       title = 'Configure REDCap Instrument',
       width = '100%',
       status = 'danger',
-      solidHeader = F
+      solidHeader = F,
+      redcap_instrument_config_ui('abstraction_ns')
       #Box Contents
       )
     )
