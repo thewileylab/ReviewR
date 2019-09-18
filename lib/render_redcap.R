@@ -8,6 +8,7 @@ reviewr_dateInput <- function(id, field_label, value = NULL, ...) {
   }
 
 reviewr_dropdown <- function(id, field_label, choices, value = NULL, ...) {
+  ## Create selectable choices
   temp <- tibble(choices = choices) %>% 
     separate_rows(choices, sep = '\\|') %>% 
     separate(col = choices, into = c('Values','Names'),sep = ',') %>% 
@@ -30,6 +31,7 @@ reviewr_yesno <- function(id, field_label, value = NULL, ...) {
   }
 
 reviewr_radio <- function(id, field_label, choices, value = NULL, ...) {
+  ## Create selectable choices
   temp <- tibble(choices = choices) %>% 
     separate_rows(choices, sep = '\\|') %>% 
     separate(col = choices, into = c('Values','Names'),sep = ',') %>% 
@@ -40,6 +42,7 @@ reviewr_radio <- function(id, field_label, choices, value = NULL, ...) {
   }
 
 reviewr_checkbox <- function(id, field_label, choices, value = NULL, ...) {
+  ## Create selectable choices
   temp <- tibble(choices = choices) %>% 
     separate_rows(choices, sep = '\\|') %>% 
     separate(col = choices, into = c('Values','Names'),sep = ',') %>% 
@@ -62,23 +65,23 @@ reviewr_integer <- function(id, field_label, value = NULL, ...) {
 render_redcap <- function(reviewr_type, field_name, field_label, choices, current_subject_data = NULL, other_default_data = NULL ) {
   if(reviewr_type == 'reviewr_text') {   ## Text: textInput ----
     reviewr_textInput(id = field_name, field_label = field_label)
-  } else if(reviewr_type == 'reviewr_date') {   ## Date: dateInput ----
+  } else if(reviewr_type == 'reviewr_date') {             ## Date: dateInput ----
     reviewr_dateInput(id = field_name, field_label = field_label)
-  } else if (reviewr_type == 'reviewr_dropdown') {   ## DropDown: selectInput
+  } else if (reviewr_type == 'reviewr_dropdown') {        ## DropDown: selectInput
     reviewr_dropdown(id = field_name, field_label = field_label, choices = choices)
-  } else if (reviewr_type == 'reviewr_truefalse') {   ## TrueFalse: radioButtoms ---- 
+  } else if (reviewr_type == 'reviewr_truefalse') {       ## TrueFalse: radioButtoms ---- 
     reviewr_truefalse(id = field_name, field_label = field_label)
-  } else if (reviewr_type == 'reviewr_yesno') {   ## YesNo: radioButtons ----
+  } else if (reviewr_type == 'reviewr_yesno') {           ## YesNo: radioButtons ----
     reviewr_yesno(id = field_name, field_label = field_label)
-  } else if (reviewr_type == 'reviewr_radio') {   ## Radio: radioButtons ----
+  } else if (reviewr_type == 'reviewr_radio') {           ## Radio: radioButtons ----
     reviewr_radio(id = field_name, field_label = field_label, choices = choices)
-  } else if (reviewr_type == 'reviewr_checkbox') {  ## Checkbox: checkboxGroupInput ----
+  } else if (reviewr_type == 'reviewr_checkbox') {        ## Checkbox: checkboxGroupInput ----
     reviewr_checkbox(id = field_name, field_label = field_label, choices = choices)
-  } else if (reviewr_type == 'reviewr_notes') {
+  } else if (reviewr_type == 'reviewr_notes') {           ## Notes: textAreaInput ----
     reviewr_notes(id = field_name, field_label = field_label)
-  } else if (reviewr_type == 'reviewr_integer') {
+  } else if (reviewr_type == 'reviewr_integer') {         ## Integer: numericInput ----
     reviewr_integer(id = field_name, field_label = field_label)
-  } else {   ## Unsupported input ----
+  } else {                                                ## Unsupported input ----
     reviewr_textInput(id = field_name, field_label = "This is an unsupported field type", placeholder = reviewr_type)
     }
   }
