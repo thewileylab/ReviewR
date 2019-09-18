@@ -1,6 +1,6 @@
 #' Initialize ReviewR
 #' Run this once at the outset to prep for manual review. Sources all libraries, libs, and functions needed to run the application.
-#' @return supported data models
+#' @return supported data models/REDCap widgets
 #'
 #' @examples
 initialize_reviewr <- function() {
