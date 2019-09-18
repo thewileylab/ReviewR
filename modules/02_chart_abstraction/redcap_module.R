@@ -1,3 +1,4 @@
+## REDCap Connection  ----
 redcap_connect_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -57,6 +58,7 @@ redcap_initialize_logic <- function(input, output, session, rc_url, rc_token) {
   
 }
 
+## REDCap Configuration ----
 redcap_instrument_config_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -103,7 +105,37 @@ redcap_instrument_select_logic <- function(input, output, session, rc_connect_pr
 redcap_instrument_config_logic <- function(input, output, session, rc_connection, instruments, instrument_selection, redcap_widget_map) {
   ns <- session$ns
   
+  ## Store the REDCap Instrument as a reactive variable. Process a bit to assist in rendering the instrument later.
   instrument <- reactive({
+    req(instruments(), instrument_selection() )
+    ## Create an instrument filter, if multiple instruments are present
+    instrument_filter <- instruments() %>% 
+      filter(instrument_label == instrument_selection() ) %>% 
+      select(instrument_name) %>% 
+      pluck(1)
+    ## Extract and process the REDCap Instrument
+    redcapAPI::exportMetaData(rcon = rc_connection()) %>%
+      filter(str_to_lower(form_name) == instrument_filter ) %>% 
+      slice(-1) %>%   # We drop the first row, as it most likely is the auto-increment field used in REDCap
+      rownames_to_column() %>% 
+      filter(!field_type %in% c('slider','calc','descriptive')) %>% 
+      # If some information is not defined within REDCap, it will convert those to logical types by default.  We are
+      # assuming that they will be all character values, so we need to perform explicit casting to continue with that
+      # assumption.
+      mutate_if(is.logical, as.character) %>% 
+      left_join(redcap_widget_map, 
+                by = c('field_type' = 'redcap_field_type', 'text_validation_type_or_show_slider_number' = 'redcap_field_val')
+                ) %>% 
+      unite(col = 'shiny_inputID', field_name, reviewr_redcap_widget_function, sep = '_', remove = F) %>% 
+      mutate(section_header = coalesce(section_header, ''),
+             field_note = coalesce(field_note, ''),
+             ## mutate shiny tags/inputs
+             
+             )
+    })
+  
+  ## Store the record identifier field
+  rc_record_id <- reactive({
     req(instruments(), instrument_selection() )
     instrument_filter <- instruments() %>% 
       filter(instrument_label == instrument_selection() ) %>% 
@@ -111,16 +143,17 @@ redcap_instrument_config_logic <- function(input, output, session, rc_connection
       pluck(1)
     redcapAPI::exportMetaData(rcon = rc_connection()) %>%
       filter(str_to_lower(form_name) == instrument_filter ) %>% 
-      left_join(redcap_widget_map, 
-                by = c('field_type' = 'redcap_field_type', 'text_validation_type_or_show_slider_number' = 'redcap_field_val')
-                )
-    })
+      select(field_name) %>% 
+      slice(1)
+  })
   
+  ## Gather project information for display WIP
   rc_project_info <- reactive({
     req(rc_connection() )
     redcapAPI::exportProjectInformation(rc_connection())
     })
-    
+  
+  ## Create a select input for potential patient identifier columns
   redcap_instrument_patient_id <- reactive({
     req(instrument() )
     tagList(
@@ -139,8 +172,9 @@ redcap_instrument_config_logic <- function(input, output, session, rc_connection
   
   return(list(
     'rc_instrument' = instrument,
+    'rc_record_id' = rc_record_id,
     'rc_project_info' = rc_project_info,
-    'rc_identifier' = rc_identifier
+    'rc_identifier' = rc_identifier ## Pass this variable to the next module
   ))
 
 }
@@ -148,6 +182,7 @@ redcap_instrument_config_logic <- function(input, output, session, rc_connection
 redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_instrument, rc_identifier) {
   ns <- session$ns
   
+  ## Create a select input for potential reviewer identifier coluimns. Remove patient identifier column and append 'Not applicable'
   rc_reviewer_id <- reactive({
     req(rc_instrument(), rc_identifier() )
     selectInput(inputId = ns('rc_reviewer_field'), 
@@ -168,4 +203,16 @@ redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_i
     'rc_identifier' = rc_identifier,
     'rc_reviewer' = rc_reviewer
   ))
+}
+
+## REDCap Instrument ----
+redcap_instrument_ui <- function(id) {
+  ns <- NS(id)
+  tagList(
+  
+  )
+}
+
+redcap_instrumment_logic <- function(input, output, session, rc_instrument, rc_idendifier, rc_reviewer) {
+  
 }
