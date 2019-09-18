@@ -8,13 +8,14 @@ source('modules/patient_chart_module.R', keep.source = F)
 subject_selection_vars <- callModule(patient_nav_logic, 'chart_review', subject_info$patient_table, subject_info$selected_patient, parent = session)
 callModule(subject_info_logic, 'chart_review', subject_info$selected_patient)
 callModule(chart_review_logic, 'chart_review', table_map$table_map, db_connection_vars$db_connection, subject_info$selected_patient)
+callModule(redcap_instrumment_logic, 'chart_review_abstraction', rc_project_vars$rc_instrument, rc_config_vars$rc_identifier , rc_config_vars$rc_reviewer)
 
 ## Outputs ----
 ## Change layout based on presence or absence of abstraction connection info
 output$chart_review <- renderUI({
   req(abstraction_vars$rc_url(), abstraction_vars$rc_url() )
   if(abstraction_vars$rc_url() == '' | abstraction_vars$rc_token() == '' ) { ## Revisit -- conditions should be dependent on valid information being provided.
-    box(title = 'No Abstraction',
+    box(title = 'Chart Review',
         width = '100%',
         chart_review_ui('chart_review')
         ) 
@@ -32,7 +33,8 @@ output$chart_review <- renderUI({
           width = 3,
           box(
             title = 'Chart Abstraction',
-            width = '100%'
+            width = '100%',
+            redcap_instrument_ui('chart_review_abstraction')
             )
           )
         )

@@ -7,7 +7,7 @@ reviewr_dateInput <- function(id, field_label, value = NULL, ...) {
   dateInput(inputId = id, label = field_label, value = value)
   }
 
-reviewr_dropdown <- function(id, field_label, choices = NULL, value = NULL, ...) {
+reviewr_dropdown <- function(id, field_label, choices, value = NULL, ...) {
   temp <- tibble(choices = choices) %>% 
     separate_rows(choices, sep = '\\|') %>% 
     separate(col = choices, into = c('Values','Names'),sep = ',') %>% 
