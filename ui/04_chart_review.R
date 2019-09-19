@@ -11,6 +11,8 @@ callModule(chart_review_logic, 'chart_review', table_map$table_map, db_connectio
 callModule(redcap_instrumment_logic, 'chart_review_abstraction', rc_project_vars$rc_instrument, rc_config_vars$rc_identifier , rc_config_vars$rc_reviewer)
 
 ## Outputs ----
+output$abstraction <- renderUI({ redcap_instrument_ui('chart_review_abstraction') })
+
 ## Change layout based on presence or absence of abstraction connection info
 output$chart_review <- renderUI({
   req(abstraction_vars$rc_url(), abstraction_vars$rc_url() )
@@ -34,7 +36,10 @@ output$chart_review <- renderUI({
           box(
             title = 'Chart Abstraction',
             width = '100%',
-            redcap_instrument_ui('chart_review_abstraction')
+            #redcap_instrument_ui('chart_review_abstraction'),
+            uiOutput('abstraction'),
+            ## CSS to scroll the abstraction instrument, if necessary
+            tags$head(tags$style("#test{color:black; font-size:12px; font-style:italic; overflow-y:scroll; max-height: 760px; background: ghostwhite;}"))
             )
           )
         )
