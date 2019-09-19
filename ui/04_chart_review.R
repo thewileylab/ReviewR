@@ -28,6 +28,7 @@ output$chart_review <- renderUI({
           box(
             title = 'Chart Review',
             width = '100%',
+            status = 'primary',
             chart_review_ui('chart_review')
             )
           ),
@@ -36,10 +37,12 @@ output$chart_review <- renderUI({
           box(
             title = 'Chart Abstraction',
             width = '100%',
-            #redcap_instrument_ui('chart_review_abstraction'),
+            status = 'danger',
             uiOutput('abstraction'),
             ## CSS to scroll the abstraction instrument, if necessary
-            tags$head(tags$style("#test{color:black; font-size:12px; font-style:italic; overflow-y:scroll; max-height: 760px; background: ghostwhite;}"))
+            tags$head(
+              tags$style("#abstraction{color:black; font-size:12px; font-style:italic; overflow-y:scroll; max-height: 600px; background: ghostwhite;}")
+              )
             )
           )
         )

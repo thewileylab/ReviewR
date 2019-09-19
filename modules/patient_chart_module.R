@@ -1,6 +1,10 @@
 chart_review_ui <- function(id) {
   ns <- NS(id)
   tagList(
+    tags$head(
+      tags$style(type='text/css', 
+                 ".nav-tabs {font-size: 12px} ")
+      ),
     tabsetPanel(id = 'patient_chart',type = 'tabs',
                 tabPanel(title = 'Condition Era', dataTableOutput(ns('condition_era_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
                 tabPanel(title = 'Condition Occurrence', dataTableOutput(ns('condition_occurrence_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
