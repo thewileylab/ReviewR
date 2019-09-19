@@ -227,22 +227,22 @@ redcap_instrumment_logic <- function(input, output, session, rc_instrument, rc_i
                                 field_name = shiny_inputID, 
                                 field_label = shiny_field_label, 
                                 choices = select_choices_or_calculations
-        ), 
-        render_redcap
-        ),
+                                ), 
+                           render_redcap
+                           ),
         shiny_note = map(field_note, tags$sub),
         shiny_taglist = pmap(list(shiny_header,
                                   shiny_input,
                                   shiny_note
-        ),
-        tagList
+                                  ),
+                             tagList
+                             )
         )
-      )
-  })
+    })
   
+  ## Create Instrument Output
   output$redcap_instrument <- renderUI ({ 
     req(rc_instrument_ui() )
- 
     rc_instrument_ui()$shiny_taglist
     })
 }
