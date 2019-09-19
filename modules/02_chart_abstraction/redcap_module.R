@@ -105,7 +105,9 @@ redcap_instrument_select_logic <- function(input, output, session, rc_connect_pr
 redcap_instrument_config_logic <- function(input, output, session, rc_connection, instruments, instrument_selection, redcap_widget_map) {
   ns <- session$ns
   
+  ## Source REDCap functions
   source('lib/render_redcap.R', keep.source = F)
+  
   ## Store the REDCap Instrument as a reactive variable. Process a bit to assist in rendering the instrument later.
   instrument <- reactive({
     req(instruments(), instrument_selection() )
@@ -129,25 +131,7 @@ redcap_instrument_config_logic <- function(input, output, session, rc_connection
                 ) %>% 
       unite(col = 'shiny_inputID', field_name, reviewr_redcap_widget_function, sep = '_', remove = F) %>% 
       mutate(section_header = coalesce(section_header, ''),
-             field_note = coalesce(field_note, ''),
-             ## mutate shiny tags/inputs
-             shiny_header = map(section_header, h3),
-             shiny_field_label = case_when(is.na(required_field) ~ field_label,
-                                           TRUE ~ paste(field_label,'*')),
-             shiny_input = pmap(list(reviewr_type = reviewr_redcap_widget_function, 
-                                     field_name = shiny_inputID, 
-                                     field_label = shiny_field_label, 
-                                     choices = select_choices_or_calculations
-                                     ), 
-                                render_redcap
-                                ),
-             shiny_note = map(field_note, tags$sub),
-             shiny_taglist = pmap(list(shiny_header,
-                                       shiny_input,
-                                       shiny_note
-                                       ),
-                                  tagList
-                                  )
+             field_note = coalesce(field_note, '')
              )
     })
   
@@ -232,8 +216,45 @@ redcap_instrument_ui <- function(id) {
 
 redcap_instrumment_logic <- function(input, output, session, rc_instrument, rc_idendifier, rc_reviewer) {
   
-  output$redcap_instrument <- renderUI ({ 
+  rc_instrument_ui <- reactive({
     req(rc_instrument() )
-    rc_instrument()$shiny_taglist
+    rc_instrument() %>% 
+      mutate(## mutate shiny tags/inputs
+        shiny_header = map(section_header, h3),
+        shiny_field_label = case_when(is.na(required_field) ~ field_label,
+                                      TRUE ~ paste(field_label,'*')),
+        shiny_input = pmap(list(reviewr_type = reviewr_redcap_widget_function, 
+                                field_name = shiny_inputID, 
+                                field_label = shiny_field_label, 
+                                choices = select_choices_or_calculations
+        ), 
+        render_redcap
+        ),
+        shiny_note = map(field_note, tags$sub),
+        shiny_taglist = pmap(list(shiny_header,
+                                  shiny_input,
+                                  shiny_note
+        ),
+        tagList
+        )
+      )
+  })
+  
+  output$redcap_instrument <- renderUI ({ 
+    req(rc_instrument_ui() )
+ 
+    rc_instrument_ui()$shiny_taglist
     })
+}
+
+## REDCap Data Collection/Upload ----
+name_UI <- function(id) {
+  ns <- NS(id)
+  tagList(
+  
+  )
+}
+
+name <- function(input, output, session) {
+  
 }
