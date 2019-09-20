@@ -9,7 +9,7 @@ chart_review_ui <- function(id) {
                 tabPanel(title = 'Condition Era', dataTableOutput(ns('condition_era_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
                 tabPanel(title = 'Condition Occurrence', dataTableOutput(ns('condition_occurrence_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
                 tabPanel(title = 'Death', dataTableOutput(ns('death_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'Device Exposure', dataTableOutput(ns('device_exposure_dt')) %>% withSpinner(type = 6)),
+                tabPanel(title = 'Device Exposure', dataTableOutput(ns('device_exposure_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
                 tabPanel(title = 'Dose Era', dataTableOutput(ns('dose_era_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
                 tabPanel(title = 'Drug Era', dataTableOutput(ns('drug_era_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
                 tabPanel(title = 'Drug Exposure', dataTableOutput(ns('drug_exposure_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
