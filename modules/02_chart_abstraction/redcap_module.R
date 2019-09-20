@@ -214,7 +214,7 @@ redcap_instrument_ui <- function(id) {
   )
 }
 
-redcap_instrumment_logic <- function(input, output, session, rc_instrument, rc_idendifier, rc_reviewer) {
+redcap_instrumment_logic <- function(input, output, session, rc_instrument, rc_identifier, rc_reviewer) {
   
   rc_instrument_ui <- reactive({
     req(rc_instrument() )
@@ -245,16 +245,34 @@ redcap_instrumment_logic <- function(input, output, session, rc_instrument, rc_i
     req(rc_instrument_ui() )
     rc_instrument_ui()$shiny_taglist
     })
+  
+  # Collect all of the user entered data
+  formData <- reactive({
+    # data <- sapply(rc_instrument()$shiny_inputID, function(x) { as.character(format(input[[x]])) })
+    data2 <- map_dfr(.x = rc_instrument()$shiny_inputID, ~ input[[.x]] )
+    data2
+  })
+  return(list(
+    'instrument_data' = formData
+  ))
 }
 
 ## REDCap Data Collection/Upload ----
-name_UI <- function(id) {
+upload_redcap_ui <- function(id) {
   ns <- NS(id)
   tagList(
   
   )
 }
 
-name <- function(input, output, session) {
+upload_redcap_logic <- function(input, output, session, rc_instrument) {
+  ns <- session$ns
   
+  # # Collect all of the user entered data
+  # formData <- reactive({
+  #   data <- sapply(rc_instrument()$shiny_inputID, function(x) { as.character(format(input[[x]])) })
+  #   data
+  # })
 }
+
+

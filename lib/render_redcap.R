@@ -1,6 +1,6 @@
 ## Create Shiny Widget Translation Functions ----
 reviewr_textInput <- function(id, field_label, value = NULL, placeholder = NULL, ...) {
-  textInput(inputId = id ,label = field_label,value = value , placeholder = placeholder)
+  textInput(inputId = id ,label = field_label, value = value , placeholder = placeholder)
   }
 
 reviewr_dateInput <- function(id, field_label, value = NULL, ...) {

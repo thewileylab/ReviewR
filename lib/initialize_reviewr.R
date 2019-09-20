@@ -77,11 +77,20 @@ initialize_reviewr <- function() {
   redcap_field_val <- c(NA,'date_mdy','integer',NA,NA,NA,NA,NA,NA)
   reviewr_redcap_widget_function <- c('reviewr_text','reviewr_date','reviewr_integer','reviewr_dropdown','reviewr_truefalse','reviewr_yesno','reviewr_radio','reviewr_checkbox','reviewr_notes')
   redcap_widget_map <- tibble(redcap_field_type, redcap_field_val, reviewr_redcap_widget_function)
+  
+  # REDCap urvey complete choices
+  redcap_survey_complete_values <- c(0,1,2)
+  redcap_survey_complete_names <- c('Incomplete', 'Unverified', 'Complete')
+  names(redcap_survey_complete_values) <-redcap_survey_complete_names
+  redcap_survey_complete_tbl <- tibble(redcap_survey_complete_names, redcap_survey_complete_values)
   redcap_message <- paste('Discovered and imported', nrow(redcap_widget_map), 'supported REDCap widgets.')
+  
   message(redcap_message)
   
   message('Proceeding to manual record review!')
   return(list(
     'supported_models' = supported_models,
-    'redcap_widget_map' = redcap_widget_map))
+    'redcap_widget_map' = redcap_widget_map,
+    'redcap_survey_complete_vals' = redcap_survey_complete_values,
+    'redcap_survey_complete_tbl' = redcap_survey_complete_tbl))
 }
