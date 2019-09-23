@@ -19,7 +19,7 @@
 
 get_all_concept <- function(table_map, db_connection, concept_table, concept_id, concept_name, table, joinable_id, table_concept_id, col_name) {
   req(table_map(), db_connection() )
-  source('lib/user_table_helper.R', keep.source = F)
+  source('lib/user_database_helper.R', keep.source = F)
   
   user_table(table_map, db_connection, concept_table) %>% 
     select(user_field(table_map, concept_table, concept_id), 
@@ -37,7 +37,7 @@ get_all_concept <- function(table_map, db_connection, concept_table, concept_id,
 
 get_subject_concept <- function(table_map, db_connection, concept_table, concept_id, concept_name, table, joinable_id, table_concept_id, col_name, subject_id_field, selected_subject) {
   req(table_map(), db_connection() )
-  source('lib/user_table_helper.R', keep.source = F)
+  source('lib/user_database_helper.R', keep.source = F)
   
   user_table(table_map, db_connection, concept_table) %>% 
     select(user_field(table_map, concept_table, concept_id), 
