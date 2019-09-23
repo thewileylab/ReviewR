@@ -4,6 +4,7 @@ source('lib/omop_get_concepts.R',keep.source = F)
 library(snakecase)
 
 ## OMOP All Patient Table -----
+
 omop_table_all_patients <- function(table_map, db_connection) {
   req(table_map(), db_connection() )
   ## Build Concepts
@@ -22,7 +23,7 @@ omop_table_all_patients <- function(table_map, db_connection) {
     collect() %>% 
     unite(col = 'Birth_Date', c('year_of_birth','month_of_birth','day_of_birth')) %>% 
     mutate(Birth_Date = as_date(Birth_Date)) %>% 
-    select('ID' = person_id, Gender, 'SourceVal' = person_source_value, everything()) %>% 
+    select('ID' = user_field(table_map, 'person', 'person_id'), Gender, 'SourceVal' = user_field(table_map, 'person', 'person_source_value'), everything()) %>% 
     arrange(ID) %>% 
     rename_at(vars(-1), to_title_case)
 }
