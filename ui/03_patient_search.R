@@ -14,7 +14,7 @@ observeEvent(subject_info$dt_selection_info(), {
     } else {
       updateTabItems(session, 'main_tabs', selected = 'chart_review')
       }
-})
+    })
 
 
 ## Create UI element from data detection module on setup tab ----
@@ -26,20 +26,21 @@ output$data_model <- renderText({
 # Define Patient Search Tab UI ----
 
 output$patient_search_tab <- renderUI({
-tagList(
-  fluidPage(
-    box(
-      #Box Setup
-      title = h2('Select a patient to view'),
-      width = '100%', 
-      status = 'success', 
-      solidHeader = F,
-      #Box Contents
-      div('To select a patient, please click the desired Subject ID in the table below:'),
-      patient_search_ui('patient_search_ns'),
-      uiOutput('data_model')
+  tagList(
+    fluidPage(
+      box(
+        #Box Setup
+        title = h2('Select a patient to view'),
+        width = '100%', 
+        status = 'success', 
+        solidHeader = F,
+        #Box Contents
+        div('To select a patient, please click the desired Subject ID in the table below:'),
+        patient_search_ui('patient_search_ns'),
+        uiOutput('data_model')
+        )
       )
-  )
-)
-})
+    )
+  })
+
 outputOptions(output, 'patient_search_tab', suspendWhenHidden = F)
