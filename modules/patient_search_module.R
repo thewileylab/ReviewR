@@ -29,25 +29,8 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
       omop_table_all_patients(table_map, db_connection)
     } else if(table_map()$count_filtered != 0 & table_map()$data_model == 'mimic3') {
       ## MIMIC Patient Search
-      patients_mimic <- 'patients'
-      id_mimic <- 'subject_id'
-      ## Determine user table from table map
-      patients_table <- table_map()$model_match[[1]] %>% 
-        filter(table == patients_mimic) %>% 
-        distinct(table, .keep_all = T) %>% 
-        select(user_database_table) %>% 
-        pluck(1)
-      ## Determine petient id field from table map
-      subject_field <- table_map()$model_match[[1]] %>% 
-        filter(table == patients_mimic & field == id_mimic) %>% 
-        select(user_fields) %>% 
-        pluck(1)
-      ## Connect to table
-      tbl(db_connection(), patients_table) %>%
-        rename(ID = subject_field) %>% 
-        select(ID, everything()) %>%
-        arrange(ID) %>% 
-        collect()
+      source('lib/mimic_tables.R',keep.source = F)
+      mimic_table_all_patients(table_map, db_connection)
     } else {
       return(NULL)
     }
