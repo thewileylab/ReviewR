@@ -12,8 +12,13 @@ callModule(omop_chart_review_logic, 'chart_review', table_map$table_map, db_conn
 callModule(mimic_chart_review_logic, 'chart_review', table_map$table_map, db_connection_vars$db_connection, subject_info$selected_patient)
 
 # Call Chart Abstraction Modules ----
-formData <- callModule(redcap_instrumment_logic, 'chart_review_abstraction', rc_project_vars$rc_instrument, rc_config_vars$rc_identifier , rc_config_vars$rc_reviewer)
-callModule(upload_redcap_logic, 'chart_review_abstraction', rc_project_vars$rc_instrument)
+instrumentData <- callModule(redcap_instrumment_logic, 'chart_review_abstraction', rc_project_vars$rc_instrument, rc_config_vars$rc_identifier , rc_config_vars$rc_reviewer, upload$rc_upload_btn_press, input_vals)
+upload <- callModule(upload_redcap_logic, 'chart_review_abstraction', rc_project_vars$rc_instrument)
+
+# RC Test observer
+observeEvent(upload$rc_upload_btn_press(), {
+  browser()
+  })
 
 ## Outputs ----
 output$abstraction <- renderUI({ redcap_instrument_ui('chart_review_abstraction') })
@@ -24,9 +29,10 @@ output$abstraction <- renderUI({ redcap_instrument_ui('chart_review_abstraction'
 
 
 ## Change layout based on presence or absence of abstraction connection info
-output$chart_review <- renderUI({
+output$chart_review <- renderUI({ 
   req(abstraction_vars$rc_url(), abstraction_vars$rc_url(), table_map$table_map())
-  if(abstraction_vars$rc_url() == '' | abstraction_vars$rc_token() == '' ) { ## Revisit -- conditions should be dependent on valid information being provided.
+  ## Revisit -- conditions should be dependent on valid information being provided.
+  if(abstraction_vars$rc_url() == '' | abstraction_vars$rc_token() == '' ) { ## No Abstraction ----
     box(title = 'Chart Review',
         width = '100%',
         ## Select patient chart ui based on data model
@@ -36,7 +42,7 @@ output$chart_review <- renderUI({
           mimic_chart_review_ui('chart_review')
         } else {return(NULL)}
         ) 
-    } else {
+    } else { ## Abstraction ----
       fluidRow(
         column(
           width = 9,
@@ -65,9 +71,9 @@ output$chart_review <- renderUI({
               )
             ),
           box(
-            title = 'test',
-            width = '100&'
-            # uiOutput('test')
+            title = 'Save Abstraction',
+            width = '100&',
+            upload_redcap_ui('chart_review_abstraction')
           )
           )
         )

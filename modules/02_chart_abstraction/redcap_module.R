@@ -88,7 +88,7 @@ redcap_instrument_select_logic <- function(input, output, session, rc_connect_pr
       )
   })
   instrument_selection <- reactive({ input$rc_instrument })
-
+  
   output$rc_select <- renderUI({ 
     tagList(
       redcap_instrument_select()
@@ -102,7 +102,7 @@ redcap_instrument_select_logic <- function(input, output, session, rc_connect_pr
   
 }
 
-redcap_instrument_config_logic <- function(input, output, session, rc_connection, instruments, instrument_selection, redcap_widget_map) {
+redcap_instrument_config_logic <- function(input, output, session, rc_connection, instruments, instrument_selection, redcap_widget_map, rc_upload) {
   ns <- session$ns
   
   ## Source REDCap functions
@@ -214,7 +214,7 @@ redcap_instrument_ui <- function(id) {
   )
 }
 
-redcap_instrumment_logic <- function(input, output, session, rc_instrument, rc_identifier, rc_reviewer) {
+redcap_instrumment_logic <- function(input, output, session, rc_instrument, rc_identifier, rc_reviewer, rc_upload, reviewr_inputs) {
   
   rc_instrument_ui <- reactive({
     req(rc_instrument() )
@@ -246,33 +246,38 @@ redcap_instrumment_logic <- function(input, output, session, rc_instrument, rc_i
     rc_instrument_ui()$shiny_taglist
     })
   
-  # Collect all of the user entered data
-  formData <- reactive({
-    # data <- sapply(rc_instrument()$shiny_inputID, function(x) { as.character(format(input[[x]])) })
-    data2 <- map_dfr(.x = rc_instrument()$shiny_inputID, ~ input[[.x]] )
-    data2
+  instrumentData <- reactive({
+    tibble(inputID = names(reviewr_inputs()), values = unname(reviewr_inputs())) %>% 
+      mutate(class = str_detect(string = inputID, pattern = regex(pattern = '_reviewr((?!_reset).)*$',ignore_case = T))) %>% ## Find instrument inputs -- not resets
+      filter(class == T) %>% 
+      select(-class) %>% 
+      pivot_wider(names_from = inputID, values_from = values)
   })
-  return(list(
-    'instrument_data' = formData
-  ))
+  
+  return('instrument_data' = instrumentData)
 }
 
 ## REDCap Data Collection/Upload ----
 upload_redcap_ui <- function(id) {
   ns <- NS(id)
   tagList(
-  
+    uiOutput(ns('rc_upload'))
   )
 }
 
 upload_redcap_logic <- function(input, output, session, rc_instrument) {
   ns <- session$ns
   
-  # # Collect all of the user entered data
-  # formData <- reactive({
-  #   data <- sapply(rc_instrument()$shiny_inputID, function(x) { as.character(format(input[[x]])) })
-  #   data
-  # })
+  rc_upload_btn <- reactive({ actionButton(inputId = ns('upload_rc'),label = "Store Abstraction") })
+  rc_upload_btn_press <- reactive({ input$upload_rc })
+  
+  output$rc_upload <- renderUI({rc_upload_btn() })
+  
+  
+  return(list(
+    'rc_upload_btn_press' = rc_upload_btn_press
+  ))
+  
 }
 
 
