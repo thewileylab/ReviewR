@@ -214,7 +214,7 @@ redcap_instrument_ui <- function(id) {
   )
 }
 
-redcap_instrumment_logic <- function(input, output, session, rc_instrument, rc_identifier, rc_reviewer, rc_upload, reviewr_inputs) {
+redcap_instrumment_logic <- function(input, output, session, rc_instrument, rc_identifier, rc_reviewer, reviewr_inputs) {
   
   rc_instrument_ui <- reactive({
     req(rc_instrument() )
