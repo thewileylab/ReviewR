@@ -78,7 +78,7 @@ initialize_reviewr <- function() {
   reviewr_redcap_widget_function <- c('reviewr_text','reviewr_date','reviewr_integer','reviewr_dropdown','reviewr_truefalse','reviewr_yesno','reviewr_radio','reviewr_checkbox','reviewr_notes')
   redcap_widget_map <- tibble(redcap_field_type, redcap_field_val, reviewr_redcap_widget_function)
   
-  # REDCap urvey complete choices
+  # REDCap survey complete choices
   redcap_survey_complete_values <- c(0,1,2)
   redcap_survey_complete_names <- c('Incomplete', 'Unverified', 'Complete')
   names(redcap_survey_complete_values) <-redcap_survey_complete_names
