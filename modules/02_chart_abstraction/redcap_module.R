@@ -118,8 +118,8 @@ redcap_instrument_config_logic <- function(input, output, session, rc_connection
       pluck(1)
     ## Extract and process the REDCap Instrument
     redcapAPI::exportMetaData(rcon = rc_connection()) %>%
-      filter(str_to_lower(form_name) == instrument_filter ) %>% 
       slice(-1) %>%   # We drop the first row, as it most likely is the auto-increment field used in REDCap
+      filter(str_to_lower(form_name) == instrument_filter ) %>% # Select the instrument based on the user selection
       rownames_to_column() %>% 
       filter(!field_type %in% c('slider','calc','descriptive')) %>% 
       # If some information is not defined within REDCap, it will convert those to logical types by default.  We are
