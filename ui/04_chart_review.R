@@ -87,7 +87,7 @@ tagList(
         width = 9,
         box(
           #Box Setup
-          title = h3('Subject Information'),
+          title = 'Subject Information',
           width = '100%',
           #height = '130px',
           status = 'success', 
