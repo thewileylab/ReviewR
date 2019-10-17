@@ -214,12 +214,19 @@ redcap_instrument_ui <- function(id) {
   )
 }
 
-redcap_instrumment_logic <- function(input, output, session, rc_instrument, rc_identifier, rc_reviewer, reviewr_inputs) {
-  
+redcap_instrumment_logic <- function(input, output, session, rc_connection, rc_instrument, rc_identifier, rc_reviewer, reviewr_inputs, subject_id, reviewr_upload_btn, reviewr_connect_btn) {
+  ## On redcap connection or subsequent upload, determine if there is any default data that needs to be displayed
+  current_subject <- reactive({
+    req(reviewr_connect_btn(), reviewr_upload_btn() )
+    redcapAPI::exportRecords(rcon = rc_connection() ) %>% 
+      filter(rc_identifier() == subject_id() )
+    browser()
+    })
+  ## Create a Shiny tagList for each question type present in the instrument
   rc_instrument_ui <- reactive({
     req(rc_instrument() )
     rc_instrument() %>% 
-      mutate(## mutate shiny tags/inputs
+      mutate( ## mutate shiny tags/inputs
         shiny_header = map(section_header, h3),
         shiny_field_label = case_when(is.na(required_field) ~ field_label,
                                       TRUE ~ paste(field_label,'*')),
@@ -246,6 +253,7 @@ redcap_instrumment_logic <- function(input, output, session, rc_instrument, rc_i
     rc_instrument_ui()$shiny_taglist
     })
   
+  ## Collect Instrument data
   instrumentData <- reactive({
     tibble(inputID = names(reviewr_inputs()), values = unname(reviewr_inputs())) %>% 
       mutate(class = str_detect(string = inputID, pattern = regex(pattern = '_reviewr((?!_reset).)*$',ignore_case = T))) %>% ## Find instrument inputs -- not resets
@@ -254,10 +262,10 @@ redcap_instrumment_logic <- function(input, output, session, rc_instrument, rc_i
       pivot_wider(names_from = inputID, values_from = values)
   })
   
-  return('instrument_data' = instrumentData)
+  return('instrument_data' = instrumentData) # Send to the Upload module
 }
 
-## REDCap Data Collection/Upload ----
+## REDCap Data Upload ----
 upload_redcap_ui <- function(id) {
   ns <- NS(id)
   tagList(
