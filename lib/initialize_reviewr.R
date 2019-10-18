@@ -11,6 +11,7 @@ initialize_reviewr <- function() {
   # Check that Packages are installed
   message('Checking available packages, installing those that are missing...')
   source('lib/check_packages.R')
+  options(repos=structure(c(CRAN="https://cloud.r-project.org/"))) 
   check_packages(pkg = list('shiny',
                             'shinydashboard',
                             'shinycssloaders',
