@@ -17,6 +17,7 @@ mimic_table_all_patients <- function(table_map, db_connection) {
            ) %>% 
     select(-matches('row_id', ignore.case = T)) %>% 
     arrange(ID) %>% 
+    mutate_if(is.integer, as.character) %>% 
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -30,7 +31,8 @@ mimic_table_admissions <- function(table_map, db_connection, subject_id) {
     select('person_id' = user_field(table_map, 'admissions', 'subject_id'), 'ID' = user_field(table_map, 'admissions', 'hadm_id'), everything()) %>% 
     filter(person_id == subject) %>% 
     select(-matches('person_id|row_id', ignore.case = T)) %>% 
-    arrange(!!as.name(user_field(table_map, 'admissions','admittime'))) %>% 
+    arrange(!!as.name(user_field(table_map, 'admissions','admittime'))) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -44,7 +46,8 @@ mimic_table_callout <- function(table_map, db_connection, subject_id) {
     select('person_id' = user_field(table_map, 'callout', 'subject_id'), 'ID' = user_field(table_map, 'callout', 'hadm_id'), everything()) %>% 
     filter(person_id == subject) %>% 
     arrange(!!as.name(user_field(table_map, 'callout','row_id'))) %>% 
-    select(-matches('person_id|row_id', ignore.case = T)) %>% 
+    select(-matches('person_id|row_id', ignore.case = T)) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case) %>% 
     rename_at(vars(-1), ~ str_replace(string = ., pattern = regex(pattern = 'id$',ignore_case = T),replacement = ' ID'))
@@ -59,7 +62,8 @@ mimic_table_chart_events <- function(table_map, db_connection, subject_id) {
     select('person_id' = user_field(table_map, 'chartevents', 'subject_id'), 'ID' = user_field(table_map, 'chartevents', 'hadm_id'), everything()) %>% 
     filter(person_id == subject)  %>% 
     select(-matches('person_id|row_id', ignore.case = T)) %>% 
-    arrange(!!as.name(user_field(table_map, 'chartevents','charttime'))) %>% 
+    arrange(!!as.name(user_field(table_map, 'chartevents','charttime'))) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -72,7 +76,8 @@ mimic_table_cpt_events <- function(table_map, db_connection, subject_id) {
     select('person_id' = user_field(table_map, 'cptevents', 'subject_id'), 'ID' = user_field(table_map, 'cptevents', 'hadm_id'), everything()) %>% 
     filter(person_id == subject)  %>% 
     select(-matches('person_id|row_id', ignore.case = T)) %>% 
-    arrange(!!as.name(user_field(table_map, 'cptevents','chartdate'))) %>% 
+    arrange(!!as.name(user_field(table_map, 'cptevents','chartdate'))) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -89,7 +94,8 @@ mimic_table_diagnoses_icd <- function(table_map, db_connection, subject_id) {
                  select(-matches('row_id', ignore.case = T))
                ) %>% 
     select(-matches('person_id|row_id', ignore.case = T)) %>% 
-    arrange(!!as.name(user_field(table_map, 'diagnoses_icd','seq_num'))) %>% 
+    arrange(!!as.name(user_field(table_map, 'diagnoses_icd','seq_num'))) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -103,7 +109,8 @@ mimic_table_drg_codes <- function(table_map, db_connection, subject_id) {
     select('person_id' = user_field(table_map, 'drgcodes', 'subject_id'), 'ID' = user_field(table_map, 'drgcodes', 'hadm_id'), everything()) %>% 
     filter(person_id == subject) %>% 
     arrange(!!as.name(user_field(table_map, 'drgcodes','row_id'))) %>% 
-    select(-matches('person_id|row_id', ignore.case = T)) %>% 
+    select(-matches('person_id|row_id', ignore.case = T)) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -117,7 +124,8 @@ mimic_table_icu_stays <- function(table_map, db_connection, subject_id) {
     select('person_id' = user_field(table_map, 'icustays', 'subject_id'), 'ID' = user_field(table_map, 'icustays', 'hadm_id'), everything()) %>% 
     filter(person_id == subject) %>% 
     select(-matches('person_id|row_id', ignore.case = T)) %>% 
-    arrange(!!as.name(user_field(table_map, 'icustays','intime'))) %>% 
+    arrange(!!as.name(user_field(table_map, 'icustays','intime'))) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case) %>% 
     rename_at(vars(-1), ~ str_replace(string = ., pattern = regex(pattern = 'id$',ignore_case = T),replacement = ' ID'))
@@ -135,7 +143,8 @@ mimic_table_lab_events <- function(table_map, db_connection, subject_id) {
                  select(-matches('row_id', ignore.case = T))
                ) %>% 
     select(-matches('person_id|row_id', ignore.case = T)) %>% 
-    arrange(!!as.name(user_field(table_map, 'labevents','charttime'))) %>% 
+    arrange(!!as.name(user_field(table_map, 'labevents','charttime'))) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), ~ str_replace(string = ., pattern = regex(pattern = '^value',ignore_case = T),replacement = 'Value ')) %>% 
     rename_at(vars(-1), to_title_case) %>% 
@@ -151,7 +160,8 @@ mimic_table_microbiology_events <- function(table_map, db_connection, subject_id
     select('person_id' = user_field(table_map, 'microbiologyevents', 'subject_id'), 'ID' = user_field(table_map, 'microbiologyevents', 'hadm_id'), everything()) %>% 
     filter(person_id == subject) %>% 
     select(-matches('person_id|row_id', ignore.case = T)) %>% 
-    arrange(!!as.name(user_field(table_map, 'microbiologyevents','charttime'))) %>% 
+    arrange(!!as.name(user_field(table_map, 'microbiologyevents','charttime'))) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case) %>% 
     rename_at(vars(-1), ~ str_replace(string = ., pattern = regex(pattern = 'id$',ignore_case = T),replacement = ' ID'))
@@ -166,8 +176,10 @@ mimic_table_note_events <- function(table_map, db_connection, subject_id) {
     select('person_id' = user_field(table_map, 'noteevents', 'subject_id'), 'ID' = user_field(table_map, 'noteevents', 'hadm_id'), 'iserror' = user_field(table_map, 'noteevents', 'iserror'),everything()) %>% 
     filter(person_id == subject & is.na(iserror)) %>% 
     select(-matches('person_id|row_id|iserror', ignore.case = T)) %>% 
-    arrange(!!as.name(user_field(table_map, 'noteevents','chartdate'))) %>% 
+    arrange(!!as.name(user_field(table_map, 'noteevents','chartdate'))) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>%
+    mutate_if(is.character, str_replace_all, pattern = '\n', replacement = '<br>') %>% 
     rename_at(vars(-1), to_title_case)
   }
 
@@ -198,7 +210,8 @@ mimic_table_procedure_events <- function(table_map, db_connection, subject_id) {
                  select(-matches('row_id', ignore.case = T))
     ) %>% 
     select(-matches('person_id|row_id', ignore.case = T)) %>% 
-    arrange(!!as.name(user_field(table_map, 'procedureevents_mv','starttime'))) %>% 
+    arrange(!!as.name(user_field(table_map, 'procedureevents_mv','starttime'))) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), ~ str_replace(string = ., pattern = regex(pattern = '^value',ignore_case = T),replacement = 'Value ')) %>% 
     rename_at(vars(-1), to_title_case) %>% 
@@ -217,7 +230,8 @@ mimic_table_procedures_icd <- function(table_map, db_connection, subject_id) {
                  select(-matches('row_id', ignore.case = T))
     ) %>% 
     select(-matches('person_id|row_id', ignore.case = T)) %>% 
-    arrange(ID, !!as.name(user_field(table_map, 'procedures_icd','seq_num'))) %>% 
+    arrange(ID, !!as.name(user_field(table_map, 'procedures_icd','seq_num'))) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), ~ str_replace(string = ., pattern = regex(pattern = '^value',ignore_case = T),replacement = 'Value ')) %>% 
     rename_at(vars(-1), to_title_case) %>% 
@@ -236,7 +250,8 @@ mimic_table_services <- function(table_map, db_connection, subject_id) {
     select('person_id' = user_field(table_map, 'services', 'subject_id'), 'ID' = user_field(table_map, 'services', 'hadm_id'), everything()) %>% 
     filter(person_id == subject) %>% 
     select(-matches('person_id|row_id', ignore.case = T)) %>% 
-    arrange(!!as.name(user_field(table_map, 'services','transfertime'))) %>% 
+    arrange(!!as.name(user_field(table_map, 'services','transfertime'))) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>%
     left_join(service_labels, 
               by = setNames('SERVICE', user_field(table_map, 'services', 'prev_service'))) %>%
@@ -256,7 +271,8 @@ mimic_table_transfers <- function(table_map, db_connection, subject_id) {
     select('person_id' = user_field(table_map, 'transfers', 'subject_id'), 'ID' = user_field(table_map, 'transfers', 'hadm_id'), everything()) %>% 
     filter(person_id == subject) %>% 
     arrange(!!as.name(user_field(table_map, 'transfers','row_id'))) %>% 
-    select(-matches('person_id|row_id', ignore.case = T)) %>% 
+    select(-matches('person_id|row_id', ignore.case = T)) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case) %>% 
     rename_at(vars(-1), ~ str_replace(string = ., pattern = regex(pattern = 'id$',ignore_case = T),replacement = ' ID'))

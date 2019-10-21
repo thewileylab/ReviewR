@@ -19,7 +19,8 @@ omop_table_all_patients <- function(table_map, db_connection) {
     left_join(gender_concepts) %>% 
     left_join(race_concepts) %>% 
     left_join(ethnicity_concepts) %>% 
-    left_join(provider_concepts) %>% 
+    left_join(provider_concepts) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     unite(col = 'Birth_Date', c('year_of_birth','month_of_birth','day_of_birth')) %>% 
     mutate(Birth_Date = as_date(Birth_Date)) %>% 
@@ -46,7 +47,8 @@ omop_table_condition_era <- function(table_map, db_connection, subject_id) {
     rename('Condition' = user_field(table_map, 'concept', 'concept_name')) %>%
     select(-matches('concept*|person*',ignore.case = T)) %>% 
     select('ID' = user_field(table_map, 'condition_era','condition_era_id'), everything()) %>% 
-    arrange(ID) %>% 
+    arrange(ID) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -73,7 +75,8 @@ omop_table_condition_occurrence <- function(table_map, db_connection, subject_id
     left_join(condition_provider_concepts) %>% 
     left_join(condition_type_concepts) %>% 
     select('ID' = user_field(table_map,'condition_occurrence','condition_occurrence_id'), Condition, 'SourceVal' = user_field(table_map,'condition_occurrence','condition_source_value'), Status, everything(), Type, Provider, 'Visit' = user_field(table_map,'condition_occurrence','visit_occurrence_id')) %>% 
-    arrange(ID) %>% 
+    arrange(ID) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -94,7 +97,8 @@ omop_table_death <- function(table_map, db_connection, subject_id) {
     select(-matches('death_type_concept*|cause_concept*|cause_source_concept*', ignore.case = T)) %>% 
     left_join(death_cause_concepts) %>% 
     left_join(death_type_concepts) %>% 
-    select('ID' = person_id, 'SourceVal' = user_field(table_map, 'death', 'cause_source_value'), everything()) %>% 
+    select('ID' = person_id, 'SourceVal' = user_field(table_map, 'death', 'cause_source_value'), everything()) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -117,7 +121,8 @@ omop_table_device_exposure <- function(table_map, db_connection, subject_id) {
     left_join(device_type_concepts) %>% 
     left_join(device_provider_concepts) %>% 
     select('ID' = user_field(table_map, 'device_exposure','device_exposure_id'), everything()) %>% 
-    arrange(ID) %>% 
+    arrange(ID) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -139,7 +144,8 @@ omop_table_dose_era <- function(table_map, db_connection, subject_id) {
     left_join(dose_concepts) %>% 
     left_join(unit_concepts) %>% 
     select('ID' = user_field(table_map, 'dose_era', 'dose_era_id'), Drug, Unit, 'DoseValue' = dose_value, everything()) %>% 
-    arrange(ID) %>% 
+    arrange(ID) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -159,7 +165,8 @@ omop_table_drug_era <- function(table_map, db_connection, subject_id) {
     select(-matches('person_id|drug_concept_id')) %>% 
     left_join(drug_concepts) %>% 
     select('ID' = user_field(table_map, 'drug_era', 'drug_era_id'), Drug, everything()) %>% 
-    arrange(ID) %>% 
+    arrange(ID) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
   
@@ -188,7 +195,8 @@ omop_table_drug_exposure <- function(table_map, db_connection, subject_id) {
     select('ID' = user_field(table_map, 'drug_exposure', 'drug_exposure_id'), Drug, 'SourceVal' = user_field(table_map, 'drug_exposure', 'drug_source_value'),  'StartDate' = user_field(table_map, 'drug_exposure', 'drug_exposure_start_date'),
            'StartDateTime' = user_field(table_map, 'drug_exposure','drug_exposure_start_datetime'), 'EndDate' = user_field(table_map, 'drug_exposure', 'drug_exposure_end_date'), 'EndDateTime' = user_field(table_map, 'drug_exposure', 'drug_exposure_end_datetime'),
            'VerbatimEnd' = user_field(table_map, 'drug_exposure', 'drug_exposure_verbatim_end_date'), Type, 'Visit' = user_field(table_map, 'drug_exposure', 'visit_occurrence_id'), everything() ) %>% 
-    arrange(ID) %>% 
+    arrange(ID) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
   
@@ -219,7 +227,8 @@ omop_table_measurement <- function(table_map, db_connection, subject_id) {
     left_join(unit_concepts) %>% 
     left_join(provider_concepts) %>% 
     select('ID' = user_field(table_map, 'measurement', 'measurement_id'), everything() ) %>% 
-    arrange(ID) %>% 
+    arrange(ID) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -247,8 +256,10 @@ omop_table_note <- function(table_map, db_connection, subject_id) {
     left_join(note_language_concepts) %>% 
     left_join(provider_concepts) %>% 
     select('ID' = user_field(table_map, 'note', 'note_id'), everything()) %>% 
-    arrange(ID) %>% 
+    arrange(ID) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
+    mutate_if(is.character, str_replace_all, pattern = '\n', replacement = '<br>') %>% 
     rename_at(vars(-1), to_title_case)
 }
 
@@ -279,7 +290,8 @@ omop_table_observation <- function(table_map, db_connection, subject_id) {
     select('ID' = user_field(table_map, 'observation','observation_id'),Observation, 'Date' = user_field(table_map, 'observation','observation_date'), 'DateTime' = user_field(table_map, 'observation','observation_datetime'),
            Type, 'ValueNum' = user_field(table_map, 'observation','value_as_number'), 'ValueString' = user_field(table_map, 'observation','value_as_string'), Value, 'SourceVal' = user_field(table_map, 'observation','observation_source_value'),
            Qualifier, Unit, Provider, 'Visit' = user_field(table_map, 'observation','visit_occurrence_id')) %>% 
-    arrange(ID) %>% 
+    arrange(ID) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -299,7 +311,8 @@ omop_table_observation_period <- function(table_map, db_connection, subject_id) 
     select(-matches('person_id|period_type_concept_id')) %>% 
     left_join(observation_type_concepts) %>% 
     select('ID' = user_field(table_map, 'observation_period','observation_period_id'), everything()) %>% 
-    arrange(ID) %>% 
+    arrange(ID) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -314,7 +327,8 @@ omop_table_payer_plan_period <- function(table_map, db_connection, subject_id) {
     filter(!!as.name(user_field(table_map, 'payer_plan_period','person_id')) == subject ) %>%
     select(-matches('person_id')) %>% 
     select('ID' = user_field(table_map, 'payer_plan_period', 'payer_plan_period_id'), everything()) %>% 
-    arrange(ID) %>% 
+    arrange(ID) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -341,7 +355,8 @@ omop_table_procedure_occurrence <- function(table_map, db_connection, subject_id
     left_join(provider_concepts) %>% 
     select('ID' = user_field(table_map, 'procedure_occurrence','procedure_occurrence_id'), Procedure, 'SourceVal' = user_field(table_map, 'procedure_occurrence','procedure_source_value'),
            'Date' = user_field(table_map, 'procedure_occurrence','procedure_date'), Type, Modifier, everything()) %>% 
-    arrange(ID) %>% 
+    arrange(ID) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -370,7 +385,8 @@ omop_table_specimen <- function(table_map, db_connection, subject_id) {
     left_join(disease_status_concepts) %>% 
     select('ID' = user_field(table_map, 'specimen', 'specimen_id'), Specimen, 'SourceVal' = user_field(table_map, 'specimen', 'specimen_source_value'),Type,'Date' = user_field(table_map, 'specimen', 'specimen_date'),
            'DateTime' = user_field(table_map, 'specimen', 'specimen_datetime'),everything()) %>% 
-    arrange(ID) %>% 
+    arrange(ID) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -401,7 +417,8 @@ omop_table_visit_occurrence <- function(table_map, db_connection, subject_id) {
     select('ID' = user_field(table_map, 'visit_occurrence', 'visit_occurrence_id'), Visit, 'StartDate' = user_field(table_map, 'visit_occurrence', 'visit_date'), 'StartDateTime' = user_field(table_map, 'visit_occurrence', 'visit_start_datetime'), 
            'EndDate' = user_field(table_map, 'visit_occurrence', 'visit_end_date'), 'EndDateTime' = user_field(table_map, 'visit_occurrence', 'visit_end_datetime'), Type, Provider, CareSite, AdmittingSource, DischargeTo, 
            'PrecedingVisit' = user_field(table_map, 'visit_occurrence', 'preceding_visit_occurrence_id')) %>% 
-    arrange(ID) %>% 
+    arrange(ID) %>%
+    mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
