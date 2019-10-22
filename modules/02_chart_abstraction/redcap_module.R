@@ -292,7 +292,7 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_instrument, i
       select(shiny_inputID, field_name) %>% 
       left_join(instrumentData(), by = c('shiny_inputID' = 'inputID')) %>% ## Join the instrument inputs with the selected instrument. This ensures inputs are collected only for the active instrument
       filter(!map_lgl(values, is.null)) %>% ## Remove NULL inputs, ie, inputs where the user has not selected anything. Prevents issues when unnesting in the next step
-      modify_depth(2, as.character) %>% ## the input values are all lists, at this moment. Dive into each list and make sure that the values within the list are coded as characters
+      modify_depth(2, as.character) %>% ## the input values are all lists at this moment. Dive into each list (depth = 2) and make sure that the values within the list are coded as characters
       unnest(cols = values) %>% ## Expand inputs where more than one selection is allowed
       mutate(col_names = pmap(list(x = shiny_inputID, y = field_name, z = values ),  function(x,y,z) case_when(str_detect(string = x, pattern = 'reviewr_checkbox') ~ paste0(y, '___', z), ## Create additional column names for inputs where multiple inputs are allowed
                                                                                                              TRUE ~ y)
