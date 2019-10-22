@@ -303,7 +303,7 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_instrument, i
       select(-shiny_inputID, -field_name) %>% 
       pivot_wider(names_from = col_names, values_from = values) %>% 
       bind_cols(rc_id() ) %>% 
-      select(participant_id, everything() ) %>% ## REDCap API likes the record identifier in the first column
+      select(participant_id, everything() ) %>% ## RedCAP API likes the record identifier in the first column
       flatten_dfr()
   })
   
