@@ -258,8 +258,7 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, rc_i
     tibble(inputID = names(reviewr_inputs()), values = unname(reviewr_inputs())) %>% 
       mutate(class = str_detect(string = inputID, pattern = regex(pattern = '_reviewr((?!_reset).)*$',ignore_case = T))) %>% ## Find instrument inputs -- not resets
       filter(class == T) %>% 
-      select(-class) %>% 
-      pivot_wider(names_from = inputID, values_from = values)
+      select(-class) 
   })
   
   return('instrument_data' = instrumentData) # Send to the Upload module
@@ -273,7 +272,7 @@ upload_redcap_ui <- function(id) {
   )
 }
 
-upload_redcap_logic <- function(input, output, session, rc_instrument) {
+upload_redcap_logic <- function(input, output, session, rc_con, rc_instrument, instrumentData) {
   ns <- session$ns
   
   rc_upload_btn <- reactive({ actionButton(inputId = ns('upload_rc'),label = "Store Abstraction") })
@@ -281,9 +280,37 @@ upload_redcap_logic <- function(input, output, session, rc_instrument) {
   
   output$rc_upload <- renderUI({rc_upload_btn() })
   
+  ## Process Shiny RedCAP inputs to match expected RedCAP API input
+  rc_id <- reactive({
+    req(rc_con() )
+    tibble(participant_id = exportNextRecordName(rc_con() ))
+    })
+  
+  rc_uploadData <- reactive({
+    req(rc_instrument(), instrumentData(), rc_id() )
+    rc_instrument() %>% 
+      select(shiny_inputID, field_name) %>% 
+      left_join(instrumentData(), by = c('shiny_inputID' = 'inputID')) %>% ## Join the instrument inputs with the selected instrument. This ensures inputs are collected only for the active instrument
+      filter(!map_lgl(values, is.null)) %>% ## Remove NULL inputs, ie, inputs where the user has not selected anything. Prevents issues when unnesting in the next step
+      unnest(cols = values) %>% ## Expand inputs where more than one selection is allowed
+      mutate(col_names = pmap(list(x = shiny_inputID, y = field_name, z = values ),  function(x,y,z) case_when(str_detect(string = x, pattern = 'reviewr_checkbox') ~ paste0(y, '___', z), ## Create additional column names for inputs where multiple inputs are allowed
+                                                                                                             TRUE ~ y)
+                              ),
+             values = map2(.x = shiny_inputID, .y = values, ~ case_when(str_detect(string = .x, pattern = 'reviewr_checkbox') ~ '1', ## Change the value to 1 for checkbox questions, to indicate a selection
+                                                               TRUE ~ .y)
+                           )
+             ) %>% 
+      select(-shiny_inputID, -field_name) %>% 
+      pivot_wider(names_from = col_names, values_from = values) %>% 
+      bind_cols(rc_id() ) %>% 
+      select(participant_id, everything() ) %>% ## REDCap API likes the record identifier in the first column
+      flatten_dfr()
+  })
+  
   
   return(list(
-    'rc_upload_btn_press' = rc_upload_btn_press
+    'rc_upload_btn_press' = rc_upload_btn_press,
+    'rc_uploadData' = rc_uploadData
   ))
   
 }
