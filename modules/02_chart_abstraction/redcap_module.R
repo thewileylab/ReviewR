@@ -278,13 +278,14 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
   
   ## Process Shiny RedCAP inputs to match expected RedCAP API input
   rc_id <- reactive({
-    req(rc_con() )
+    req(rc_con(), rc_upload_btn_press() ) ## Add rc_upload_btn_press() as a req to force refresh of next record id on submit
     rc_recordID_field <- rc_recordID() %>% extract2(1)
     tibble(!!rc_recordID_field := exportNextRecordName(rc_con() ))
     })
   
   rc_uploadData <- reactive({
     req(rc_instrument(), instrumentData(), rc_id() )
+    rc_recordID_field <- rc_recordID() %>% extract2(1)
     rc_instrument() %>% 
       select(shiny_inputID, field_name) %>% 
       left_join(instrumentData(), by = c('shiny_inputID' = 'inputID')) %>% ## Join the instrument inputs with the selected instrument. This ensures inputs are collected only for the active instrument
@@ -301,7 +302,7 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
       select(-shiny_inputID, -field_name) %>% 
       pivot_wider(names_from = col_names, values_from = values) %>% 
       bind_cols(rc_id() ) %>% 
-      select(participant_id, everything() ) %>% ## RedCAP API likes the record identifier in the first column
+      select(!!rc_recordID_field, everything() ) %>% ## RedCAP API likes the record identifier in the first column
       flatten_dfr()
   })
   
