@@ -137,13 +137,9 @@ redcap_instrument_config_logic <- function(input, output, session, rc_connection
   
   ## Store the record identifier field
   rc_record_id <- reactive({
-    req(instruments(), instrument_selection() )
-    instrument_filter <- instruments() %>% 
-      filter(instrument_label == instrument_selection() ) %>% 
-      select(instrument_name) %>% 
-      pluck(1)
+    # record identifier will always be the first row of the first instrument in the project
+    req(rc_connection() )
     redcapAPI::exportMetaData(rcon = rc_connection()) %>%
-      filter(str_to_lower(form_name) == instrument_filter ) %>% 
       select(field_name) %>% 
       slice(1)
   })
@@ -272,7 +268,7 @@ upload_redcap_ui <- function(id) {
   )
 }
 
-upload_redcap_logic <- function(input, output, session, rc_con, rc_instrument, instrumentData) {
+upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_instrument, instrumentData) {
   ns <- session$ns
   
   rc_upload_btn <- reactive({ actionButton(inputId = ns('upload_rc'),label = "Store Abstraction") })
@@ -283,7 +279,8 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_instrument, i
   ## Process Shiny RedCAP inputs to match expected RedCAP API input
   rc_id <- reactive({
     req(rc_con() )
-    tibble(participant_id = exportNextRecordName(rc_con() ))
+    rc_recordID_field <- rc_recordID() %>% extract2(1)
+    tibble(!!rc_recordID_field := exportNextRecordName(rc_con() ))
     })
   
   rc_uploadData <- reactive({
