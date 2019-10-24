@@ -233,11 +233,13 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
   })
   current_subject <- reactive({
     req(rc_connection(), reviewr_upload_btn(), subject_id() )
-    redcapAPI::exportRecords(rcon = rc_connection(), factors = F, forms = selected_instrument(), labels = F ) %>% 
+    previous_data <- redcapAPI::exportRecords(rcon = rc_connection(), factors = F, forms = selected_instrument(), labels = F ) %>% 
       as_tibble() %>% 
       mutate_all(as.character) %>% 
       mutate_all(replace_na, replace = '') %>% # replace all NA values with blank character vectors, so that shiny radio buttons without a previous response will display empty
-      filter(!!as.name(rc_identifier_field() ) == subject_id() ) %>% 
+      filter(!!as.name(rc_identifier_field() ) == subject_id() )
+    if(nrow(previous_data)>0){
+      previous_data %>% 
       # Turn wide data from RedCAP to long, collapsing checkbox type quesitions along the way
       pivot_longer(cols = contains('___'),names_to = 'checkbox_questions',values_to = 'value_present') %>% 
       filter(value_present == 1) %>% # Remove checkbox questions with no box checked
@@ -245,12 +247,23 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
       select(-value_present) %>% # remove value presence variable
       pivot_wider(names_from = checkbox_questions, values_from = checkbox_value, values_fn = list(checkbox_value = list)) %>% # pivot wider, utilizing list to preserve column types. Having collapsed the checkbox quesions, we now have a the original field_name as a joinable variable
       pivot_longer(cols = everything(), names_to = 'field_name', values_to = 'default_value', values_ptypes = list(default_value = list())) # Pivot longer, utilizing a list as the column type to avoid variable coercion
+    } else {
+      previous_data %>% 
+        add_row(!!rc_identifier_field() := subject_id() ) %>% 
+        mutate_all(replace_na, replace = '') %>% # replace all NA values with blank character vectors, so that shiny radio buttons without a previous response will display empty
+        pivot_longer(cols = contains('___'),names_to = 'checkbox_questions',values_to = 'value_present') %>% 
+        separate(checkbox_questions, into = c('checkbox_questions','checkbox_value'), sep = '___') %>% # Separate value from column name
+        select(-checkbox_value) %>% # remove value presence variable
+        pivot_wider(names_from = checkbox_questions, values_from = value_present, values_fn = list(value_present = list)) %>% # pivot wider, utilizing list to preserve column types. Having collapsed the checkbox quesions, we now have a the original field_name as a joinable variable
+        pivot_longer(cols = everything(), names_to = 'field_name', values_to = 'default_value', values_ptypes = list(default_value = list())) # Pivot longer, utilizing a list as the column type to avoid variable coercion
+        }
     })
   
   ## Create a Shiny tagList for each question type present in the instrument
   rc_instrument_ui <- reactive({
     req(rc_instrument() )
     rc_instrument() %>% 
+      left_join(current_subject() ) %>% # add current subject info, if present, to the mix
       mutate( ## mutate shiny tags/inputs
         shiny_header = map(section_header, h3),
         shiny_field_label = case_when(is.na(required_field) ~ field_label,
@@ -258,7 +271,8 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
         shiny_input = pmap(list(reviewr_type = reviewr_redcap_widget_function, 
                                 field_name = shiny_inputID, 
                                 field_label = shiny_field_label, 
-                                choices = select_choices_or_calculations
+                                choices = select_choices_or_calculations,
+                                current_subject_data = default_value
                                 ), 
                            render_redcap
                            ),
