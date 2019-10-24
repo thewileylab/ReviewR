@@ -236,6 +236,7 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
     redcapAPI::exportRecords(rcon = rc_connection(), factors = F, forms = selected_instrument(), labels = F ) %>% 
       as_tibble() %>% 
       mutate_all(as.character) %>% 
+      mutate_all(replace_na, replace = '') %>% # replace all NA values with blank character vectors, so that shiny radio buttons without a previous response will display empty
       filter(!!as.name(rc_identifier_field() ) == subject_id() ) %>% 
       # Turn wide data from RedCAP to long, collapsing checkbox type quesitions along the way
       pivot_longer(cols = contains('___'),names_to = 'checkbox_questions',values_to = 'value_present') %>% 
