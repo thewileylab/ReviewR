@@ -74,23 +74,23 @@ reviewr_integer <- function(id, field_label, value = NULL, ...) {
 ## Remember to add default values!! WIP
 render_redcap <- function(reviewr_type, field_name, field_label, choices, current_subject_data = NULL, other_default_data = NULL ) {
   if(reviewr_type == 'reviewr_text') {   ## Text: textInput ----
-    reviewr_textInput(id = field_name, field_label = field_label)
+    reviewr_textInput(id = field_name, field_label = field_label, value = current_subject_data)
   } else if(reviewr_type == 'reviewr_date') {             ## Date: dateInput ----
-    reviewr_dateInput(id = field_name, field_label = field_label)
+    reviewr_dateInput(id = field_name, field_label = field_label, value = current_subject_data)
   } else if (reviewr_type == 'reviewr_dropdown') {        ## DropDown: selectInput
-    reviewr_dropdown(id = field_name, field_label = field_label, choices = choices)
+    reviewr_dropdown(id = field_name, field_label = field_label, choices = choices, value = current_subject_data)
   } else if (reviewr_type == 'reviewr_truefalse') {       ## TrueFalse: radioButtoms ---- 
-    reviewr_truefalse(id = field_name, field_label = field_label)
+    reviewr_truefalse(id = field_name, field_label = field_label, value = current_subject_data)
   } else if (reviewr_type == 'reviewr_yesno') {           ## YesNo: radioButtons ----
-    reviewr_yesno(id = field_name, field_label = field_label)
+    reviewr_yesno(id = field_name, field_label = field_label, value = current_subject_data)
   } else if (reviewr_type == 'reviewr_radio') {           ## Radio: radioButtons ----
-    reviewr_radio(id = field_name, field_label = field_label, choices = choices)
+    reviewr_radio(id = field_name, field_label = field_label, choices = choices, value = current_subject_data)
   } else if (reviewr_type == 'reviewr_checkbox') {        ## Checkbox: checkboxGroupInput ----
-    reviewr_checkbox(id = field_name, field_label = field_label, choices = choices)
+    reviewr_checkbox(id = field_name, field_label = field_label, choices = choices, value = current_subject_data)
   } else if (reviewr_type == 'reviewr_notes') {           ## Notes: textAreaInput ----
-    reviewr_notes(id = field_name, field_label = field_label)
+    reviewr_notes(id = field_name, field_label = field_label, value = current_subject_data)
   } else if (reviewr_type == 'reviewr_integer') {         ## Integer: numericInput ----
-    reviewr_integer(id = field_name, field_label = field_label)
+    reviewr_integer(id = field_name, field_label = field_label, value = current_subject_data)
   } else {                                                ## Unsupported input ----
     reviewr_textInput(id = field_name, field_label = "This is an unsupported field type", placeholder = reviewr_type)
     }
