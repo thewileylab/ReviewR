@@ -206,7 +206,7 @@ redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_i
 redcap_instrument_ui <- function(id) {
   ns <- NS(id)
   tagList(
-    uiOutput(ns('redcap_instrument')) %>% withSpinner()
+    uiOutput(ns('redcap_instrument')) %>% withSpinner(type = 5, color = '#e83a2f')
   )
 }
 
@@ -225,6 +225,13 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
       filter(field_label == rc_identifier() ) %>% 
       extract2(1)
     })
+  rc_reviewer_field <- reactive({
+    req(rc_instrument() )
+    rc_instrument() %>% 
+      select(field_name, field_label) %>% 
+      filter(field_label == rc_reviewer() ) %>% 
+      extract2(1)
+  })
   selected_instrument <- reactive({
     req(instruments(), instrument_selection() )
     instruments() %>% 
@@ -247,9 +254,18 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
       select(-value_present) %>% # remove value presence variable
       pivot_wider(names_from = checkbox_questions, values_from = checkbox_value, values_fn = list(checkbox_value = list)) %>% # pivot wider, utilizing list to preserve column types. Having collapsed the checkbox quesions, we now have a the original field_name as a joinable variable
       pivot_longer(cols = everything(), names_to = 'field_name', values_to = 'default_value', values_ptypes = list(default_value = list())) # Pivot longer, utilizing a list as the column type to avoid variable coercion
+    } else if (nrow(previous_data) == 0 & is_empty(rc_reviewer_field() == T)) {
+      previous_data %>% 
+        add_row(!!rc_identifier_field() := subject_id() ) %>% # Add default data, without reviewer info, if present
+        mutate_all(replace_na, replace = '') %>% # replace all NA values with blank character vectors, so that shiny radio buttons without a previous response will display empty
+        pivot_longer(cols = contains('___'),names_to = 'checkbox_questions',values_to = 'value_present') %>% 
+        separate(checkbox_questions, into = c('checkbox_questions','checkbox_value'), sep = '___') %>% # Separate value from column name
+        select(-checkbox_value) %>% # remove checkbox value variable. Here, we know that nothing has been entered, so it is preferrable to end up with a blank character list
+        pivot_wider(names_from = checkbox_questions, values_from = value_present, values_fn = list(value_present = list)) %>% # pivot wider, utilizing list to preserve column types. Having collapsed the checkbox quesions, we now have a the original field_name as a joinable variable
+        pivot_longer(cols = everything(), names_to = 'field_name', values_to = 'default_value', values_ptypes = list(default_value = list())) # Pivot longer, utilizing a list as the column type to avoid variable coercion
     } else {
       previous_data %>% 
-        add_row(!!rc_identifier_field() := subject_id() ) %>% # Add default data, if present
+        add_row(!!rc_identifier_field() := subject_id(), !!rc_reviewer_field() := rc_reviewer() ) %>% # Add default data, with reviewer info, if present
         mutate_all(replace_na, replace = '') %>% # replace all NA values with blank character vectors, so that shiny radio buttons without a previous response will display empty
         pivot_longer(cols = contains('___'),names_to = 'checkbox_questions',values_to = 'value_present') %>% 
         separate(checkbox_questions, into = c('checkbox_questions','checkbox_value'), sep = '___') %>% # Separate value from column name
