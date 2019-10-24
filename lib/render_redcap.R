@@ -15,6 +15,7 @@ reviewr_dropdown <- function(id, field_label, choices, value = NULL, ...) {
     mutate_all(str_trim)
   dropdown_choices <- temp$Values
   names(dropdown_choices) <- temp$Names
+  dropdown_choices = append('', dropdown_choices)
   selectInput(inputId = id, label = field_label, choices = dropdown_choices, selected = value)
   }
 
