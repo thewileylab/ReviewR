@@ -94,5 +94,3 @@ render_redcap <- function(reviewr_type, field_name, field_label, choices, curren
     reviewr_textInput(id = field_name, field_label = "This is an unsupported field type", placeholder = reviewr_type)
     }
   }
-
-## REDCap Data Collection/Upload ----
