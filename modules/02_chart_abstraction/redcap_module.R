@@ -210,14 +210,42 @@ redcap_instrument_ui <- function(id) {
   )
 }
 
-redcap_instrumment_logic <- function(input, output, session, rc_connection, rc_instrument, rc_identifier, rc_reviewer, reviewr_inputs, subject_id, reviewr_upload_btn, reviewr_connect_btn) {
-  ## On redcap connection or subsequent upload, determine if there is any default data that needs to be displayed
-  current_subject <- reactive({
-    req(reviewr_connect_btn(), reviewr_upload_btn() )
-    redcapAPI::exportRecords(rcon = rc_connection() ) %>% 
-      filter(rc_identifier() == subject_id() )
+redcap_instrumment_logic <- function(input, output, session, rc_connection, instruments, instrument_selection, rc_instrument, rc_identifier, rc_reviewer, reviewr_inputs, subject_id, reviewr_upload_btn, reviewr_connect_btn) {
+ 
+  ##Pause
+  observeEvent(reviewr_upload_btn(), {
     browser()
+  })
+  
+  ## On redcap connection or subsequent upload, determine if there is any default data that needs to be displayed
+  rc_identifier_field <- reactive({
+    req(rc_instrument() )
+    rc_instrument() %>% 
+      select(field_name, field_label) %>% 
+      filter(field_label == rc_identifier() ) %>% 
+      extract2(1)
     })
+  selected_instrument <- reactive({
+    req(instruments(), instrument_selection() )
+    instruments() %>% 
+      filter(instrument_label == instrument_selection() ) %>% 
+      extract2(1)
+  })
+  current_subject <- reactive({
+    req(rc_connection(), reviewr_upload_btn(), subject_id() )
+    redcapAPI::exportRecords(rcon = rc_connection(), factors = F, forms = selected_instrument(), labels = F ) %>% 
+      as_tibble() %>% 
+      mutate_all(as.character) %>% 
+      filter(!!as.name(rc_identifier_field() ) == subject_id() ) %>% 
+      # Turn wide data from RedCAP to long, collapsing checkbox type quesitions along the way
+      pivot_longer(cols = contains('___'),names_to = 'checkbox_questions',values_to = 'value_present') %>% 
+      filter(value_present == 1) %>% # Remove checkbox questions with no box checked
+      separate(checkbox_questions, into = c('checkbox_questions','checkbox_value'), sep = '___') %>% # Separate value from column name
+      select(-value_present) %>% # remove value presence variable
+      pivot_wider(names_from = checkbox_questions, values_from = checkbox_value, values_fn = list(checkbox_value = list)) %>% # pivot wider, utilizing list to preserve column types. Having collapsed the checkbox quesions, we now have a the original field_name as a joinable variable
+      pivot_longer(cols = everything(), names_to = 'field_name', values_to = 'default_value', values_ptypes = list(default_value = list())) # Pivot longer, utilizing a list as the column type to avoid variable coercion
+    })
+  
   ## Create a Shiny tagList for each question type present in the instrument
   rc_instrument_ui <- reactive({
     req(rc_instrument() )
