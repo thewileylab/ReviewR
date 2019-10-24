@@ -206,7 +206,7 @@ redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_i
 redcap_instrument_ui <- function(id) {
   ns <- NS(id)
   tagList(
-    uiOutput(ns('redcap_instrument'))
+    uiOutput(ns('redcap_instrument')) %>% withSpinner()
   )
 }
 
@@ -232,7 +232,7 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
       extract2(1)
   })
   current_subject <- reactive({
-    req(rc_connection(), reviewr_upload_btn(), subject_id() )
+    req(rc_connection(), rc_identifier_field(), selected_instrument(), subject_id() )
     previous_data <- redcapAPI::exportRecords(rcon = rc_connection(), factors = F, forms = selected_instrument(), labels = F ) %>% 
       as_tibble() %>% 
       mutate_all(as.character) %>% 
