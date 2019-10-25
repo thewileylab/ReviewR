@@ -12,16 +12,18 @@ reviewr_dropdown <- function(id, field_label, choices, value = NULL, ...) {
   temp <- tibble(choices = choices) %>% 
     separate_rows(choices, sep = '\\|') %>% 
     separate(col = choices, into = c('Values','Names'),sep = ',') %>% 
-    mutate_all(str_trim)
+    mutate_all(str_trim) %>% 
+    mutate_all(as.character) %>% 
+    add_row(Values = '', Names = '[Leave Blank]')
   dropdown_choices <- temp$Values
   names(dropdown_choices) <- temp$Names
-  dropdown_choices = append('', dropdown_choices)
+  dropdown_choices = dropdown_choices
   selectInput(inputId = id, label = field_label, choices = dropdown_choices, selected = value)
   }
 
 reviewr_truefalse <- function(id, field_label, value = NULL, ...) {
-  radio_choices <- c(1, 0)
-  names(radio_choices) <- c('True', 'False')
+  radio_choices <- c(1, 0, '')
+  names(radio_choices) <- c('True', 'False', '[Leave Blank]')
   tagList(
     radioButtons(inputId = id, label = field_label, choices = radio_choices, selected = value),
     div(style='display:inline-block', actionLink(inputId = paste0(id,'_reset'), label = 'reset'), style='float:right')
@@ -29,8 +31,8 @@ reviewr_truefalse <- function(id, field_label, value = NULL, ...) {
   }
 
 reviewr_yesno <- function(id, field_label, value = NULL, ...) {
-  radio_choices <- c(1, 0)
-  names(radio_choices) <- c('Yes', 'No')
+  radio_choices <- c(1, 0, '')
+  names(radio_choices) <- c('Yes', 'No', '[Leave Blank]')
   tagList(
     radioButtons(inputId = id, label = field_label, choices = radio_choices, selected = value),
     div(style='display:inline-block', actionLink(inputId = paste0(id,'_reset'), label = 'reset'), style='float:right')
@@ -42,7 +44,9 @@ reviewr_radio <- function(id, field_label, choices, value = NULL, ...) {
   temp <- tibble(choices = choices) %>% 
     separate_rows(choices, sep = '\\|') %>% 
     separate(col = choices, into = c('Values','Names'),sep = ',') %>% 
-    mutate_all(str_trim)
+    mutate_all(str_trim) %>% 
+    mutate_all(as.character) %>% 
+    add_row(Values = '', Names = '[Leave Blank]')
   radio_choices <- temp$Values
   names(radio_choices) <- temp$Names
   tagList(
