@@ -25,8 +25,7 @@ reviewr_truefalse <- function(id, field_label, value = NULL, ...) {
   radio_choices <- c(1, 0, '')
   names(radio_choices) <- c('True', 'False', '[Leave Blank]')
   tagList(
-    radioButtons(inputId = id, label = field_label, choices = radio_choices, selected = value),
-    div(style='display:inline-block', actionLink(inputId = paste0(id,'_reset'), label = 'reset'), style='float:right')
+    radioButtons(inputId = id, label = field_label, choices = radio_choices, selected = value)
     )
   }
 
@@ -34,8 +33,7 @@ reviewr_yesno <- function(id, field_label, value = NULL, ...) {
   radio_choices <- c(1, 0, '')
   names(radio_choices) <- c('Yes', 'No', '[Leave Blank]')
   tagList(
-    radioButtons(inputId = id, label = field_label, choices = radio_choices, selected = value),
-    div(style='display:inline-block', actionLink(inputId = paste0(id,'_reset'), label = 'reset'), style='float:right')
+    radioButtons(inputId = id, label = field_label, choices = radio_choices, selected = value)
     )
   }
 
@@ -50,8 +48,7 @@ reviewr_radio <- function(id, field_label, choices, value = NULL, ...) {
   radio_choices <- temp$Values
   names(radio_choices) <- temp$Names
   tagList(
-    radioButtons(inputId = id, label = field_label, choices = radio_choices, selected = value),
-    div(style='display:inline-block', actionLink(inputId = paste0(id,'_reset'), label = 'reset'), style='float:right')
+    radioButtons(inputId = id, label = field_label, choices = radio_choices, selected = value)
     )
   }
 
