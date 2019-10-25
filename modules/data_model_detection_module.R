@@ -27,7 +27,7 @@ data_model_detection_logic <- function(input, output, session, db_connection, co
     user_tables <- dbListTables(db_connection()) %>% 
       tibble(user_database_table = .) %>% 
       mutate(user_fields_long = map(.x = user_database_table,.f = dbListFields,conn=db_connection()),
-             user_fields_long = map(.x = user_fields_long,.f = as.tibble)
+             user_fields_long = map(.x = user_fields_long,.f = as_tibble)
              ) %>% 
       ## Unnest user tables and coerce to match cdm standards
       unnest(cols = c(user_fields_long)) %>% 
