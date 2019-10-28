@@ -22,19 +22,15 @@ reviewr_dropdown <- function(id, field_label, choices, value = NULL, ...) {
   }
 
 reviewr_truefalse <- function(id, field_label, value = NULL, ...) {
-  radio_choices <- c(1, 0, '')
-  names(radio_choices) <- c('True', 'False', '[Leave Blank]')
-  tagList(
-    radioButtons(inputId = id, label = field_label, choices = radio_choices, selected = value)
-    )
+  radio_names <- list('True', 'False', HTML("<font color='grey'>[Leave Blank]</font>"))
+  radio_values <- c(1, 0, '')
+  radioButtons(inputId = id, label = field_label, choiceNames = radio_names, choiceValues = radio_values, selected = value)
   }
 
 reviewr_yesno <- function(id, field_label, value = NULL, ...) {
-  radio_choices <- c(1, 0, '')
-  names(radio_choices) <- c('Yes', 'No', '[Leave Blank]')
-  tagList(
-    radioButtons(inputId = id, label = field_label, choices = radio_choices, selected = value)
-    )
+  radio_names <- list('Yes', 'No', HTML("<font color='grey'>[Leave Blank]</font>"))
+  radio_values <- c(1, 0, '')
+  radioButtons(inputId = id, label = field_label, choiceNames = radio_names, choiceValues = radio_values, selected = value)
   }
 
 reviewr_radio <- function(id, field_label, choices, value = NULL, ...) {
@@ -43,13 +39,17 @@ reviewr_radio <- function(id, field_label, choices, value = NULL, ...) {
     separate_rows(choices, sep = '\\|') %>% 
     separate(col = choices, into = c('Values','Names'),sep = ',') %>% 
     mutate_all(str_trim) %>% 
-    mutate_all(as.character) %>% 
-    add_row(Values = '', Names = '[Leave Blank]')
-  radio_choices <- temp$Values
-  names(radio_choices) <- temp$Names
-  tagList(
-    radioButtons(inputId = id, label = field_label, choices = radio_choices, selected = value)
-    )
+    mutate_all(as.character)
+    #add_row(Values = '', Names = HTML("<font color='grey'>[Leave Blank]</font>"))
+  radio_names <- temp %>% 
+    select(Names) %>% 
+    flatten() %>% 
+    append(list(HTML("<font color='grey'>[Leave Blank]</font>")))
+  radio_values <- temp %>% 
+    select(Values) %>% 
+    flatten() %>% 
+    append(list(''))
+  radioButtons(inputId = id, label = field_label, choiceNames = radio_names, choiceValues = radio_values, selected = value)
   }
 
 reviewr_checkbox <- function(id, field_label, choices, value = NULL, ...) {
