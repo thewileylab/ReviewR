@@ -235,6 +235,7 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
       extract2(1)
   })
   
+  ## Determine if there is any previous data to show. If a reviewer field is specified, make sure to filter to data belonging to that reviewer.
   previous_data <- reactive({
     req(rc_connection(), rc_identifier_field(), selected_instrument(), subject_id() )
     redcapAPI::exportRecords(rcon = rc_connection(), factors = F, forms = selected_instrument(), labels = F ) %>% 
@@ -320,11 +321,14 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
       select(-class) 
   })
   
-  # ##Pause, verify collected data
-  # observeEvent(reviewr_upload_btn(), {
-  #   browser()
-  # })
-  return('instrument_data' = instrumentData) # Send to the Upload module
+  ##Pause, verify collected data
+  observeEvent(reviewr_upload_btn(), {
+    browser()
+  })
+  return(list(
+    'instrument_data' = instrumentData,
+    'previous_data' = previous_data
+    )) # Send to the Upload module
 }
 
 ## REDCap Data Upload ----
@@ -342,10 +346,19 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
   rc_upload_btn_press <- reactive({ input$upload_rc })
   
   output$rc_upload <- renderUI({rc_upload_btn() })
+  
   ## Test, verify data before upload
+  display_data <- eventReactive(rc_upload_btn_press(), {
+    instrumentData()
+  })
+  output$dt_test <- renderDataTable(display_data() %>% reviewr_datatable())
   observeEvent(rc_upload_btn_press(), {
     message('upload pause')
-    browser()
+    # browser()
+    showModal(modalDialog(
+      title = 'Are You Sure?!',
+      dataTableOutput(ns('dt_test'))
+    ))
   })
   ## Process Shiny RedCAP inputs to match expected RedCAP API input
   rc_id <- reactive({
