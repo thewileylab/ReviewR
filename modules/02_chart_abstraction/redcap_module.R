@@ -385,13 +385,15 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
       flatten_dfr()
   })
   
-  ## Test, verify data before upload
+  ## Verify data before upload. Compare current entries with previous entries. Isolate and display differences
+  # Dtermine if the data exists in REDCap by extracting the REDCap record identifier. If blank ('') we assume new record.
   continue_val <- reactive({
     req(currentSubject() )
     currentSubject() %>% 
       filter(field_name == rc_recordID() %>% flatten_chr()) %>% 
       extract2(1,2)
   })
+  # Create a DT to display in modal, with Question, Previous Value, and New Value
   modal_data <- eventReactive(rc_upload_btn_press(), {
     instrumentData() %>% 
       mutate(inputID = str_replace(string = inputID, pattern = regex(pattern = '_reviewr_.*'),replacement = '')) %>% 
@@ -411,7 +413,7 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
                 by =c('inputID' = 'field_name')) %>% 
       select('Question' = field_label, 'Previous Value' = default_value, 'New Value' = values) 
   })
-  output$dt_test <- renderDataTable(modal_data() %>% 
+  output$confirm_modal_dt <- renderDataTable(modal_data() %>% 
                                       datatable(
                                         extensions = list('Scroller' = NULL),
                                         options = list(scrollX = TRUE,
@@ -423,12 +425,13 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
                                         escape = F,
                                         class = 'cell-border strip hover'
                                         ))
+  # If data already exists in REDCap and there are differences, show modal which highlights differences
   observeEvent(rc_upload_btn_press(), {
     if(continue_val() != '' & nrow(modal_data()) > 0) {
       showModal(
         modalDialog(
           title = 'Warning: Overwriting previous REDCap data, continue?',
-          dataTableOutput(ns('dt_test')),
+          dataTableOutput(ns('confirm_modal_dt')),
           actionButton(inputId = ns('continue'), label = 'Continue'),
           actionButton(inputId = ns('go_back'), label = 'Go Back'), 
           easyClose = FALSE,
@@ -438,16 +441,19 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
         )
       message('modal pause')
       #browser()
+      # else, send data to REDCap
       } else {
         message('upload pause')
         #browser()
         redcapAPI::importRecords(rcon = rc_con(), rc_uploadData())
       }
   })
+  # If confirming changes, send new data to REDCap
   observeEvent(input$continue, {
     removeModal()
     redcapAPI::importRecords(rcon = rc_con(), rc_uploadData())
   })
+  # If dismissing new changes, remove modal and go back to ReviewR
   observeEvent(input$go_back, {
     removeModal()
   })
