@@ -206,7 +206,7 @@ redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_i
 redcap_instrument_ui <- function(id) {
   ns <- NS(id)
   tagList(
-    uiOutput(ns('redcap_instrument')) %>% withSpinner(type = 5, color = '#e83a2f')
+    uiOutput(ns('redcap_instrument')) %>% withSpinner(type = 5, color = '#e83a2f') ## 'danger red'
   )
 }
 
@@ -238,7 +238,7 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
   ## Determine if there is any previous data to show. If a reviewer field is specified, make sure to filter to data belonging to that reviewer.
   previous_data <- reactive({
     req(rc_connection(), rc_identifier_field(), selected_instrument(), subject_id() )
-    redcapAPI::exportRecords(rcon = rc_connection(), factors = F, forms = selected_instrument(), labels = F ) %>% 
+    redcapAPI::exportRecords(rcon = rc_connection(), factors = F, labels = F ) %>% 
       as_tibble() %>% 
       mutate_all(as.character) %>% 
       mutate_all(replace_na, replace = '') %>% # replace all NA values with blank character vectors, so that shiny radio buttons without a previous response will display empty
@@ -321,13 +321,14 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
       select(-class) 
   })
   
-  ##Pause, verify collected data
-  observeEvent(reviewr_upload_btn(), {
-    browser()
-  })
+  # ##Pause, verify collected data
+  # observeEvent(reviewr_upload_btn(), {
+  #   browser()
+  # })
   return(list(
     'instrument_data' = instrumentData,
-    'previous_data' = previous_data
+    'previous_data' = previous_data,
+    'current_subject' = current_subject
     )) # Send to the Upload module
 }
 
@@ -339,7 +340,7 @@ upload_redcap_ui <- function(id) {
   )
 }
 
-upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_instrument, instrumentData) {
+upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_instrument, instrumentData, previousData, currentSubject) {
   ns <- session$ns
   
   rc_upload_btn <- reactive({ actionButton(inputId = ns('upload_rc'),label = "Store Abstraction") })
@@ -347,24 +348,16 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
   
   output$rc_upload <- renderUI({rc_upload_btn() })
   
-  ## Test, verify data before upload
-  display_data <- eventReactive(rc_upload_btn_press(), {
-    instrumentData()
-  })
-  output$dt_test <- renderDataTable(display_data() %>% reviewr_datatable())
-  observeEvent(rc_upload_btn_press(), {
-    message('upload pause')
-    # browser()
-    showModal(modalDialog(
-      title = 'Are You Sure?!',
-      dataTableOutput(ns('dt_test'))
-    ))
-  })
   ## Process Shiny RedCAP inputs to match expected RedCAP API input
   rc_id <- reactive({
     req(rc_con(), rc_upload_btn_press() ) ## Add rc_upload_btn_press() as a req to force refresh of next record id on submit
-    rc_recordID_field <- rc_recordID() %>% extract2(1)
-    tibble(!!rc_recordID_field := exportNextRecordName(rc_con() ))
+    rc_recordID_field <- rc_recordID() %>% flatten_chr()
+    if(nrow(previousData()) > 0) {
+      previousData() %>% 
+        select(rc_recordID_field)
+    } else {
+      tibble(!!rc_recordID_field := exportNextRecordName(rc_con() ))
+      }
     })
   
   rc_uploadData <- reactive({
@@ -373,6 +366,7 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
     rc_instrument() %>% 
       mutate(shiny_inputID = ns(shiny_inputID)) %>% ## Namespace
       select(shiny_inputID, field_name) %>% 
+      add_row(field_name = rc_recordID() %>% flatten()) %>% ## Add REDCap record ID field back into the instrument, so it can be joined with any previous data.
       left_join(instrumentData(), by = c('shiny_inputID' = 'inputID')) %>% ## Join the instrument inputs with the selected instrument. This ensures inputs are collected only for the active instrument
       filter(!map_lgl(values, is.null) & values != '' & values != 'NA') %>% ## Remove NULL & blank ('') and character 'NA' inputs, ie, inputs where the user has not selected anything. Prevents issues when unnesting in the next step
       modify_depth(2, as.character) %>% ## the input values are all lists at this moment. Dive into each list (depth = 2) and make sure that the values within the list are coded as characters
@@ -391,6 +385,72 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
       flatten_dfr()
   })
   
+  ## Test, verify data before upload
+  continue_val <- reactive({
+    req(currentSubject() )
+    currentSubject() %>% 
+      filter(field_name == rc_recordID() %>% flatten_chr()) %>% 
+      extract2(1,2)
+  })
+  modal_data <- eventReactive(rc_upload_btn_press(), {
+    instrumentData() %>% 
+      mutate(inputID = str_replace(string = inputID, pattern = regex(pattern = '_reviewr_.*'),replacement = '')) %>% 
+      left_join(currentSubject() %>% 
+                  mutate(field_name = ns(field_name)), 
+                by = c('inputID' = 'field_name')) %>% 
+      mutate_all(replace_na, replace = '') %>% 
+      modify_depth(.depth = 2, as.character) %>% 
+      mutate_all(as.character) %>% 
+      mutate(diff = case_when(values == default_value ~ 0,
+                              TRUE ~ 1)
+             ) %>%
+      filter(diff == 1) %>% 
+      left_join(rc_instrument() %>% 
+                  select(field_name, field_label) %>% 
+                  mutate(field_name = ns(field_name)), 
+                by =c('inputID' = 'field_name')) %>% 
+      select('Question' = field_label, 'Previous Value' = default_value, 'New Value' = values) 
+  })
+  output$dt_test <- renderDataTable(modal_data() %>% 
+                                      datatable(
+                                        extensions = list('Scroller' = NULL),
+                                        options = list(scrollX = TRUE,
+                                                       deferRender = TRUE,
+                                                       scroller = TRUE,
+                                                       sDom  = '<"top">lrt<"bottom">ip'
+                                                       ),
+                                        rownames = F, 
+                                        escape = F,
+                                        class = 'cell-border strip hover'
+                                        ))
+  observeEvent(rc_upload_btn_press(), {
+    if(continue_val() != '' & nrow(modal_data()) > 0) {
+      showModal(
+        modalDialog(
+          title = 'Warning: Overwriting previous REDCap data, continue?',
+          dataTableOutput(ns('dt_test')),
+          actionButton(inputId = ns('continue'), label = 'Continue'),
+          actionButton(inputId = ns('go_back'), label = 'Go Back'), 
+          easyClose = FALSE,
+          fade = TRUE,
+          footer = NULL
+          )
+        )
+      message('modal pause')
+      #browser()
+      } else {
+        message('upload pause')
+        #browser()
+        redcapAPI::importRecords(rcon = rc_con(), rc_uploadData())
+      }
+  })
+  observeEvent(input$continue, {
+    removeModal()
+    redcapAPI::importRecords(rcon = rc_con(), rc_uploadData())
+  })
+  observeEvent(input$go_back, {
+    removeModal()
+  })
   
   return(list(
     'rc_upload_btn_press' = rc_upload_btn_press,
