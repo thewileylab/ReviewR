@@ -436,7 +436,8 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
           actionButton(inputId = ns('go_back'), label = 'Go Back'), 
           easyClose = FALSE,
           fade = TRUE,
-          footer = NULL
+          footer = NULL,
+          size = 'l'
           )
         )
       message('modal pause')
