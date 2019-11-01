@@ -247,7 +247,7 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
   current_subject <- reactive({
     req(previous_data() )
     
-    if(nrow(previous_data() )>0){
+    if(nrow(previous_data() ) > 0 ){
       previous_data() %>% 
       # Turn wide data from RedCAP to long, collapsing checkbox type quesitions along the way
       pivot_longer(cols = contains('___'),names_to = 'checkbox_questions',values_to = 'value_present') %>% 
@@ -359,26 +359,36 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
       tibble(!!rc_recordID_field := exportNextRecordName(rc_con() ))
       }
     })
+  # observeEvent(rc_upload_btn_press(), {
+  #   browser()
+  # })
   
   rc_uploadData <- reactive({
     req(rc_instrument(), instrumentData(), rc_id() )
     rc_recordID_field <- rc_recordID() %>% extract2(1)
     rc_instrument() %>% 
       mutate(shiny_inputID = ns(shiny_inputID)) %>% ## Namespace
-      select(shiny_inputID, field_name) %>% 
+      select(shiny_inputID, field_name, select_choices_or_calculations) %>% ## Include select_choices_or_calculations so that all columns can be sent back to REDCap. This allows for overwriting old data with blank ''
       add_row(field_name = rc_recordID() %>% flatten()) %>% ## Add REDCap record ID field back into the instrument, so it can be joined with any previous data.
       left_join(instrumentData(), by = c('shiny_inputID' = 'inputID')) %>% ## Join the instrument inputs with the selected instrument. This ensures inputs are collected only for the active instrument
-      filter(!map_lgl(values, is.null) & values != '' & values != 'NA') %>% ## Remove NULL & blank ('') and character 'NA' inputs, ie, inputs where the user has not selected anything. Prevents issues when unnesting in the next step
       modify_depth(2, as.character) %>% ## the input values are all lists at this moment. Dive into each list (depth = 2) and make sure that the values within the list are coded as characters
-      unnest(cols = values) %>% ## Expand inputs where more than one selection is allowed
-      mutate(col_names = pmap(list(x = shiny_inputID, y = field_name, z = values ),  function(x,y,z) case_when(str_detect(string = x, pattern = 'reviewr_checkbox') ~ paste0(y, '___', z), ## Create additional column names for inputs where multiple inputs are allowed
+      separate_rows(select_choices_or_calculations,sep = '\\|') %>% ## Expand select_choices_or_calculations
+      mutate(select_choices_or_calculations = str_trim(select_choices_or_calculations)) %>% ## Trim
+      separate(select_choices_or_calculations, into = c('rc_val','rc_label'), sep = ',') %>% ## Separate
+      mutate(rc_label = str_trim(rc_label), ## Trim
+             col_names = pmap(list(x = shiny_inputID, y = field_name, z = rc_val ),  function(x,y,z) case_when(str_detect(string = x, pattern = 'reviewr_checkbox') ~ paste0(y, '___', z), ## Create additional column names for inputs where multiple inputs are allowed
                                                                                                              TRUE ~ y)
                               ),
-             values = map2(.x = shiny_inputID, .y = values, ~ case_when(str_detect(string = .x, pattern = 'reviewr_checkbox') ~ '1', ## Change the value to 1 for checkbox questions, to indicate a selection
-                                                               TRUE ~ .y)
-                           )
+             values = pmap(list(x = shiny_inputID, y = rc_val, z = values), function(x,y,z) case_when(str_detect(string = x, pattern = 'reviewr_checkbox') & y == z ~ '1',
+                                                                                                      str_detect(string = x, pattern = 'reviewr_checkbox') & y != z ~ '',
+                                                                                                      TRUE ~ z)
+                           ),
+             col_names = flatten_chr(col_names)
              ) %>% 
-      select(-shiny_inputID, -field_name) %>% 
+      select(col_names, values) %>% 
+      unnest(values) %>% 
+      arrange(desc(values)) %>% 
+      distinct(col_names,.keep_all = T) %>% 
       pivot_wider(names_from = col_names, values_from = values) %>% 
       bind_cols(rc_id() ) %>% 
       select(!!rc_recordID_field, everything() ) %>% ## RedCAP API likes the record identifier in the first column
@@ -386,7 +396,7 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
   })
   
   ## Verify data before upload. Compare current entries with previous entries. Isolate and display differences
-  # Dtermine if the data exists in REDCap by extracting the REDCap record identifier. If blank ('') we assume new record.
+  # Detrmine if the data exists in REDCap by extracting the REDCap record identifier. If blank ('') we assume new record.
   continue_val <- reactive({
     req(currentSubject() )
     currentSubject() %>% 
@@ -411,7 +421,8 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
                   select(field_name, field_label) %>% 
                   mutate(field_name = ns(field_name)), 
                 by =c('inputID' = 'field_name')) %>% 
-      select('Question' = field_label, 'Previous Value' = default_value, 'New Value' = values) 
+      select('Question' = field_label, 'Previous Value' = default_value, 'New Value' = values) %>% 
+      filter(Question != '')
   })
   output$confirm_modal_dt <- renderDataTable(modal_data() %>% 
                                       datatable(
@@ -430,7 +441,7 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
     if(continue_val() != '' & nrow(modal_data()) > 0) {
       showModal(
         modalDialog(
-          title = 'Warning: Overwriting previous REDCap data, continue?',
+          title = 'Warning: Overwriting previous REDCap data. Continue?',
           dataTableOutput(ns('confirm_modal_dt')),
           actionButton(inputId = ns('continue'), label = 'Continue'),
           actionButton(inputId = ns('go_back'), label = 'Go Back'), 
@@ -440,19 +451,19 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
           size = 'l'
           )
         )
-      message('modal pause')
+      message('Warning: Potentially overwriting existing REDCap data. Continue?')
       #browser()
       # else, send data to REDCap
       } else {
-        message('upload pause')
+        message('Uploading data to REDCap.')
         #browser()
-        redcapAPI::importRecords(rcon = rc_con(), rc_uploadData())
+        redcapAPI::importRecords(rcon = rc_con(), data = rc_uploadData(), overwriteBehavior = 'overwrite', returnContent = 'ids' )
       }
   })
   # If confirming changes, send new data to REDCap
   observeEvent(input$continue, {
     removeModal()
-    redcapAPI::importRecords(rcon = rc_con(), rc_uploadData())
+    redcapAPI::importRecords(rcon = rc_con(), data = rc_uploadData(), overwriteBehavior = 'overwrite', returnContent = 'ids')
   })
   # If dismissing new changes, remove modal and go back to ReviewR
   observeEvent(input$go_back, {
