@@ -251,8 +251,11 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
       previous_data() %>% 
       # Turn wide data from RedCAP to long, collapsing checkbox type quesitions along the way
       pivot_longer(cols = contains('___'),names_to = 'checkbox_questions',values_to = 'value_present') %>% 
-      filter(value_present == 1) %>% # Remove checkbox questions with no box checked
       separate(checkbox_questions, into = c('checkbox_questions','checkbox_value'), sep = '___') %>% # Separate value from column name
+      mutate(checkbox_value = map2_chr(.x = checkbox_value, .y = value_present, ~ case_when(.y == 0 ~ '',
+                                                                                            TRUE ~ .x)
+                                       )
+             ) %>%   
       select(-value_present) %>% # remove value presence variable
       pivot_wider(names_from = checkbox_questions, values_from = checkbox_value, values_fn = list(checkbox_value = list)) %>% # pivot wider, utilizing list to preserve column types. Having collapsed the checkbox quesions, we now have a the original field_name as a joinable variable
       pivot_longer(cols = everything(), names_to = 'field_name', values_to = 'default_value', values_ptypes = list(default_value = list())) # Pivot longer, utilizing a list as the column type to avoid variable coercion
@@ -277,6 +280,10 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
         }
     })
   
+  # observeEvent(reviewr_upload_btn(), {
+  #   browser()
+  # })
+  # 
   ## Create a Shiny tagList for each question type present in the instrument
   rc_instrument_ui <- reactive({
     req(rc_instrument(), current_subject() )
