@@ -375,6 +375,7 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
       separate_rows(select_choices_or_calculations,sep = '\\|') %>% ## Expand select_choices_or_calculations
       mutate(select_choices_or_calculations = str_trim(select_choices_or_calculations)) %>% ## Trim
       separate(select_choices_or_calculations, into = c('rc_val','rc_label'), sep = ',') %>% ## Separate
+      ## This mutate adds additional column names to hold values for checkbox questions
       mutate(rc_label = str_trim(rc_label), ## Trim
              col_names = pmap(list(x = shiny_inputID, y = field_name, z = rc_val ),  function(x,y,z) case_when(str_detect(string = x, pattern = 'reviewr_checkbox') ~ paste0(y, '___', z), ## Create additional column names for inputs where multiple inputs are allowed
                                                                                                              TRUE ~ y)
@@ -386,9 +387,16 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
              col_names = flatten_chr(col_names)
              ) %>% 
       select(col_names, values) %>% 
-      unnest(values) %>% 
+      unnest(cols = values, keep_empty = T) %>% ## in the case that all checkbox questions are de-selected, this keeps empty values, but stores them as NA. 
+      ## This mutate modifys values to blanks, except for the special case when the record ID is NA. We would like to trop this value, if NA.
+      mutate(values = map2_chr(.x = col_names, .y = values, ~ case_when(str_detect(string = .x,pattern = !!rc_recordID_field) & is.na(.y) ~ .y,
+                                                                        is.na(.y) ~ '',
+                                                                        TRUE ~ .y)
+                               )
+             ) %>%  
       arrange(desc(values)) %>% 
       distinct(col_names,.keep_all = T) %>% 
+      remove_missing() %>% 
       pivot_wider(names_from = col_names, values_from = values) %>% 
       bind_cols(rc_id() ) %>% 
       select(!!rc_recordID_field, everything() ) %>% ## RedCAP API likes the record identifier in the first column
