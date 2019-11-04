@@ -453,12 +453,13 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
                                         ))
   # If data already exists in REDCap and there are differences, show modal which highlights differences
   observeEvent(rc_upload_btn_press(), {
+    rc_recordID_field <- rc_recordID() %>% flatten_chr()
     if(continue_val() != '' & nrow(modal_data()) > 0) {
       showModal(
         modalDialog(
-          title = 'Warning: Overwriting previous REDCap data. Continue?',
+          title = 'Warning: Overwriting previous REDCap data.',
           dataTableOutput(ns('confirm_modal_dt')),
-          actionButton(inputId = ns('continue'), label = 'Continue'),
+          actionButton(inputId = ns('continue'), label = 'Continue overwriting existing REDCap values'),
           actionButton(inputId = ns('go_back'), label = 'Go Back'), 
           easyClose = FALSE,
           fade = TRUE,
@@ -466,19 +467,34 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
           size = 'l'
           )
         )
-      message('Warning: Potentially overwriting existing REDCap data. Continue?')
+      message('Warning: Potentially overwriting existing REDCap data.')
       #browser()
       # else, send data to REDCap
       } else {
         message('Uploading data to REDCap.')
-        #browser()
-        redcapAPI::importRecords(rcon = rc_con(), data = rc_uploadData(), overwriteBehavior = 'overwrite', returnContent = 'ids' )
+        # browser()
+        upload_status <- redcapAPI::importRecords(rcon = rc_con(), data = rc_uploadData(), overwriteBehavior = 'overwrite', returnContent = 'ids' )
+        upload_message <- paste('REDCap', rc_recordID_field, upload_status %>% tibble::enframe(name = NULL) %>% separate(col = value,into = c('id','value'), sep = '\n') %>% select(value) %>% extract2(1), 'Uploaded Successfully.')
+        # Display message after sending data to REDCap
+        showNotification(ui = upload_message,
+                         duration = 5,
+                         closeButton = T,
+                         type = 'default')
       }
   })
+  
   # If confirming changes, send new data to REDCap
   observeEvent(input$continue, {
     removeModal()
-    redcapAPI::importRecords(rcon = rc_con(), data = rc_uploadData(), overwriteBehavior = 'overwrite', returnContent = 'ids')
+    rc_recordID_field <- rc_recordID() %>% flatten_chr()
+    overwrite_status <- redcapAPI::importRecords(rcon = rc_con(), data = rc_uploadData(), overwriteBehavior = 'overwrite', returnContent = 'ids')
+    overwrite_message <- paste('REDCap', rc_recordID_field, overwrite_status %>% tibble::enframe(name = NULL) %>% separate(col = value,into = c('id','value'), sep = '\n') %>% select(value) %>% extract2(1), 'Modified Successfully.')
+
+    # Display message after sending data to REDCap
+    showNotification(ui = overwrite_message,
+                     duration = 5,
+                     closeButton = T,
+                     type = 'warning')
   })
   # If dismissing new changes, remove modal and go back to ReviewR
   observeEvent(input$go_back, {
