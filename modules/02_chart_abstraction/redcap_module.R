@@ -238,14 +238,14 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
   ## Determine if there is any previous data to show. If a reviewer field is specified, make sure to filter to data belonging to that reviewer.
   previous_data <- reactive({
     req(rc_connection(), rc_identifier_field(), selected_instrument(), subject_id() )
-    if(redcapAPI::exportNextRecordName(rc_connection()) == 1) {
+    if(redcapAPI::exportNextRecordName(rc_connection()) == 1) { ## Special case, when the REDCap Instrument has no previous data
       redcapAPI::exportFieldNames(rc_connection() ) %>% 
         select(export_field_name, choice_value) %>% 
         mutate(choice_value = map(.x = choice_value, ~ NA)) %>% 
         pivot_wider(names_from = export_field_name, values_from = choice_value) %>% 
         flatten_dfr() %>% 
         remove_missing()
-      } else {
+      } else { ## Export existing Records, filtering to the subject and reviewer in context
       redcapAPI::exportRecords(rcon = rc_connection(), factors = F, labels = F ) %>% 
         as_tibble() %>% 
         mutate_all(as.character) %>% 
@@ -289,9 +289,9 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
         }
     })
   
-  observeEvent(reviewr_upload_btn(), {
-    browser()
-  })
+  # observeEvent(reviewr_upload_btn(), {
+  #   browser()
+  # })
 
   ## Create a Shiny tagList for each question type present in the instrument
   rc_instrument_ui <- reactive({
@@ -375,9 +375,9 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
       tibble(!!rc_recordID_field := exportNextRecordName(rc_con() ))
       }
     })
-  # observeEvent(rc_upload_btn_press(), {
-  #   browser()
-  # })
+  observeEvent(rc_upload_btn_press(), {
+    browser()
+  })
   
   rc_uploadData <- reactive({
     req(rc_instrument(), instrumentData(), rc_id() )
