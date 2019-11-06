@@ -238,11 +238,20 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
   ## Determine if there is any previous data to show. If a reviewer field is specified, make sure to filter to data belonging to that reviewer.
   previous_data <- reactive({
     req(rc_connection(), rc_identifier_field(), selected_instrument(), subject_id() )
-    redcapAPI::exportRecords(rcon = rc_connection(), factors = F, labels = F ) %>% 
-      as_tibble() %>% 
-      mutate_all(as.character) %>% 
-      mutate_all(replace_na, replace = '') %>% # replace all NA values with blank character vectors, so that shiny radio buttons without a previous response will display empty
-      filter(!!as.name(rc_identifier_field() ) == subject_id() )
+    if(redcapAPI::exportNextRecordName(rc_connection()) == 1) {
+      redcapAPI::exportFieldNames(rc_connection() ) %>% 
+        select(export_field_name, choice_value) %>% 
+        mutate(choice_value = map(.x = choice_value, ~ NA)) %>% 
+        pivot_wider(names_from = export_field_name, values_from = choice_value) %>% 
+        flatten_dfr() %>% 
+        remove_missing()
+      } else {
+      redcapAPI::exportRecords(rcon = rc_connection(), factors = F, labels = F ) %>% 
+        as_tibble() %>% 
+        mutate_all(as.character) %>% 
+        mutate_all(replace_na, replace = '') %>% # replace all NA values with blank character vectors, so that shiny radio buttons without a previous response will display empty
+        filter(!!as.name(rc_identifier_field() ) == subject_id() )
+    }
   })
   current_subject <- reactive({
     req(previous_data() )
@@ -280,10 +289,10 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
         }
     })
   
-  # observeEvent(reviewr_upload_btn(), {
-  #   browser()
-  # })
-  # 
+  observeEvent(reviewr_upload_btn(), {
+    browser()
+  })
+
   ## Create a Shiny tagList for each question type present in the instrument
   rc_instrument_ui <- reactive({
     req(rc_instrument(), current_subject() )
