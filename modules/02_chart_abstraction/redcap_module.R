@@ -306,6 +306,7 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
         shiny_input = pmap(list(reviewr_type = reviewr_redcap_widget_function, 
                                 field_name = ns(shiny_inputID), 
                                 field_label = shiny_field_label, 
+                                required = required_field,
                                 choices = select_choices_or_calculations,
                                 current_subject_data = default_value
                                 ), 
