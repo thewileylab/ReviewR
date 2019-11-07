@@ -1,10 +1,10 @@
 ## Create Shiny Widget Translation Functions ----
 reviewr_textInput <- function(id, field_label, value = NULL, placeholder = NULL, ...) {
-  textInput(inputId = id ,label = field_label, value = value , placeholder = placeholder)
+  textInput(inputId = id ,label = HTML(field_label), value = value , placeholder = placeholder)
   }
 
 reviewr_dateInput <- function(id, field_label, value = NULL, ...) {
-  dateInput(inputId = id, label = field_label, value = value)
+  dateInput(inputId = id, label = HTML(field_label), value = value)
   }
 
 reviewr_dropdown <- function(id, field_label, choices, value = NULL, ...) {
@@ -18,19 +18,19 @@ reviewr_dropdown <- function(id, field_label, choices, value = NULL, ...) {
   dropdown_choices <- temp$Values
   names(dropdown_choices) <- temp$Names
   dropdown_choices = dropdown_choices
-  selectInput(inputId = id, label = field_label, choices = dropdown_choices, selected = value)
+  selectInput(inputId = id, label = HTML(field_label), choices = dropdown_choices, selected = value)
   }
 
 reviewr_truefalse <- function(id, field_label, value = NULL, ...) {
   radio_names <- list('True', 'False', HTML("<font color='grey'>[Leave Blank]</font>"))
   radio_values <- c(1, 0, '')
-  radioButtons(inputId = id, label = field_label, choiceNames = radio_names, choiceValues = radio_values, selected = value)
+  radioButtons(inputId = id, label = HTML(field_label), choiceNames = radio_names, choiceValues = radio_values, selected = value)
   }
 
 reviewr_yesno <- function(id, field_label, value = NULL, ...) {
   radio_names <- list('Yes', 'No', HTML("<font color='grey'>[Leave Blank]</font>"))
   radio_values <- c(1, 0, '')
-  radioButtons(inputId = id, label = field_label, choiceNames = radio_names, choiceValues = radio_values, selected = value)
+  radioButtons(inputId = id, label = HTML(field_label), choiceNames = radio_names, choiceValues = radio_values, selected = value)
   }
 
 reviewr_radio <- function(id, field_label, choices, value = NULL, ...) {
@@ -49,7 +49,7 @@ reviewr_radio <- function(id, field_label, choices, value = NULL, ...) {
     select(Values) %>% 
     flatten() %>% 
     append(list(''))
-  radioButtons(inputId = id, label = field_label, choiceNames = radio_names, choiceValues = radio_values, selected = value)
+  radioButtons(inputId = id, label = HTML(field_label), choiceNames = radio_names, choiceValues = radio_values, selected = value)
   }
 
 reviewr_checkbox <- function(id, field_label, choices, value = NULL, ...) {
@@ -60,15 +60,15 @@ reviewr_checkbox <- function(id, field_label, choices, value = NULL, ...) {
     mutate_all(str_trim)
   checkbox_choices <- temp$Values
   names(checkbox_choices) <- temp$Names
-  checkboxGroupInput(inputId = id, label = field_label, choices = checkbox_choices, selected = value)
+  checkboxGroupInput(inputId = id, label = HTML(field_label), choices = checkbox_choices, selected = value)
   }
 
 reviewr_notes <- function(id, field_label, value = NULL, ...) {
-  textAreaInput(inputId = id, label = field_label, value = value)
+  textAreaInput(inputId = id, label = HTML(field_label), value = value)
   }
 
 reviewr_integer <- function(id, field_label, value = NULL, ...) {
-  numericInput(inputId = id, label = field_label, value = value)
+  numericInput(inputId = id, label = HTML(field_label), value = value)
 }
 
 ## Render REDCap Instrument shinyInput Tags ----

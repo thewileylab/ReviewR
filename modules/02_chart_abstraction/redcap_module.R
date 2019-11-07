@@ -301,7 +301,8 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
       mutate( ## mutate shiny tags/inputs
         shiny_header = map(section_header, h3),
         shiny_field_label = case_when(is.na(required_field) ~ field_label,
-                                      TRUE ~ paste(field_label,'*')),
+                                      TRUE ~ paste(field_label,"<br/><font color='#FC0020'>* must provide value</font>")
+                                      ),
         shiny_input = pmap(list(reviewr_type = reviewr_redcap_widget_function, 
                                 field_name = ns(shiny_inputID), 
                                 field_label = shiny_field_label, 
@@ -319,7 +320,7 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
                              )
         )
     })
-  
+
   ## Create Instrument Output
   output$redcap_instrument <- renderUI ({ 
     req(rc_instrument_ui() )
