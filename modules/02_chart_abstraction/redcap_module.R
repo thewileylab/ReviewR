@@ -428,38 +428,109 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
       extract2(1,2)
   })
   # Create a DT to display in modal, with Question, Previous Value, and New Value
-  modal_data <- eventReactive(rc_upload_btn_press(), {
-    instrumentData() %>% 
-      mutate(inputID = str_replace(string = inputID, pattern = regex(pattern = '_reviewr_.*'),replacement = '')) %>% 
-      left_join(currentSubject() %>% 
-                  mutate(field_name = ns(field_name)), 
-                by = c('inputID' = 'field_name')) %>% 
-      mutate_all(replace_na, replace = '') %>% 
-      modify_depth(.depth = 2, as.character) %>% 
-      mutate_all(as.character) %>% 
-      mutate(diff = case_when(values == default_value ~ 0,
-                              TRUE ~ 1)
-             ) %>%
-      filter(diff == 1) %>% 
-      left_join(rc_instrument() %>% 
-                  select(field_name, field_label) %>% 
-                  mutate(field_name = ns(field_name)), 
-                by =c('inputID' = 'field_name')) %>% 
-      select('Question' = field_label, 'Previous Value' = default_value, 'New Value' = values) %>% 
-      filter(Question != '')
+  ## Process the instrumnet slightly
+  exploded_instrument  <- reactive({
+    rc_instrument() %>%
+    select(shiny_inputID, field_type, select_choices_or_calculations) %>% 
+    mutate(select_choices_or_calculations = case_when(field_type == 'yesno' ~ '1, yes | 0, no',
+                                                      field_type == 'truefalse' ~ '1, true | 0, false',
+                                                      TRUE ~ select_choices_or_calculations
+                                                      )
+           ) %>% 
+    separate_rows(select_choices_or_calculations, sep = '\\|') %>% 
+    separate(select_choices_or_calculations, into = c('values','choice_labels'), sep = ',') %>% 
+    mutate_all(str_trim) %>% 
+    mutate_all(replace_na, replace = '') %>% 
+    mutate(inputID = ns(shiny_inputID)) %>% 
+    select(inputID, everything(), -shiny_inputID)
   })
-  output$confirm_modal_dt <- renderDataTable(modal_data() %>% 
-                                      datatable(
-                                        extensions = list('Scroller' = NULL),
-                                        options = list(scrollX = TRUE,
-                                                       deferRender = TRUE,
-                                                       scroller = TRUE,
-                                                       sDom  = '<"top">lrt<"bottom">ip'
-                                                       ),
-                                        rownames = F, 
-                                        escape = F,
-                                        class = 'cell-border strip hover'
-                                        ))
+  
+  ## Process current data, matching values with choice labels for display
+  current_data <- reactive({
+    instrumentData() %>% 
+    modify_depth(.depth = 2, as.character) %>% 
+    unnest(cols = values) %>% 
+    mutate(current_values = values)
+    })
+  
+  new_data_w_labels <- reactive({
+    exploded_instrument() %>% 
+    full_join(current_data() ) %>% 
+    mutate(inputID = str_replace(string = inputID, pattern = regex(pattern = '_reviewr_.*'),replacement = '')) %>% 
+    mutate_all(replace_na, replace = '') %>% 
+    filter(current_values != '') %>% 
+    mutate(current_values_2 = case_when(choice_labels == '' ~ current_values,
+                                        TRUE ~ choice_labels
+                                        )
+           ) %>% 
+    select(inputID, 'current_values' = current_values_2) %>% 
+    group_by(inputID) %>% 
+    mutate(current_values = paste(current_values, collapse = '<br><br>')) %>% 
+    ungroup() %>% 
+    distinct(inputID, .keep_all = T)
+  })
+  
+  ## Process old (existing) data, matching values with choice labels for display
+  old_data <- reactive({
+    currentSubject() %>% 
+    modify_depth(.depth = 2, as.character) %>% 
+    unnest(cols = default_value) %>% 
+    mutate(inputID = ns(field_name)) %>% 
+    select(inputID, previous_values = default_value,-field_name) %>% 
+    mutate(values = previous_values) %>% 
+    select(inputID, values, previous_values)
+  })
+  
+  old_data_w_labels <- reactive({
+    exploded_instrument() %>% 
+    mutate(inputID = str_replace(string = inputID, pattern = regex(pattern = '_reviewr_.*'),replacement = '')) %>% 
+    full_join(old_data() ) %>% 
+    mutate_all(replace_na, replace = '') %>% 
+    filter(previous_values != '') %>% 
+    mutate(previous_values_2 = case_when(choice_labels == '' ~ previous_values,
+                                         TRUE ~ choice_labels
+                                         )
+           ) %>% 
+    select(inputID, 'previous_values' = previous_values_2) %>% 
+    group_by(inputID) %>% 
+    mutate(previous_values = paste(previous_values, collapse = '<br><br>')) %>% 
+    ungroup() %>% 
+    distinct(inputID, .keep_all = T)
+  })
+  
+  ## Modal Representation
+  modal_data <- eventReactive(rc_upload_btn_press(), {
+  new_data_w_labels() %>% 
+  full_join(old_data_w_labels() ) %>% 
+    mutate_all(replace_na, replace = '') %>%
+    mutate(diff = case_when(current_values != previous_values ~ 1,
+                            TRUE ~ 0
+    )
+    ) %>% 
+    filter(diff == 1) %>% 
+    left_join(rc_instrument() %>% 
+                select(field_name, field_label, select_choices_or_calculations) %>% 
+                mutate(field_name = ns(field_name)), 
+              by =c('inputID' = 'field_name')) %>% 
+    select('Question' = field_label, 'Previous Values' = previous_values, 'New Values' = current_values) %>% 
+    remove_missing(vars = 'Question', na.rm = TRUE) 
+  })
+
+  output$confirm_modal_dt <- renderDataTable(
+    modal_data() %>% 
+      datatable(
+        extensions = list('Scroller' = NULL),
+        options = list(scrollX = TRUE,
+                       deferRender = TRUE,
+                       scrollY = '450px',
+                       scroller = TRUE,
+                       sDom  = '<"top">lrt<"bottom">ip'
+                       ),
+        rownames = F, 
+        escape = F,
+        class = 'cell-border strip hover'
+        )
+    )
   # If data already exists in REDCap and there are differences, show modal which highlights differences
   observeEvent(rc_upload_btn_press(), {
     rc_recordID_field <- rc_recordID() %>% flatten_chr()
