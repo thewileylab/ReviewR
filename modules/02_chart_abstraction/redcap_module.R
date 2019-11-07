@@ -210,7 +210,7 @@ redcap_instrument_ui <- function(id) {
   )
 }
 
-redcap_instrumment_logic <- function(input, output, session, rc_connection, instruments, instrument_selection, rc_instrument, rc_identifier, rc_reviewer, reviewr_inputs, subject_id, reviewr_upload_btn, reviewr_connect_btn) {
+redcap_instrumment_logic <- function(input, output, session, rc_connection, instruments, instrument_selection, rc_instrument, rc_identifier, rc_reviewer, subject_id, reviewr_upload_btn, reviewr_connect_btn) {
   ns <- session$ns
   
   ## On redcap connection or subsequent upload, determine if there is any default data that needs to be displayed
@@ -244,7 +244,7 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
         mutate(choice_value = map(.x = choice_value, ~ NA)) %>% 
         pivot_wider(names_from = export_field_name, values_from = choice_value) %>% 
         flatten_dfr() %>% 
-        remove_missing()
+        remove_missing(na.rm = TRUE)
       } else { ## Export existing Records, filtering to the subject and reviewer in context
       redcapAPI::exportRecords(rcon = rc_connection(), factors = F, labels = F ) %>% 
         as_tibble() %>% 
@@ -329,15 +329,15 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
       )
     })
   
-  ## Collect Instrument data
+  # Collect Instrument data
+  redcap_module_inputs <- reactive({reactiveValuesToList(input)})
   instrumentData <- reactive({
-    tibble(inputID = names(reviewr_inputs()), values = unname(reviewr_inputs())) %>% 
-      mutate(class = str_detect(string = inputID, pattern = regex(pattern = '_reviewr((?!_reset).)*$',ignore_case = T))) %>% ## Find instrument inputs -- not resets
-      filter(class == T) %>% 
-      select(-class) 
+    tibble(inputID = names(redcap_module_inputs() ),
+           values = unname(redcap_module_inputs() )
+           )
   })
   
-  # ##Pause, verify collected data
+  # #Pause, verify collected data
   # observeEvent(reviewr_upload_btn(), {
   #   browser()
   # })
@@ -375,15 +375,15 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
       tibble(!!rc_recordID_field := exportNextRecordName(rc_con() ))
       }
     })
-  observeEvent(rc_upload_btn_press(), {
-    browser()
-  })
+  # observeEvent(rc_upload_btn_press(), {
+  #   browser()
+  # })
   
   rc_uploadData <- reactive({
     req(rc_instrument(), instrumentData(), rc_id() )
     rc_recordID_field <- rc_recordID() %>% extract2(1)
     rc_instrument() %>% 
-      mutate(shiny_inputID = ns(shiny_inputID)) %>% ## Namespace
+      mutate(shiny_inputID = shiny_inputID) %>% ## Namespace
       select(shiny_inputID, field_name, select_choices_or_calculations) %>% ## Include select_choices_or_calculations so that all columns can be sent back to REDCap. This allows for overwriting old data with blank ''
       add_row(field_name = rc_recordID() %>% flatten()) %>% ## Add REDCap record ID field back into the instrument, so it can be joined with any previous data.
       left_join(instrumentData(), by = c('shiny_inputID' = 'inputID')) %>% ## Join the instrument inputs with the selected instrument. This ensures inputs are collected only for the active instrument
@@ -412,7 +412,7 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
              ) %>%  
       arrange(desc(values)) %>% 
       distinct(col_names,.keep_all = T) %>% 
-      remove_missing() %>% 
+      remove_missing(na.rm = TRUE) %>% 
       pivot_wider(names_from = col_names, values_from = values) %>% 
       bind_cols(rc_id() ) %>% 
       select(!!rc_recordID_field, everything() ) %>% ## RedCAP API likes the record identifier in the first column
@@ -441,7 +441,7 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
     separate(select_choices_or_calculations, into = c('values','choice_labels'), sep = ',') %>% 
     mutate_all(str_trim) %>% 
     mutate_all(replace_na, replace = '') %>% 
-    mutate(inputID = ns(shiny_inputID)) %>% 
+    mutate(inputID = shiny_inputID) %>%
     select(inputID, everything(), -shiny_inputID)
   })
   
@@ -475,7 +475,7 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
     currentSubject() %>% 
     modify_depth(.depth = 2, as.character) %>% 
     unnest(cols = default_value) %>% 
-    mutate(inputID = ns(field_name)) %>% 
+    mutate(inputID = field_name) %>% 
     select(inputID, previous_values = default_value,-field_name) %>% 
     mutate(values = previous_values) %>% 
     select(inputID, values, previous_values)
@@ -509,8 +509,7 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
     ) %>% 
     filter(diff == 1) %>% 
     left_join(rc_instrument() %>% 
-                select(field_name, field_label, select_choices_or_calculations) %>% 
-                mutate(field_name = ns(field_name)), 
+                select(field_name, field_label, select_choices_or_calculations), 
               by =c('inputID' = 'field_name')) %>% 
     select('Question' = field_label, 'Previous Values' = previous_values, 'New Values' = current_values) %>% 
     remove_missing(vars = 'Question', na.rm = TRUE) 

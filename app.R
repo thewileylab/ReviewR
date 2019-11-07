@@ -48,9 +48,6 @@ server <- function(input, output, session) {
         stopApp()
         })
     
-    ## Collect All input values and store as reactive object
-    input_vals <- reactive({reactiveValuesToList(input) })
-    
     ## Define a dynamic application menu
     output$application_menu <- renderMenu({
         sidebarMenu(id = 'main_tabs',

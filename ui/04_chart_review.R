@@ -12,7 +12,7 @@ callModule(omop_chart_review_logic, 'chart_review', table_map$table_map, db_conn
 callModule(mimic_chart_review_logic, 'chart_review', table_map$table_map, db_connection_vars$db_connection, subject_info$selected_patient)
 
 # Call Chart Abstraction Modules ----
-instrumentData <- callModule(redcap_instrumment_logic, 'chart_review_abstraction', abstraction_vars$rc_con, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection, rc_project_vars$rc_instrument, rc_config_vars$rc_identifier , rc_config_vars$rc_reviewer, input_vals, subject_info$selected_patient, upload$rc_upload_btn_press, abstraction_vars$rc_press)
+instrumentData <- callModule(redcap_instrumment_logic, 'chart_review_abstraction', abstraction_vars$rc_con, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection, rc_project_vars$rc_instrument, rc_config_vars$rc_identifier , rc_config_vars$rc_reviewer, subject_info$selected_patient, upload$rc_upload_btn_press, abstraction_vars$rc_press)
 upload <- callModule(upload_redcap_logic, 'chart_review_abstraction', abstraction_vars$rc_con, rc_project_vars$rc_record_id, rc_project_vars$rc_instrument, instrumentData$instrument_data, instrumentData$previous_data, instrumentData$current_subject)
 
 # RC Test observer
