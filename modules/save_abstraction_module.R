@@ -40,10 +40,9 @@ instrument_complete_logic <- function(input, output, session, rc_instrument, ins
     req(qty_required() == qty_required_answered() )
     dropdown_choices <- c(0,1,2)
     names(dropdown_choices) <- c('Incomplete', 'Unverified', 'Complete')
-    dropdown_choices = dropdown_choices
     selectInput(inputId = ns('abstraction_complete'), label = 'Complete?', choices = dropdown_choices, selected = input$abstraction_complete)
   })
-  abstraction_complete_val = reactive({ input$abstraction_comnplete })
+  abstraction_complete_val = reactive({ input$abstraction_complete })
   output$abstraction_complete_ui <- renderUI({ redcap_instrument_complete() })
   
   ## Create a Button allowing the status of the review to be saved. 

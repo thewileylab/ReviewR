@@ -350,7 +350,7 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
     )) # Send to the Upload module
 }
 
-upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_instrument, instrumentData, previousData, currentSubject, rc_upload_btn_press) {
+upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_instrument, instrumentData, previousData, currentSubject, rc_upload_btn_press, abstraction_complete_val, all_instruments, instrument_selection) {
   ns <- session$ns
   
   ## Process Shiny RedCAP inputs to match expected RedCAP API input
@@ -364,9 +364,22 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
       tibble(!!rc_recordID_field := exportNextRecordName(rc_con() ))
       }
     })
-  # observeEvent(rc_upload_btn_press(), {
-  #   browser()
-  # })
+  
+  rc_complete <- reactive({
+    req(rc_upload_btn_press() )
+    selected_instrument_name <- all_instruments() %>% 
+      filter(instrument_label == instrument_selection() ) %>% 
+      extract2(1,1)
+    instrument_complete_field <- paste0(selected_instrument_name,'_complete')
+    if(is.null(abstraction_complete_val() ) ) {
+      tibble(!!instrument_complete_field := 0)
+    } else {
+      tibble(!!instrument_complete_field := abstraction_complete_val() )
+    }
+  })
+  observeEvent(rc_upload_btn_press(), {
+    browser()
+  })
   
   rc_uploadData <- reactive({
     req(rc_instrument(), instrumentData(), rc_id() )
@@ -403,7 +416,7 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
       distinct(col_names,.keep_all = T) %>% 
       remove_missing(na.rm = TRUE) %>% 
       pivot_wider(names_from = col_names, values_from = values) %>% 
-      bind_cols(rc_id() ) %>% 
+      bind_cols(rc_id(), rc_complete() ) %>% 
       select(!!rc_recordID_field, everything() ) %>% ## RedCAP API likes the record identifier in the first column
       flatten_dfr()
   })
