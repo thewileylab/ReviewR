@@ -350,7 +350,7 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
     )) # Send to the Upload module
 }
 
-upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_instrument, instrumentData, previousData, currentSubject, rc_upload_btn_press, abstraction_complete_val, all_instruments, instrument_selection) {
+upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_instrument, instrumentData, previousData, currentSubject, rc_upload_btn_press, abstraction_complete, abstraction_complete_val, all_instruments, instrument_selection) {
   ns <- session$ns
   
   ## Process Shiny RedCAP inputs to match expected RedCAP API input
@@ -371,7 +371,7 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
       filter(instrument_label == instrument_selection() ) %>% 
       extract2(1,1)
     instrument_complete_field <- paste0(selected_instrument_name,'_complete')
-    if(is.null(abstraction_complete_val() ) ) {
+    if(is.null(abstraction_complete_val() ) | abstraction_complete() == F) {
       tibble(!!instrument_complete_field := 0)
     } else {
       tibble(!!instrument_complete_field := abstraction_complete_val() )
