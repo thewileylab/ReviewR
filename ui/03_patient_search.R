@@ -32,7 +32,7 @@ output$patient_search_tab <- renderUI({
         #Box Setup
         title = h2('Select a patient to view'),
         width = '100%', 
-        status = 'success', 
+        status = 'primary', 
         solidHeader = F,
         #Box Contents
         div('To select a patient, please click the desired Subject ID in the table below:'),

@@ -15,7 +15,7 @@ callModule(mimic_chart_review_logic, 'chart_review', table_map$table_map, db_con
 # Call Chart Abstraction Modules ----
 instrumentData <- callModule(redcap_instrumment_logic, 'chart_review_abstraction', abstraction_vars$rc_con, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection, rc_project_vars$rc_instrument, rc_config_vars$rc_identifier , rc_config_vars$rc_reviewer, subject_info$selected_patient, upload$abstraction_save_btn_press, abstraction_vars$rc_press)
 upload <- callModule(instrument_complete_logic, 'chart_review_upload', rc_project_vars$rc_instrument, instrumentData$instrument_data)
-callModule(upload_redcap_logic, 'chart_review_abstraction', abstraction_vars$rc_con, rc_project_vars$rc_record_id, rc_project_vars$rc_instrument, instrumentData$instrument_data, instrumentData$previous_data, instrumentData$current_subject, upload$abstraction_save_btn_press)
+callModule(upload_redcap_logic, 'chart_review_abstraction', abstraction_vars$rc_con, rc_project_vars$rc_record_id, rc_project_vars$rc_instrument, instrumentData$instrument_data, instrumentData$previous_data, instrumentData$current_subject, upload$abstraction_save_btn_press, upload$abstraction_complete_val, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection)
 
 # # RC Test observer
 # observeEvent(upload$abstraction_save_btn_press(), {
@@ -88,7 +88,7 @@ tagList(
           title = 'Subject Information',
           width = '100%',
           #height = '130px',
-          status = 'success', 
+          status = 'primary', 
           solidHeader = F,
           #Box Contents
           subject_info('chart_review')
@@ -101,7 +101,7 @@ tagList(
           #Box Setup
           width = '100%',
           #height = '130px',
-          status = 'success', 
+          status = 'primary', 
           solidHeader = F,
           #Box Contents
           patient_nav_ui('chart_review')
