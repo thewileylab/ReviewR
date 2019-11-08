@@ -61,7 +61,7 @@ output$chart_review <- renderUI({
             uiOutput('abstraction'),
             ## CSS to scroll the abstraction instrument, if necessary
             tags$head(
-              tags$style("#abstraction{color:black; font-size:12px; font-style:italic; overflow-y:scroll; max-height: 675px; background: ghostwhite;}")
+              tags$style("#abstraction{color:black; font-size:12px; font-style:italic; overflow-y:scroll; max-height: 630px; background: ghostwhite;}")
               )
             ),
           box(
