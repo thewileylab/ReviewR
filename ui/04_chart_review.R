@@ -5,6 +5,7 @@
 # Source Chart Review Tab Modules ----
 source('modules/patient_nav_module.R')
 source('modules/patient_chart_module.R', keep.source = F)
+source('modules/save_abstraction_module.R')
 # Load Chart Review Modules ----
 subject_selection_vars <- callModule(patient_nav_logic, 'chart_review', subject_info$patient_table, subject_info$selected_patient, parent = session)
 callModule(subject_info_logic, 'chart_review', subject_info$selected_patient)
@@ -12,21 +13,17 @@ callModule(omop_chart_review_logic, 'chart_review', table_map$table_map, db_conn
 callModule(mimic_chart_review_logic, 'chart_review', table_map$table_map, db_connection_vars$db_connection, subject_info$selected_patient)
 
 # Call Chart Abstraction Modules ----
-instrumentData <- callModule(redcap_instrumment_logic, 'chart_review_abstraction', abstraction_vars$rc_con, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection, rc_project_vars$rc_instrument, rc_config_vars$rc_identifier , rc_config_vars$rc_reviewer, subject_info$selected_patient, upload$rc_upload_btn_press, abstraction_vars$rc_press)
-upload <- callModule(upload_redcap_logic, 'chart_review_abstraction', abstraction_vars$rc_con, rc_project_vars$rc_record_id, rc_project_vars$rc_instrument, instrumentData$instrument_data, instrumentData$previous_data, instrumentData$current_subject)
+instrumentData <- callModule(redcap_instrumment_logic, 'chart_review_abstraction', abstraction_vars$rc_con, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection, rc_project_vars$rc_instrument, rc_config_vars$rc_identifier , rc_config_vars$rc_reviewer, subject_info$selected_patient, upload$abstraction_save_btn_press, abstraction_vars$rc_press)
+upload <- callModule(instrument_complete_logic, 'chart_review_upload', rc_project_vars$rc_instrument, instrumentData$instrument_data)
+callModule(upload_redcap_logic, 'chart_review_abstraction', abstraction_vars$rc_con, rc_project_vars$rc_record_id, rc_project_vars$rc_instrument, instrumentData$instrument_data, instrumentData$previous_data, instrumentData$current_subject, upload$abstraction_save_btn_press)
 
-# RC Test observer
-# observeEvent(upload$rc_upload_btn_press(), {
+# # RC Test observer
+# observeEvent(upload$abstraction_save_btn_press(), {
 #   browser()
 #   })
 
 ## Outputs ----
 output$abstraction <- renderUI({ redcap_instrument_ui('chart_review_abstraction') })
-# output$test <- renderDataTable({
-#   req(rc_project_vars$rc_instrument() )
-#   formData$instrument_data() %>% reviewr_datatable()
-#   })
-
 
 ## Change layout based on presence or absence of abstraction connection info
 output$chart_review <- renderUI({ 
@@ -58,7 +55,7 @@ output$chart_review <- renderUI({
         column(
           width = 3,
           box(
-            title = 'Chart Abstraction',
+            title = instrument_selection$rc_instrument_selection(),
             width = '100%',
             status = 'danger',
             uiOutput('abstraction'),
@@ -71,7 +68,7 @@ output$chart_review <- renderUI({
             title = 'Save Abstraction',
             width = '100&',
             status = 'danger',
-            upload_redcap_ui('chart_review_abstraction')
+            instrument_complete_ui('chart_review_upload')
           )
           )
         )

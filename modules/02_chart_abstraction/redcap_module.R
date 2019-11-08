@@ -350,21 +350,8 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
     )) # Send to the Upload module
 }
 
-## REDCap Data Upload ----
-upload_redcap_ui <- function(id) {
-  ns <- NS(id)
-  tagList(
-    uiOutput(ns('rc_upload'))
-  )
-}
-
-upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_instrument, instrumentData, previousData, currentSubject) {
+upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_instrument, instrumentData, previousData, currentSubject, rc_upload_btn_press) {
   ns <- session$ns
-  
-  rc_upload_btn <- reactive({ actionButton(inputId = ns('upload_rc'),label = "Store Abstraction") })
-  rc_upload_btn_press <- reactive({ input$upload_rc })
-  
-  output$rc_upload <- renderUI({rc_upload_btn() })
   
   ## Process Shiny RedCAP inputs to match expected RedCAP API input
   rc_id <- reactive({
@@ -582,11 +569,4 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
     removeModal()
   })
   
-  return(list(
-    'rc_upload_btn_press' = rc_upload_btn_press,
-    'rc_uploadData' = rc_uploadData
-  ))
-  
 }
-
-
