@@ -47,7 +47,6 @@ instrument_complete_logic <- function(input, output, session, rc_instrument, ins
   # Create a reactive storing any previously stored value
   instrument_complete_val <-reactive({
     req(previousData(), instrument_complete_field() )
-    message('instrument_complete_val triggered')
     previousData() %>%
       select(instrument_complete_field() ) %>%
       extract2(1) %>%
