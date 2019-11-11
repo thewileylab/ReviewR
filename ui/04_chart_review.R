@@ -8,7 +8,7 @@ source('modules/patient_chart_module.R', keep.source = F)
 source('modules/save_abstraction_module.R')
 # Load Chart Review Modules ----
 subject_selection_vars <- callModule(patient_nav_logic, 'chart_review', subject_info$patient_table, subject_info$selected_patient, parent = session)
-callModule(subject_info_logic, 'chart_review', instrumentData$previous_data, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection, subject_info$selected_patient)
+callModule(subject_info_logic, 'chart_review', instrumentData$previous_data, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection, subject_info$selected_patient, subject_info$selected_patient_info)
 callModule(omop_chart_review_logic, 'chart_review', table_map$table_map, db_connection_vars$db_connection, subject_info$selected_patient)
 callModule(mimic_chart_review_logic, 'chart_review', table_map$table_map, db_connection_vars$db_connection, subject_info$selected_patient)
 
@@ -87,7 +87,7 @@ tagList(
           #Box Setup
           # title = 'Subject Information',
           width = '100%',
-          #height = '130px',
+          height = '130px',
           status = 'primary', 
           solidHeader = F,
           #Box Contents
@@ -100,7 +100,7 @@ tagList(
         box(
           #Box Setup
           width = '100%',
-          #height = '130px',
+          height = '130px',
           status = 'primary', 
           solidHeader = F,
           #Box Contents

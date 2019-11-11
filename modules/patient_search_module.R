@@ -91,10 +91,17 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
       pull(ID)
     })
   
+  selected_patient_info <- reactive({ 
+    req(patient_search_tbl(), input$patient_search_dt_rows_selected )
+    patient_search_tbl() %>% 
+      slice(input$patient_search_dt_rows_selected)
+    })
+  
   return(list(
     'patient_table' = patient_search_tbl,
     'dt_selection_info' = select_patient_click,
-    'selected_patient' = selected_patient
+    'selected_patient' = selected_patient,
+    'selected_patient_info' = selected_patient_info
   ))
 }
 

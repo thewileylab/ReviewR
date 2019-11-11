@@ -50,11 +50,11 @@ patient_nav_logic <- function(input, output, session, patient_table, selected_pa
 subject_info <- function(id) {
   ns <- NS(id)
   tagList(
-    uiOutput(ns('subject_info_ui')) %>% withSpinner(type = 7, proxy.height = 10, size = .25)
+    uiOutput(ns('subject_header_ui')) %>% withSpinner(type = 7, proxy.height = 100, size = .5)
   )
 }
 
-subject_info_logic <- function(input, output, session, previousData, all_instruments, instrument_selection, subject) {
+subject_info_logic <- function(input, output, session, previousData, all_instruments, instrument_selection, subject, subjectInfo) {
   ns <- session$ns
   
   # observeEvent(subject(), {
@@ -96,14 +96,16 @@ subject_info_logic <- function(input, output, session, previousData, all_instrum
       } else { 'status_complete.png' }
     })
   
-  output$subject_info_ui <- renderUI({ 
+  output$subject_header_ui <- renderUI({ 
     tagList(
       tags$head(tags$style("
                            #subject_header * {  
                            display: inline;
                            vertical-align: middle;
                            }")),
-      div(id="subject_header",subject_info_text(), img(id = 'subject_status', src = subject_status(), style='width: 20px' ))
+      div(id="subject_header",subject_info_text(), img(id = 'subject_status', src = subject_status(), style='width: 20px' )),
+      renderTable(subjectInfo() %>% mutate_all(as.character) %>% select(-ID), width = '100%', align = 'l', digits = 0)
       )
     }) 
+  
 }
