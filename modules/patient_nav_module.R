@@ -51,10 +51,57 @@ subject_info <- function(id) {
   )
 }
 
-subject_info_logic <- function(input, output, session, subject) {
+subject_info_logic <- function(input, output, session, previousData, all_instruments, instrument_selection, subject) {
+  ns <- session$ns
+  
+  # observeEvent(subject(), {
+  #   browser()
+  # })
+  
+  # Determine the variable name of the currently selected instrument
+  selected_instrument_name <- reactive({
+    req(all_instruments(), instrument_selection() )
+    all_instruments() %>%
+      filter(instrument_label == instrument_selection() ) %>%
+      extract2(1,1)
+  })
+  
+  # Create a variable containing the instrument complete field name, following the REDCap convention of instrument_name_complete
+  instrument_complete_field <- reactive({
+    req(selected_instrument_name() )
+    paste0(selected_instrument_name(),'_complete')
+  })
+  
+  # Create a reactive to hold the previous Instrument Complete value.
+  instrument_complete_val <-reactive({
+    req(previousData(), instrument_complete_field() )
+    previousData() %>%
+      select(instrument_complete_field() ) %>%
+      extract2(1) %>%
+      as.numeric()
+  })
+  tagList(
+  
+  )
+  # Create text, with information about the subject
   subject_info_text <- reactive({ 
     req(subject() )
-    paste('Subject ID: ', subject() )
+    tags$h2(paste('Subject ID: ', subject()))
     })
-  output$subject_info_ui <- renderText({ subject_info_text() })
+  # Determine which icon is needed to depict the review status for the current subject
+  subject_status <- reactive({
+    if(instrument_complete_val() == 0 ) { 'status_incomplete.png'
+    } else if (instrument_complete_val() == 1) { 'status_unverified.png'
+      } else { 'status_complete.png' }
+    })
+  
+  output$subject_info_ui <- renderUI({ 
+    tagList(
+      tags$head(tags$style("
+      #subject_header * {  
+      display: inline;
+                           }")),
+      div(id="subject_header",subject_info_text(), img(id = 'subject_status', src = subject_status() ))
+      )
+    }) 
 }
