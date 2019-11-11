@@ -377,10 +377,10 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
       tibble(!!instrument_complete_field := abstraction_complete_val() )
     }
   })
-  observeEvent(rc_upload_btn_press(), {
-    browser()
-  })
-  
+  # observeEvent(rc_upload_btn_press(), {
+  #   browser()
+  # })
+  # 
   rc_uploadData <- reactive({
     req(rc_instrument(), instrumentData(), rc_id() )
     rc_recordID_field <- rc_recordID() %>% extract2(1)
@@ -434,8 +434,8 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
   exploded_instrument  <- reactive({
     rc_instrument() %>%
     select(shiny_inputID, field_type, select_choices_or_calculations) %>% 
-    mutate(select_choices_or_calculations = case_when(field_type == 'yesno' ~ '1, yes | 0, no',
-                                                      field_type == 'truefalse' ~ '1, true | 0, false',
+    mutate(select_choices_or_calculations = case_when(field_type == 'yesno' ~ '1, Yes | 0, No',
+                                                      field_type == 'truefalse' ~ '1, True | 0, False',
                                                       TRUE ~ select_choices_or_calculations
                                                       )
            ) %>% 

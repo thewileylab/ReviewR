@@ -44,7 +44,7 @@ instrument_complete_logic <- function(input, output, session, rc_instrument, ins
     paste0(selected_instrument_name(),'_complete')
   })
   
-  # Create a reactive storing any previously stored value
+  # Create a reactive to hold the previous Instrument Complete value.
   instrument_complete_val <-reactive({
     req(previousData(), instrument_complete_field() )
     previousData() %>%
@@ -61,7 +61,7 @@ instrument_complete_logic <- function(input, output, session, rc_instrument, ins
   output$abstraction_complete_ui <- renderUI({
     shinyjs::hidden(
       div(id = ns('abstraction_complete_div'),
-          selectInput(inputId = ns('abstraction_complete'), label = 'Complete?', choices = dropdown_choices, selected = instrument_complete_val() )
+          selectInput(inputId = ns('abstraction_complete'), label = 'Form Status:', choices = dropdown_choices, selected = instrument_complete_val() )
           )
       )
     })
