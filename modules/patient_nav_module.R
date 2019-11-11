@@ -27,8 +27,11 @@ patient_nav_logic <- function(input, output, session, patient_table, selected_pa
                      choices = NULL,
                      selected = NULL
                      ),
-      actionButton(inputId = ns('previous_sub'), label = '<--Previous', width = '150px'),
-      actionButton(inputId = ns('next_sub'), label = 'Next-->', width = '150px')
+      tags$head(tags$style("
+                           #pt_nav_btns * {
+                           display: inline;
+                           }")),
+      div(id="pt_nav_btns", actionButton(inputId = ns('previous_sub'), label = '<--Previous', width = '125px'), actionButton(inputId = ns('next_sub'), label = 'Next-->', width = '125px'))
   )
   })
   outputOptions(output, 'patient_nav_ui', suspendWhenHidden = F) #This output needs to run all the time, so that it can receive data from the Patient Search tab
@@ -80,17 +83,15 @@ subject_info_logic <- function(input, output, session, previousData, all_instrum
       extract2(1) %>%
       as.numeric()
   })
-  tagList(
-  
-  )
+
   # Create text, with information about the subject
   subject_info_text <- reactive({ 
     req(subject() )
-    tags$h2(paste('Subject ID: ', subject()))
+    tags$h3(paste('Subject ID: ', subject()), style="padding:0px;")
     })
   # Determine which icon is needed to depict the review status for the current subject
   subject_status <- reactive({
-    if(instrument_complete_val() == 0 ) { 'status_incomplete.png'
+    if(instrument_complete_val() == 0 || identical(instrument_complete_val(), numeric(0) )  == TRUE ) { 'status_incomplete.png'
     } else if (instrument_complete_val() == 1) { 'status_unverified.png'
       } else { 'status_complete.png' }
     })
@@ -98,10 +99,11 @@ subject_info_logic <- function(input, output, session, previousData, all_instrum
   output$subject_info_ui <- renderUI({ 
     tagList(
       tags$head(tags$style("
-      #subject_header * {  
-      display: inline;
+                           #subject_header * {  
+                           display: inline;
+                           vertical-align: middle;
                            }")),
-      div(id="subject_header",subject_info_text(), img(id = 'subject_status', src = subject_status() ))
+      div(id="subject_header",subject_info_text(), img(id = 'subject_status', src = subject_status(), style='width: 20px' ))
       )
     }) 
 }
