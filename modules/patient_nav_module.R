@@ -57,9 +57,9 @@ subject_info <- function(id) {
 subject_info_logic <- function(input, output, session, previousData, all_instruments, instrument_selection, subject, subjectInfo) {
   ns <- session$ns
   
-  observeEvent(subject(), {
-    browser()
-  })
+  # observeEvent(subject(), {
+  #   browser()
+  # })
   
   # Determine the variable name of the currently selected instrument
   selected_instrument_name <- reactive({
