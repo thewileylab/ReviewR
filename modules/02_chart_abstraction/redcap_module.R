@@ -74,7 +74,7 @@ redcap_connected_logic <- function(input, output, session, connect, rc_project_i
   rc_connected_message <- eventReactive(connect(), {
     if (nrow(rc_project_info() ) > 0) {
       HTML(paste('<H3>Success!!</H3>', 
-                 'You have connected to the', rc_project_info()$project_title, 'Project.',
+                 'You have connected to the', rc_project_info()$project_title, 'Project in REDCap.',
                  '<br>',
                  '<br>',
                  '<H4>Project Information:</H4>',
@@ -100,6 +100,11 @@ redcap_connected_logic <- function(input, output, session, connect, rc_project_i
     )
   })
   
+  rc_disconnect <- reactive({ input$rc_disconnect })
+  
+  return(list(
+    'rc_disconnect' = rc_disconnect
+  ))
 }
 
 ## REDCap Configuration ----
@@ -108,7 +113,9 @@ redcap_instrument_config_ui <- function(id) {
   tagList(
     uiOutput(ns('rc_select')),
     uiOutput(ns('rc_configure')),
-    uiOutput(ns('rc_reviewer'))
+    uiOutput(ns('rc_reviewer')),
+    uiOutput(ns('current_reviewer')),
+    uiOutput(ns('rc_configure_btn'))
   )
 }
 
@@ -220,7 +227,7 @@ redcap_instrument_config_logic <- function(input, output, session, rc_connection
 
 }
 
-redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_instrument, rc_identifier) {
+redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_instrument, rc_identifier, rc_connection) {
   ns <- session$ns
   
   ## Create a select input for potential reviewer identifier coluimns. Remove patient identifier column and append 'Not applicable'
@@ -239,6 +246,39 @@ redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_i
   rc_reviewer <- reactive({ input$rc_reviewer_field })
   
   output$rc_reviewer <- renderUI({rc_reviewer_id() })
+  
+  rc_previous_reviewers <- reactive({
+    req(rc_reviewer(), rc_connection() )
+    if(rc_reviewer() =='(Not Applicable)') {
+      return(NULL) 
+      } else {
+        reviewer_field <- rc_instrument() %>% 
+          filter(field_label == rc_reviewer()) %>% 
+          pull(field_name) 
+        redcapAPI::exportRecords(rc_connection() ) %>% 
+          select(reviewer_field) %>% 
+          distinct() %>% 
+          remove_missing(na.rm = T)
+        }
+  })
+  
+  rc_current_reviewer_question <- reactive({
+    if(is.null(rc_previous_reviewers()) == T ) {
+      return(NULL)
+    } else {
+      selectizeInput(inputId = ns('rc_current_reviewer'),
+                     label = 'Select your name from the list, or enter a new one:',
+                     choices = rc_previous_reviewers(), 
+                     options = list(create = TRUE))
+    }
+  })
+  
+  output$current_reviewer <- renderUI( rc_current_reviewer_question() )
+  
+  output$rc_configure_btn <- renderUI({ actionButton(inputId = ns('rc_configure'), label = 'Configure REDCap Instrument') })
+  observeEvent(input$rc_configure, {
+    browser()
+  })
   
   return(list(
     'rc_identifier' = rc_identifier,
