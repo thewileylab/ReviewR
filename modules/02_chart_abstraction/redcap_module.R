@@ -258,40 +258,35 @@ redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_i
       remove_missing(na.rm = T)
   })
   
-  observeEvent(rc_reviewer(), {
-    # browser()
-    if(rc_reviewer() == "(Not Applicable)") {
-      message('hide')
-      shinyjs::hide(id = 'rc_current_reviewer_question_div')
+  rc_current_reviewer_question <- reactive({
+    req(rc_reviewer())
+    if(rc_reviewer() == '(Not Applicable)' ) {
+      return(NULL)
     } else {
-      message('show')
-      shinyjs::show(id = 'rc_current_reviewer_question_div')
-      updateSelectizeInput(session = session,
-                           inputId = 'rc_current_reviewer',
-                           choices = append('',
-                                            rc_previous_reviewers()),
-                           server = TRUE)
+      selectizeInput(inputId = ns('rc_current_reviewer'),
+                     label = 'Select your name from the list, or enter a new one:',
+                     choices = append('',
+                                      rc_previous_reviewers()
+                                      ), 
+                     options = list(create = TRUE,
+                                    placeholder = 'New Reviewer'))
     }
   })
   
-  output$current_reviewer <- renderUI({
-    shinyjs::hidden(
-      div(id = ns('rc_current_reviewer_question_div'),
-          selectizeInput(inputId = ns('rc_current_reviewer'),
-                         label = 'Select your name from the list, or enter a new one:',
-                         choices = NULL,
-                         options = list(create = TRUE) 
-                         )
-          )
-      )
-    })
+  output$current_reviewer <- renderUI( rc_current_reviewer_question() )
       
   
   # output$current_reviewer <- renderUI( rc_current_reviewer_question() )
   
   output$rc_configure_btn <- renderUI({ actionButton(inputId = ns('rc_configure'), label = 'Configure REDCap Instrument') })
   
-  rc_selected_reviewer <- reactive({ input$rc_current_reviewer })
+  rc_selected_reviewer <- reactive({ 
+    if(rc_reviewer() == '(Not Applicable)' ) {
+      ''
+    } else{
+    input$rc_current_reviewer 
+      }
+    })
   rc_configure_btn_press <- reactive({ input$rc_configure})
   
   return(list(
