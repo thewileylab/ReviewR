@@ -57,31 +57,40 @@ subject_info <- function(id) {
 subject_info_logic <- function(input, output, session, previousData, all_instruments, instrument_selection, subject, subjectInfo) {
   ns <- session$ns
   
-  # observeEvent(subject(), {
-  #   browser()
-  # })
+  observeEvent(subject(), {
+    browser()
+  })
   
   # Determine the variable name of the currently selected instrument
   selected_instrument_name <- reactive({
-    req(all_instruments(), instrument_selection() )
+    if(is.null(instrument_selection() ) == T ) {
+      return(NULL) 
+    } else {
     all_instruments() %>%
       filter(instrument_label == instrument_selection() ) %>%
       extract2(1,1)
+    }
   })
   
   # Create a variable containing the instrument complete field name, following the REDCap convention of instrument_name_complete
   instrument_complete_field <- reactive({
-    req(selected_instrument_name() )
+    if(is.null(selected_instrument_name()) == T) {
+      return(NULL)
+    } else {
     paste0(selected_instrument_name(),'_complete')
+    }
   })
   
   # Create a reactive to hold the previous Instrument Complete value.
   instrument_complete_val <-reactive({
-    req(previousData(), instrument_complete_field() )
+    if(is.null(instrument_complete_field()) == T){
+      return(NULL)
+    } else {
     previousData() %>%
       select(instrument_complete_field() ) %>%
       extract2(1) %>%
       as.numeric()
+    }
   })
 
   # Create text, with information about the subject
@@ -91,21 +100,37 @@ subject_info_logic <- function(input, output, session, previousData, all_instrum
     })
   # Determine which icon is needed to depict the review status for the current subject
   subject_status <- reactive({
-    if(instrument_complete_val() == 0 || identical(instrument_complete_val(), numeric(0) )  == TRUE ) { 'status_incomplete.png'
+    if(is.null(instrument_complete_val()) == T) {
+      return(NULL)
+    } else if(instrument_complete_val() == 0 || identical(instrument_complete_val(), numeric(0) )  == TRUE ) { 'status_incomplete.png'
     } else if (instrument_complete_val() == 1) { 'status_unverified.png'
-      } else { 'status_complete.png' }
+    } else { 'status_complete.png' }
     })
   
+  status_indicator <- reactive({
+    if(is.null(subject_status()) == T) {
+      return(NULL)
+    } else {
+    img(id = 'subject_status', src = subject_status(), style='width: 20px' )
+    }
+  })
+  
   output$subject_header_ui <- renderUI({ 
+    if(is.null(status_indicator()) ) {
+      tagList(subject_info_text(),
+              renderTable(subjectInfo() %>% mutate_all(as.character) %>% select(-ID), width = '100%', align = 'l', digits = 0)
+              )
+    } else {
     tagList(
       tags$head(tags$style("
                            #subject_header * {  
                            display: inline;
                            vertical-align: middle;
                            }")),
-      div(id="subject_header",subject_info_text(), img(id = 'subject_status', src = subject_status(), style='width: 20px' )),
+      div(id="subject_header",subject_info_text(), status_indicator() ),
       renderTable(subjectInfo() %>% mutate_all(as.character) %>% select(-ID), width = '100%', align = 'l', digits = 0)
       )
+    }
     }) 
   
 }
