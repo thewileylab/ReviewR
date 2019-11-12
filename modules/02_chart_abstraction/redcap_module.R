@@ -84,7 +84,7 @@ redcap_connected_logic <- function(input, output, session, connect, rc_project_i
                  '<br>',
                  '<b>Production Status:</b>', rc_project_info()$in_production,
                  '<br><br>',
-                 '<b>Please Configure the REDCap Instrument in the Box below before continuing.</b>',
+                 '<b>Please configure a REDCap Instrument in the box below before continuing.</b>',
                  '<br><br>'))
     } else {HTML(paste('No REDCap Projects were found. Please connect to a different REDCap Project.',
                        '<br><br>'))
