@@ -58,6 +58,50 @@ redcap_initialize_logic <- function(input, output, session, rc_url, rc_token) {
   
 }
 
+redcap_connected_ui <- function(id) {
+  ns <- NS(id)
+  tagList(
+    uiOutput(ns('rc_connected_ui'))
+  )
+}
+
+redcap_connected_logic <- function(input, output, session, connect, rc_project_info) {
+  ns <- session$ns
+  # observeEvent(connect(), {
+  #   browser()
+  # })
+  
+  rc_connected_message <- eventReactive(connect(), {
+    if (nrow(rc_project_info() ) > 0) {
+      HTML(paste('<H3>Success!!</H3>', 
+                 'You have connected to the', rc_project_info()$project_title, 'Project.',
+                 '<br>',
+                 '<br>',
+                 '<H4>Project Information:</H4>',
+                 '<b>Project ID:</b>', rc_project_info()$project_id,
+                 '<br>',
+                 '<b>Created:</b>', rc_project_info()$creation_time,
+                 '<br>',
+                 '<b>Production Status:</b>', rc_project_info()$in_production,
+                 '<br><br>',
+                 '<b>Please Configure the REDCap Instrument in the Box below before continuing.</b>',
+                 '<br><br>'))
+    } else {HTML(paste('No REDCap Projects were found. Please connect to a different REDCap Project.',
+                       '<br><br>'))
+    }
+    
+  })
+  
+  output$rc_connected_ui <- renderUI({
+    req(rc_connected_message() )
+    tagList(
+      rc_connected_message(),
+      actionButton(inputId = ns('rc_disconnect'),label = 'Disconnect')
+    )
+  })
+  
+}
+
 ## REDCap Configuration ----
 redcap_instrument_config_ui <- function(id) {
   ns <- NS(id)

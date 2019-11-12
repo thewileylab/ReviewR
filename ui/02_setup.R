@@ -21,6 +21,7 @@ abstraction_vars <- callModule(chart_abstraction_setup_logic, 'abstraction_ns', 
 ## REDCap Configuration
 instrument_selection <- callModule(redcap_instrument_select_logic, 'abstraction_ns', abstraction_vars$rc_press, abstraction_vars$rc_con)
 rc_project_vars <- callModule(redcap_instrument_config_logic, 'abstraction_ns', abstraction_vars$rc_con, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection, init_data$redcap_widget_map)
+rc_connected_vars <- callModule(redcap_connected_logic, 'abstraction_ns', abstraction_vars$rc_press, rc_project_vars$rc_project_info)
 rc_config_vars <- callModule(redcap_instrument_config_reviewer_logic, 'abstraction_ns', rc_project_vars$rc_instrument, rc_project_vars$rc_identifier)
 
 ## BigQuery Redirect Observer. When leaving the application after authenticating with BigQuery, take the user back to the Setup Tab to complete setup. ----
@@ -43,7 +44,7 @@ observeEvent(table_map$db_disconnect(), {
   shinyjs::hide('data_model_div',anim = TRUE,animType = 'fade')
 })
 
-## Outputs ----
+## db_setup Outputs ----
 output$db_setup <- renderUI({ 
   div(id = 'db_setup_div',
     db_setup_ui('db_setup_ns') 
@@ -52,6 +53,44 @@ output$db_setup <- renderUI({
 output$model <- renderUI({ 
   div(id = 'data_model_div',
     data_model_detection_ui('model_ns')
+    )
+  })
+
+## ## Hide/show the REDCap Setup ui ----
+observeEvent(abstraction_vars$rc_press(), ignoreInit = TRUE, {
+  if(nrow(rc_project_vars$rc_project_info()) > 0 ) {
+    shinyjs::hide('chart_abstraction_setup_div',anim = TRUE,animType = 'fade')
+    shinyjs::show('redcap_instrument_config_div',anim = TRUE,animType = 'slide')
+    shinyjs::show('rc_connected_div')
+  }
+})
+
+## redcap_setup Outputs
+output$rc_setup <- renderUI({
+  div(id = 'chart_abstraction_setup_div',
+      chart_abstraction_setup_ui('abstraction_ns')
+      )
+  })
+output$rc_connected <- renderUI({
+  shinyjs::hidden(
+    div(id = 'rc_connected_div',
+        redcap_connected_ui('abstraction_ns')
+        )
+    )
+  })
+output$rc_config_ui<- renderUI({
+  shinyjs::hidden(
+    div(id = 'redcap_instrument_config_div',
+        box(
+          #Box Setup
+          title = 'Configure REDCap Instrument',
+          width = '100%',
+          status = 'danger',
+          solidHeader = F,
+          #Box Contents
+          redcap_instrument_config_ui('abstraction_ns'),
+          )
+        )
     )
   })
 
@@ -90,17 +129,10 @@ fluidRow(
       status = 'danger',
       solidHeader = F,
       #Box Contents
-        chart_abstraction_setup_ui('abstraction_ns')
+        uiOutput('rc_setup'),
+        uiOutput('rc_connected')
       ),
-    box(
-      #Box Setup
-      title = 'Configure REDCap Instrument',
-      width = '100%',
-      status = 'danger',
-      solidHeader = F,
-      redcap_instrument_config_ui('abstraction_ns')
-      #Box Contents
-      )
+    uiOutput('rc_config_ui')
     )
   )
 )
