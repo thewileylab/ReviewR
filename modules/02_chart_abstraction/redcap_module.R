@@ -268,7 +268,9 @@ redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_i
     } else {
       selectizeInput(inputId = ns('rc_current_reviewer'),
                      label = 'Select your name from the list, or enter a new one:',
-                     choices = rc_previous_reviewers(), 
+                     choices = append('(Not Applicable)',
+                                      rc_previous_reviewers()
+                                      ), 
                      options = list(create = TRUE))
     }
   })
@@ -336,7 +338,7 @@ redcap_instrument_ui <- function(id) {
   )
 }
 
-redcap_instrumment_logic <- function(input, output, session, rc_connection, instruments, instrument_selection, rc_instrument, rc_identifier, rc_reviewer, subject_id, reviewr_upload_btn, reviewr_connect_btn) {
+redcap_instrumment_logic <- function(input, output, session, rc_connection, instruments, instrument_selection, rc_instrument, rc_identifier, rc_reviewer, rc_selected_reviewer, subject_id, reviewr_upload_btn, reviewr_connect_btn) {
   ns <- session$ns
   
   ## On redcap connection or subsequent upload, determine if there is any default data that needs to be displayed
@@ -376,7 +378,7 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
         as_tibble() %>% 
         mutate_all(as.character) %>% 
         mutate_all(replace_na, replace = '') %>% # replace all NA values with blank character vectors, so that shiny radio buttons without a previous response will display empty
-        filter(!!as.name(rc_identifier_field() ) == subject_id() )
+        filter(!!as.name(rc_identifier_field() ) == subject_id() & !!as.name(rc_reviewer_field()) == rc_selected_reviewer() )
     }
   })
   current_subject <- reactive({
@@ -405,7 +407,7 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
         pivot_longer(cols = everything(), names_to = 'field_name', values_to = 'default_value', values_ptypes = list(default_value = list())) # Pivot longer, utilizing a list as the column type to avoid variable coercion
     } else {
       previous_data() %>% 
-        add_row(!!rc_identifier_field() := subject_id(), !!rc_reviewer_field() := rc_reviewer() ) %>% # Add default data, with reviewer info, if present
+        add_row(!!rc_identifier_field() := subject_id(), !!rc_reviewer_field() := rc_selected_reviewer() ) %>% # Add default data, with reviewer info, if present
         mutate_all(replace_na, replace = '') %>% # replace all NA values with blank character vectors, so that shiny radio buttons without a previous response will display empty
         pivot_longer(cols = contains('___'),names_to = 'checkbox_questions',values_to = 'value_present') %>% 
         separate(checkbox_questions, into = c('checkbox_questions','checkbox_value'), sep = '___') %>% # Separate value from column name
