@@ -161,7 +161,7 @@ redcap_instrument_config_logic <- function(input, output, session, rc_connection
   
   ## Store the REDCap Instrument as a reactive variable. Process a bit to assist in rendering the instrument later.
   instrument <- reactive({
-    req(instruments(), instrument_selection() )
+    req(instruments(), instrument_selection(), rc_connection() )
     ## Create an instrument filter, if multiple instruments are present
     instrument_filter <- instruments() %>% 
       filter(instrument_label == instrument_selection() ) %>% 
@@ -276,13 +276,55 @@ redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_i
   output$current_reviewer <- renderUI( rc_current_reviewer_question() )
   
   output$rc_configure_btn <- renderUI({ actionButton(inputId = ns('rc_configure'), label = 'Configure REDCap Instrument') })
-  observeEvent(input$rc_configure, {
-    browser()
-  })
+  
+  rc_selected_reviewer <- reactive({ input$rc_current_reviewer })
+  rc_configure_btn_press <- reactive({ input$rc_configure})
   
   return(list(
     'rc_identifier' = rc_identifier,
-    'rc_reviewer' = rc_reviewer
+    'rc_reviewer' = rc_reviewer, 
+    'rc_selected_reviewer' = rc_selected_reviewer,
+    'rc_configure_btn_press' = rc_configure_btn_press
+  ))
+}
+
+rc_instrument_configured_ui <- function(id) {
+  ns <- NS(id)
+  tagList(
+    uiOutput(ns('rc_configured_ui'))
+  )
+}
+
+rc_instrument_configured_logic <- function(input, output, session, rc_instrument_info, selected_instrument) {
+  ns <- session$ns
+  
+  rc_configured_message <- eventReactive(rc_instrument_info$rc_configure_btn_press(), {
+      HTML(paste('<H3>Success!!</H3>', 
+                 'You have configured the REDCap Instrument.',
+                 '<br>',
+                 '<br>',
+                 '<H4>Instrment Information:</H4>',
+                 '<b>Instrument Name:</b>', selected_instrument(),
+                 '<br>',
+                 '<b>Identifier Field:</b>', rc_instrument_info$rc_identifier(),
+                 '<br>',
+                 '<b>Reviewer Field:</b>', rc_instrument_info$rc_reviewer(),
+                 '<br>',
+                 '<b>Reviewer Name:</b>', rc_instrument_info$rc_selected_reviewer(),
+                 '<br><br>',
+                 '<b>You may now proceed to record review. Have fun and watch out for bugs!</b>',
+                 '<br><br>'))
+  })
+  output$rc_configured_ui <- renderUI({
+    req(rc_configured_message() )
+    tagList(
+      rc_configured_message(),
+      actionButton(inputId = ns('rc_reconfig'),label = 'Reconfigure Instrument')
+    )
+  })
+  rc_reconfig <- reactive({input$rc_reconfig})
+  return(list(
+    'rc_reconfig' = rc_reconfig
   ))
 }
 
