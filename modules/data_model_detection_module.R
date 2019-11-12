@@ -63,7 +63,7 @@ data_model_detection_logic <- function(input, output, session, db_connection, co
   })
   
   data_model_message <- eventReactive(connect(), {
-    req(db_connection(), table_map() )
+    req(db_connection() )
     if (table_map()$count_filtered !=0) {
         HTML(paste('<H3>Success!!</H3>', 
                    'You have connected to a', ifelse(db_type() == 'bigquery', 'Google BigQuery', 'Unknown'), 'database.',
@@ -84,7 +84,7 @@ data_model_detection_logic <- function(input, output, session, db_connection, co
   })
   
   data_model_text <- eventReactive(connect(), {
-    req(db_connection(), table_map() )
+    req(db_connection() )
     if (table_map()$count_filtered !=0) {
       HTML(paste('<b>Data Model:</b>', table_map()$data_model,
                  '<br>',
