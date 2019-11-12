@@ -73,6 +73,7 @@ fluidRow(
       #Box Setup
       title = 'Connect to Patient Database',
       width = '100%',
+      height = '475px',
       status = 'primary',
       solidHeader = F,
       #Box Contents
