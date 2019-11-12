@@ -16,7 +16,7 @@ data_model_detection_ui <- function(id) {
 #' @export
 #'
 #' @examples
-data_model_detection_logic <- function(input, output, session, db_connection, connect, supported_models) {
+data_model_detection_logic <- function(input, output, session, db_connection, connect, supported_models, db_type) {
   library(tidyverse)
   library(DBI)
   ns <- session$ns
@@ -54,11 +54,27 @@ data_model_detection_logic <- function(input, output, session, db_connection, co
       slice(1)
     return(table_map)
     })
-  
-  data_model_text <- reactive({
+  db_info <- reactive({
     req(db_connection() )
+    DBI::dbGetInfo(db_connection() ) %>% 
+      tibble::enframe(name = NULL) %>% 
+      separate(col = value, into = c('project', 'dataset'),sep = '\\.',fill = 'right') %>% 
+      remove_missing(na.rm = TRUE)
+  })
+  
+  data_model_message <- eventReactive(connect(), {
+    req(db_connection(), table_map() )
     if (table_map()$count_filtered !=0) {
-        HTML(paste('<b>Data Model:</b>',table_map()$data_model,
+        HTML(paste('<H3>Success!!</H3>', 
+                   'You have connected to a', ifelse(db_type() == 'bigquery', 'Google BigQuery', 'Unknown'), 'database.',
+                   '<br>',
+                   '<br>',
+                   '<H4>Connection Information:</H4>',
+                   '<b>Project:</b>', db_info()$project,
+                   '<br>',
+                   '<b>Dataset:</b>', db_info()$dataset,
+                   '<br>',
+                   '<b>Data Model:</b>', table_map()$data_model,
                    '<br>',
                    '<b>Version:</b>', table_map()$model_version,
                    '<br><br>'))
@@ -66,16 +82,23 @@ data_model_detection_logic <- function(input, output, session, db_connection, co
                        '<br><br>'))
       }
   })
-  observeEvent(db_connection(), {
-    shinyjs::show('db_disconnect')
-  })
-  observeEvent(input$db_disconnect, {
-    shinyjs::hide('db_disconnect')
+  
+  data_model_text <- eventReactive(connect(), {
+    req(db_connection(), table_map() )
+    if (table_map()$count_filtered !=0) {
+      HTML(paste('<b>Data Model:</b>', table_map()$data_model,
+                 '<br>',
+                 '<b>Version:</b>', table_map()$model_version,
+                 '<br><br>'))
+    } else {HTML(paste('The selected database does not appear to be in OMOP or MIMIC III format. Please disconnect and select another database.',
+                       '<br><br>'))
+    }
   })
   
   output$data_model_ui <- renderUI({
+    req(data_model_message() )
     tagList(
-      data_model_text(),
+      data_model_message(),
       actionButton(inputId = ns('db_disconnect'),label = 'Disconnect')
       )
   })
@@ -84,6 +107,7 @@ data_model_detection_logic <- function(input, output, session, db_connection, co
 
   return(list(
     'table_map' = table_map,
+    'data_model_message' = data_model_message,
     'data_model_text' = data_model_text, 
     'db_disconnect' = db_disconnect
   ))
