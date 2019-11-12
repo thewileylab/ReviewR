@@ -248,34 +248,46 @@ redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_i
   output$rc_reviewer <- renderUI({rc_reviewer_id() })
   
   rc_previous_reviewers <- reactive({
-    req(rc_reviewer(), rc_connection() )
-    if(rc_reviewer() =='(Not Applicable)') {
-      return(NULL) 
-      } else {
-        reviewer_field <- rc_instrument() %>% 
-          filter(field_label == rc_reviewer()) %>% 
-          pull(field_name) 
-        redcapAPI::exportRecords(rc_connection() ) %>% 
-          select(reviewer_field) %>% 
-          distinct() %>% 
-          remove_missing(na.rm = T)
-        }
+    req(rc_instrument(), rc_reviewer(), rc_connection() )
+    reviewer_field <- rc_instrument() %>% 
+      filter(field_label == rc_reviewer()) %>% 
+      pull(field_name) 
+    redcapAPI::exportRecords(rc_connection() ) %>% 
+      select(reviewer_field) %>% 
+      distinct() %>% 
+      remove_missing(na.rm = T)
   })
   
-  rc_current_reviewer_question <- reactive({
-    if(is.null(rc_previous_reviewers()) == T ) {
-      return(NULL)
+  observeEvent(rc_reviewer(), {
+    # browser()
+    if(rc_reviewer() == "(Not Applicable)") {
+      message('hide')
+      shinyjs::hide(id = 'rc_current_reviewer_question_div')
     } else {
-      selectizeInput(inputId = ns('rc_current_reviewer'),
-                     label = 'Select your name from the list, or enter a new one:',
-                     choices = append('(Not Applicable)',
-                                      rc_previous_reviewers()
-                                      ), 
-                     options = list(create = TRUE))
+      message('show')
+      shinyjs::show(id = 'rc_current_reviewer_question_div')
+      updateSelectizeInput(session = session,
+                           inputId = 'rc_current_reviewer',
+                           choices = append('',
+                                            rc_previous_reviewers()),
+                           server = TRUE)
     }
   })
   
-  output$current_reviewer <- renderUI( rc_current_reviewer_question() )
+  output$current_reviewer <- renderUI({
+    shinyjs::hidden(
+      div(id = ns('rc_current_reviewer_question_div'),
+          selectizeInput(inputId = ns('rc_current_reviewer'),
+                         label = 'Select your name from the list, or enter a new one:',
+                         choices = NULL,
+                         options = list(create = TRUE) 
+                         )
+          )
+      )
+    })
+      
+  
+  # output$current_reviewer <- renderUI( rc_current_reviewer_question() )
   
   output$rc_configure_btn <- renderUI({ actionButton(inputId = ns('rc_configure'), label = 'Configure REDCap Instrument') })
   
@@ -373,12 +385,18 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
         pivot_wider(names_from = export_field_name, values_from = choice_value) %>% 
         flatten_dfr() %>% 
         remove_missing(na.rm = TRUE)
-      } else { ## Export existing Records, filtering to the subject and reviewer in context
+      } else if (redcapAPI::exportNextRecordName(rc_connection()) != 1 & is_empty(rc_reviewer_field() ) == T ) { ## Export existing Records, filtering to the subject and reviewer in context
       redcapAPI::exportRecords(rcon = rc_connection(), factors = F, labels = F ) %>% 
         as_tibble() %>% 
         mutate_all(as.character) %>% 
         mutate_all(replace_na, replace = '') %>% # replace all NA values with blank character vectors, so that shiny radio buttons without a previous response will display empty
-        filter(!!as.name(rc_identifier_field() ) == subject_id() & !!as.name(rc_reviewer_field()) == rc_selected_reviewer() )
+        filter(!!as.name(rc_identifier_field() ) == subject_id() )
+      } else {
+        redcapAPI::exportRecords(rcon = rc_connection(), factors = F, labels = F ) %>% 
+          as_tibble() %>% 
+          mutate_all(as.character) %>% 
+          mutate_all(replace_na, replace = '') %>% # replace all NA values with blank character vectors, so that shiny radio buttons without a previous response will display empty
+          filter(!!as.name(rc_identifier_field() ) == subject_id() & !!as.name(rc_reviewer_field()) == rc_selected_reviewer() )
     }
   })
   current_subject <- reactive({
