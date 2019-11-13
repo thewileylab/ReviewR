@@ -312,7 +312,7 @@ rc_instrument_configured_logic <- function(input, output, session, rc_instrument
                  'You have configured the REDCap Instrument.',
                  '<br>',
                  '<br>',
-                 '<H4>Instrment Information:</H4>',
+                 '<H4>Instrument Information:</H4>',
                  '<b>Instrument Name:</b>', selected_instrument(),
                  '<br>',
                  '<b>Identifier Field:</b>', rc_instrument_info$rc_identifier(),
