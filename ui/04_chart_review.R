@@ -31,6 +31,7 @@ output$chart_review <- renderUI({
   ## Revisit -- conditions should be dependent on valid information being provided.
   if(abstraction_vars$rc_url() == '' | abstraction_vars$rc_token() == '' ) { ## No Abstraction ----
     box(width = '100%',
+        status = 'primary',
         ## Select patient chart ui based on data model
         if(table_map$table_map()$data_model == 'omop') {
           omop_chart_review_ui('chart_review')
