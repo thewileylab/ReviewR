@@ -47,6 +47,9 @@ initialize_reviewr <- function() {
   library(snakecase)
   library(redcapAPI)
   
+  # Source helper libraries
+  source('lib/img_uri.R')
+  
   message('Done.')
   # Load Supported data models
   ## This isn't a large dataset by any means, but it can be made available across all R sessions upon App initialization. 
