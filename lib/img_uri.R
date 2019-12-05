@@ -7,5 +7,5 @@
 #'
 #' @examples img_uri('www/status_unverified.png', 15)
 img_uri <- function(img_location, img_height) { 
-  sprintf(paste('<img src="%s" height="',y,'px"/>'), knitr::image_uri(x)) 
+  sprintf(paste('<img src="%s" height="',img_height,'px"/>'), knitr::image_uri(img_location)) 
   }
