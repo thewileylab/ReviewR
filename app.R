@@ -36,7 +36,7 @@ ui <- dashboardPage(title = 'ReviewR',
                         )
                         ),
                     dashboardBody(
-                        tags$script(stop_nav_jscode),
+                        tags$script(stop_nav_jscode), #Prevent navigation using browser buttons (back, reload, close tab)
                         useShinyjs(),
                         uiOutput('main_ui')
                         )
