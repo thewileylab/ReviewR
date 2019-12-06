@@ -17,7 +17,6 @@
 source('lib/initialize_reviewr.R')
 init_data <- initialize_reviewr()
 stop_nav_jscode <- 'window.onbeforeunload = function() { return true; };'
-#allow_nav_jscode <- '$("#db_setup_ns-bq_setup_ns-bq_connect").click(function() { window.onbeforeunload = null; });'
 
 # Define a reactive UI for ReviewR ----
 ui <- dashboardPage(title = 'ReviewR',
@@ -37,8 +36,7 @@ ui <- dashboardPage(title = 'ReviewR',
                         )
                         ),
                     dashboardBody(
-                        tags$head(tags$script(stop_nav_jscode)),
-                        #tags$head(tags$script(allow_nav_jscode)),
+                        tags$script(stop_nav_jscode),
                         useShinyjs(),
                         uiOutput('main_ui')
                         )

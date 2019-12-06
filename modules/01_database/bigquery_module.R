@@ -62,6 +62,7 @@ bq_project_auth_logic <- function(input, output, session) {
   library(httr)
   # Pull the namespace function from the session info to assist in updating selectInputs
   ns <- session$ns
+  allow_nav_jscode <- 'window.onbeforeunload = null;'
   
   params <- parseQueryString(isolate(session$clientData$url_search))
   
@@ -130,7 +131,7 @@ bq_project_auth_logic <- function(input, output, session) {
           inputId = 'login',
           label = 'Sign In with Google',
           icon = icon(name = 'google'),
-          onclick = HTML(redirect)
+          onclick = HTML(allow_nav_jscode, redirect)
         ) 
       )
     } else {
@@ -145,7 +146,7 @@ bq_project_auth_logic <- function(input, output, session) {
           inputId = 'logout',
           label = 'Sign Out of Google',
           icon = icon(name = 'sign-out-alt'),
-          onclick = HTML(redirect_home)
+          onclick = HTML(allow_nav_jscode, redirect_home)
         ),
         ## Otherwise, walk the user through selecting a project using reactive selectInput
         select_project_ui()
