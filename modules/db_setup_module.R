@@ -35,7 +35,8 @@ db_setup_ui <- function(id) {
 
 # Supported databases
   db_choices <- c('BigQuery' = 'bigquery',
-                  'PostgreSQL' = 'pg_sql')
+                  'PostgreSQL' = 'pg_sql',
+                  'Microsoft SQL Server' = 'mssql')
   db_ui <- 
     tagList(
       div("Please select a database type from the list of supported databases."),
@@ -64,21 +65,33 @@ db_connect_logic <- function(input, output, session, db_type, db_disconnect){
   bq_prj_connect_vars <- callModule(bq_project_auth_logic, id = 'bq_setup_ns')
   bq_ds_connect_vars <- callModule(bq_dataset_auth_logic, id = 'bq_setup_ns', bq_prj_connect_vars$bq_project)
   db_connection <- callModule(bq_initialize, id = 'bq_setup_ns', bq_prj_connect_vars$bq_project, bq_ds_connect_vars$bq_dataset, db_disconnect)
+
+# Load SQL Server Auth Module
+  source('modules/01_database/sqlserver_module.R')
+  mssql_server_vars = callModule(mssql_server_auth_logic, id = "mssql_setup_ns")
+  db_connection <- callModule(mssql_initialize, id = 'mssql_setup_ns', mssql_server_vars$mssql_server, mssql_server_vars$mssql_port, mssql_server_vars$mssql_database,
+                              mssql_server_vars$mssql_user, mssql_server_vars$mssql_password, db_disconnect)
   
   db_connection_ui <- reactive({
-  req(db_type() )
+    req(db_type() )
+    
     if(db_type() == 'bigquery') {
       tagList(
         bq_auth_ui(ns('bq_setup_ns'))
       )
-  } else if(db_type() == 'pg_sql') {
-    renderUI({
+      
+    } else if(db_type() == 'pg_sql') {
+      renderUI({
+        tagList(
+          div('Error!!!'),
+          br(),
+          div('PostgreSQL Module is imaginary at this time. Do something about that eventually.') 
+        )
+      })
+    } else if(db_type() == 'mssql') {
       tagList(
-        div('Error!!!'),
-        br(),
-        div('PostgreSQL Module is imaginary at this time. Do something about that eventually.') 
+        mssql_auth_ui(ns('mssql_setup_ns'))
       )
-    })
     } else { return(NULL)}
   })
   
