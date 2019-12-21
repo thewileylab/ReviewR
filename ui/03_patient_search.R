@@ -4,7 +4,7 @@
 
 # Source Patient Search Modules ----
 source('modules/patient_search_module.R', keep.source = F)
-subject_info <- callModule(patient_search_logic, 'patient_search_ns', table_map$table_map, db_connection_vars$db_connection, table_map$db_disconnect, subject_selection_vars$previous_sub, subject_selection_vars$next_sub, subject_selection_vars$subject_id, parent=session)
+subject_info <- callModule(patient_search_logic, 'patient_search_ns', table_map$table_map, db_connection_vars$db_connection, table_map$db_disconnect, subject_selection_vars$previous_sub, subject_selection_vars$next_sub, subject_selection_vars$subject_id, parent=session, db_connection_vars$db_schema_name)
 
 ## Patient Search Data Table Observer: open chart review tab when patient id is clicked ----
 observeEvent(subject_info$dt_selection_info(), {

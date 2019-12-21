@@ -9,7 +9,7 @@ source('modules/save_abstraction_module.R')
 # Load Chart Review Modules ----
 subject_selection_vars <- callModule(patient_nav_logic, 'chart_review', subject_info$patient_table, subject_info$selected_patient, parent = session)
 callModule(subject_info_logic, 'chart_review', instrumentData$previous_data, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection, subject_info$selected_patient, subject_info$selected_patient_info)
-callModule(omop_chart_review_logic, 'chart_review', table_map$table_map, db_connection_vars$db_connection, subject_info$selected_patient)
+callModule(omop_chart_review_logic, 'chart_review', table_map$table_map, db_connection_vars$db_connection, subject_info$selected_patient, db_connection_vars$db_schema_name)
 callModule(mimic_chart_review_logic, 'chart_review', table_map$table_map, db_connection_vars$db_connection, subject_info$selected_patient)
 
 # Call Chart Abstraction Modules ----

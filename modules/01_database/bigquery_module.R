@@ -225,7 +225,8 @@ bq_initialize <- function(input, output, session, bq_project, bq_dataset, discon
   
   return(list(
     'db_connection' = db_connection,
-    'connect_press' = connect_press
+    'connect_press' = connect_press,
+    'db_schema_name' = NULL           # Does not apply to BQ, but needs to be provided
   ))
 }
   

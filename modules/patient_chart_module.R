@@ -32,112 +32,112 @@ omop_chart_review_ui <- function(id) {
   )
 }
 
-omop_chart_review_logic <- function(input, output, session, table_map, db_connection, subject_id) {
+omop_chart_review_logic <- function(input, output, session, table_map, db_connection, subject_id, db_schema_name) {
   ns <- session$ns
   ## Define Reactive OMOP tibbles -----
   ## Update every time the subject_id() variable changes
   omop_condition_era <- reactive({
     req(table_map(), db_connection(), subject_id() )
     if(table_map()$data_model == 'omop'){
-    omop_table_condition_era(table_map, db_connection, subject_id)
+    omop_table_condition_era(table_map, db_connection, subject_id, db_schema_name)
     } else { return(NULL) }
     })
   
   omop_condition_occurrence <- reactive({
     req(table_map(), db_connection(), subject_id() )
     if(table_map()$data_model == 'omop') {
-    omop_table_condition_occurrence(table_map, db_connection, subject_id)
+    omop_table_condition_occurrence(table_map, db_connection, subject_id, db_schema_name)
     } else { return(NULL) }
   })
   
   omop_death <- reactive({
     req(table_map(), db_connection(), subject_id() )
     if(table_map()$data_model == 'omop') {
-    omop_table_death(table_map, db_connection, subject_id)
+    omop_table_death(table_map, db_connection, subject_id, db_schema_name)
     } else { return(NULL) }
   })
   
   omop_device_exposure <- reactive({
     req(table_map(), db_connection(), subject_id() )
     if(table_map()$data_model == 'omop') {
-    omop_table_device_exposure(table_map, db_connection, subject_id)
+    omop_table_device_exposure(table_map, db_connection, subject_id, db_schema_name)
     } else { return(NULL) }
   })
   
   omop_dose_era <- reactive({
     req(table_map(), db_connection(), subject_id() )
     if(table_map()$data_model == 'omop') {
-    omop_table_dose_era(table_map, db_connection, subject_id)
+    omop_table_dose_era(table_map, db_connection, subject_id, db_schema_name)
     } else { return(NULL) }
   })
   
   omop_drug_era <- reactive({
     req(table_map(), db_connection(), subject_id() )
     if(table_map()$data_model == 'omop') {
-    omop_table_drug_era(table_map, db_connection, subject_id)
+    omop_table_drug_era(table_map, db_connection, subject_id, db_schema_name)
     } else { return(NULL) }
   })
   
   omop_drug_exposure <- reactive({
     req(table_map(), db_connection(), subject_id() )
     if(table_map()$data_model == 'omop') {
-    omop_table_drug_exposure(table_map, db_connection, subject_id)
+    omop_table_drug_exposure(table_map, db_connection, subject_id, db_schema_name)
     } else { return(NULL) }
   })
   
   omop_measurement <- reactive({
     req(table_map(), db_connection(), subject_id() )
     if(table_map()$data_model == 'omop') {
-    omop_table_measurement(table_map, db_connection, subject_id)
+    omop_table_measurement(table_map, db_connection, subject_id, db_schema_name)
     } else { return(NULL) }
   })
   
   omop_note <- reactive({
     req(table_map(), db_connection(), subject_id() )
     if(table_map()$data_model == 'omop') {
-    omop_table_note(table_map, db_connection, subject_id)
+    omop_table_note(table_map, db_connection, subject_id, db_schema_name)
     } else { return(NULL) }
   })
   
   omop_observation <- reactive({
     req(table_map(), db_connection(), subject_id() )
     if(table_map()$data_model == 'omop') {
-    omop_table_observation(table_map, db_connection, subject_id)
+    omop_table_observation(table_map, db_connection, subject_id, db_schema_name)
     } else { return(NULL) }
   })
   
   omop_observation_period <- reactive({
     req(table_map(), db_connection(), subject_id() )
     if(table_map()$data_model == 'omop') {
-    omop_table_observation_period(table_map, db_connection, subject_id)
+    omop_table_observation_period(table_map, db_connection, subject_id, db_schema_name)
     } else { return(NULL) }
   })
   
   omop_payer_plan_period <- reactive({
     req(table_map(), db_connection(), subject_id() )
     if(table_map()$data_model == 'omop') {
-    omop_table_payer_plan_period(table_map, db_connection, subject_id)
+    omop_table_payer_plan_period(table_map, db_connection, subject_id, db_schema_name)
     } else { return(NULL) }
   })
   
   omop_procedure_occurrence <- reactive({
     req(table_map(), db_connection(), subject_id() )
     if(table_map()$data_model == 'omop') {
-    omop_table_procedure_occurrence(table_map, db_connection, subject_id)
+    omop_table_procedure_occurrence(table_map, db_connection, subject_id, db_schema_name)
     } else { return(NULL) }
   })
   
   omop_specimen <- reactive({
     req(table_map(), db_connection(), subject_id() )
     if(table_map()$data_model == 'omop') {
-    omop_table_specimen(table_map, db_connection, subject_id)
+    omop_table_specimen(table_map, db_connection, subject_id, db_schema_name)
     } else { return(NULL) }
   })
   
   omop_visit_occurrence <- reactive({
     req(table_map(), db_connection(), subject_id() )
     if(table_map()$data_model == 'omop') {
-    omop_table_visit_occurrence(table_map, db_connection, subject_id)
+    omop_table_visit_occurrence(table_map, db_connection, subject_id, db_schema_name)
     } else { return(NULL) }
   })
   

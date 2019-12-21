@@ -55,18 +55,28 @@ data_model_detection_logic <- function(input, output, session, db_connection, co
     return(table_map)
     })
   db_info <- reactive({
-    req(db_connection() )
-    DBI::dbGetInfo(db_connection() ) %>% 
-      tibble::enframe(name = NULL) %>% 
-      separate(col = value, into = c('project', 'dataset'),sep = '\\.',fill = 'right') %>% 
-      remove_missing(na.rm = TRUE)
+    req(db_connection(), db_type() )
+    if (db_type() == 'bigquery') {
+      DBI::dbGetInfo(db_connection() ) %>% 
+        tibble::enframe(name = NULL) %>% 
+        separate(col = value, into = c('project', 'dataset'),sep = '\\.',fill = 'right') %>% 
+        remove_missing(na.rm = TRUE)
+    }
+    else if (db_type() == 'mssql') {
+      info = DBI::dbGetInfo(db_connection())
+      list(
+        "dbname" = info$dbname,
+        "servername" = info$servername
+      )
+    }
   })
   
   data_model_message <- eventReactive(connect(), {
     req(db_connection() )
     if (table_map()$count_filtered !=0) {
+      if (db_type() == 'bigquery') {
         HTML(paste('<H3>Success!!</H3>', 
-                   'You have connected to a', ifelse(db_type() == 'bigquery', 'Google BigQuery', 'Unknown'), 'database.',
+                   'You have connected to a', ifelse(db_type() == 'bigquery', 'Google BigQuery', ifelse(db_type() == 'mssql', 'Microsoft SQL Server', 'Unknown')), 'database.',
                    '<br>',
                    '<br>',
                    '<H4>Connection Information:</H4>',
@@ -78,6 +88,33 @@ data_model_detection_logic <- function(input, output, session, db_connection, co
                    '<br>',
                    '<b>Version:</b>', table_map()$model_version,
                    '<br><br>'))
+      }
+      else if (db_type() == 'mssql') {
+        HTML(paste('<H3>Success!!</H3>', 
+                   'You have connected to a Microsoft SQL Server database.',
+                   '<br>',
+                   '<br>',
+                   '<H4>Connection Information:</H4>',
+                   '<b>Server:</b>', db_info()$servername,
+                   '<br>',
+                   '<b>Database:</b>', db_info()$dbname,
+                   '<br>',
+                   '<b>Data Model:</b>', table_map()$data_model,
+                   '<br>',
+                   '<b>Version:</b>', table_map()$model_version,
+                   '<br><br>'))
+      }
+      else {
+        HTML(paste('<H3>Success!!</H3>', 
+                   'You have connected to an Unknown database.',
+                   '<br>',
+                   '<br>',
+                   '<H4>Connection Information:</H4>',
+                   '<b>Data Model:</b>', table_map()$data_model,
+                   '<br>',
+                   '<b>Version:</b>', table_map()$model_version,
+                   '<br><br>'))
+      }
     } else {HTML(paste('The selected database does not appear to be in OMOP or MIMIC III format. Please disconnect and select another database.',
                        '<br><br>'))
       }

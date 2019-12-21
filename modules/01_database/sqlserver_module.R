@@ -64,9 +64,10 @@ mssql_server_auth_logic <- function(input, output, session) {
   # Define the reactive SQL Server Setup UI
   mssql_setup_ui <- reactive({
     tagList(
-      textInput(inputId = ns('mssql_server'),label = 'Server:',value = '127.0.0.1'),
+      textInput(inputId = ns('mssql_server'),label = 'Server:',value = 'localhost'),
       textInput(inputId = ns('mssql_port'),label = 'Port:',value = '1433'),
       textInput(inputId = ns('mssql_database'),label = 'Database:',value = 'OHDSI'),
+      textInput(inputId = ns('mssql_schema'),label = 'Schema:',value = 'dbo'),
       textInput(inputId = ns('mssql_user'),label = 'User:',value = ''),
       passwordInput(inputId = ns('mssql_password'),label = 'Password:',value = '')
     )
@@ -81,6 +82,7 @@ mssql_server_auth_logic <- function(input, output, session) {
   mssql_database <- reactive({input$mssql_database})
   mssql_user <- reactive({input$mssql_user})
   mssql_password <- reactive({input$mssql_password})
+  mssql_schema <- reactive({input$mssql_schema})
   
   # Also Return a list of objects for use in other parts of the app.
   return(
@@ -89,12 +91,13 @@ mssql_server_auth_logic <- function(input, output, session) {
       'mssql_port' = mssql_port,
       'mssql_database' = mssql_database,
       'mssql_user' = mssql_user,
-      'mssql_password' = mssql_password
+      'mssql_password' = mssql_password,
+      'mssql_schema' = mssql_schema
       )
     )
 }
 
-mssql_initialize <- function(input, output, session, mssql_server, mssql_port, mssql_database, mssql_user, mssql_password, disconnect) {
+mssql_initialize <- function(input, output, session, mssql_server, mssql_port, mssql_database, mssql_user, mssql_password, mssql_schema, disconnect) {
   library(DBI)
   library(odbc)
 
@@ -106,11 +109,13 @@ mssql_initialize <- function(input, output, session, mssql_server, mssql_port, m
   })
   
   observeEvent(disconnect(), {
+    message("Disconnecting from SQL Server")
+    dbDisconnect(db_connection())
     db_connection <- NULL
   })
   
   db_connection <- eventReactive(connect_press(), {
-    req(mssql_server(), mssql_port(), mssql_database())
+    req(mssql_server(), mssql_port(), mssql_database(), mssql_schema())
     if (mssql_user() != '') {
       odbc::dbConnect(odbc::odbc(),
                       Driver = "SQL Server",
@@ -132,10 +137,12 @@ mssql_initialize <- function(input, output, session, mssql_server, mssql_port, m
   output$mssql_init_connection_ui <- renderUI({ connect_button() })
 
   connect_press <- reactive({ input$mssql_connect })
+  schema_name <- reactive({ mssql_schema() })
   
   return(list(
     'db_connection' = db_connection,
-    'connect_press' = connect_press
+    'connect_press' = connect_press,
+    'db_schema_name' = schema_name
   ))
 }
   

@@ -8,15 +8,20 @@
 #' @export
 #'
 #' @examples
-#' user_table(table_map = table_map, connection_info = db_connection, 'person')
-user_table <- function(table_map, connection_info, desired_cdm_table) {
+#' user_table(table_map = table_map, connection_info = db_connection, 'person', db_schema_name = 'cdm')
+user_table <- function(table_map, connection_info, desired_cdm_table, db_schema_name) {
   req(table_map(), connection_info())
   table_name <- table_map()$model_match[[1]] %>% 
     filter(table == desired_cdm_table) %>% 
     distinct(table, .keep_all = T) %>% 
     select(user_database_table) %>% 
     pluck(1)
-  tbl(src = connection_info(), table_name)
+  if (is.na(db_schema_name) | is.null(db_schema_name) | db_schema_name() == '') {
+    tbl(src = connection_info(), table_name)
+  }
+  else {
+    tbl(src = connection_info(), in_schema(db_schema_name(), table_name))
+  }
 }
 
 #' user_field

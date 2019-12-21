@@ -27,7 +27,8 @@ initialize_reviewr <- function() {
                             'DBI',
                             'DT',
                             'snakecase',
-                            'redcapAPI')
+                            'redcapAPI',
+                            'odbc')
                  )
   # Load All necessary libraries
   library(shiny)
@@ -40,6 +41,7 @@ initialize_reviewr <- function() {
   library(lubridate)
   library(magrittr)
   library(bigrquery)
+  library(odbc)
   library(httr)
   library(dbplyr)
   library(DBI)

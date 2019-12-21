@@ -70,7 +70,7 @@ db_connect_logic <- function(input, output, session, db_type, db_disconnect){
   source('modules/01_database/sqlserver_module.R')
   mssql_server_vars = callModule(mssql_server_auth_logic, id = "mssql_setup_ns")
   db_connection <- callModule(mssql_initialize, id = 'mssql_setup_ns', mssql_server_vars$mssql_server, mssql_server_vars$mssql_port, mssql_server_vars$mssql_database,
-                              mssql_server_vars$mssql_user, mssql_server_vars$mssql_password, db_disconnect)
+                              mssql_server_vars$mssql_user, mssql_server_vars$mssql_password, mssql_server_vars$mssql_schema, db_disconnect)
   
   db_connection_ui <- reactive({
     req(db_type() )
@@ -106,6 +106,7 @@ db_connect_logic <- function(input, output, session, db_type, db_disconnect){
     'bq_project' = bq_prj_connect_vars$bq_project,
     'bq_dataset' = bq_ds_connect_vars$bq_dataset, 
     'db_connection' = db_connection$db_connection,
-    'connect_press' = db_connection$connect_press
+    'connect_press' = db_connection$connect_press,
+    'db_schema_name' = db_connection$db_schema_name
   ))
 }
