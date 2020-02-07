@@ -14,10 +14,11 @@ The goal of ReviewR is to …
 ## Installation
 
 You can install the released version of ReviewR from
-[CRAN](https://CRAN.R-project.org) with:
+[GitHub](https://github.com/) with:
 
 ``` r
-install.packages("ReviewR")
+# install.packages("devtools")
+devtools::install_github("thewileylab/ReviewR")
 ```
 
 And the development version from [GitHub](https://github.com/) with:
