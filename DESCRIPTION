@@ -17,7 +17,8 @@ Imports:
     attempt,
     DT,
     glue,
-    htmltools
+    htmltools,
+    shinydashboard
 RoxygenNote: 7.0.2
 URL: https://github.com/thewileylab/ReviewR
 BugReports: https://github.com/thewileylab/ReviewR/issues
