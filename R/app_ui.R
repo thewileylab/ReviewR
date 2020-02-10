@@ -1,5 +1,6 @@
 #' @import shiny
 #' @import shinydashboard
+#' @importFrom shinyjs useShinyjs
 app_ui <- function() {
   stop_nav_jscode <- 'window.onbeforeunload = function() { return true; };'
   
