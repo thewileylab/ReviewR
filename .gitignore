@@ -10,3 +10,4 @@ projects/*
 tmp/
 *config*.yml
 dev/
+.DS_Store
