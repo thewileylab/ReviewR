@@ -88,3 +88,8 @@ to REDCap’ button to store your information in the REDCap project.
 
 This is a work in progress and thus there are no guarantees of
 functionality or accuracy. Use at your own risk.
+
+## Getting help
+
+If you encounter bugs, please file a minimal reproducible example on
+[GitHub](https://github.com/thewileylab/ReviewR/issues).
