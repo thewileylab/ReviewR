@@ -1,4 +1,0 @@
-"key","value"
-"database","postgres"
-"data_model","OMOP"
-"table_map_file","table_map_postgres_omop.csv"
