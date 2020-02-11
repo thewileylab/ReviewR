@@ -17,13 +17,14 @@ knitr::opts_chunk$set(
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1488535.svg)](https://doi.org/10.5281/zenodo.1488535)
 <!-- badges: end -->
 
-ReviewR is a portable Shiny tool to help you explore data across different data models. Within ReviewR, you can browse patient data stored in either the OMOP or MIMIC-III data model.
+ReviewR is a portable Shiny tool to help you explore patient data across different data models. Within ReviewR, you can browse data stored in either the OMOP or MIMIC-III data model.
 
 In addition to viewing patient data, you may also connect to a REDCap project to perform a chart review.
 
-Currently, ReviewR Supports:
+Currently, ReviewR will connect to Google BigQuery as a database backend, with suppoort planned for:
 
-  * Google BigQuery
+  * PostgresSQL
+  * SQL Server
   * others supported by the dbplyr backend (https://dbplyr.tidyverse.org/)
 
 ## Installation
