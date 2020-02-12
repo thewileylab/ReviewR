@@ -38,7 +38,7 @@ ReviewR can optionally be deployed to a Shiny Server. Follow the [Shiny
 Server Quick Start
 Guide](https://support.rstudio.com/hc/en-us/articles/360011458854-Shiny-Server-Quick-Start-Installation-and-Configuration)
 to get Shiny Server up and running. After cloning the repository as
-described above, symlink the ReviewR directory to
+described above to your server, symlink the ReviewR directory to
 `/srv/shiny-server/ReviewR`. Note, for Google Authentication to work,
 your server must have a fully qualified domain name and link to a Google
 Project that you own to perform authorization.
@@ -52,19 +52,20 @@ shiny::runApp('app.R', port = 8100)
 ```
 
 Once the app has loaded, please complete the ‘Setup’ tab (found in the
-left navigation menu) to connect to your database and optionally connect
-to a REDCap project.
+left navigation menu) to connect to your patient database and optionally
+connect to a REDCap project.
 
 ### View Mode
 
-Complete the database setup. For BigQuery connections, simply press
-“Sign in with Google” and you will be redirected to authenticate with
-Google. Once successfully connected, the ‘Patient Search’ tab will
-appear. Select the patient you wish to view, and you will be taken to a
-pre-coordinated table containing EHR data for that patient. Navigate
-through patients using the previous and next buttons or select form the
-dropdown on the ‘Chart Review’ tab. At any time, you may return to the
-‘Patient Search’ tab to select a different patient. Patient
+Complete the database setup to connect to EHR data stored in MIMIC-III
+or OMOP format. For BigQuery connections, simply press “Sign in with
+Google” and you will be redirected to authenticate with Google. Once
+successfully connected to a patient database, the ‘Patient Search’ tab
+will appear. Select the patient you wish to view, and you will be taken
+to a pre-coordinated table containing EHR data for that patient.
+Navigate through patients using the previous and next buttons or select
+form the dropdown on the ‘Chart Review’ tab. At any time, you may return
+to the ‘Patient Search’ tab to select a different patient. Patient
 information globally within each tab or by a particular column.
 Searching via regex is also supported.
 
@@ -80,9 +81,10 @@ reviewer information. Enter your name to keep track of who has completed
 the review.
 
 Now, after selecting a patient from the ‘Patient Search’ tab, your
-REDCap instrument will appear next to the patient information on the
-‘Chart Review’ tab. Fill in desired information and click the ‘Upload
-to REDCap’ button to store your information in the REDCap project.
+REDCap instrument will appear next to the patient identifier information
+on the ‘Chart Review’ tab. Fill in desired information and click the
+‘Upload to REDCap’ button to store your information in the REDCap
+project.
 
 ## Disclaimer
 
@@ -91,7 +93,8 @@ functionality or accuracy. Use at your own risk.
 
 ## Getting help
 
-If you encounter bugs, please file a minimal reproducible example on
+If you encounter bugs, errors, issues or other general unpleasantness,
+please let us know on
 [GitHub](https://github.com/thewileylab/ReviewR/issues).
 
 -----
