@@ -93,3 +93,9 @@ functionality or accuracy. Use at your own risk.
 
 If you encounter bugs, please file a minimal reproducible example on
 [GitHub](https://github.com/thewileylab/ReviewR/issues).
+
+-----
+
+Please note that the ‘ReviewR’ project is released with a [Contributor
+Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this project,
+you agree to abide by its terms.
