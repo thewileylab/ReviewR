@@ -1,16 +1,17 @@
-#
-# This file contains all elements that are needed to configure ReviewR and render the setup page
-#
-
 # Define Database Setup UI Elements----------
-#' db_setup_ui
+#' Database Setup Module
+#'
+#' A Shiny module to step a user through the process of selecting a database and calling the appropriate module based on selection.
 #'
 #' @param id The namespace id for the UI output
+#' @param input internal
+#' @param output internal
+#' @param session internal
 #'
-#' @return A Shiny outputUI to step a user through the process of selecting a database, calling the appropriate module based on selection
+#' @rdname mod_database_setup_module
+#'
+#' @keywords internal
 #' @export
-#'
-#' @examples
 db_setup_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -20,19 +21,14 @@ db_setup_ui <- function(id) {
 }
 
 # Setup Logic----------
-#' db_select_logic
-#'
-#' @param input Required by Shiny for module operation
-#' @param output Required by Shiny for module operation
-#' @param session Required by Shiny for module operation
-#'
-#' @return Database specific variables AND a DBI connection to be used elsewhere in the Application.
-#' @export 
-#'
-#' @examples 
-  db_select_logic <- function(input, output, session) {
-  ns <- session$ns
 
+#' @rdname mod_database_setup_module
+#' 
+#' @keywords internal
+#' @export 
+
+db_select_logic <- function(input, output, session) {
+  ns <- session$ns
 # Supported databases
   db_choices <- c('BigQuery' = 'bigquery',
                   'PostgreSQL' = 'pg_sql')
@@ -55,6 +51,14 @@ db_setup_ui <- function(id) {
     )
   )
 }
+
+#' @param db_type Database type selection
+#' @param db_disconnect An Action button press
+#' 
+#' @rdname mod_database_setup_module
+#' 
+#' @keywords internal
+#' @export 
 
 db_connect_logic <- function(input, output, session, db_type, db_disconnect){
   ns <- session$ns

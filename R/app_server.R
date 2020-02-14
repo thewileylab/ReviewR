@@ -5,7 +5,6 @@ app_server <- function(input, output, session) {
   init_data <- initialize_reviewr()
   ## Source ReviewR Setup Tab Modules ----
   ## Patient Database Setup
-  source('modules/db_setup_module.R')
   db_type <- callModule(db_select_logic, 'db_setup_ns')
   ### Database
   db_connection_vars <- callModule(db_connect_logic, 'db_setup_ns', db_type$db_selection, table_map$db_disconnect )
