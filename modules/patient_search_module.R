@@ -8,7 +8,6 @@ patient_search_ui <- function(id) {
 }
 
 patient_search_logic <- function(input, output, session, table_map, db_connection, disconnect, prev_sub, next_sub, selected_sub, parent) {
-  source('lib/reviewr_datatable.R')
   library(tibble)
   library(lubridate)
   ns <- session$ns
