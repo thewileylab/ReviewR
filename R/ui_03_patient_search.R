@@ -4,8 +4,7 @@
 #'
 #' @return Patient Search Tab UI Output
 #'
-#' @examples output$patient_search_tab <- patient_search_tab()
-patient_search_tab <- function(){
+patient_search_tab <- function() {
   renderUI({
     tagList(
       fluidPage(

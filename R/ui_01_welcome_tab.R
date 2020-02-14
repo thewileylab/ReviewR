@@ -4,7 +4,6 @@
 #'
 #' @return Welcome Tab UI Output
 #'
-#' @examples output$welcome_tab <- welcome_tab()
 welcome_tab <- function() {
   renderUI({
     fluidRow(

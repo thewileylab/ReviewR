@@ -4,7 +4,6 @@
 #'
 #' @return Setup Tab UI Output
 #'
-#' @examples output$setup_tab <- setup_tab()
 setup_tab <- function() {
   renderUI({
     # Define Setup Tab UI ----
