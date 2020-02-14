@@ -12,6 +12,3 @@ Setup Tab UI Output
 \description{
 This file contains the UI elements that are needed to render the Setup Tab and configure ReviewR. Each element consists of a module, which is rendered within it's own box element on the setup tab.
 }
-\examples{
-output$setup_tab <- setup_tab()
-}

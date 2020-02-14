@@ -12,6 +12,3 @@ Patient Search Tab UI Output
 \description{
 This file contains all elements that are needed to render the Patient Search Tab
 }
-\examples{
-output$patient_search_tab <- patient_search_tab()
-}
