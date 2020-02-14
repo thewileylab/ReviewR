@@ -18,7 +18,16 @@ Imports:
     DT,
     glue,
     htmltools,
-    shinydashboard
+    shinydashboard,
+    shinyjs,
+    dplyr,
+    magrittr,
+    purrr,
+    rlang,
+    DBI,
+    bigrquery,
+    httr,
+    tibble
 RoxygenNote: 7.0.2
 URL: https://github.com/thewileylab/ReviewR
 BugReports: https://github.com/thewileylab/ReviewR/issues
