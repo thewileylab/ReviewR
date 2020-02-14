@@ -14,7 +14,6 @@ app_server <- function(input, output, session) {
   table_map <- callModule(data_model_detection_logic, 'model_ns', db_connection_vars$db_connection, db_connection_vars$connect_press, init_data$supported_models, db_type$db_selection)
   
   ## Chart Abstraction Setup
-  source('modules/chart_abstraction_setup_module.R')
   abstraction <- callModule(chart_abstraction_select_logic, 'abstraction_ns')
   abstraction_vars <- callModule(chart_abstraction_setup_logic, 'abstraction_ns', abstraction$abstraction_selection)
   

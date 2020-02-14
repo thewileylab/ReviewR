@@ -1,3 +1,15 @@
+#' Chart Abstraction Setup Module
+#'
+#' @param id shiny id
+#' @param input internal
+#' @param output internal
+#' @param session internal
+#'
+#' @rdname mod_abstraction_setup_module
+#'
+#' @keywords internal
+#' @export 
+#' @importFrom shiny NS tagList 
 chart_abstraction_setup_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -21,6 +33,12 @@ chart_abstraction_select_logic <- function(input, output, session) {
   ))
 }
 
+# Chart Abstraction Setup  Logic
+
+#' @rdname mod_abstraction_setup_module
+#' @param abstraction_selection Which abstraction backend has been selected?
+#' @export
+#' @keywords internal
 chart_abstraction_setup_logic <- function(input, output, session, abstraction_selection) {
   ns <- session$ns
   
