@@ -5,16 +5,24 @@
 #' @param desired_cdm_table In the desired CDM, which table do you want?
 #'
 #' @return tbl(connection_info, user_table) the user table that corresponds to the omop table you want
-#' @export
+#' 
+#' @keywords internal
+#' @export 
+#' @importFrom magrittr %>%
+#' @importFrom dplyr distinct select filter
+#' @importFrom purrr pluck
+#' @importFrom rlang .data
 #'
-#' @examples
-#' user_table(table_map = table_map, connection_info = db_connection, 'person')
+#' @examples 
+#' \dontrun{
+#' user_table(table_map = table_map, connection_info = db_connection, desired_cdm_table = 'person')
+#' }
 user_table <- function(table_map, connection_info, desired_cdm_table) {
   req(table_map(), connection_info())
   table_name <- table_map()$model_match[[1]] %>% 
-    filter(table == desired_cdm_table) %>% 
-    distinct(table, .keep_all = T) %>% 
-    select(user_database_table) %>% 
+    filter(.data$table == desired_cdm_table) %>% 
+    distinct(.data$table, .keep_all = T) %>% 
+    select(.data$user_database_table) %>% 
     pluck(1)
   tbl(src = connection_info(), table_name)
 }
@@ -26,14 +34,22 @@ user_table <- function(table_map, connection_info, desired_cdm_table) {
 #' @param desired_cdm_field In the OMOP CDM, which field do you want?
 #'
 #' @return character object containing the user database field pertaining to the omop field you want, from the omop table specified
-#' @export
-#'
-#' @examples
-#' user_field(table_map = table_map, desired_user_table = 'person', desired_user_field = 'person_id')
+#' 
+#' @keywords internal
+#' @export 
+#' @importFrom magrittr %>%
+#' @importFrom dplyr select filter
+#' @importFrom purrr pluck
+#' @importFrom rlang .data
+#' 
+#' @examples 
+#' \dontrun{
+#' user_field(table_map = table_map, desired_cdm_table = 'person', desired_cdm_field = 'person_id')
+#' }
 user_field <- function(table_map, desired_cdm_table, desired_cdm_field){
   req(table_map())
   table_map()$model_match[[1]] %>% 
-    filter(table == desired_cdm_table & field == desired_cdm_field) %>% 
-    select(user_fields) %>% 
+    filter(.data$table == desired_cdm_table & .data$field == desired_cdm_field) %>% 
+    select(.data$user_fields) %>% 
     pluck(1)
 }
