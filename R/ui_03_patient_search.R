@@ -3,6 +3,8 @@
 #' This file contains all elements that are needed to render the Patient Search Tab
 #'
 #' @return Patient Search Tab UI Output
+#' @export
+#' @keywords internal
 #'
 patient_search_tab <- function() {
   renderUI({

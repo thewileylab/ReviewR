@@ -3,6 +3,8 @@
 #' This file contains all elements that are needed to render the Chart Review Tab
 #'
 #' @return Chart Review Tab UI Output
+#' @export
+#' @keywords internal
 #'
 chart_review_tab <- function() {
   renderUI({

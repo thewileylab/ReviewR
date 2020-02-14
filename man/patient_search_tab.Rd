@@ -12,3 +12,4 @@ Patient Search Tab UI Output
 \description{
 This file contains all elements that are needed to render the Patient Search Tab
 }
+\keyword{internal}

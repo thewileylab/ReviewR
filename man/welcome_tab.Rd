@@ -12,3 +12,4 @@ Welcome Tab UI Output
 \description{
 This file contains all the UI elements that are needed to render the Welcome Tab, which contains basic information about using ReviewR.
 }
+\keyword{internal}
