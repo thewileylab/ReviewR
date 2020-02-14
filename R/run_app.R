@@ -1,8 +1,11 @@
-#' Run the Shiny Application
+#' Run the ReviewR Application
+#'
+#' @param ... A list of options to pass to golem
 #'
 #' @export
 #' @importFrom shiny shinyApp
 #' @importFrom golem with_golem_options
+#' 
 #  __________            .__              __________ 
 #  \______   \ _______  _|__| ______  _  _\______   \
 #   |       _// __ \  \/ /  |/ __ \ \/ \/ /|       _/
@@ -18,9 +21,10 @@
 # authors:  Laura Wiley, Luke Rasmussen, David Mayer
 #
 run_app <- function(...) {
-  options(shiny.port = 8100)
   with_golem_options(
-    app = shinyApp(ui = app_ui, server = app_server), 
+    app = shinyApp(ui = app_ui, 
+                   server = app_server,
+                   options = list(port = 8100)), 
     golem_opts = list(...)
   )
 }
