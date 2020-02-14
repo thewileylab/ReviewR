@@ -13,7 +13,7 @@
 #' @export
 #' @importFrom shiny NS tagList parseQueryString isolate
 #' @importFrom httr oauth_app oauth_endpoints oauth2.0_authorize_url oauth2.0_token oauth2.0_access_token
-#' @importFrom bigrquery bq_auth bq_projects bq_project_datasets bigquery
+#' @importFrom bigrquery bq_auth bq_projects bq_project_datasets bigquery dbDisconnect
 #' @importFrom tibble tibble deframe
 #' @importFrom dplyr filter
 #' @importFrom magrittr %>% 
@@ -81,8 +81,6 @@ bq_project_auth_logic <- function(input, output, session) {
   
   # Create choices for project/dataset selectInputs
   available_projects <- reactive({
-    # Authenticate session with Google, Gargle is unnessecarily verbose at it's current version, hence suppressWarnings()
-    #suppressWarnings(bigrquery::bq_auth(token = token()))
     bigrquery::bq_auth(token = token())
     bigrquery::bq_projects()
   })
@@ -145,16 +143,22 @@ bq_project_auth_logic <- function(input, output, session) {
 #' @param bq_project A BigQuery Project ID
 #' @export
 #' @keywords internal
+#' @importFrom purrr flatten
+#' @importFrom tibble enframe
+#' @importFrom dplyr filter pull
+#' @importFrom tidyr unnest
+#' @importFrom rlang .data
 
 bq_dataset_auth_logic <- function(input, output, session, bq_project) {
   ns <- session$ns
   
   available_datasets <- eventReactive(bq_project(), {
     bigrquery::bq_project_datasets(bq_project()) %>%
-      unlist() %>%
-      tibble() %>%
-      filter(. != bq_project()) %>% 
-      deframe()
+      flatten() %>% 
+      enframe %>% 
+      filter(.data$name == 'dataset') %>% 
+      unnest(.data$value) %>% 
+      pull(.data$value)
   })
   
   select_dataset_ui <- reactive({
@@ -191,7 +195,8 @@ bq_initialize <- function(input, output, session, bq_project, bq_dataset, discon
   })
   
   observeEvent(disconnect(), {
-    db_connection <- NULL
+    # db_connection <- NULL
+    bigrquery::dbDisconnect(db_connection())
   })
   
   output$bq_init_connection_ui <- renderUI({ connect_button() })
