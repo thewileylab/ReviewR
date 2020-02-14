@@ -1,26 +1,23 @@
-#' Connect to BigQuery UI
+#' BigQuery Module
+#'
+#' This module is designed to guide a user through the process of authenticating with Google BigQuery. It is responsible for returning an authorization token, the user selected project,the user selected dataset, and a DBI connection to a BigQuery Dataset.
 #'
 #' @param id The namespace id for the UI output
+#' @param input internal
+#' @param output internal
+#' @param session internal
 #'
-#' @return A Shiny outputUI to step a user through the process of authenticating with GoogleBigQuery
-#'
-#' @examples
-#' ui <- fluidPage(
-#' bq_auth_ui('ba_setup_ns'),
-#' textOutput('connected')
-#' )
-#' server <- function(input,output){
-#' bq_connect_vars <- callModule(bq_auth_logic, id = 'bq_setup_ns')
-#' output$bq_connect_ui <- renderUI({
-#'  bq_connect_vars$ui()
-#' })
-#' output$connected <-
-#'  renderText({
-#'    paste('you have conneted to the',bq_connect_vars$bq_dataset(),'dataset within the',bq_connect_vars$bq_project(), 'project.')
-#'  })
-#' }
-#' shinyApp(ui = ui, server = server)
-
+#' @rdname BigQuery_module
+#' 
+#' @keywords internal
+#' @export
+#' @importFrom shiny NS tagList parseQueryString isolate
+#' @importFrom httr oauth_app oauth_endpoints oauth2.0_authorize_url oauth2.0_token oauth2.0_access_token
+#' @importFrom bigrquery bq_auth bq_projects bq_project_datasets bigquery
+#' @importFrom tibble tibble deframe
+#' @importFrom dplyr filter
+#' @importFrom magrittr %>% 
+#' @importFrom DBI dbConnect
 bq_auth_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -30,36 +27,13 @@ bq_auth_ui <- function(id) {
     )
 }
 
-#' Connect to BigQuery Server Logic
-#'
-#' @param input Required by Shiny for module operation
-#' @param output Required by Shiny for module operation 
-#' @param session Required by Shiny for module operation
-#'
-#' @return A list of reactive reactive objects containing a an authorization token, the user selected project,the user selected dataset, and a DBI connection to a BigQuery Dataset
-#'
-#' @examples
-#' ui <- fluidPage(
-#' bq_auth_ui('ba_setup_ns'),
-#' textOutput('connected')
-#' )
-#' server <- function(input,output){
-#' bq_connect_vars <- callModule(bq_auth_logic, id = 'bq_setup_ns')
-#' output$bq_connect_ui <- renderUI({
-#'  bq_connect_vars$ui()
-#' })
-#' output$connected <-
-#'  renderText({
-#'    paste('you have conneted to the',bq_connect_vars$bq_dataset(),'dataset within the',bq_connect_vars$bq_project(), 'project.')
-#'  })
-#' }
-#' shinyApp(ui = ui, server = server)
+# BigQuery Module Server Logic
+
+#' @rdname BigQuery_module
+#' @export
+#' @keywords internal
 
 bq_project_auth_logic <- function(input, output, session) {
-  # Load Module Libraries
-  library(dplyr)
-  library(bigrquery)
-  library(httr)
   # Pull the namespace function from the session info to assist in updating selectInputs
   ns <- session$ns
   allow_nav_jscode <- 'window.onbeforeunload = null;'
@@ -165,11 +139,14 @@ bq_project_auth_logic <- function(input, output, session) {
     )
 }
 
+# BigQuery Module Dataset Auth Logic
+
+#' @rdname BigQuery_module
+#' @param bq_project A BigQuery Project ID
+#' @export
+#' @keywords internal
+
 bq_dataset_auth_logic <- function(input, output, session, bq_project) {
-  library(dplyr)
-  library(tibble)
-  library(bigrquery)
-  
   ns <- session$ns
   
   available_datasets <- eventReactive(bq_project(), {
@@ -196,9 +173,16 @@ bq_dataset_auth_logic <- function(input, output, session, bq_project) {
   )
 }
 
-bq_initialize <- function(input, output, session, bq_project, bq_dataset, disconnect) {
-  library(DBI)
+# BigQuery Module BigQuery Initialize Logic
 
+#' @rdname BigQuery_module
+#' @param bq_project A BigQuery Project ID
+#' @param bq_dataset A BigQuery Dataset ID
+#' @param disconnect An action button press
+#' @export
+#' @keywords internal
+
+bq_initialize <- function(input, output, session, bq_project, bq_dataset, disconnect) {
   ns <- session$ns
   # Create a connection UI based on the database type, add logic for postgres to hide connect button until required information is present.
   connect_button <- reactive({
@@ -228,5 +212,3 @@ bq_initialize <- function(input, output, session, bq_project, bq_dataset, discon
     'connect_press' = connect_press
   ))
 }
-  
-
