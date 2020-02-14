@@ -7,7 +7,7 @@
 #' @param output internal
 #' @param session internal
 #'
-#' @rdname BigQuery_module
+#' @rdname mod_BigQuery_module
 #' 
 #' @keywords internal
 #' @export
@@ -29,7 +29,7 @@ bq_auth_ui <- function(id) {
 
 # BigQuery Module Server Logic
 
-#' @rdname BigQuery_module
+#' @rdname mod_BigQuery_module
 #' @export
 #' @keywords internal
 
@@ -141,7 +141,7 @@ bq_project_auth_logic <- function(input, output, session) {
 
 # BigQuery Module Dataset Auth Logic
 
-#' @rdname BigQuery_module
+#' @rdname mod_BigQuery_module
 #' @param bq_project A BigQuery Project ID
 #' @export
 #' @keywords internal
@@ -175,7 +175,7 @@ bq_dataset_auth_logic <- function(input, output, session, bq_project) {
 
 # BigQuery Module BigQuery Initialize Logic
 
-#' @rdname BigQuery_module
+#' @rdname mod_BigQuery_module
 #' @param bq_project A BigQuery Project ID
 #' @param bq_dataset A BigQuery Dataset ID
 #' @param disconnect An action button press
