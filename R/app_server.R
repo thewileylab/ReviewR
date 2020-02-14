@@ -47,8 +47,7 @@ app_server <- function(input, output, session) {
   ## Define Main UI observers ---- 
   ## Close Application when "Leave ReviewR" button is clicked
   observeEvent(input$quit, {
-    browser()
-    # stopApp()
+    stopApp()
   })
   ### BigQuery Redirect Observer. When leaving the application after authenticating with BigQuery, take the user back to the Setup Tab to complete setup.
   observeEvent(db_connection_vars$bq_token(), {
