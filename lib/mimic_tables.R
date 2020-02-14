@@ -1,5 +1,4 @@
 ## Source function to extract tables and field names from table_map
-source('lib/user_database_helper.R', keep.source = F)
 library(snakecase)
 
 ## MIMIC All Patient Table ----

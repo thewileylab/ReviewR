@@ -1,6 +1,4 @@
 ## Source function to extract tables and field names from table_map
-source('lib/user_database_helper.R',keep.source = F)
-source('lib/omop_get_concepts.R',keep.source = F)
 library(snakecase)
 
 ## OMOP All Patient Table -----
@@ -422,6 +420,3 @@ omop_table_visit_occurrence <- function(table_map, db_connection, subject_id) {
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
-
-
-
