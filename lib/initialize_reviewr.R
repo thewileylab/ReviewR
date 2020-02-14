@@ -15,7 +15,6 @@ initialize_reviewr <- function() {
   check_packages(pkg = list('shiny',
                             'shinydashboard',
                             'shinycssloaders',
-                            'shinyjqui',
                             'shinyjs',
                             'tidyverse',
                             'tibble',
@@ -33,7 +32,6 @@ initialize_reviewr <- function() {
   library(shiny)
   library(shinydashboard)
   library(shinycssloaders)
-  library(shinyjqui)
   library(shinyjs)
   library(tidyverse)
   library(tibble)
