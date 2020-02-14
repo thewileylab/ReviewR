@@ -27,7 +27,8 @@ Imports:
     DBI,
     bigrquery,
     httr,
-    tibble
+    tibble,
+    tidyr
 RoxygenNote: 7.0.2
 URL: https://github.com/thewileylab/ReviewR
 BugReports: https://github.com/thewileylab/ReviewR/issues
