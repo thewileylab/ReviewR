@@ -9,25 +9,25 @@ initialize_reviewr <- function() {
   options(shiny.reactlog=TRUE)
   
   # Check that Packages are installed
-  message('Checking available packages, installing those that are missing...')
-  source('lib/check_packages.R')
-  options(repos=structure(c(CRAN="https://cloud.r-project.org/"))) 
-  check_packages(pkg = list('shiny',
-                            'shinydashboard',
-                            'shinycssloaders',
-                            'shinyjs',
-                            'tidyverse',
-                            'tibble',
-                            'lubridate',
-                            'magrittr',
-                            'bigrquery',
-                            'httr',
-                            'dbplyr',
-                            'DBI',
-                            'DT',
-                            'snakecase',
-                            'redcapAPI')
-                 )
+  # message('Checking available packages, installing those that are missing...')
+  # source('lib/check_packages.R')
+  # options(repos=structure(c(CRAN="https://cloud.r-project.org/"))) 
+  # check_packages(pkg = list('shiny',
+  #                           'shinydashboard',
+  #                           'shinycssloaders',
+  #                           'shinyjs',
+  #                           'tidyverse',
+  #                           'tibble',
+  #                           'lubridate',
+  #                           'magrittr',
+  #                           'bigrquery',
+  #                           'httr',
+  #                           'dbplyr',
+  #                           'DBI',
+  #                           'DT',
+  #                           'snakecase',
+  #                           'redcapAPI')
+  #                )
   # Load All necessary libraries
   library(shiny)
   library(shinydashboard)
@@ -46,7 +46,7 @@ initialize_reviewr <- function() {
   library(redcapAPI)
   
   # Source helper libraries
-  source('lib/img_uri.R')
+  # source('lib/img_uri.R')
   
   message('Done.')
   # Load Supported data models
