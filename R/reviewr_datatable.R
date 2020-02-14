@@ -1,12 +1,14 @@
 #' ReviewR Datatable
 #'
-#' @return return a DT with custom options
+#' @param .data A local tibble or dataframe to be rendered in the ReviewR UI
 #'
-#' @examples condition_era() %>% reviewr_datatable()
-
+#' @return return a DT with custom options
+#' @keywords internal
+#' @export 
+#' @importFrom DT datatable
+#'
 reviewr_datatable <- function(.data) {
-  library(DT)
-  datatable(data = .data,
+  DT::datatable(data = .data,
             extensions = list('Scroller' = NULL),
   options = list(scrollX = TRUE,
                  deferRender = TRUE,
