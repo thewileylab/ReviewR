@@ -12,3 +12,4 @@ Chart Review Tab UI Output
 \description{
 This file contains all elements that are needed to render the Chart Review Tab
 }
+\keyword{internal}
