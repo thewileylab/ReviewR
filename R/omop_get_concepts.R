@@ -13,8 +13,9 @@
 #' @return The desired OMOP concepts based on the user data model for all subjects
 #' @keywords internal
 #' @export
-#' @importFrom dplyr select inner_join rename
+#' @importFrom dplyr select inner_join rename contains
 #' @importFrom stats setNames
+#' @importFrom rlang := 
 #'
 #' @examples 
 #' \dontrun{
@@ -62,8 +63,9 @@ get_all_concept <- function(table_map, db_connection, concept_table, concept_id,
 #' @return The desired OMOP concepts based on the user data model for a particular subject
 #' @keywords internal
 #' @export
-#' @importFrom dplyr select inner_join rename
+#' @importFrom dplyr select inner_join rename contains
 #' @importFrom stats setNames
+#' @importFrom rlang := 
 #'
 get_subject_concept <- function(table_map, db_connection, concept_table, concept_id, concept_name, table, joinable_id, table_concept_id, col_name, subject_id_field, selected_subject) {
   req(table_map(), db_connection() )
