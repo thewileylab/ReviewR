@@ -1,7 +1,6 @@
 #
 # Patient Chart Module
 #
-source('lib/reviewr_datatable.R',keep.source = F)
 
 ## OMOP ----
 
