@@ -27,7 +27,7 @@ app_ui <- function() {
                   ),
                   dashboardBody(
                     tags$script(stop_nav_jscode), #Prevent navigation using browser buttons (back, reload, close tab)
-                    useShinyjs(),
+                    shinyjs::useShinyjs(),
                     uiOutput('main_ui')
                   )
     )
