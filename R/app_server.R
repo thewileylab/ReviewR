@@ -9,8 +9,7 @@ app_server <- function(input, output, session) {
   ### Database
   db_connection_vars <- callModule(db_connect_logic, 'db_setup_ns', db_type$db_selection, table_map$db_disconnect )
   ### Data Model Detection
-  source('modules/data_model_detection_module.R',keep.source = F)
-  table_map <- callModule(data_model_detection_logic, 'model_ns', db_connection_vars$db_connection, db_connection_vars$connect_press, init_data$supported_models, db_type$db_selection)
+  table_map <- callModule(data_model_detection_logic, 'model_ns', db_connection_vars$db_connection, db_connection_vars$connect_press, db_type$db_selection)
   
   ## Chart Abstraction Setup
   abstraction <- callModule(chart_abstraction_select_logic, 'abstraction_ns')
@@ -18,7 +17,7 @@ app_server <- function(input, output, session) {
   
   ## REDCap Configuration
   instrument_selection <- callModule(redcap_instrument_select_logic, 'abstraction_ns', abstraction_vars$rc_press, abstraction_vars$rc_con)
-  rc_project_vars <- callModule(redcap_instrument_config_logic, 'abstraction_ns', abstraction_vars$rc_con, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection, init_data$redcap_widget_map)
+  rc_project_vars <- callModule(redcap_instrument_config_logic, 'abstraction_ns', abstraction_vars$rc_con, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection)
   rc_connected_vars <- callModule(redcap_connected_logic, 'abstraction_ns', abstraction_vars$rc_press, rc_project_vars$rc_project_info)
   rc_config_vars <- callModule(redcap_instrument_config_reviewer_logic, 'abstraction_ns', rc_project_vars$rc_instrument, rc_project_vars$rc_identifier, abstraction_vars$rc_con)
   rc_reconfig <- callModule(rc_instrument_configured_logic, 'abstraction_ns', rc_config_vars, instrument_selection$rc_instrument_selection)
