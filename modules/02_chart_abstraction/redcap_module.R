@@ -153,7 +153,7 @@ redcap_instrument_select_logic <- function(input, output, session, rc_connect_pr
   
 }
 
-redcap_instrument_config_logic <- function(input, output, session, rc_connection, instruments, instrument_selection, redcap_widget_map, rc_upload) {
+redcap_instrument_config_logic <- function(input, output, session, rc_connection, instruments, instrument_selection, rc_upload) {
   ns <- session$ns
   
   ## Source REDCap functions
