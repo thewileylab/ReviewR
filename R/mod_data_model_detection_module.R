@@ -1,3 +1,19 @@
+#' Data Model Detection Module
+#'
+#' This module is designed to connect to a user supplied database, compare it with known common data models and determine the most likely version of the user's database.
+#'
+#' @param id The namespace id for the UI output
+#' @param input internal
+#' @param output internal
+#' @param session internal
+#'
+#' @rdname mod_data_model_detection_module
+#' 
+#' @keywords internal
+#' @export
+#' @importFrom shiny NS tagList HTML
+#' 
+
 data_model_detection_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -5,24 +21,26 @@ data_model_detection_ui <- function(id) {
     )
 }
 
-#' data_model_detection_logic
-#'
-#' @param input Required by Shiny for module operation
-#' @param output Required by Shiny for module operation
-#' @param session Required by Shiny for module operation
+
+#' @rdname mod_data_model_detection_module
 #' @param db_connection Connection info received from the database setup module
-#'
-#' @return tibble containing a the cdm that most closely matches the user's database and a map of standard tables to user tables
 #' @export
-#'
-#' @examples
-data_model_detection_logic <- function(input, output, session, db_connection, connect, supported_models, db_type) {
-  library(tidyverse)
-  library(DBI)
+#' @keywords internal
+#' @importFrom magrittr %>% 
+#' @importFrom DBI dbListTables dbListFields dbGetInfo
+#' @importFrom dplyr mutate rename select left_join filter ungroup arrange slice group_by
+#' @importFrom tibble tibble enframe
+#' @importFrom purrr map
+#' @importFrom tidyr unnest as_tibble separate
+#' @importFrom stringr str_replace regex str_extract
+#' @importFrom ggplot2 remove_missing
+#' @importFrom readr read_csv
+data_model_detection_logic <- function(input, output, session, db_connection, connect, db_type) {
   ns <- session$ns
   
   table_map <- eventReactive(connect(), {
     req(db_connection())
+    
     # Load user tables and nest fields. 
     user_tables <- dbListTables(db_connection()) %>% 
       tibble(user_database_table = .) %>% 
