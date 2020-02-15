@@ -37,10 +37,8 @@ app_ui <- function() {
 #' @import shiny
 golem_add_external_resources <- function(){
 
-  addResourcePath(
-    'www', system.file('app/www', package = 'ReviewR')
-  )
-
+  addResourcePath('www', system.file('app/www', package = 'ReviewR') )
+  
   tags$head(
     golem::activate_js(),
     golem::favicon('www/favicon.png'),
