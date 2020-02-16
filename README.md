@@ -1,62 +1,106 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# ReviewR
+# ReviewR: A light-weight, portable tool for reviewing individual patient records
 
 <!-- badges: start -->
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1488535.svg)](https://doi.org/10.5281/zenodo.1488535)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 <!-- badges: end -->
 
-The goal of ReviewR is to …
+ReviewR is a portable Shiny tool to help you explore patient data across
+different data models. Within ReviewR, you can browse data stored in
+either the OMOP or MIMIC-III data model.
+
+In addition to viewing patient data, you may also connect to a REDCap
+project to perform a chart review.
+
+Currently, ReviewR will connect to Google BigQuery as a database
+back-end, with support planned for:
+
+  - PostgreSQL
+  - SQL Server
+  - others supported by the dbplyr back-end
+    (<https://dbplyr.tidyverse.org/>)
 
 ## Installation
 
-You can install the released version of ReviewR from
-[GitHub](https://github.com/) with:
+To install the latest development release:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("thewileylab/ReviewR")
+# install.packages('usethis')
+usethis::create_from_github("thewileylab/ReviewR")
 ```
 
-And the development version from [GitHub](https://github.com/) with:
+## Shiny Server Deployment
+
+ReviewR can optionally be deployed to a Shiny Server. Follow the [Shiny
+Server Quick Start
+Guide](https://support.rstudio.com/hc/en-us/articles/360011458854-Shiny-Server-Quick-Start-Installation-and-Configuration)
+to get Shiny Server up and running. After cloning the repository as
+described above to your server, symlink the ReviewR directory to
+`/srv/shiny-server/ReviewR`. Note, for Google Authentication to work,
+your server must have a fully qualified domain name and link to a Google
+Project that you own to perform authorization.
+
+## Usage
+
+To run the application from your local machine:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("thewileylab/ReviewR_dev")
+shiny::runApp('app.R', port = 8100)
 ```
 
-## Example
+Once the app has loaded, please complete the ‘Setup’ tab (found in the
+left navigation menu) to connect to your patient database and optionally
+connect to a REDCap project.
 
-This is a basic example which shows you how to solve a common problem:
+### View Mode
 
-``` r
-# library(ReviewR)
-## basic example code
-```
+Complete the database setup to connect to EHR data stored in MIMIC-III
+or OMOP format. For BigQuery connections, simply press “Sign in with
+Google” and you will be redirected to authenticate with Google. Once
+successfully connected to a patient database, the ‘Patient Search’ tab
+will appear. Select the patient you wish to view, and you will be taken
+to a pre-coordinated table containing EHR data for that patient.
+Navigate through patients using the previous and next buttons or select
+form the dropdown on the ‘Chart Review’ tab. At any time, you may return
+to the ‘Patient Search’ tab to select a different patient. Patient
+information globally within each tab or by a particular column.
+Searching via regex is also supported.
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
+### Review Mode
 
-``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
-```
+Optionally, you may connect to a REDCap project to store manual review
+information. On the setup tab, enter your institution’s REDCap URL and
+an API token for a REDCap project. This project may contain multiple
+REDCap instruments for data collection which are selectable from the
+Setup interface. Once connected, please select the REDCap field that
+contains your patient information as well as the field that will contain
+reviewer information. Enter your name to keep track of who has completed
+the review.
 
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date.
+Now, after selecting a patient from the ‘Patient Search’ tab, your
+REDCap instrument will appear next to the patient identifier information
+on the ‘Chart Review’ tab. Fill in desired information and click the
+‘Upload to REDCap’ button to store your information in the REDCap
+project.
 
-You can also embed plots, for example:
+## Disclaimer
 
-<img src="man/figures/README-pressure-1.png" width="100%" />
+This is a work in progress and thus there are no guarantees of
+functionality or accuracy. Use at your own risk.
 
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub\!
+## Getting help
+
+If you encounter bugs, errors, issues or other general unpleasantness,
+please let us know on
+[GitHub](https://github.com/thewileylab/ReviewR/issues).
+
+-----
+
+Please note that the ‘ReviewR’ project is released with a [Contributor
+Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this project,
+you agree to abide by its terms.
