@@ -34,7 +34,6 @@ data_model_detection_ui <- function(id) {
 #' @importFrom tidyr unnest as_tibble separate
 #' @importFrom stringr str_replace regex str_extract
 #' @importFrom ggplot2 remove_missing
-#' @importFrom readr read_csv
 data_model_detection_logic <- function(input, output, session, db_connection, connect, db_type) {
   ns <- session$ns
   
