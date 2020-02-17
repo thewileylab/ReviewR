@@ -1,6 +1,6 @@
 Package: ReviewR
 Title: ReviewR: A light-weight, portable tool for reviewing individual patient records
-Version: 0.0.0.9000
+Version: 2.0.0.9000
 Authors@R: c(
             person('Laura', 'Wiley', email = 'laura.wiley@cuanschutz.edu', role = c('aut')),
             person('Luke', 'Rasmussen', email = 'luke.rasmussen@northwestern.edu', role = c('aut')),
