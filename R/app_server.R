@@ -30,7 +30,6 @@ app_server <- function(input, output, session) {
 
   ## Source Reviewr Chart Review Tab Modules ----
   source('modules/patient_nav_module.R')
-  source('modules/patient_chart_module.R', keep.source = F)
   source('modules/save_abstraction_module.R')
   ### Load Chart Review Modules
   subject_selection_vars <- callModule(patient_nav_logic, 'chart_review', subject_info$patient_table, subject_info$selected_patient, parent = session)

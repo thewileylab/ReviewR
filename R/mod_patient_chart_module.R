@@ -1,6 +1,18 @@
-#
-# Patient Chart Module
-#
+#' Patient Chart Module
+#'
+#' This module is designed to guide a user through the process of authenticating with Google BigQuery. It is responsible for returning an authorization token, the user selected project,the user selected dataset, and a DBI connection to a BigQuery Dataset.
+#'
+#' @param id The namespace id for the UI output
+#' @param input internal
+#' @param output internal
+#' @param session internal
+#'
+#' @rdname mod_patient_chart_module
+#' 
+#' @keywords internal
+#' @export
+#' @import shiny 
+#' 
 
 ## OMOP ----
 
@@ -30,6 +42,15 @@ omop_chart_review_ui <- function(id) {
                 )
   )
 }
+
+# OMOP Chart Review Logic
+
+#' @rdname mod_patient_chart_module
+#' @param table_map tibble containing a the cdm that most closely matches the user's database and a map of standard tables to user tables
+#' @param db_connection Connection info received from the database setup module
+#' @param subject_id The selected subject
+#' @export
+#' @keywords internal
 
 omop_chart_review_logic <- function(input, output, session, table_map, db_connection, subject_id) {
   ns <- session$ns
@@ -233,7 +254,10 @@ omop_chart_review_logic <- function(input, output, session, table_map, db_connec
 }
 
 ## MIMIC ----
-
+#' @rdname mod_patient_chart_module
+#' @param id The namespace id for the UI output
+#' @export
+#' @keywords internal
 mimic_chart_review_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -261,6 +285,12 @@ mimic_chart_review_ui <- function(id) {
     )
   }
 
+#' @rdname mod_patient_chart_module
+#' @param table_map tibble containing a the cdm that most closely matches the user's database and a map of standard tables to user tables
+#' @param db_connection Connection info received from the database setup module
+#' @param subject_id The selected subject
+#' @export
+#' @keywords internal
 mimic_chart_review_logic <- function(input, output, session, table_map, db_connection, subject_id) {
   ns <- session$ns
   
