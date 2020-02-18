@@ -1,5 +1,18 @@
-# Define Patient Search DataTable
-
+#' Patient Search Module
+#'
+#' This module will render the datatable on the 'Patient Search' tab containing all patients in the cohort. The selected patient in the DT is kept in sync with the 'Chart Review' tab.
+#' 
+#' @param id The namespace id for the UI output
+#' @param input internal
+#' @param output internal
+#' @param session internal
+#'
+#' @rdname mod_patient_search_module
+#' 
+#' @keywords internal
+#' @export
+#' @import shiny 
+#' 
 patient_search_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -7,9 +20,24 @@ patient_search_ui <- function(id) {
   )
 }
 
+#' @param table_map tibble containing a the cdm that most closely matches the user's database and a map of standard tables to user tables
+#' @param db_connection Connection info received from the database setup module
+#' @param disconnect disconnect button press
+#' @param prev_sub previous subject button press
+#' @param next_sub next subject button press
+#' @param selected_sub the selected subject
+#' @param parent the parent environment of this module
+#'
+#' @rdname mod_patient_search_module
+#' 
+#' @keywords internal
+#' @export
+#' @import shiny 
+#' @importFrom DT reloadData formatStyle selectRows
+#' @importFrom dplyr rename slice filter select pull
+#' @importFrom tibble rowid_to_column
+#' @importFrom rlang .data
 patient_search_logic <- function(input, output, session, table_map, db_connection, disconnect, prev_sub, next_sub, selected_sub, parent) {
-  library(tibble)
-  library(lubridate)
   ns <- session$ns
   
   #Replace Patient Search Table when table map changes
@@ -38,7 +66,7 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
     req(patient_search_tbl())
     # The next time you think about implementing FixedColumns, check the status of this issue first: https://github.com/rstudio/DT/issues/275
     patient_search_tbl() %>% 
-      rename('Subject ID' = ID) %>% 
+      rename('Subject ID' = .data$ID) %>% 
       reviewr_datatable() %>% 
       formatStyle('Subject ID', 
                   color = '#0000EE', 
@@ -73,8 +101,8 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
     req(patient_search_tbl(), selected_sub(), input$patient_search_dt_rows_selected )
     sub_row_id <- patient_search_tbl() %>%
       rowid_to_column(var = 'row_id') %>%
-      filter(ID == selected_sub() ) %>%
-      select(row_id) %>%
+      filter(.data$ID == selected_sub() ) %>%
+      select(.data$row_id) %>%
       slice(1)
     DT::selectRows(patient_search_proxy, sub_row_id)
     })
@@ -85,7 +113,7 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
     req(patient_search_tbl(), input$patient_search_dt_rows_selected )
     patient_search_tbl() %>% 
       slice(input$patient_search_dt_rows_selected) %>% 
-      pull(ID)
+      pull(.data$ID)
     })
   
   selected_patient_info <- reactive({ 
