@@ -9,7 +9,7 @@
 #' @keywords internal
 #' @export 
 #' @importFrom magrittr %>%
-#' @importFrom dplyr distinct select filter
+#' @importFrom dplyr distinct select filter tbl
 #' @importFrom purrr pluck
 #' @importFrom rlang .data
 #'
