@@ -1,6 +1,6 @@
 #' Patient Chart Module
 #'
-#' This module is designed to guide a user through the process of authenticating with Google BigQuery. It is responsible for returning an authorization token, the user selected project,the user selected dataset, and a DBI connection to a BigQuery Dataset.
+#' This module will render a pre coordinated table with multiple tabsets containing patient information. If configured, a chart abstraction UI will also be presented.
 #'
 #' @param id The namespace id for the UI output
 #' @param input internal
@@ -43,7 +43,7 @@ omop_chart_review_ui <- function(id) {
   )
 }
 
-# OMOP Chart Review Logic
+## OMOP Chart Review Logic ----
 
 #' @rdname mod_patient_chart_module
 #' @param table_map tibble containing a the cdm that most closely matches the user's database and a map of standard tables to user tables
@@ -253,11 +253,15 @@ omop_chart_review_logic <- function(input, output, session, table_map, db_connec
   })
 }
 
+
+
 ## MIMIC ----
+
 #' @rdname mod_patient_chart_module
 #' @param id The namespace id for the UI output
 #' @export
 #' @keywords internal
+#' 
 mimic_chart_review_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -284,6 +288,7 @@ mimic_chart_review_ui <- function(id) {
                 )
     )
   }
+## MIMIC Chart Review Logic ----
 
 #' @rdname mod_patient_chart_module
 #' @param table_map tibble containing a the cdm that most closely matches the user's database and a map of standard tables to user tables
@@ -493,5 +498,76 @@ mimic_chart_review_logic <- function(input, output, session, table_map, db_conne
   })
 }
 
-## Other ----
+## Chart Review UI ----
+#' @rdname mod_patient_chart_module
+#' @export
+#' @keywords internal
 
+chart_review_ui <- function(id){
+  ns <- NS(id)
+  tagList(
+    uiOutput(ns('chart_review_ui'))
+  )
+}
+
+#' @rdname mod_patient_chart_module
+#' @param abstraction_vars a list containing data abstraction variables (REDCap currently: url, api token, connection, connect button press)
+#' @param table_map tibble containing a the cdm that most closely matches the user's database and a map of standard tables to user tables
+#' @param instrument_selection Which REDCap instrument in the projcet to use
+#' @export
+#' @keywords internal
+
+chart_review_ui_logic <- function(input, output, session, abstraction_vars, table_map, instrument_selection) {
+  ns <- session$ns
+  
+  ## Change layout based on presence or absence of abstraction connection info
+  output$chart_review_ui <- renderUI({ 
+    req(abstraction_vars$rc_url(), abstraction_vars$rc_url(), table_map$table_map())
+    ## Revisit -- conditions should be dependent on valid information being provided.
+    if(abstraction_vars$rc_url() == '' | abstraction_vars$rc_token() == '' ) { ## No Abstraction
+      box(width = '100%',
+          status = 'primary',
+          ## Select patient chart ui based on data model
+          if(table_map$table_map()$data_model == 'omop') {
+            omop_chart_review_ui('chart_review')
+          } else if (table_map$table_map()$data_model == 'mimic3') {
+            mimic_chart_review_ui('chart_review')
+          } else {return(NULL)}
+      ) 
+    } else { ## Abstraction ----
+      fluidRow(
+        column(
+          width = 9,
+          box(width = '100%',
+              status = 'primary',
+              ## Select patient chart ui based on data model
+              if(table_map$table_map()$data_model == 'omop') {
+                omop_chart_review_ui('chart_review')
+              } else if (table_map$table_map()$data_model == 'mimic3') {
+                mimic_chart_review_ui('chart_review')
+              } else {return(NULL)}
+          )
+        ),
+        column(
+          width = 3,
+          box(
+            title = instrument_selection$rc_instrument_selection(),
+            width = '100%',
+            status = 'danger',
+            redcap_instrument_ui('chart_review_abstraction'),
+            ## CSS to scroll the abstraction instrument, if necessary
+            tags$head(
+              tags$style("#abstraction{color:black; font-size:12px; font-style:italic; overflow-y:scroll; max-height: 600px; background: ghostwhite;}")
+            )
+          ),
+          box(
+            title = 'Save Form',
+            width = '100&',
+            status = 'danger',
+            instrument_complete_ui('chart_review_upload')
+          )
+        )
+      )
+    }
+  })
+}

@@ -5,6 +5,8 @@
 \alias{omop_chart_review_logic}
 \alias{mimic_chart_review_ui}
 \alias{mimic_chart_review_logic}
+\alias{chart_review_ui}
+\alias{chart_review_ui_logic}
 \title{Patient Chart Module}
 \usage{
 omop_chart_review_ui(id)
@@ -28,6 +30,17 @@ mimic_chart_review_logic(
   db_connection,
   subject_id
 )
+
+chart_review_ui(id)
+
+chart_review_ui_logic(
+  input,
+  output,
+  session,
+  abstraction_vars,
+  table_map,
+  instrument_selection
+)
 }
 \arguments{
 \item{id}{The namespace id for the UI output}
@@ -43,8 +56,12 @@ mimic_chart_review_logic(
 \item{db_connection}{Connection info received from the database setup module}
 
 \item{subject_id}{The selected subject}
+
+\item{abstraction_vars}{a list containing data abstraction variables (REDCap currently: url, api token, connection, connect button press)}
+
+\item{instrument_selection}{Which REDCap instrument in the projcet to use}
 }
 \description{
-This module is designed to guide a user through the process of authenticating with Google BigQuery. It is responsible for returning an authorization token, the user selected project,the user selected dataset, and a DBI connection to a BigQuery Dataset.
+This module will render a pre coordinated table with multiple tabsets containing patient information. If configured, a chart abstraction UI will also be presented.
 }
 \keyword{internal}
