@@ -28,12 +28,15 @@ data_model_detection_ui <- function(id) {
 #' @keywords internal
 #' @importFrom magrittr %>% 
 #' @importFrom DBI dbListTables dbListFields dbGetInfo
-#' @importFrom dplyr mutate rename select left_join filter ungroup arrange slice group_by
+#' @importFrom dplyr mutate rename select left_join filter ungroup arrange slice group_by desc
 #' @importFrom tibble tibble enframe
 #' @importFrom purrr map
 #' @importFrom tidyr unnest as_tibble separate
 #' @importFrom stringr str_replace regex str_extract
 #' @importFrom ggplot2 remove_missing
+#' @importFrom rlang .data
+#' @importFrom utils data
+
 data_model_detection_logic <- function(input, output, session, db_connection, connect, db_type) {
   ns <- session$ns
   
@@ -42,32 +45,32 @@ data_model_detection_logic <- function(input, output, session, db_connection, co
     
     # Load user tables and nest fields. 
     user_tables <- dbListTables(db_connection()) %>% 
-      tibble(user_database_table = .) %>% 
-      mutate(user_fields_long = map(.x = user_database_table,.f = dbListFields,conn=db_connection()),
-             user_fields_long = map(.x = user_fields_long,.f = as_tibble)
+      tibble(user_database_table = .data$.) %>% 
+      mutate(user_fields_long = map(.x = .data$user_database_table,.f = dbListFields,conn=db_connection()),
+             user_fields_long = map(.x = .data$user_fields_long,.f = as_tibble)
              ) %>% 
       ## Unnest user tables and coerce to match cdm standards
-      unnest(cols = c(user_fields_long)) %>% 
-      rename(user_fields = value) %>% 
-      mutate(clean_user_fields = tolower(user_fields),
-             clean_user_fields = str_replace(string = clean_user_fields, pattern = regex(pattern = '[.!?\\-]'),replacement = '_'),
-             clean_table = tolower(user_database_table),
-             clean_table = str_replace(string = clean_table, pattern = regex(pattern = '[.!?\\-]'),replacement = '_')) %>% 
-      select(user_database_table, clean_table, user_fields, clean_user_fields)
+      unnest(cols = c(.data$user_fields_long)) %>% 
+      rename(user_fields = .data$value) %>% 
+      mutate(clean_user_fields = tolower(.data$user_fields),
+             clean_user_fields = str_replace(string = .data$clean_user_fields, pattern = regex(pattern = '[.!?\\-]'),replacement = '_'),
+             clean_table = tolower(.data$user_database_table),
+             clean_table = str_replace(string = .data$clean_table, pattern = regex(pattern = '[.!?\\-]'),replacement = '_')) %>% 
+      select(.data$user_database_table, .data$clean_table, .data$user_fields, .data$clean_user_fields)
     
     # Join user tables with supported data models, determine which one the user is likely running
     user_joined <- supported_models %>% 
       mutate(model_match = map(.x = data,.f = left_join, user_tables, by = c('table'='clean_table', 'field'='clean_user_fields')))%>% 
-      mutate(filtered = map(.x = model_match,.f = filter, is.na(user_fields)!=T),
-             count_filtered = map(.x = filtered,.f = nrow), 
-             count_filtered = unlist(count_filtered)
+      mutate(filtered = map(.x = .data$model_match,.f = filter, is.na(.data$user_fields)!=T),
+             count_filtered = map(.x = .data$filtered,.f = nrow), 
+             count_filtered = unlist(.data$count_filtered)
              )
     
     table_map <- user_joined %>% 
       ungroup() %>% 
-      filter(count_filtered == max(count_filtered)) %>% 
-      select(data_model, model_version, data, model_match, count_filtered) %>%
-      arrange(desc(model_version)) %>%
+      filter(.data$count_filtered == max(.data$count_filtered)) %>% 
+      select(.data$data_model, .data$model_version, .data$data, .data$model_match, .data$count_filtered) %>%
+      arrange(desc(.data$model_version)) %>%
       slice(1)
     return(table_map)
     })
@@ -75,7 +78,7 @@ data_model_detection_logic <- function(input, output, session, db_connection, co
     req(db_connection() )
     DBI::dbGetInfo(db_connection() ) %>% 
       tibble::enframe(name = NULL) %>% 
-      separate(col = value, into = c('project', 'dataset'),sep = '\\.',fill = 'right') %>% 
+      separate(col = .data$value, into = c('project', 'dataset'),sep = '\\.',fill = 'right') %>% 
       remove_missing(na.rm = TRUE)
   })
   
