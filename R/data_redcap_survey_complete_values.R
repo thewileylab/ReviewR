@@ -2,6 +2,8 @@
 #'
 #' A named list containing REDCap "Survey Complete" Values. 
 #'
+#' @docType data
+#'
 #' @format A named list containing 3 items:
 #' \describe{
 #'   \item{Incomplete}{REDCap Survey Incomplete}

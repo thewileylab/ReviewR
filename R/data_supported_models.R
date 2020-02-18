@@ -2,6 +2,8 @@
 #'
 #' A dataset containing data model information along with the corresponding
 #' version and schema.
+#' 
+#' @docType data
 #'
 #' @format A data frame with 12 rows and 4 variables:
 #' \describe{
