@@ -30,7 +30,10 @@ Imports:
     tibble,
     tidyr,
     ggplot2,
-    stringr
+    stringr,
+    snakecase,
+    shinycssloaders,
+    lubridate
 RoxygenNote: 7.0.2
 URL: https://github.com/thewileylab/ReviewR
 BugReports: https://github.com/thewileylab/ReviewR/issues
