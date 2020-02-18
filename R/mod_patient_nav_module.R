@@ -1,3 +1,17 @@
+#' Patient Navigation Module
+#'
+#' This module will assist with selecting a patient. It keeps the patient search tab data table up todate, server side renders the select input on the patient chart tab, and displays in context information about the selected patient. 
+#'
+#' @param id The namespace id for the UI output
+#' @param input internal
+#' @param output internal
+#' @param session internal
+#'
+#' @rdname mod_patient_nav_module
+#' 
+#' @keywords internal
+#' @export
+
 patient_nav_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -5,6 +19,15 @@ patient_nav_ui <- function(id) {
   )
 }
 
+#' @param patient_table A reactive expression containing a DT of the current "All Patients" table
+#' @param selected_patient A reactive expression containing the currently selected patient subject ID
+#' @param parent the parent environement of this module
+#'
+#' @rdname mod_patient_nav_module
+#' 
+#' @keywords internal
+#' @export
+#' @import shiny
 patient_nav_logic <- function(input, output, session, patient_table, selected_patient, parent) {
   ns <- session$ns
   
@@ -47,6 +70,10 @@ patient_nav_logic <- function(input, output, session, patient_table, selected_pa
   ))
 }
 
+#' @rdname mod_patient_nav_module
+#' 
+#' @keywords internal
+#' @export
 subject_info <- function(id) {
   ns <- NS(id)
   tagList(
@@ -54,6 +81,18 @@ subject_info <- function(id) {
   )
 }
 
+
+#' @param previousData Previous Abstraction "Instrument Complete" Value
+#' @param all_instruments All data abstraction instruments in the project
+#' @param instrument_selection The selected data abstraction instrument
+#' @param subject A reactive expression containing the currently selected patient subject ID
+#' @param subjectInfo Demographic information about the currently selected patient
+#'
+#' @rdname mod_patient_nav_module
+#' 
+#' @keywords internal
+#' @export
+#' @import shiny
 subject_info_logic <- function(input, output, session, previousData, all_instruments, instrument_selection, subject, subjectInfo) {
   ns <- session$ns
   
@@ -114,5 +153,4 @@ subject_info_logic <- function(input, output, session, previousData, all_instrum
       renderTable(subjectInfo() %>% mutate_all(as.character) %>% select(-ID), width = '100%', align = 'l', digits = 0)
       )
     }) 
-  
 }
