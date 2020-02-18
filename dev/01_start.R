@@ -53,7 +53,7 @@ golem::use_recommended_deps()
 
 # If you want to change the favicon (default is golem's one)
 golem::remove_favicon()
-golem::use_favicon('~/Desktop/Picture1.png') # path = "path/to/ico". Can be an online file. 
+golem::use_favicon('~/Documents/ReviewR_Docs/ReviewR_Logo.png') # path = "path/to/ico". Can be an online file. 
 
 # Add helper functions 
 golem::use_utils_ui()
