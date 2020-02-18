@@ -28,6 +28,7 @@ patient_nav_ui <- function(id) {
 #' @keywords internal
 #' @export
 #' @import shiny
+#' @importFrom rlang .data
 patient_nav_logic <- function(input, output, session, patient_table, selected_patient, parent) {
   ns <- session$ns
   
@@ -36,7 +37,7 @@ patient_nav_logic <- function(input, output, session, patient_table, selected_pa
     updateSelectizeInput(session = parent,
                          inputId = ns('subject_id'),
                          choices = patient_table() %>% 
-                           select(ID) %>% 
+                           select(.data$ID) %>% 
                            deframe(),
                          selected = selected_patient(),
                          server = TRUE )
@@ -93,6 +94,10 @@ subject_info <- function(id) {
 #' @keywords internal
 #' @export
 #' @import shiny
+#' @importFrom rlang .data
+#' @importFrom magrittr extract2
+#' @importFrom dplyr mutate_all
+
 subject_info_logic <- function(input, output, session, previousData, all_instruments, instrument_selection, subject, subjectInfo) {
   ns <- session$ns
   
@@ -104,7 +109,7 @@ subject_info_logic <- function(input, output, session, previousData, all_instrum
   selected_instrument_name <- reactive({
     req(all_instruments(), instrument_selection() )
     all_instruments() %>%
-      filter(instrument_label == instrument_selection() ) %>%
+      filter(.data$instrument_label == instrument_selection() ) %>%
       extract2(1,1)
   })
   
@@ -150,7 +155,7 @@ subject_info_logic <- function(input, output, session, previousData, all_instrum
     tagList(
       tags$div(subject_info_text(), style='display:inline-block;vertical-align:middle'),
       tags$div(status_indicator(), style='display:inline-block;vertical-align:middle'),
-      renderTable(subjectInfo() %>% mutate_all(as.character) %>% select(-ID), width = '100%', align = 'l', digits = 0)
+      renderTable(subjectInfo() %>% mutate_all(as.character) %>% select(-.data$ID), width = '100%', align = 'l', digits = 0)
       )
     }) 
 }
