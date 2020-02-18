@@ -1,5 +1,21 @@
-## Source function to extract tables and field names from table_map
-library(snakecase)
+#' OMOP Tables
+#'
+#' Collection of functions to create pre-arranged views of OMOP patient data for ReviewR.
+#' 
+#' @param table_map tibble containing a the cdm that most closely matches the user's database and a map of standard tables to user tables
+#' @param db_connection Connection info received from the database setup module
+#'
+#' @rdname omop_tables
+#' @keywords internal
+#' @export
+#' @importFrom dplyr select everything arrange matches mutate_if rename_at collect filter inner_join vars left_join
+#' @importFrom snakecase to_title_case
+#' @importFrom stringr str_replace regex str_replace_all
+#' @importFrom rlang .data
+#' @importFrom tidyr unite
+#' @importFrom lubridate as_date
+#' @importFrom stats setNames
+#' 
 
 ## OMOP All Patient Table -----
 
@@ -21,14 +37,18 @@ omop_table_all_patients <- function(table_map, db_connection) {
     mutate_if(is.integer, as.character) %>%
     collect() %>% 
     unite(col = 'Birth_Date', c('year_of_birth','month_of_birth','day_of_birth')) %>% 
-    mutate(Birth_Date = as_date(Birth_Date)) %>% 
-    select('ID' = user_field(table_map, 'person', 'person_id'), Gender, 'SourceVal' = user_field(table_map, 'person', 'person_source_value'), everything()) %>% 
-    arrange(ID) %>% 
+    mutate(Birth_Date = as_date(.data$Birth_Date)) %>% 
+    select(ID = user_field(table_map, 'person', 'person_id'), .data$Gender, SourceVal = user_field(table_map, 'person', 'person_source_value'), everything()) %>% 
+    arrange(.data$ID) %>% 
     rename_at(vars(-1), to_title_case)
 }
 
 ## OMOP Condition Era -----
-
+#' @param subject_id The selected subject 
+#'
+#' @rdname omop_tables
+#' @keywords internal
+#' @export
 omop_table_condition_era <- function(table_map, db_connection, subject_id) {
   req(table_map(), db_connection(), subject_id() )
   message('Running Condition Era')
@@ -44,15 +64,19 @@ omop_table_condition_era <- function(table_map, db_connection, subject_id) {
                ) %>%
     rename('Condition' = user_field(table_map, 'concept', 'concept_name')) %>%
     select(-matches('concept*|person*',ignore.case = T)) %>% 
-    select('ID' = user_field(table_map, 'condition_era','condition_era_id'), everything()) %>% 
-    arrange(ID) %>%
+    select(ID = user_field(table_map, 'condition_era','condition_era_id'), everything()) %>% 
+    arrange(.data$ID) %>%
     mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
 
 ## OMOP Condition Occurrence -----
-
+#' @param subject_id The selected subject 
+#'
+#' @rdname omop_tables
+#' @keywords internal
+#' @export
 omop_table_condition_occurrence <- function(table_map, db_connection, subject_id) {
   req(table_map(), db_connection(), subject_id() )
   message('Running Condition Occurrence')
@@ -72,14 +96,18 @@ omop_table_condition_occurrence <- function(table_map, db_connection, subject_id
     left_join(condition_status_concepts) %>% 
     left_join(condition_provider_concepts) %>% 
     left_join(condition_type_concepts) %>% 
-    select('ID' = user_field(table_map,'condition_occurrence','condition_occurrence_id'), Condition, 'SourceVal' = user_field(table_map,'condition_occurrence','condition_source_value'), Status, everything(), Type, Provider, 'Visit' = user_field(table_map,'condition_occurrence','visit_occurrence_id')) %>% 
-    arrange(ID) %>%
+    select(ID = user_field(table_map,'condition_occurrence','condition_occurrence_id'), .data$Condition, SourceVal = user_field(table_map,'condition_occurrence','condition_source_value'), .data$Status, everything(), .data$Type, .data$Provider, Visit = user_field(table_map,'condition_occurrence','visit_occurrence_id')) %>% 
+    arrange(.data$ID) %>%
     mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
 ## OMOP Death -----
-
+#' @param subject_id The selected subject 
+#'
+#' @rdname omop_tables
+#' @keywords internal
+#' @export
 omop_table_death <- function(table_map, db_connection, subject_id) {
   req(table_map(), db_connection(), subject_id() )
   message('Running Death')
@@ -95,13 +123,18 @@ omop_table_death <- function(table_map, db_connection, subject_id) {
     select(-matches('death_type_concept*|cause_concept*|cause_source_concept*', ignore.case = T)) %>% 
     left_join(death_cause_concepts) %>% 
     left_join(death_type_concepts) %>% 
-    select('ID' = person_id, 'SourceVal' = user_field(table_map, 'death', 'cause_source_value'), everything()) %>%
+    select(ID = .data$person_id, SourceVal = user_field(table_map, 'death', 'cause_source_value'), everything()) %>%
     mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
 
 ## Device Exposure -----
+#' @param subject_id The selected subject 
+#'
+#' @rdname omop_tables
+#' @keywords internal
+#' @export
 omop_table_device_exposure <- function(table_map, db_connection, subject_id) {
   req(table_map(), db_connection(), subject_id() )
   message('Running Device Exposure')
@@ -118,14 +151,19 @@ omop_table_device_exposure <- function(table_map, db_connection, subject_id) {
     left_join(device_concepts) %>% 
     left_join(device_type_concepts) %>% 
     left_join(device_provider_concepts) %>% 
-    select('ID' = user_field(table_map, 'device_exposure','device_exposure_id'), everything()) %>% 
-    arrange(ID) %>%
+    select(ID = user_field(table_map, 'device_exposure','device_exposure_id'), everything()) %>% 
+    arrange(.data$ID) %>%
     mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
  
 ## Dose Era -----
+#' @param subject_id The selected subject 
+#'
+#' @rdname omop_tables
+#' @keywords internal
+#' @export
 omop_table_dose_era <- function(table_map, db_connection, subject_id) {
   req(table_map(), db_connection(), subject_id() )
   message('Running Dose Era')
@@ -141,14 +179,19 @@ omop_table_dose_era <- function(table_map, db_connection, subject_id) {
     select(-matches('person_id|drug_concept_id|unit_concept_id')) %>% 
     left_join(dose_concepts) %>% 
     left_join(unit_concepts) %>% 
-    select('ID' = user_field(table_map, 'dose_era', 'dose_era_id'), Drug, Unit, 'DoseValue' = dose_value, everything()) %>% 
-    arrange(ID) %>%
+    select(ID = user_field(table_map, 'dose_era', 'dose_era_id'), .data$Drug, .data$Unit, DoseValue = .data$dose_value, everything()) %>% 
+    arrange(.data$ID) %>%
     mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
 
 ## Drug Era -----
+#' @param subject_id The selected subject 
+#'
+#' @rdname omop_tables
+#' @keywords internal
+#' @export
 omop_table_drug_era <- function(table_map, db_connection, subject_id) {
   req(table_map(), db_connection(), subject_id() )
   message('Running Drug Era')
@@ -162,8 +205,8 @@ omop_table_drug_era <- function(table_map, db_connection, subject_id) {
     filter(!!as.name(user_field(table_map, 'drug_era','person_id')) == subject ) %>% 
     select(-matches('person_id|drug_concept_id')) %>% 
     left_join(drug_concepts) %>% 
-    select('ID' = user_field(table_map, 'drug_era', 'drug_era_id'), Drug, everything()) %>% 
-    arrange(ID) %>%
+    select(ID = user_field(table_map, 'drug_era', 'drug_era_id'), .data$Drug, everything()) %>% 
+    arrange(.data$ID) %>%
     mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
@@ -171,7 +214,13 @@ omop_table_drug_era <- function(table_map, db_connection, subject_id) {
 }
 
 ## Drug Exposure -----
+#' @param subject_id The selected subject 
+#'
+#' @rdname omop_tables
+#' @keywords internal
+#' @export
 omop_table_drug_exposure <- function(table_map, db_connection, subject_id) {
+  browser()
   req(table_map(), db_connection(), subject_id() )
   message('Running Drug Exposure')
   subject <- as.integer(subject_id() )
@@ -190,10 +239,10 @@ omop_table_drug_exposure <- function(table_map, db_connection, subject_id) {
     left_join(drug_type_concepts) %>% 
     left_join(route_concepts) %>% 
     left_join(provider_concepts) %>% 
-    select('ID' = user_field(table_map, 'drug_exposure', 'drug_exposure_id'), Drug, 'SourceVal' = user_field(table_map, 'drug_exposure', 'drug_source_value'),  'StartDate' = user_field(table_map, 'drug_exposure', 'drug_exposure_start_date'),
-           'StartDateTime' = user_field(table_map, 'drug_exposure','drug_exposure_start_datetime'), 'EndDate' = user_field(table_map, 'drug_exposure', 'drug_exposure_end_date'), 'EndDateTime' = user_field(table_map, 'drug_exposure', 'drug_exposure_end_datetime'),
-           'VerbatimEnd' = user_field(table_map, 'drug_exposure', 'drug_exposure_verbatim_end_date'), Type, 'Visit' = user_field(table_map, 'drug_exposure', 'visit_occurrence_id'), everything() ) %>% 
-    arrange(ID) %>%
+    select(ID = user_field(table_map, 'drug_exposure', 'drug_exposure_id'), .data$Drug, SourceVal = user_field(table_map, 'drug_exposure', 'drug_source_value'), StartDate = user_field(table_map, 'drug_exposure', 'drug_exposure_start_date'),
+           StartDateTime = user_field(table_map, 'drug_exposure','drug_exposure_start_datetime'), EndDate = user_field(table_map, 'drug_exposure', 'drug_exposure_end_date'), EndDateTime = user_field(table_map, 'drug_exposure', 'drug_exposure_end_datetime'),
+           VerbatimEnd = user_field(table_map, 'drug_exposure', 'drug_exposure_verbatim_end_date'), .data$Type, Visit = user_field(table_map, 'drug_exposure', 'visit_occurrence_id'), everything() ) %>% 
+    arrange(.data$ID) %>%
     mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
@@ -201,6 +250,11 @@ omop_table_drug_exposure <- function(table_map, db_connection, subject_id) {
 }
 
 ## Measurement -----
+#' @param subject_id The selected subject 
+#'
+#' @rdname omop_tables
+#' @keywords internal
+#' @export
 omop_table_measurement <- function(table_map, db_connection, subject_id) {
   req(table_map(), db_connection(), subject_id() )
   message('Running Measurement')
@@ -224,14 +278,19 @@ omop_table_measurement <- function(table_map, db_connection, subject_id) {
     left_join(value_concepts) %>% 
     left_join(unit_concepts) %>% 
     left_join(provider_concepts) %>% 
-    select('ID' = user_field(table_map, 'measurement', 'measurement_id'), everything() ) %>% 
-    arrange(ID) %>%
+    select(ID = user_field(table_map, 'measurement', 'measurement_id'), everything() ) %>% 
+    arrange(.data$ID) %>%
     mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
 
 ## Note -----
+#' @param subject_id The selected subject 
+#'
+#' @rdname omop_tables
+#' @keywords internal
+#' @export
 omop_table_note <- function(table_map, db_connection, subject_id) {
   req(table_map(), db_connection(), subject_id() )
   message('Running Note')
@@ -253,8 +312,8 @@ omop_table_note <- function(table_map, db_connection, subject_id) {
     left_join(note_encoding_concepts) %>% 
     left_join(note_language_concepts) %>% 
     left_join(provider_concepts) %>% 
-    select('ID' = user_field(table_map, 'note', 'note_id'), everything()) %>% 
-    arrange(ID) %>%
+    select(ID = user_field(table_map, 'note', 'note_id'), everything()) %>% 
+    arrange(.data$ID) %>%
     mutate_if(is.integer, as.character) %>%
     collect() %>% 
     mutate_if(is.character, str_replace_all, pattern = '\n', replacement = '<br>') %>% 
@@ -262,6 +321,11 @@ omop_table_note <- function(table_map, db_connection, subject_id) {
 }
 
 ## Observation -----
+#' @param subject_id The selected subject 
+#'
+#' @rdname omop_tables
+#' @keywords internal
+#' @export
 omop_table_observation <- function(table_map, db_connection, subject_id) {
   req(table_map(), db_connection(), subject_id() )
   message('Running Observation')
@@ -285,16 +349,21 @@ omop_table_observation <- function(table_map, db_connection, subject_id) {
     left_join(observation_qualifier_concepts) %>% 
     left_join(observation_unit_concepts) %>% 
     left_join(provider_concepts) %>% 
-    select('ID' = user_field(table_map, 'observation','observation_id'),Observation, 'Date' = user_field(table_map, 'observation','observation_date'), 'DateTime' = user_field(table_map, 'observation','observation_datetime'),
-           Type, 'ValueNum' = user_field(table_map, 'observation','value_as_number'), 'ValueString' = user_field(table_map, 'observation','value_as_string'), Value, 'SourceVal' = user_field(table_map, 'observation','observation_source_value'),
-           Qualifier, Unit, Provider, 'Visit' = user_field(table_map, 'observation','visit_occurrence_id')) %>% 
-    arrange(ID) %>%
+    select(ID = user_field(table_map, 'observation','observation_id'), .data$Observation, Date = user_field(table_map, 'observation','observation_date'), DateTime = user_field(table_map, 'observation','observation_datetime'),
+           .data$Type, ValueNum = user_field(table_map, 'observation','value_as_number'), ValueString = user_field(table_map, 'observation','value_as_string'), .data$Value, SourceVal = user_field(table_map, 'observation','observation_source_value'),
+           .data$Qualifier, .data$Unit, .data$Provider, Visit = user_field(table_map, 'observation','visit_occurrence_id')) %>% 
+    arrange(.data$ID) %>%
     mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
 
 ## Observation Period -----
+#' @param subject_id The selected subject 
+#'
+#' @rdname omop_tables
+#' @keywords internal
+#' @export
 omop_table_observation_period <- function(table_map, db_connection, subject_id) {
   req(table_map(), db_connection(), subject_id() )
   message('Running Observation Period')
@@ -308,14 +377,19 @@ omop_table_observation_period <- function(table_map, db_connection, subject_id) 
     filter(!!as.name(user_field(table_map, 'note','person_id')) == subject ) %>% 
     select(-matches('person_id|period_type_concept_id')) %>% 
     left_join(observation_type_concepts) %>% 
-    select('ID' = user_field(table_map, 'observation_period','observation_period_id'), everything()) %>% 
-    arrange(ID) %>%
+    select(ID = user_field(table_map, 'observation_period','observation_period_id'), everything()) %>% 
+    arrange(.data$ID) %>%
     mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
 
 ## Payer Plan Period -----
+#' @param subject_id The selected subject 
+#'
+#' @rdname omop_tables
+#' @keywords internal
+#' @export
 omop_table_payer_plan_period <- function(table_map, db_connection, subject_id) {
   req(table_map(), db_connection(), subject_id() )
   message('Running Payer Plan Period')
@@ -324,14 +398,19 @@ omop_table_payer_plan_period <- function(table_map, db_connection, subject_id) {
   user_table(table_map, db_connection, 'payer_plan_period') %>% 
     filter(!!as.name(user_field(table_map, 'payer_plan_period','person_id')) == subject ) %>%
     select(-matches('person_id')) %>% 
-    select('ID' = user_field(table_map, 'payer_plan_period', 'payer_plan_period_id'), everything()) %>% 
-    arrange(ID) %>%
+    select(ID = user_field(table_map, 'payer_plan_period', 'payer_plan_period_id'), everything()) %>% 
+    arrange(.data$ID) %>%
     mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
 
 ## Procedure Occurrence -----
+#' @param subject_id The selected subject 
+#'
+#' @rdname omop_tables
+#' @keywords internal
+#' @export
 omop_table_procedure_occurrence <- function(table_map, db_connection, subject_id) {
   req(table_map(), db_connection(), subject_id() )
   message('Running Procedure Occurrence')
@@ -351,15 +430,20 @@ omop_table_procedure_occurrence <- function(table_map, db_connection, subject_id
     left_join(procedure_type_concepts) %>% 
     left_join(procedure_modifier_concepts) %>% 
     left_join(provider_concepts) %>% 
-    select('ID' = user_field(table_map, 'procedure_occurrence','procedure_occurrence_id'), Procedure, 'SourceVal' = user_field(table_map, 'procedure_occurrence','procedure_source_value'),
-           'Date' = user_field(table_map, 'procedure_occurrence','procedure_date'), Type, Modifier, everything()) %>% 
-    arrange(ID) %>%
+    select(ID = user_field(table_map, 'procedure_occurrence','procedure_occurrence_id'), .data$Procedure, SourceVal = user_field(table_map, 'procedure_occurrence','procedure_source_value'),
+           Date = user_field(table_map, 'procedure_occurrence','procedure_date'), .data$Type, .data$Modifier, everything()) %>% 
+    arrange(.data$ID) %>%
     mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
 
 ## Specimen -----
+#' @param subject_id The selected subject 
+#'
+#' @rdname omop_tables
+#' @keywords internal
+#' @export
 omop_table_specimen <- function(table_map, db_connection, subject_id) {
   req(table_map(), db_connection(), subject_id() )
   message('Running Specimen')
@@ -381,14 +465,19 @@ omop_table_specimen <- function(table_map, db_connection, subject_id) {
     left_join(specimen_unit_concepts) %>% 
     left_join(anatomic_site_concepts) %>% 
     left_join(disease_status_concepts) %>% 
-    select('ID' = user_field(table_map, 'specimen', 'specimen_id'), Specimen, 'SourceVal' = user_field(table_map, 'specimen', 'specimen_source_value'),Type,'Date' = user_field(table_map, 'specimen', 'specimen_date'),
-           'DateTime' = user_field(table_map, 'specimen', 'specimen_datetime'),everything()) %>% 
-    arrange(ID) %>%
+    select(ID = user_field(table_map, 'specimen', 'specimen_id'), .data$Specimen, SourceVal = user_field(table_map, 'specimen', 'specimen_source_value'), .data$Type, Date = user_field(table_map, 'specimen', 'specimen_date'),
+           DateTime = user_field(table_map, 'specimen', 'specimen_datetime'), everything()) %>% 
+    arrange(.data$ID) %>%
     mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
 ## Visit Occurrence -----
+#' @param subject_id The selected subject 
+#'
+#' @rdname omop_tables
+#' @keywords internal
+#' @export
 omop_table_visit_occurrence <- function(table_map, db_connection, subject_id) {
   req(table_map(), db_connection(), subject_id() )
   message('Running Visit Occurrence')
@@ -412,10 +501,10 @@ omop_table_visit_occurrence <- function(table_map, db_connection, subject_id) {
     left_join(discharge_to_concepts) %>% 
     left_join(care_site_concepts) %>% 
     left_join(provider_concepts) %>% 
-    select('ID' = user_field(table_map, 'visit_occurrence', 'visit_occurrence_id'), Visit, 'StartDate' = user_field(table_map, 'visit_occurrence', 'visit_date'), 'StartDateTime' = user_field(table_map, 'visit_occurrence', 'visit_start_datetime'), 
-           'EndDate' = user_field(table_map, 'visit_occurrence', 'visit_end_date'), 'EndDateTime' = user_field(table_map, 'visit_occurrence', 'visit_end_datetime'), Type, Provider, CareSite, AdmittingSource, DischargeTo, 
-           'PrecedingVisit' = user_field(table_map, 'visit_occurrence', 'preceding_visit_occurrence_id')) %>% 
-    arrange(ID) %>%
+    select(ID = user_field(table_map, 'visit_occurrence', 'visit_occurrence_id'), .data$Visit, StartDate = user_field(table_map, 'visit_occurrence', 'visit_date'), StartDateTime = user_field(table_map, 'visit_occurrence', 'visit_start_datetime'), 
+           EndDate = user_field(table_map, 'visit_occurrence', 'visit_end_date'), EndDateTime = user_field(table_map, 'visit_occurrence', 'visit_end_datetime'), .data$Type, .data$Provider, .data$CareSite, .data$AdmittingSource, .data$DischargeTo, 
+           PrecedingVisit = user_field(table_map, 'visit_occurrence', 'preceding_visit_occurrence_id')) %>% 
+    arrange(.data$ID) %>%
     mutate_if(is.integer, as.character) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
