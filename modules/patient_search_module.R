@@ -24,11 +24,9 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
   patient_search_tbl <- eventReactive(table_map(), {
     req(db_connection() )
     if (table_map()$count_filtered != 0 & table_map()$data_model == 'omop') {
-      source('lib/omop_tables.R',keep.source = F)
       omop_table_all_patients(table_map, db_connection)
     } else if(table_map()$count_filtered != 0 & table_map()$data_model == 'mimic3') {
       ## MIMIC Patient Search
-      source('lib/mimic_tables.R',keep.source = F)
       mimic_table_all_patients(table_map, db_connection)
     } else {
       return(NULL)
