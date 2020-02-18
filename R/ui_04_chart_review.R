@@ -40,7 +40,11 @@ chart_review_tab <- function() {
             )
           ),
         fluidRow(
-          uiOutput('chart_review')
+          column(
+            # Column Setup
+            width = 12,
+            chart_review_ui('chart_review')
+            )
           )
         )
       )
