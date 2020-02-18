@@ -1,12 +1,42 @@
+#' Render REDCap Instrument
+#'
+#' Collection of functions to map REDCap question types to native Shiny widgets.
+#' 
+#' @param id Unique REDCap question identifier
+#' @param field_label Question text, with formatting
+#' @param value Default value or previous data if question has previously been answered 
+#' @param placeholder Placeholder text to help a reviewer decide how to answer the question
+#' @param ... Any additional parameters
+#'
+#' @rdname render_redcap_instrument
+#' @keywords internal
+#' @export
+#' @import shiny
+#' @importFrom tibble tibble add_row
+#' @importFrom tidyr separate_rows separate
+#' @importFrom dplyr mutate_all select if_else
+#' @importFrom purrr flatten
+#' @importFrom stringr str_trim
+#' @importFrom rlang .data
+#' 
+
 ## Create Shiny Widget Translation Functions ----
 reviewr_textInput <- function(id, field_label, value = NULL, placeholder = NULL, ...) {
   textInput(inputId = id ,label = HTML(field_label), value = value , placeholder = placeholder)
   }
 
+#' @rdname render_redcap_instrument
+#' @keywords internal
+#' @export
 reviewr_dateInput <- function(id, field_label, value = NULL, ...) {
   dateInput(inputId = id, label = HTML(field_label), value = value)
   }
 
+#' @param required Is this a required REDCap question type?
+#' @param choices REDCap choices for the question.
+#' @rdname render_redcap_instrument
+#' @keywords internal
+#' @export
 reviewr_dropdown <- function(id, field_label, required, choices, value = NULL, ...) {
   ## Create selectable choices
   required_choice <- if_else(is.na(required), '[Leave Blank]', '[Not Yet Answered]')
@@ -22,6 +52,9 @@ reviewr_dropdown <- function(id, field_label, required, choices, value = NULL, .
   selectInput(inputId = id, label = HTML(field_label), choices = dropdown_choices, selected = value)
   }
 
+#' @rdname render_redcap_instrument
+#' @keywords internal
+#' @export
 reviewr_truefalse <- function(id, field_label, required, value = NULL, ...) {
   if(is.na(required) ) {
     radio_names <- list('True', 'False', HTML("<font color='grey'>[Leave Blank]</font>"))
@@ -32,6 +65,9 @@ reviewr_truefalse <- function(id, field_label, required, value = NULL, ...) {
   radioButtons(inputId = id, label = HTML(field_label), choiceNames = radio_names, choiceValues = radio_values, selected = value)
   }
 
+#' @rdname render_redcap_instrument
+#' @keywords internal
+#' @export
 reviewr_yesno <- function(id, field_label, required, value = NULL, ...) {
   if(is.na(required) ) {
     radio_names <- list('Yes', 'No', HTML("<font color='grey'>[Leave Blank]</font>"))
@@ -42,6 +78,9 @@ reviewr_yesno <- function(id, field_label, required, value = NULL, ...) {
   radioButtons(inputId = id, label = HTML(field_label), choiceNames = radio_names, choiceValues = radio_values, selected = value)
   }
 
+#' @rdname render_redcap_instrument
+#' @keywords internal
+#' @export
 reviewr_radio <- function(id, field_label, required, choices, value = NULL, ...) {
   ## Create selectable choices
   if(is.na(required) ) {
@@ -55,16 +94,19 @@ reviewr_radio <- function(id, field_label, required, choices, value = NULL, ...)
     mutate_all(str_trim) %>% 
     mutate_all(as.character)
   radio_names <- temp %>% 
-    select(Names) %>% 
+    select(.data$Names) %>% 
     flatten() %>% 
     append(append_val)
   radio_values <- temp %>% 
-    select(Values) %>% 
+    select(.data$Values) %>% 
     flatten() %>% 
     append(list(''))
   radioButtons(inputId = id, label = HTML(field_label), choiceNames = radio_names, choiceValues = radio_values, selected = value)
   }
 
+#' @rdname render_redcap_instrument
+#' @keywords internal
+#' @export
 reviewr_checkbox <- function(id, field_label, choices, value = NULL, ...) {
   ## Create selectable choices
   temp <- tibble(choices = choices) %>% 
@@ -76,16 +118,26 @@ reviewr_checkbox <- function(id, field_label, choices, value = NULL, ...) {
   checkboxGroupInput(inputId = id, label = HTML(field_label), choices = checkbox_choices, selected = value)
   }
 
+#' @rdname render_redcap_instrument
+#' @keywords internal
+#' @export
 reviewr_notes <- function(id, field_label, value = NULL, ...) {
   textAreaInput(inputId = id, label = HTML(field_label), value = value)
   }
 
+#' @rdname render_redcap_instrument
+#' @keywords internal
+#' @export
 reviewr_integer <- function(id, field_label, value = NULL, ...) {
   numericInput(inputId = id, label = HTML(field_label), value = value)
 }
 
 ## Render REDCap Instrument shinyInput Tags ----
-## Remember to add default values!! WIP
+
+#' @param current_subject_data Previous REDCap data on the current subject
+#' @rdname render_redcap_instrument
+#' @keywords internal
+#' @export
 render_redcap <- function(reviewr_type, field_name, field_label, required, choices, current_subject_data = NULL ) {
   if(reviewr_type == 'reviewr_text') {   ## Text: textInput ----
     reviewr_textInput(id = field_name, field_label = field_label, value = current_subject_data)

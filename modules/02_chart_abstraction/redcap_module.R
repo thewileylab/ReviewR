@@ -155,10 +155,7 @@ redcap_instrument_select_logic <- function(input, output, session, rc_connect_pr
 
 redcap_instrument_config_logic <- function(input, output, session, rc_connection, instruments, instrument_selection, rc_upload) {
   ns <- session$ns
-  
-  ## Source REDCap functions
-  source('lib/render_redcap.R', keep.source = F)
-  
+
   ## Store the REDCap Instrument as a reactive variable. Process a bit to assist in rendering the instrument later.
   instrument <- reactive({
     req(instruments(), instrument_selection(), rc_connection() )
