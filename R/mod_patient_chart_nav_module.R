@@ -28,6 +28,8 @@ patient_nav_ui <- function(id) {
 #' @keywords internal
 #' @export
 #' @import shiny
+#' @importFrom tibble deframe
+#' @importFrom dplyr select
 #' @importFrom rlang .data
 patient_nav_logic <- function(input, output, session, patient_table, selected_patient, parent) {
   ns <- session$ns
