@@ -59,7 +59,7 @@ data_model_detection_logic <- function(input, output, session, db_connection, co
       select(.data$user_database_table, .data$clean_table, .data$user_fields, .data$clean_user_fields)
     
     # Join user tables with supported data models, determine which one the user is likely running
-    user_joined <- supported_models %>% 
+    user_joined <- 'supported_models' %>% 
       mutate(model_match = map(.x = data,.f = left_join, user_tables, by = c('table'='clean_table', 'field'='clean_user_fields')))%>% 
       mutate(filtered = map(.x = .data$model_match,.f = filter, is.na(.data$user_fields)!=T),
              count_filtered = map(.x = .data$filtered,.f = nrow), 
