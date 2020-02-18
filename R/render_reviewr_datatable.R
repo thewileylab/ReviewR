@@ -1,4 +1,4 @@
-#' ReviewR Datatable
+#' Render ReviewR Datatable
 #'
 #' @param .data A local tibble or dataframe to be rendered in the ReviewR UI
 #'
