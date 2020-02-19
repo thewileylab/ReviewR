@@ -1,9 +1,6 @@
 #' @import shiny
 app_server <- function(input, output, session) {
-  # Initialize the application ----
-  source('lib/initialize_reviewr.R')
-  init_data <- initialize_reviewr()
-  ## Source ReviewR Setup Tab Modules ----
+  ## Call ReviewR Setup Tab Modules ----
   ## Patient Database Setup
   db_type <- callModule(db_select_logic, 'db_setup_ns')
   ### Database
@@ -23,22 +20,20 @@ app_server <- function(input, output, session) {
   rc_reconfig <- callModule(rc_instrument_configured_logic, 'abstraction_ns', rc_config_vars, instrument_selection$rc_instrument_selection)
   
   
-  ## Source Patient Search Tab Modules ----
+  ## Call Patient Search Tab Modules ----
   ### Patient Search Module
-  source('modules/patient_search_module.R', keep.source = F)
   subject_info <- callModule(patient_search_logic, 'patient_search_ns', table_map$table_map, db_connection_vars$db_connection, table_map$db_disconnect, subject_selection_vars$previous_sub, subject_selection_vars$next_sub, subject_selection_vars$subject_id, parent=session)
 
-  ## Source Reviewr Chart Review Tab Modules ----
-  source('modules/patient_nav_module.R')
-  source('modules/save_abstraction_module.R')
+  ## Call ReviewR Chart Review Tab Modules ----
   ### Load Chart Review Modules
   subject_selection_vars <- callModule(patient_nav_logic, 'chart_review', subject_info$patient_table, subject_info$selected_patient, parent = session)
   callModule(subject_info_logic, 'chart_review', instrumentData$previous_data, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection, subject_info$selected_patient, subject_info$selected_patient_info)
   callModule(omop_chart_review_logic, 'chart_review', table_map$table_map, db_connection_vars$db_connection, subject_info$selected_patient)
   callModule(mimic_chart_review_logic, 'chart_review', table_map$table_map, db_connection_vars$db_connection, subject_info$selected_patient)
+  callModule(chart_review_ui_logic, 'chart_review', abstraction_vars, table_map, instrument_selection)
   
   ### Call Chart Abstraction Modules
-  instrumentData <- callModule(redcap_instrumment_logic, 'chart_review_abstraction', abstraction_vars$rc_con, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection, rc_project_vars$rc_instrument, rc_config_vars$rc_identifier , rc_config_vars$rc_reviewer, rc_config_vars$rc_selected_reviewer, subject_info$selected_patient, upload$abstraction_save_btn_press, abstraction_vars$rc_press)
+  instrumentData <- callModule(redcap_instrument_logic, 'chart_review_abstraction', abstraction_vars$rc_con, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection, rc_project_vars$rc_instrument, rc_config_vars$rc_identifier , rc_config_vars$rc_reviewer, rc_config_vars$rc_selected_reviewer, subject_info$selected_patient, upload$abstraction_save_btn_press, abstraction_vars$rc_press)
   upload <- callModule(instrument_complete_logic, 'chart_review_upload', rc_project_vars$rc_instrument, instrumentData$instrument_data, instrumentData$previous_data, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection, subject_info$selected_patient)
   callModule(upload_redcap_logic, 'chart_review_abstraction', abstraction_vars$rc_con, rc_project_vars$rc_record_id, rc_project_vars$rc_instrument, instrumentData$instrument_data, instrumentData$previous_data, instrumentData$current_subject, upload$abstraction_save_btn_press, upload$abstraction_complete, upload$abstraction_complete_val, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection)
   
@@ -72,8 +67,7 @@ app_server <- function(input, output, session) {
   output$patient_search_tab <- patient_search_tab()
   output$chart_review_tab <- chart_review_tab()
   outputOptions(output, 'chart_review_tab', suspendWhenHidden = F)
-  # source('ui/04_chart_review.R', local = T)$value
-  
+
   ## Render the main UI ----
   output$main_ui <- renderUI({
     tabItems(
@@ -203,61 +197,5 @@ app_server <- function(input, output, session) {
   output$data_model <- renderText({
     req(table_map$data_model_text() )
     table_map$data_model_text() 
-  })
-  
-
-  
-  ## Define Chart Review Tab UI Outputs ----
-  output$abstraction <- renderUI({ redcap_instrument_ui('chart_review_abstraction') })
-  
-  ## Change layout based on presence or absence of abstraction connection info
-  output$chart_review <- renderUI({ 
-    req(abstraction_vars$rc_url(), abstraction_vars$rc_url(), table_map$table_map())
-    ## Revisit -- conditions should be dependent on valid information being provided.
-    if(abstraction_vars$rc_url() == '' | abstraction_vars$rc_token() == '' ) { ## No Abstraction
-      box(width = '100%',
-          status = 'primary',
-          ## Select patient chart ui based on data model
-          if(table_map$table_map()$data_model == 'omop') {
-            omop_chart_review_ui('chart_review')
-          } else if (table_map$table_map()$data_model == 'mimic3') {
-            mimic_chart_review_ui('chart_review')
-          } else {return(NULL)}
-      ) 
-    } else { ## Abstraction ----
-      fluidRow(
-        column(
-          width = 9,
-          box(width = '100%',
-              status = 'primary',
-              ## Select patient chart ui based on data model
-              if(table_map$table_map()$data_model == 'omop') {
-                omop_chart_review_ui('chart_review')
-              } else if (table_map$table_map()$data_model == 'mimic3') {
-                mimic_chart_review_ui('chart_review')
-              } else {return(NULL)}
-          )
-        ),
-        column(
-          width = 3,
-          box(
-            title = instrument_selection$rc_instrument_selection(),
-            width = '100%',
-            status = 'danger',
-            uiOutput('abstraction'),
-            ## CSS to scroll the abstraction instrument, if necessary
-            tags$head(
-              tags$style("#abstraction{color:black; font-size:12px; font-style:italic; overflow-y:scroll; max-height: 600px; background: ghostwhite;}")
-            )
-          ),
-          box(
-            title = 'Save Form',
-            width = '100&',
-            status = 'danger',
-            instrument_complete_ui('chart_review_upload')
-          )
-        )
-      )
-    }
   })
 }
