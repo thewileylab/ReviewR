@@ -1,3 +1,23 @@
+#' Chart Abstraction Save Module
+#'
+#' This module is responsible for rendering the "Save Abstraction" dialogue. It ensures that all required question types are answered before presenting the user with a dropdown to 'complete' the review. A save button is also provided.
+#'
+#' @param id The namespace id for the UI output
+#' @param input internal
+#' @param output internal
+#' @param session internal
+#'
+#' @rdname mod_chart_abstraction_save_module
+#' 
+#' @keywords internal
+#' @export
+#' @import shiny 
+#' @importFrom dplyr filter select mutate left_join
+#' @importFrom ggplot2 remove_missing
+#' @importFrom magrittr extract2
+#' @importFrom shinyjs show hidden
+#' @importFrom rlang .data
+#' 
 instrument_complete_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -6,6 +26,17 @@ instrument_complete_ui <- function(id) {
   )
 }
 
+#' @param rc_instrument A reactive tibble containing the chart abstraction instrument
+#' @param instrumentData A reactive tibble containing the instrument schema 
+#' @param previousData A reactive tibble containing any previously entered data for the currently selected subject
+#' @param all_instruments All instruments in the current abstraction project
+#' @param instrument_selection The currently selected abstraction instrument
+#' @param subjectID The currently selected subject identifier
+#'
+#' @rdname mod_chart_abstraction_save_module
+#' 
+#' @keywords internal
+#' @export
 instrument_complete_logic <- function(input, output, session, rc_instrument, instrumentData, previousData, all_instruments, instrument_selection, subjectID) {
   ns <- session$ns
   
@@ -13,7 +44,7 @@ instrument_complete_logic <- function(input, output, session, rc_instrument, ins
   qty_required <- reactive({
     req(rc_instrument() )
     rc_instrument() %>% 
-      filter(required_field == 'y') %>% 
+      filter(.data$required_field == 'y') %>% 
       nrow()
   })
   
@@ -21,12 +52,12 @@ instrument_complete_logic <- function(input, output, session, rc_instrument, ins
   qty_required_answered <- reactive({
     req(rc_instrument(), instrumentData() )
     rc_instrument() %>% 
-      filter(required_field == 'y') %>% 
-      mutate(inputID = shiny_inputID) %>% 
-      select(inputID) %>% 
+      filter(.data$required_field == 'y') %>% 
+      mutate(inputID = .data$shiny_inputID) %>% 
+      select(.data$inputID) %>% 
       left_join(instrumentData() , by = 'inputID') %>% 
       remove_missing(na.rm = T) %>% 
-      filter(values != '') %>% 
+      filter(.data$values != '') %>% 
       nrow()
   })
   
@@ -34,7 +65,7 @@ instrument_complete_logic <- function(input, output, session, rc_instrument, ins
   selected_instrument_name <- reactive({
     req(all_instruments(), instrument_selection() )
     all_instruments() %>%
-      filter(instrument_label == instrument_selection() ) %>%
+      filter(.data$instrument_label == instrument_selection() ) %>%
       extract2(1,1)
   })
   
