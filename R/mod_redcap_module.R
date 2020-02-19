@@ -622,7 +622,7 @@ upload_redcap_logic <- function(input, output, session, rc_connection, rc_record
     rc_recordID_field <- rc_recordID() %>% flatten_chr()
     if(nrow(previousData()) > 0) {
       previousData() %>% 
-        select(.data$rc_recordID_field)
+        select(rc_recordID_field)
     } else {
       tibble(!!rc_recordID_field := exportNextRecordName(rc_connection() ))
       }
