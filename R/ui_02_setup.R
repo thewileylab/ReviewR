@@ -11,42 +11,38 @@ setup_tab <- function() {
     # Define Setup Tab UI ----
     tagList(
       fluidRow(
-        box(
-          title = h2("ReviewR Setup", style = 'text-align: center;'),
-          width = 12,
-          status = 'primary',
-          solidHeader = F
-          )
+        #Box Setup
+        box(title = h2("ReviewR Setup", style = 'text-align: center;'),
+            width = 12,
+            status = 'primary',
+            solidHeader = F
+            )
         ),
-    fluidRow(
-      column(
-        width = 6,
-        box(
-          #Box Setup
-          title = 'Connect to Patient Database',
-          width = '100%',
-          status = 'primary',
-          solidHeader = F,
-          #Box Contents
-            uiOutput('db_setup'),
-            uiOutput('model')
-          )
-        ),
-      column(
-        width = 6,
-        box(
-          #Box Setup
-          title = 'Configure Patient Chart Abstraction',
-          width = '100%',
-          status = 'danger',
-          solidHeader = F,
-          #Box Contents
-            uiOutput('rc_setup'),
-            uiOutput('rc_connected')
-          ),
-        uiOutput('rc_config_ui')
+      fluidRow(
+        column(width = 6,
+               #Box Setup
+               box(title = 'Connect to Patient Database',
+                   width = '100%',
+                   status = 'primary',
+                   solidHeader = F,
+                   #Box Contents
+                   uiOutput('db_setup'),
+                   uiOutput('model')
+                   )
+               ),
+        column(width = 6,
+               #Box Setup
+               box(title = 'Configure Patient Chart Abstraction',
+                   width = '100%',
+                   status = 'danger',
+                   solidHeader = F,
+                   #Box Contents
+                   uiOutput('rc_setup'),
+                   uiOutput('rc_connected')
+                   ),
+               uiOutput('rc_config_ui')
+               )
         )
       )
-    )
-  })
-}
+    })
+  }

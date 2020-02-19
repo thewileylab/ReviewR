@@ -11,42 +11,36 @@ chart_review_tab <- function() {
     tagList(
       fluidPage(
         fluidRow(
-          column(
-            #Column Setup
-            width = 9,
-            box(
-              #Box Setup
-              # title = 'Subject Information',
-              width = '100%',
-              height = '130px',
-              status = 'primary', 
-              solidHeader = F,
-              #Box Contents
-              subject_info('chart_review')
-              )
-            ),
-          column(
-            #Column Setup
-            width = 3,
-            box(
-              #Box Setup
-              width = '100%',
-              height = '130px',
-              status = 'primary', 
-              solidHeader = F,
-              #Box Contents
-              patient_nav_ui('chart_review')
-              )
-            )
+          #Column Setup
+          column(width = 9,
+                 #Box Setup
+                 box(width = '100%',
+                     height = '130px',
+                     status = 'primary', 
+                     solidHeader = F,
+                     #Box Contents
+                     subject_info('chart_review')
+                     )
+                 ),
+          #Column Setup
+          column(width = 3,
+                 #Box Setup
+                 box(width = '100%',
+                     height = '130px',
+                     status = 'primary', 
+                     solidHeader = F,
+                     #Box Contents
+                     patient_nav_ui('chart_review')
+                     )
+                 )
           ),
         fluidRow(
-          column(
-            # Column Setup
-            width = 12,
-            chart_review_ui('chart_review')
-            )
+          # Column Setup
+          column(width = 12,
+                 chart_review_ui('chart_review')
+                 )
           )
         )
       )
-  })
+    })
   }
