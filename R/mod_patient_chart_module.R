@@ -25,21 +25,21 @@ omop_chart_review_ui <- function(id) {
                  ".nav-tabs {font-size: 12px} ")
       ),
     tabsetPanel(id = 'patient_chart',type = 'tabs',
-                tabPanel(title = 'Condition Era', dataTableOutput(ns('omop_condition_era_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'Condition Occurrence', dataTableOutput(ns('omop_condition_occurrence_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'Death', dataTableOutput(ns('omop_death_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'Device Exposure', dataTableOutput(ns('omop_device_exposure_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'Dose Era', dataTableOutput(ns('omop_dose_era_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'Drug Era', dataTableOutput(ns('omop_drug_era_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'Drug Exposure', dataTableOutput(ns('omop_drug_exposure_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'Measurement', dataTableOutput(ns('omop_measurement_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'Note', dataTableOutput(ns('omop_note_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'Observation', dataTableOutput(ns('omop_observation_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'Observation Period', dataTableOutput(ns('omop_observation_period_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'Payer Plan Period', dataTableOutput(ns('omop_payer_plan_period_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'Procedure Occurrence', dataTableOutput(ns('omop_procedure_occurrence_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'Specimen', dataTableOutput(ns('omop_specimen_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'Visit Occurrence', dataTableOutput(ns('omop_visit_occurrence_dt')) %>% withSpinner(type = 6, proxy.height = '760px'))
+                tabPanel(title = 'Condition Era', DT::dataTableOutput(ns('omop_condition_era_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'Condition Occurrence', DT::dataTableOutput(ns('omop_condition_occurrence_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'Death', DT::dataTableOutput(ns('omop_death_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'Device Exposure', DT::dataTableOutput(ns('omop_device_exposure_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'Dose Era', DT::dataTableOutput(ns('omop_dose_era_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'Drug Era', DT::dataTableOutput(ns('omop_drug_era_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'Drug Exposure', DT::dataTableOutput(ns('omop_drug_exposure_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'Measurement', DT::dataTableOutput(ns('omop_measurement_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'Note', DT::dataTableOutput(ns('omop_note_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'Observation', DT::dataTableOutput(ns('omop_observation_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'Observation Period', DT::dataTableOutput(ns('omop_observation_period_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'Payer Plan Period', DT::dataTableOutput(ns('omop_payer_plan_period_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'Procedure Occurrence', DT::dataTableOutput(ns('omop_procedure_occurrence_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'Specimen', DT::dataTableOutput(ns('omop_specimen_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'Visit Occurrence', DT::dataTableOutput(ns('omop_visit_occurrence_dt')) %>% withSpinner(type = 6, proxy.height = '760px'))
                 )
   )
 }
@@ -50,8 +50,9 @@ omop_chart_review_ui <- function(id) {
 #' @param table_map tibble containing a the cdm that most closely matches the user's database and a map of standard tables to user tables
 #' @param db_connection Connection info received from the database setup module
 #' @param subject_id The selected subject
-#' @export
 #' @keywords internal
+#' @export
+
 
 omop_chart_review_logic <- function(input, output, session, table_map, db_connection, subject_id) {
   ns <- session$ns
@@ -163,91 +164,91 @@ omop_chart_review_logic <- function(input, output, session, table_map, db_connec
   })
   
   ## Render OMOP tibbles as datatables -----
-  output$omop_condition_era_dt <- renderDataTable({
+  output$omop_condition_era_dt <- DT::renderDataTable({
     req(omop_condition_era())
     omop_condition_era() %>% 
       reviewr_datatable()
   })
   
-  output$omop_condition_occurrence_dt <- renderDataTable({
+  output$omop_condition_occurrence_dt <- DT::renderDataTable({
     req(omop_condition_occurrence() )
     omop_condition_occurrence() %>% 
       reviewr_datatable()
   })
   
-  output$omop_death_dt <- renderDataTable({
+  output$omop_death_dt <- DT::renderDataTable({
     req(omop_death() )
     omop_death() %>% 
       reviewr_datatable()
   })
   
-  output$omop_device_exposure_dt <- renderDataTable({
+  output$omop_device_exposure_dt <- DT::renderDataTable({
     req(omop_device_exposure() )
     omop_device_exposure() %>% 
       reviewr_datatable()
   })
   
-  output$omop_dose_era_dt <- renderDataTable({
+  output$omop_dose_era_dt <- DT::renderDataTable({
     req(omop_dose_era() )
     omop_dose_era() %>% 
       reviewr_datatable()
   })
   
-  output$omop_drug_era_dt <- renderDataTable({
+  output$omop_drug_era_dt <- DT::renderDataTable({
     req(omop_drug_era() )
     omop_drug_era() %>% 
       reviewr_datatable()
   })
   
-  output$omop_drug_exposure_dt <- renderDataTable({
+  output$omop_drug_exposure_dt <- DT::renderDataTable({
     req(omop_drug_exposure() )
     omop_drug_exposure() %>% 
       reviewr_datatable()
   })
   
-  output$omop_measurement_dt <- renderDataTable({
+  output$omop_measurement_dt <- DT::renderDataTable({
     req(omop_measurement() )
     omop_measurement() %>% 
       reviewr_datatable()
   })
   
-  output$omop_note_dt <- renderDataTable({
+  output$omop_note_dt <- DT::renderDataTable({
     req(omop_note() )
     omop_note() %>% 
       reviewr_datatable()
   })
   
-  output$omop_observation_dt <- renderDataTable({
+  output$omop_observation_dt <- DT::renderDataTable({
     req(omop_observation() )
     omop_observation() %>% 
       reviewr_datatable()
   })
   
-  output$omop_observation_period_dt <- renderDataTable({
+  output$omop_observation_period_dt <- DT::renderDataTable({
     req(omop_observation_period() )
     omop_observation_period() %>% 
       reviewr_datatable()
   })
   
-  output$omop_payer_plan_period_dt <- renderDataTable({
+  output$omop_payer_plan_period_dt <- DT::renderDataTable({
     req(omop_payer_plan_period() )
     omop_payer_plan_period() %>% 
       reviewr_datatable()
   })
   
-  output$omop_procedure_occurrence_dt <- renderDataTable({
+  output$omop_procedure_occurrence_dt <- DT::renderDataTable({
     req(omop_procedure_occurrence() )
     omop_procedure_occurrence() %>% 
       reviewr_datatable()
   })
   
-  output$omop_specimen_dt <- renderDataTable({
+  output$omop_specimen_dt <- DT::renderDataTable({
     req(omop_specimen() )
     omop_specimen() %>% 
       reviewr_datatable()
   })
   
-  output$omop_visit_occurrence_dt <- renderDataTable({
+  output$omop_visit_occurrence_dt <- DT::renderDataTable({
     req(omop_visit_occurrence() )
     omop_visit_occurrence() %>% 
       reviewr_datatable()
@@ -271,21 +272,21 @@ mimic_chart_review_ui <- function(id) {
                  ".nav-tabs {font-size: 12px} ")
     ),
     tabsetPanel(id = 'patient_chart',type = 'tabs',
-                tabPanel(title = 'Admissions', dataTableOutput(ns('mimic_admissions_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'Callout', dataTableOutput(ns('mimic_callout_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'Chart Events', dataTableOutput(ns('mimic_chart_events_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'CPT Events', dataTableOutput(ns('mimic_cpt_events_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'Diagnoses ICD', dataTableOutput(ns('mimic_diagnoses_icd_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'DRG Codes', dataTableOutput(ns('mimic_drg_codes_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'ICU Stays', dataTableOutput(ns('mimic_icu_stays_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'Lab Events', dataTableOutput(ns('mimic_lab_events_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'Microbiology Events', dataTableOutput(ns('mimic_microbiology_events_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'Note', dataTableOutput(ns('mimic_note_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'Prescriptions Events MV', dataTableOutput(ns('mimic_prescriptions_events_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'Procedure Events MV', dataTableOutput(ns('mimic_procedure_events_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'Procedures ICD', dataTableOutput(ns('mimic_procedures_icd_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'Services', dataTableOutput(ns('mimic_services_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
-                tabPanel(title = 'Transfers', dataTableOutput(ns('mimic_transfers_dt')) %>% withSpinner(type = 6, proxy.height = '760px'))
+                tabPanel(title = 'Admissions', DT::dataTableOutput(ns('mimic_admissions_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'Callout', DT::dataTableOutput(ns('mimic_callout_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'Chart Events', DT::dataTableOutput(ns('mimic_chart_events_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'CPT Events', DT::dataTableOutput(ns('mimic_cpt_events_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'Diagnoses ICD', DT::dataTableOutput(ns('mimic_diagnoses_icd_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'DRG Codes', DT::dataTableOutput(ns('mimic_drg_codes_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'ICU Stays', DT::dataTableOutput(ns('mimic_icu_stays_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'Lab Events', DT::dataTableOutput(ns('mimic_lab_events_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'Microbiology Events', DT::dataTableOutput(ns('mimic_microbiology_events_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'Note', DT::dataTableOutput(ns('mimic_note_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'Prescriptions Events MV', DT::dataTableOutput(ns('mimic_prescriptions_events_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'Procedure Events MV', DT::dataTableOutput(ns('mimic_procedure_events_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'Procedures ICD', DT::dataTableOutput(ns('mimic_procedures_icd_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'Services', DT::dataTableOutput(ns('mimic_services_dt')) %>% withSpinner(type = 6, proxy.height = '760px')),
+                tabPanel(title = 'Transfers', DT::dataTableOutput(ns('mimic_transfers_dt')) %>% withSpinner(type = 6, proxy.height = '760px'))
                 )
     )
   }
@@ -408,91 +409,91 @@ mimic_chart_review_logic <- function(input, output, session, table_map, db_conne
   })
   
   ## Render MIMIC3 tibbles as datatables -----
-  output$mimic_admissions_dt <- renderDataTable({
+  output$mimic_admissions_dt <- DT::renderDataTable({
     req(mimic_admissions())
     mimic_admissions() %>% 
       reviewr_datatable()
   })
   
-  output$mimic_callout_dt <- renderDataTable({
+  output$mimic_callout_dt <- DT::renderDataTable({
     req(mimic_callout() )
     mimic_callout() %>% 
       reviewr_datatable()
   })
   
-  output$mimic_chart_events_dt <- renderDataTable({
+  output$mimic_chart_events_dt <- DT::renderDataTable({
     req(mimic_chart_events() )
     mimic_chart_events() %>% 
       reviewr_datatable()
   })
   
-  output$mimic_cpt_events_dt <- renderDataTable({
+  output$mimic_cpt_events_dt <- DT::renderDataTable({
     req(mimic_cpt_events() )
     mimic_cpt_events() %>% 
       reviewr_datatable()
   })
   
-  output$mimic_diagnoses_icd_dt <- renderDataTable({
+  output$mimic_diagnoses_icd_dt <- DT::renderDataTable({
     req(mimic_diagnoses_icd() )
     mimic_diagnoses_icd() %>% 
       reviewr_datatable()
   })
   
-  output$mimic_drg_codes_dt <- renderDataTable({
+  output$mimic_drg_codes_dt <- DT::renderDataTable({
     req(mimic_drg_codes() )
     mimic_drg_codes() %>% 
       reviewr_datatable()
   })
   
-  output$mimic_icu_stays_dt <- renderDataTable({
+  output$mimic_icu_stays_dt <- DT::renderDataTable({
     req(mimic_icu_stays() )
     mimic_icu_stays() %>% 
       reviewr_datatable()
   })
   
-  output$mimic_lab_events_dt <- renderDataTable({
+  output$mimic_lab_events_dt <- DT::renderDataTable({
     req(mimic_lab_events() )
     mimic_lab_events() %>% 
       reviewr_datatable()
   })
   
-  output$mimic_microbiology_events_dt <- renderDataTable({
+  output$mimic_microbiology_events_dt <- DT::renderDataTable({
     req(mimic_microbiology_events() )
     mimic_microbiology_events() %>% 
       reviewr_datatable()
   })
   
-  output$mimic_note_dt <- renderDataTable({
+  output$mimic_note_dt <- DT::renderDataTable({
     req(mimic_note() )
     mimic_note() %>% 
       reviewr_datatable()
   })
   
-  output$mimic_prescriptions_events_dt <- renderDataTable({
+  output$mimic_prescriptions_events_dt <- DT::renderDataTable({
     req(mimic_prescriptions_events() )
     mimic_prescriptions_events() %>% 
       reviewr_datatable()
   })
   
-  output$mimic_procedure_events_dt <- renderDataTable({
+  output$mimic_procedure_events_dt <- DT::renderDataTable({
     req(mimic_procedure_events() )
     mimic_procedure_events() %>% 
       reviewr_datatable()
   })
   
-  output$mimic_procedures_icd_dt <- renderDataTable({
+  output$mimic_procedures_icd_dt <- DT::renderDataTable({
     req(mimic_procedures_icd() )
     mimic_procedures_icd() %>% 
       reviewr_datatable()
   })
   
-  output$mimic_services_dt <- renderDataTable({
+  output$mimic_services_dt <- DT::renderDataTable({
     req(mimic_services() )
     mimic_services() %>% 
       reviewr_datatable()
   })
   
-  output$mimic_transfers_dt <- renderDataTable({
+  output$mimic_transfers_dt <- DT::renderDataTable({
     req(mimic_transfers() )
     mimic_transfers() %>% 
       reviewr_datatable()

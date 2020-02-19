@@ -780,7 +780,7 @@ upload_redcap_logic <- function(input, output, session, rc_connection, rc_record
     remove_missing(vars = 'Question', na.rm = TRUE) 
   })
 
-  output$confirm_modal_dt <- renderDataTable(
+  output$confirm_modal_dt <- DT::renderDataTable(
     modal_data() %>% 
       datatable(
         extensions = list('Scroller' = NULL),

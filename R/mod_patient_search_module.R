@@ -17,7 +17,7 @@
 patient_search_ui <- function(id) {
   ns <- NS(id)
   tagList(
-    dataTableOutput(ns('patient_search_dt')) %>% withSpinner() 
+    DT::dataTableOutput(ns('patient_search_dt')) %>% withSpinner() 
   )
 }
 
@@ -44,7 +44,7 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
   #Replace Patient Search Table when table map changes
   observeEvent(table_map(), {
     req(table_map() )
-    reloadData(proxy = patient_search_proxy,
+    DT::reloadData(proxy = patient_search_proxy,
                resetPaging = T,
                clearSelection = T)
   })
@@ -63,7 +63,7 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
   })
   
   ## Render Patient Search Data Table
-  output$patient_search_dt <- renderDataTable({
+  output$patient_search_dt <- DT::renderDataTable({
     req(patient_search_tbl())
     # The next time you think about implementing FixedColumns, check the status of this issue first: https://github.com/rstudio/DT/issues/275
     patient_search_tbl() %>% 
