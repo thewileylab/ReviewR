@@ -1,7 +1,10 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# ReviewR: A light-weight, portable tool for reviewing individual patient records
+# ReviewR <img src='man/figures/logo.png' align="right" height="138.5" />
+
+A light-weight, portable tool for reviewing individual patient
+records
 
 <!-- badges: start -->
 
