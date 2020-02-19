@@ -33,8 +33,8 @@ back-end, with support planned for:
 To install the latest development release:
 
 ``` r
-# install.packages('usethis')
-usethis::create_from_github("thewileylab/ReviewR")
+# install.packages('devtools')
+devtools::install_github('thewileylab/ReviewR', ref = 'pkg_reorg')
 ```
 
 ## Shiny Server Deployment
