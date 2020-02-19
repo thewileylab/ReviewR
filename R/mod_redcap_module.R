@@ -802,7 +802,7 @@ upload_redcap_logic <- function(input, output, session, rc_connection, rc_record
       showModal(
         modalDialog(
           title = 'Warning: Overwriting existing REDCap data.',
-          dataTableOutput(ns('confirm_modal_dt')),
+          DT::dataTableOutput(ns('confirm_modal_dt')),
           actionButton(inputId = ns('continue'), label = 'Continue overwriting existing REDCap values'),
           actionButton(inputId = ns('go_back'), label = 'Go Back'), 
           easyClose = FALSE,
