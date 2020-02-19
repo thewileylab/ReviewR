@@ -12,6 +12,7 @@
 #' @keywords internal
 #' @export
 #' @import shiny 
+#' @importFrom shinycssloaders withSpinner
 #' 
 patient_search_ui <- function(id) {
   ns <- NS(id)
@@ -33,7 +34,7 @@ patient_search_ui <- function(id) {
 #' @keywords internal
 #' @export
 #' @import shiny 
-#' @importFrom DT reloadData formatStyle selectRows
+#' @importFrom DT reloadData formatStyle selectRows dataTableProxy
 #' @importFrom dplyr rename slice filter select pull
 #' @importFrom tibble rowid_to_column
 #' @importFrom rlang .data
