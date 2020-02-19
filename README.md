@@ -53,7 +53,7 @@ ReviewR can optionally be deployed to a Shiny Server.
 usethis::create_from_github('thewileylab/ReviewR')
 ```
 
-3.  Finally, symlink the ReviewR directory to
+3.  Finally, symlink the cloned ReviewR directory to
     `/srv/shiny-server/ReviewR`. Note, for Google Authentication to
     work, your server must have a fully qualified domain name and link
     to a Google Project that you own to perform authorization.
