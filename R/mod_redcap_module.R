@@ -1,3 +1,18 @@
+#' REDCap Module
+#'
+#' This module will assist with selecting a patient. It keeps the patient search tab data table up todate, server side renders the select input on the patient chart tab, and displays in context information about the selected patient. 
+#'
+#' @param id The namespace id for the UI output
+#' @param input internal
+#' @param output internal
+#' @param session internal
+#'
+#' @rdname mod_redcap_module
+#' 
+#' @keywords internal
+#' @export
+#' @import shiny
+
 ## REDCap Connection  ----
 redcap_connect_ui <- function(id) {
   ns <- NS(id)
@@ -7,6 +22,10 @@ redcap_connect_ui <- function(id) {
     )
 }
 
+#' @rdname mod_redcap_module
+#' 
+#' @keywords internal
+#' @export
 redcap_connect_logic <- function(input, output, session) { 
   ns <- session$ns
   
@@ -28,10 +47,17 @@ redcap_connect_logic <- function(input, output, session) {
   ))
 }
 
+
+#' @param rc_url A character string containing the REDCap API URL for your institution ex: https://redcap.ucdenver.edu/api/
+#' @param rc_token A password string representing your REDCap API token
+#'
+#' @rdname mod_redcap_module
+#' 
+#' @keywords internal
+#' @export
+#' @importFrom redcapAPI redcapConnection
 redcap_initialize_logic <- function(input, output, session, rc_url, rc_token) {
-  library(tidyverse)
-  library(redcapAPI)
-  
+
   ns <- session$ns
   rc_connect <- reactive({
     req(rc_url(),rc_token())
@@ -58,6 +84,10 @@ redcap_initialize_logic <- function(input, output, session, rc_url, rc_token) {
   
 }
 
+#' @rdname mod_redcap_module
+#' 
+#' @keywords internal
+#' @export
 redcap_connected_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -65,6 +95,13 @@ redcap_connected_ui <- function(id) {
   )
 }
 
+#' @param connect A press of the REDCap connect button from the Setup Tab
+#' @param rc_project_info The project information assosciated with your REDCap API key
+#'
+#' @rdname mod_redcap_module
+#' 
+#' @keywords internal
+#' @export
 redcap_connected_logic <- function(input, output, session, connect, rc_project_info) {
   ns <- session$ns
   # observeEvent(connect(), {
@@ -108,6 +145,10 @@ redcap_connected_logic <- function(input, output, session, connect, rc_project_i
 }
 
 ## REDCap Configuration ----
+#' @rdname mod_redcap_module
+#' 
+#' @keywords internal
+#' @export
 redcap_instrument_config_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -119,6 +160,14 @@ redcap_instrument_config_ui <- function(id) {
   )
 }
 
+#' @param rc_connect_press A press of the REDCap connect button from the Setup Tab
+#' @param rc_connection A REDCap API connection object
+#'
+#' @rdname mod_redcap_module
+#' 
+#' @keywords internal
+#' @export
+#' @importFrom redcapAPI exportInstruments
 redcap_instrument_select_logic <- function(input, output, session, rc_connect_press, rc_connection) {
   ns <- session$ns
   
@@ -133,7 +182,7 @@ redcap_instrument_select_logic <- function(input, output, session, rc_connect_pr
       selectInput(inputId = ns('rc_instrument'),
                   label = 'Available Instruments:',
                   choices = instruments() %>% 
-                    select(instrument_label) %>% 
+                    select(.data$instrument_label) %>% 
                     deframe()
                   )
       )
@@ -153,7 +202,22 @@ redcap_instrument_select_logic <- function(input, output, session, rc_connect_pr
   
 }
 
-redcap_instrument_config_logic <- function(input, output, session, rc_connection, instruments, instrument_selection, rc_upload) {
+#' @param rc_connection A REDCap API connection object
+#' @param instruments All REDCap instruments assosciated with the project API key
+#' @param instrument_selection  The user selected REDCap Instrument
+#'
+#' @rdname mod_redcap_module
+#' 
+#' @keywords internal
+#' @export
+#' @importFrom dplyr filter select slice mutate_if left_join mutate coalesce
+#' @importFrom purrr pluck map2_chr
+#' @importFrom rlang .data
+#' @importFrom redcapAPI exportMetaData exportProjectInformation
+#' @importFrom stringr str_to_lower
+#' @importFrom tibble rownames_to_column deframe
+#' @importFrom tidyr unite
+redcap_instrument_config_logic <- function(input, output, session, rc_connection, instruments, instrument_selection) {
   ns <- session$ns
 
   ## Store the REDCap Instrument as a reactive variable. Process a bit to assist in rendering the instrument later.
@@ -161,25 +225,25 @@ redcap_instrument_config_logic <- function(input, output, session, rc_connection
     req(instruments(), instrument_selection(), rc_connection() )
     ## Create an instrument filter, if multiple instruments are present
     instrument_filter <- instruments() %>% 
-      filter(instrument_label == instrument_selection() ) %>% 
-      select(instrument_name) %>% 
+      filter(.data$instrument_label == instrument_selection() ) %>% 
+      select(.data$instrument_name) %>% 
       pluck(1)
     ## Extract and process the REDCap Instrument
     redcapAPI::exportMetaData(rcon = rc_connection()) %>%
       slice(-1) %>%   # We drop the first row, as it most likely is the auto-increment field used in REDCap
-      filter(str_to_lower(form_name) == instrument_filter ) %>% # Select the instrument based on the user selection
+      filter(str_to_lower(.data$form_name) == instrument_filter ) %>% # Select the instrument based on the user selection
       rownames_to_column() %>% 
-      filter(!field_type %in% c('slider','calc','descriptive')) %>% 
+      filter(!.data$field_type %in% c('slider','calc','descriptive')) %>% 
       # If some information is not defined within REDCap, it will convert those to logical types by default.  We are
       # assuming that they will be all character values, so we need to perform explicit casting to continue with that
       # assumption.
       mutate_if(is.logical, as.character) %>% 
-      left_join(redcap_widget_map, 
+      left_join(ReviewR::redcap_widget_map, 
                 by = c('field_type' = 'redcap_field_type', 'text_validation_type_or_show_slider_number' = 'redcap_field_val')
                 ) %>% 
-      unite(col = 'shiny_inputID', field_name, reviewr_redcap_widget_function, sep = '_', remove = F) %>% 
-      mutate(section_header = coalesce(section_header, ''),
-             field_note = coalesce(field_note, '')
+      unite(col = 'shiny_inputID', .data$field_name, .data$reviewr_redcap_widget_function, sep = '_', remove = F) %>% 
+      mutate(section_header = coalesce(.data$section_header, ''),
+             field_note = coalesce(.data$field_note, '')
              )
     })
   
@@ -188,7 +252,7 @@ redcap_instrument_config_logic <- function(input, output, session, rc_connection
     # record identifier will always be the first row of the first instrument in the project
     req(rc_connection() )
     redcapAPI::exportMetaData(rcon = rc_connection()) %>%
-      select(field_name) %>% 
+      select(.data$field_name) %>% 
       slice(1)
   })
   
@@ -205,8 +269,8 @@ redcap_instrument_config_logic <- function(input, output, session, rc_connection
       selectInput(inputId = ns('rc_identifier_field'),
                   label = 'Which variable contains your record identifier (e.g., MRN, subject ID)?',
                   choices = instrument() %>%
-                    filter(field_type == 'text') %>% 
-                    select(field_label) %>%
+                    filter(.data$field_type == 'text') %>% 
+                    select(.data$field_label) %>%
                     deframe()
                   )
       )
@@ -224,6 +288,16 @@ redcap_instrument_config_logic <- function(input, output, session, rc_connection
 
 }
 
+#' @param rc_instrument The user selected REDCap Instrument
+#' @param rc_identifier The field that contains the REDCap Identifier
+#'
+#' @rdname mod_redcap_module
+#' 
+#' @keywords internal
+#' @export
+#' @importFrom dplyr pull distinct
+#' @importFrom redcapAPI exportRecords
+#' @importFrom ggplot2 remove_missing
 redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_instrument, rc_identifier, rc_connection) {
   ns <- session$ns
   
@@ -234,8 +308,8 @@ redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_i
               label = 'Which variable contains your reviewer identifier?',
               choices = append('(Not Applicable)', 
                                rc_instrument() %>%
-                                 filter(field_type == 'text' & field_label != rc_identifier() ) %>% 
-                                 select(field_label) %>%
+                                 filter(.data$field_type == 'text' & .data$field_label != rc_identifier() ) %>% 
+                                 select(.data$field_label) %>%
                                  deframe()
                                )
               )
@@ -247,8 +321,8 @@ redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_i
   rc_previous_reviewers <- reactive({
     req(rc_instrument(), rc_reviewer(), rc_connection() )
     reviewer_field <- rc_instrument() %>% 
-      filter(field_label == rc_reviewer()) %>% 
-      pull(field_name) 
+      filter(.data$field_label == rc_reviewer()) %>% 
+      pull(.data$field_name) 
     redcapAPI::exportRecords(rc_connection() ) %>% 
       select(reviewer_field) %>% 
       distinct() %>% 
@@ -294,6 +368,10 @@ redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_i
   ))
 }
 
+#' @rdname mod_redcap_module
+#' 
+#' @keywords internal
+#' @export
 rc_instrument_configured_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -301,6 +379,14 @@ rc_instrument_configured_ui <- function(id) {
   )
 }
 
+
+#' @param rc_instrument_info Information about the configured REDCap Instrument
+#' @param selected_instrument The currently selected REDCap Instrument
+#'
+#' @rdname mod_redcap_module
+#' 
+#' @keywords internal
+#' @export
 rc_instrument_configured_logic <- function(input, output, session, rc_instrument_info, selected_instrument) {
   ns <- session$ns
   
@@ -335,6 +421,10 @@ rc_instrument_configured_logic <- function(input, output, session, rc_instrument
 }
 
 ## REDCap Instrument ----
+#' @rdname mod_redcap_module
+#' 
+#' @keywords internal
+#' @export
 redcap_instrument_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -342,28 +432,45 @@ redcap_instrument_ui <- function(id) {
   )
 }
 
-redcap_instrumment_logic <- function(input, output, session, rc_connection, instruments, instrument_selection, rc_instrument, rc_identifier, rc_reviewer, rc_selected_reviewer, subject_id, reviewr_upload_btn, reviewr_connect_btn) {
+#' @param rc_reviewer The REDCap field that holds reviewer names
+#' @param rc_selected_reviewer The selected reviewer from the list of previous reviewers (if present)
+#' @param subject_id The currently selected patient identifier
+#' @param reviewr_upload_btn A button press of the REDCap upload button
+#' @param reviewr_connect_btn A button press of the REDCap Connect button
+#'
+#' @rdname mod_redcap_module
+#' 
+#' @keywords internal
+#' @export
+#' @importFrom magrittr extract2
+#' @importFrom redcapAPI exportFieldNames
+#' @importFrom purrr flatten_dfr map map2 pmap
+#' @importFrom tidyr as_tibble replace_na pivot_wider pivot_longer contains separate everything
+#' @importFrom dplyr mutate_all case_when
+#' @importFrom rlang is_empty :=
+#' @importFrom tibble add_row
+redcap_instrument_logic <- function(input, output, session, rc_connection, instruments, instrument_selection, rc_instrument, rc_identifier, rc_reviewer, rc_selected_reviewer, subject_id, reviewr_upload_btn, reviewr_connect_btn) {
   ns <- session$ns
   
   ## On redcap connection or subsequent upload, determine if there is any default data that needs to be displayed
   rc_identifier_field <- reactive({
     req(rc_instrument(), rc_identifier() )
     rc_instrument() %>% 
-      select(field_name, field_label) %>% 
-      filter(field_label == rc_identifier() ) %>% 
+      select(.data$field_name, .data$field_label) %>% 
+      filter(.data$field_label == rc_identifier() ) %>% 
       extract2(1)
     })
   rc_reviewer_field <- reactive({
     req(rc_instrument(), rc_reviewer() )
     rc_instrument() %>% 
-      select(field_name, field_label) %>% 
-      filter(field_label == rc_reviewer() ) %>% 
+      select(.data$field_name, .data$field_label) %>% 
+      filter(.data$field_label == rc_reviewer() ) %>% 
       extract2(1)
   })
   selected_instrument <- reactive({
     req(instruments(), instrument_selection() )
     instruments() %>% 
-      filter(instrument_label == instrument_selection() ) %>% 
+      filter(.data$instrument_label == instrument_selection() ) %>% 
       extract2(1)
   })
   
@@ -372,9 +479,9 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
     req(rc_connection(), rc_identifier_field(), selected_instrument(), subject_id() )
     if(redcapAPI::exportNextRecordName(rc_connection()) == 1) { ## Special case, when the REDCap Instrument has no previous data
       redcapAPI::exportFieldNames(rc_connection() ) %>% 
-        select(export_field_name, choice_value) %>% 
-        mutate(choice_value = map(.x = choice_value, ~ NA)) %>% 
-        pivot_wider(names_from = export_field_name, values_from = choice_value) %>% 
+        select(.data$export_field_name, .data$choice_value) %>% 
+        mutate(choice_value = map(.x = .data$choice_value, ~ NA)) %>% 
+        pivot_wider(names_from = .data$export_field_name, values_from = .data$choice_value) %>% 
         flatten_dfr() %>% 
         remove_missing(na.rm = TRUE)
       } else if (redcapAPI::exportNextRecordName(rc_connection()) != 1 & is_empty(rc_reviewer_field() ) == T ) { ## Export existing Records, filtering to the subject and reviewer in context
@@ -398,31 +505,31 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
       previous_data() %>% 
       # Turn wide data from RedCAP to long, collapsing checkbox type quesitions along the way
       pivot_longer(cols = contains('___'),names_to = 'checkbox_questions',values_to = 'value_present') %>% 
-      separate(checkbox_questions, into = c('checkbox_questions','checkbox_value'), sep = '___') %>% # Separate value from column name
-      mutate(checkbox_value = map2_chr(.x = checkbox_value, .y = value_present, ~ case_when(.y == 0 ~ '',
+      separate(.data$checkbox_questions, into = c('checkbox_questions','checkbox_value'), sep = '___') %>% # Separate value from column name
+      mutate(checkbox_value = map2_chr(.x = .data$checkbox_value, .y = .data$value_present, ~ case_when(.y == 0 ~ '',
                                                                                             TRUE ~ .x)
                                        )
              ) %>%   
-      select(-value_present) %>% # remove value presence variable
-      pivot_wider(names_from = checkbox_questions, values_from = checkbox_value, values_fn = list(checkbox_value = list)) %>% # pivot wider, utilizing list to preserve column types. Having collapsed the checkbox quesions, we now have a the original field_name as a joinable variable
+      select(-.data$value_present) %>% # remove value presence variable
+      pivot_wider(names_from = .data$checkbox_questions, values_from = .data$checkbox_value, values_fn = list(checkbox_value = list)) %>% # pivot wider, utilizing list to preserve column types. Having collapsed the checkbox quesions, we now have a the original field_name as a joinable variable
       pivot_longer(cols = everything(), names_to = 'field_name', values_to = 'default_value', values_ptypes = list(default_value = list())) # Pivot longer, utilizing a list as the column type to avoid variable coercion
     } else if(nrow(previous_data() ) == 0 & is_empty(rc_reviewer_field()) ) {
       previous_data() %>% 
         add_row(!!rc_identifier_field() := subject_id() ) %>% # Add default data, without reviewer info, if present
         mutate_all(replace_na, replace = '') %>% # replace all NA values with blank character vectors, so that shiny radio buttons without a previous response will display empty
         pivot_longer(cols = contains('___'),names_to = 'checkbox_questions',values_to = 'value_present') %>% 
-        separate(checkbox_questions, into = c('checkbox_questions','checkbox_value'), sep = '___') %>% # Separate value from column name
-        select(-checkbox_value) %>% # remove checkbox value variable. Here, we know that nothing has been entered, so it is preferrable to end up with a blank character list
-        pivot_wider(names_from = checkbox_questions, values_from = value_present, values_fn = list(value_present = list)) %>% # pivot wider, utilizing list to preserve column types. Having collapsed the checkbox quesions, we now have a the original field_name as a joinable variable
+        separate(.data$checkbox_questions, into = c('checkbox_questions','checkbox_value'), sep = '___') %>% # Separate value from column name
+        select(-.data$checkbox_value) %>% # remove checkbox value variable. Here, we know that nothing has been entered, so it is preferrable to end up with a blank character list
+        pivot_wider(names_from = .data$checkbox_questions, values_from = .data$value_present, values_fn = list(value_present = list)) %>% # pivot wider, utilizing list to preserve column types. Having collapsed the checkbox quesions, we now have a the original field_name as a joinable variable
         pivot_longer(cols = everything(), names_to = 'field_name', values_to = 'default_value', values_ptypes = list(default_value = list())) # Pivot longer, utilizing a list as the column type to avoid variable coercion
     } else {
       previous_data() %>% 
         add_row(!!rc_identifier_field() := subject_id(), !!rc_reviewer_field() := rc_selected_reviewer() ) %>% # Add default data, with reviewer info, if present
         mutate_all(replace_na, replace = '') %>% # replace all NA values with blank character vectors, so that shiny radio buttons without a previous response will display empty
         pivot_longer(cols = contains('___'),names_to = 'checkbox_questions',values_to = 'value_present') %>% 
-        separate(checkbox_questions, into = c('checkbox_questions','checkbox_value'), sep = '___') %>% # Separate value from column name
-        select(-checkbox_value) %>% # remove checkbox value variable. Here, we know that nothing has been entered, so it is preferrable to end up with a blank character list
-        pivot_wider(names_from = checkbox_questions, values_from = value_present, values_fn = list(value_present = list)) %>% # pivot wider, utilizing list to preserve column types. Having collapsed the checkbox quesions, we now have a the original field_name as a joinable variable
+        separate(.data$checkbox_questions, into = c('checkbox_questions','checkbox_value'), sep = '___') %>% # Separate value from column name
+        select(-.data$checkbox_value) %>% # remove checkbox value variable. Here, we know that nothing has been entered, so it is preferrable to end up with a blank character list
+        pivot_wider(names_from = .data$checkbox_questions, values_from = .data$value_present, values_fn = list(value_present = list)) %>% # pivot wider, utilizing list to preserve column types. Having collapsed the checkbox quesions, we now have a the original field_name as a joinable variable
         pivot_longer(cols = everything(), names_to = 'field_name', values_to = 'default_value', values_ptypes = list(default_value = list())) # Pivot longer, utilizing a list as the column type to avoid variable coercion
         }
     })
@@ -437,23 +544,23 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
     rc_instrument() %>% 
       left_join(current_subject() ) %>% # add current subject info, if present, to the mix
       mutate( ## mutate shiny tags/inputs
-        shiny_header = map(section_header, h3),
-        shiny_field_label = case_when(is.na(required_field) ~ field_label,
-                                      TRUE ~ paste(field_label,"<br/><font color='#FC0020'>* must provide value</font>")
+        shiny_header = map(.data$section_header, h3),
+        shiny_field_label = case_when(is.na(.data$required_field) ~ .data$field_label,
+                                      TRUE ~ paste(.data$field_label,"<br/><font color='#FC0020'>* must provide value</font>")
                                       ),
-        shiny_input = pmap(list(reviewr_type = reviewr_redcap_widget_function, 
-                                field_name = ns(shiny_inputID), 
-                                field_label = shiny_field_label, 
-                                required = required_field,
-                                choices = select_choices_or_calculations,
-                                current_subject_data = default_value
+        shiny_input = pmap(list(reviewr_type = .data$reviewr_redcap_widget_function, 
+                                field_name = ns(.data$shiny_inputID), 
+                                field_label = .data$shiny_field_label, 
+                                required = .data$required_field,
+                                choices = .data$select_choices_or_calculations,
+                                current_subject_data = .data$default_value
                                 ), 
                            render_redcap
                            ),
-        shiny_note = map(field_note, tags$sub),
-        shiny_taglist = pmap(list(shiny_header,
-                                  shiny_input,
-                                  shiny_note
+        shiny_note = map(.data$field_note, tags$sub),
+        shiny_taglist = pmap(list(.data$shiny_header,
+                                  .data$shiny_input,
+                                  .data$shiny_note
                                   ),
                              tagList
                              )
@@ -488,25 +595,43 @@ redcap_instrumment_logic <- function(input, output, session, rc_connection, inst
     )) # Send to the Upload module
 }
 
-upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_instrument, instrumentData, previousData, currentSubject, rc_upload_btn_press, abstraction_complete, abstraction_complete_val, all_instruments, instrument_selection) {
+#' @param rc_recordID The REDCap Record ID for the currently selected subject 
+#' @param instrumentData The user entered data currently present in the REDCap instrument
+#' @param previousData Previous Abstraction "Instrument Complete" Value
+#' @param currentSubject Abstraction data assosciated with the currently selected subject
+#' @param rc_upload_btn_press A press of the Upload to REDCap button
+#' @param abstraction_complete Person readable abstraction complete value
+#' @param abstraction_complete_val Machine readable abstraction complete value
+#' @param all_instruments All data abstraction instruments in the project
+#'
+#' @rdname mod_redcap_module
+#' 
+#' @keywords internal
+#' @export
+#' @importFrom dplyr full_join bind_cols
+#' @importFrom purrr flatten_chr modify_depth flatten map2_chr flatten_dfr
+#' @importFrom redcapAPI exportNextRecordName
+#' @importFrom stringr str_trim str_detect
+#' @importFrom redcapAPI importRecords
+upload_redcap_logic <- function(input, output, session, rc_connection, rc_recordID, rc_instrument, instrumentData, previousData, currentSubject, rc_upload_btn_press, abstraction_complete, abstraction_complete_val, all_instruments, instrument_selection) {
   ns <- session$ns
   
   ## Process Shiny RedCAP inputs to match expected RedCAP API input
   rc_id <- reactive({
-    req(rc_con(), rc_upload_btn_press() ) ## Add rc_upload_btn_press() as a req to force refresh of next record id on submit
+    req(rc_connection(), rc_upload_btn_press() ) ## Add rc_upload_btn_press() as a req to force refresh of next record id on submit
     rc_recordID_field <- rc_recordID() %>% flatten_chr()
     if(nrow(previousData()) > 0) {
       previousData() %>% 
-        select(rc_recordID_field)
+        select(.data$rc_recordID_field)
     } else {
-      tibble(!!rc_recordID_field := exportNextRecordName(rc_con() ))
+      tibble(!!rc_recordID_field := exportNextRecordName(rc_connection() ))
       }
     })
   
   rc_complete <- reactive({
     req(rc_upload_btn_press() )
     selected_instrument_name <- all_instruments() %>% 
-      filter(instrument_label == instrument_selection() ) %>% 
+      filter(.data$instrument_label == instrument_selection() ) %>% 
       extract2(1,1)
     instrument_complete_field <- paste0(selected_instrument_name,'_complete')
     if(is.null(abstraction_complete_val() ) | abstraction_complete() == F) {
@@ -523,37 +648,37 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
     req(rc_instrument(), instrumentData(), rc_id() )
     rc_recordID_field <- rc_recordID() %>% extract2(1)
     rc_instrument() %>% 
-      mutate(shiny_inputID = shiny_inputID) %>% ## Namespace
-      select(shiny_inputID, field_name, select_choices_or_calculations) %>% ## Include select_choices_or_calculations so that all columns can be sent back to REDCap. This allows for overwriting old data with blank ''
+      mutate(shiny_inputID = .data$shiny_inputID) %>% ## Namespace
+      select(.data$shiny_inputID, .data$field_name, .data$select_choices_or_calculations) %>% ## Include select_choices_or_calculations so that all columns can be sent back to REDCap. This allows for overwriting old data with blank ''
       add_row(field_name = rc_recordID() %>% flatten()) %>% ## Add REDCap record ID field back into the instrument, so it can be joined with any previous data.
       left_join(instrumentData(), by = c('shiny_inputID' = 'inputID')) %>% ## Join the instrument inputs with the selected instrument. This ensures inputs are collected only for the active instrument
       modify_depth(2, as.character) %>% ## the input values are all lists at this moment. Dive into each list (depth = 2) and make sure that the values within the list are coded as characters
-      separate_rows(select_choices_or_calculations,sep = '\\|') %>% ## Expand select_choices_or_calculations
-      mutate(select_choices_or_calculations = str_trim(select_choices_or_calculations)) %>% ## Trim
-      separate(select_choices_or_calculations, into = c('rc_val','rc_label'), sep = ',') %>% ## Separate
+      separate_rows(.data$select_choices_or_calculations, sep = '\\|') %>% ## Expand select_choices_or_calculations
+      mutate(select_choices_or_calculations = str_trim(.data$select_choices_or_calculations)) %>% ## Trim
+      separate(.data$select_choices_or_calculations, into = c('rc_val','rc_label'), sep = ',') %>% ## Separate
       ## This mutate adds additional column names to hold values for checkbox questions
-      mutate(rc_label = str_trim(rc_label), ## Trim
-             col_names = pmap(list(x = shiny_inputID, y = field_name, z = rc_val ),  function(x,y,z) case_when(str_detect(string = x, pattern = 'reviewr_checkbox') ~ paste0(y, '___', z), ## Create additional column names for inputs where multiple inputs are allowed
+      mutate(rc_label = str_trim(.data$rc_label), ## Trim
+             col_names = pmap(list(x = .data$shiny_inputID, y = .data$field_name, z = .data$rc_val ),  function(x,y,z) case_when(str_detect(string = x, pattern = 'reviewr_checkbox') ~ paste0(y, '___', z), ## Create additional column names for inputs where multiple inputs are allowed
                                                                                                              TRUE ~ y)
                               ),
-             values = pmap(list(x = shiny_inputID, y = rc_val, z = values), function(x,y,z) case_when(str_detect(string = x, pattern = 'reviewr_checkbox') & y == z ~ '1',
+             values = pmap(list(x = .data$shiny_inputID, y = .data$rc_val, z = .data$values), function(x,y,z) case_when(str_detect(string = x, pattern = 'reviewr_checkbox') & y == z ~ '1',
                                                                                                       str_detect(string = x, pattern = 'reviewr_checkbox') & y != z ~ '',
                                                                                                       TRUE ~ z)
                            ),
-             col_names = flatten_chr(col_names)
+             col_names = flatten_chr(.data$col_names)
              ) %>% 
-      select(col_names, values) %>% 
-      unnest(cols = values, keep_empty = T) %>% ## in the case that all checkbox questions are de-selected, this keeps empty values, but stores them as NA. 
+      select(.data$col_names, .data$values) %>% 
+      unnest(cols = .data$values, keep_empty = T) %>% ## in the case that all checkbox questions are de-selected, this keeps empty values, but stores them as NA. 
       ## This mutate modifys values to blanks, except for the special case when the record ID is NA. We would like to trop this value, if NA.
-      mutate(values = map2_chr(.x = col_names, .y = values, ~ case_when(str_detect(string = .x,pattern = !!rc_recordID_field) & is.na(.y) ~ .y,
+      mutate(values = map2_chr(.x = .data$col_names, .y = .data$values, ~ case_when(str_detect(string = .x,pattern = !!rc_recordID_field) & is.na(.y) ~ .y,
                                                                         is.na(.y) ~ '',
                                                                         TRUE ~ .y)
                                )
              ) %>%  
-      arrange(desc(values)) %>% 
-      distinct(col_names,.keep_all = T) %>% 
+      arrange(desc(.data$values)) %>% 
+      distinct(.data$col_names,.keep_all = T) %>% 
       remove_missing(na.rm = TRUE) %>% 
-      pivot_wider(names_from = col_names, values_from = values) %>% 
+      pivot_wider(names_from = .data$col_names, values_from = .data$values) %>% 
       bind_cols(rc_id(), rc_complete() ) %>% 
       select(!!rc_recordID_field, everything() ) %>% ## RedCAP API likes the record identifier in the first column
       flatten_dfr()
@@ -564,78 +689,78 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
   continue_val <- reactive({
     req(currentSubject() )
     currentSubject() %>% 
-      filter(field_name == rc_recordID() %>% flatten_chr()) %>% 
+      filter(.data$field_name == rc_recordID() %>% flatten_chr()) %>% 
       extract2(1,2)
   })
   # Create a DT to display in modal, with Question, Previous Value, and New Value
   ## Process the instrumnet slightly
   exploded_instrument  <- reactive({
     rc_instrument() %>%
-    select(shiny_inputID, field_type, select_choices_or_calculations) %>% 
-    mutate(select_choices_or_calculations = case_when(field_type == 'yesno' ~ '1, Yes | 0, No',
-                                                      field_type == 'truefalse' ~ '1, True | 0, False',
+    select(.data$shiny_inputID, .data$field_type, .data$select_choices_or_calculations) %>% 
+    mutate(select_choices_or_calculations = case_when(.data$field_type == 'yesno' ~ '1, Yes | 0, No',
+                                                      .data$field_type == 'truefalse' ~ '1, True | 0, False',
                                                       TRUE ~ select_choices_or_calculations
                                                       )
            ) %>% 
-    separate_rows(select_choices_or_calculations, sep = '\\|') %>% 
-    separate(select_choices_or_calculations, into = c('values','choice_labels'), sep = ',') %>% 
+    separate_rows(.data$select_choices_or_calculations, sep = '\\|') %>% 
+    separate(.data$select_choices_or_calculations, into = c('values','choice_labels'), sep = ',') %>% 
     mutate_all(str_trim) %>% 
     mutate_all(replace_na, replace = '') %>% 
-    mutate(inputID = shiny_inputID) %>%
-    select(inputID, everything(), -shiny_inputID)
+    mutate(inputID = .data$shiny_inputID) %>%
+    select(.data$inputID, everything(), -.data$shiny_inputID)
   })
   
   ## Process current data, matching values with choice labels for display
   current_data <- reactive({
     instrumentData() %>% 
     modify_depth(.depth = 2, as.character) %>% 
-    unnest(cols = values) %>% 
-    mutate(current_values = values)
+    unnest(cols = .data$values) %>% 
+    mutate(current_values = .data$values)
     })
   
   new_data_w_labels <- reactive({
     exploded_instrument() %>% 
     full_join(current_data() ) %>% 
-    mutate(inputID = str_replace(string = inputID, pattern = regex(pattern = '_reviewr_.*'),replacement = '')) %>% 
+    mutate(inputID = str_replace(string = .data$inputID, pattern = regex(pattern = '_reviewr_.*'),replacement = '')) %>% 
     mutate_all(replace_na, replace = '') %>% 
-    filter(current_values != '') %>% 
-    mutate(current_values_2 = case_when(choice_labels == '' ~ current_values,
-                                        TRUE ~ choice_labels
+    filter(.data$current_values != '') %>% 
+    mutate(current_values_2 = case_when(.data$choice_labels == '' ~ .data$current_values,
+                                        TRUE ~ .data$choice_labels
                                         )
            ) %>% 
-    select(inputID, 'current_values' = current_values_2) %>% 
-    group_by(inputID) %>% 
-    mutate(current_values = paste(current_values, collapse = '<br><br>')) %>% 
+    select(.data$inputID, current_values = .data$current_values_2) %>% 
+    group_by(.data$inputID) %>% 
+    mutate(current_values = paste(.data$current_values, collapse = '<br><br>')) %>% 
     ungroup() %>% 
-    distinct(inputID, .keep_all = T)
+    distinct(.data$inputID, .keep_all = T)
   })
   
   ## Process old (existing) data, matching values with choice labels for display
   old_data <- reactive({
     currentSubject() %>% 
     modify_depth(.depth = 2, as.character) %>% 
-    unnest(cols = default_value) %>% 
-    mutate(inputID = field_name) %>% 
-    select(inputID, previous_values = default_value,-field_name) %>% 
-    mutate(values = previous_values) %>% 
-    select(inputID, values, previous_values)
+    unnest(cols = .data$default_value) %>% 
+    mutate(inputID = .data$field_name) %>% 
+    select(.data$inputID, previous_values = .data$default_value,-.data$field_name) %>% 
+    mutate(values = .data$previous_values) %>% 
+    select(.data$inputID, .data$values, .data$previous_values)
   })
   
   old_data_w_labels <- reactive({
     exploded_instrument() %>% 
-    mutate(inputID = str_replace(string = inputID, pattern = regex(pattern = '_reviewr_.*'),replacement = '')) %>% 
+    mutate(inputID = str_replace(string = .data$inputID, pattern = regex(pattern = '_reviewr_.*'),replacement = '')) %>% 
     full_join(old_data() ) %>% 
     mutate_all(replace_na, replace = '') %>% 
-    filter(previous_values != '') %>% 
-    mutate(previous_values_2 = case_when(choice_labels == '' ~ previous_values,
-                                         TRUE ~ choice_labels
+    filter(.data$previous_values != '') %>% 
+    mutate(previous_values_2 = case_when(.data$choice_labels == '' ~ .data$previous_values,
+                                         TRUE ~ .data$choice_labels
                                          )
            ) %>% 
-    select(inputID, 'previous_values' = previous_values_2) %>% 
-    group_by(inputID) %>% 
-    mutate(previous_values = paste(previous_values, collapse = '<br><br>')) %>% 
+    select(.data$inputID, previous_values = .data$previous_values_2) %>% 
+    group_by(.data$inputID) %>% 
+    mutate(previous_values = paste(.data$previous_values, collapse = '<br><br>')) %>% 
     ungroup() %>% 
-    distinct(inputID, .keep_all = T)
+    distinct(.data$inputID, .keep_all = T)
   })
   
   ## Modal Representation
@@ -643,15 +768,15 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
   new_data_w_labels() %>% 
   full_join(old_data_w_labels() ) %>% 
     mutate_all(replace_na, replace = '') %>%
-    mutate(diff = case_when(current_values != previous_values ~ 1,
+    mutate(diff = case_when(.data$current_values != .data$previous_values ~ 1,
                             TRUE ~ 0
     )
     ) %>% 
-    filter(diff == 1) %>% 
+    filter(.data$diff == 1) %>% 
     left_join(rc_instrument() %>% 
-                select(field_name, field_label, select_choices_or_calculations), 
+                select(.data$field_name, .data$field_label, .data$select_choices_or_calculations), 
               by =c('inputID' = 'field_name')) %>% 
-    select('Question' = field_label, 'Previous Values' = previous_values, 'New Values' = current_values) %>% 
+    select(Question = .data$field_label, 'Previous Values' = .data$previous_values, 'New Values' = .data$current_values) %>% 
     remove_missing(vars = 'Question', na.rm = TRUE) 
   })
 
@@ -692,8 +817,8 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
       } else {
         message('Uploading data to REDCap.')
         # browser()
-        upload_status <- redcapAPI::importRecords(rcon = rc_con(), data = rc_uploadData(), overwriteBehavior = 'overwrite', returnContent = 'ids' )
-        upload_message <- paste('REDCap', rc_recordID_field, upload_status %>% tibble::enframe(name = NULL) %>% separate(col = value,into = c('id','value'), sep = '\n') %>% select(value) %>% extract2(1), 'Uploaded Successfully.')
+        upload_status <- redcapAPI::importRecords(rcon = rc_connection(), data = rc_uploadData(), overwriteBehavior = 'overwrite', returnContent = 'ids' )
+        upload_message <- paste('REDCap', rc_recordID_field, upload_status %>% tibble::enframe(name = NULL) %>% separate(col = .data$value,into = c('id','value'), sep = '\n') %>% select(.data$value) %>% extract2(1), 'Uploaded Successfully.')
         # Display message after sending data to REDCap
         showNotification(ui = upload_message,
                          duration = 5,
@@ -706,8 +831,8 @@ upload_redcap_logic <- function(input, output, session, rc_con, rc_recordID, rc_
   observeEvent(input$continue, {
     removeModal()
     rc_recordID_field <- rc_recordID() %>% flatten_chr()
-    overwrite_status <- redcapAPI::importRecords(rcon = rc_con(), data = rc_uploadData(), overwriteBehavior = 'overwrite', returnContent = 'ids')
-    overwrite_message <- paste('REDCap', rc_recordID_field, overwrite_status %>% tibble::enframe(name = NULL) %>% separate(col = value,into = c('id','value'), sep = '\n') %>% select(value) %>% extract2(1), 'Modified Successfully.')
+    overwrite_status <- redcapAPI::importRecords(rcon = rc_connection(), data = rc_uploadData(), overwriteBehavior = 'overwrite', returnContent = 'ids')
+    overwrite_message <- paste('REDCap', rc_recordID_field, overwrite_status %>% tibble::enframe(name = NULL) %>% separate(col = .data$value,into = c('id','value'), sep = '\n') %>% select(.data$value) %>% extract2(1), 'Modified Successfully.')
 
     # Display message after sending data to REDCap
     showNotification(ui = overwrite_message,
