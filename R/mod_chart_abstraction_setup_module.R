@@ -43,7 +43,6 @@ chart_abstraction_setup_logic <- function(input, output, session, abstraction_se
   ns <- session$ns
   
   ### REDCap
-  source('modules/02_chart_abstraction/redcap_module.R')
   rc_vars <- callModule(redcap_connect_logic, 'abstraction_ns')
   rc_con <- callModule(redcap_initialize_logic, 'abstraction_ns', rc_vars$rc_url, rc_vars$rc_token)
   
