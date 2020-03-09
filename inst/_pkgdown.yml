@@ -1,0 +1,14 @@
+reference:
+  - title: "Running the Application"
+    desc: >
+      Execute this function to start ReviewR.
+    contents: 
+      - run_app
+  - title: "ReviewR Datasets"
+    desc: "Datasets that ReviewR uses to map patient data to the appropriate CDM and map REDCap fields to native R shiny widgets."
+    contents:
+      - supported_models
+      - redcap_widget_map
+      - redcap_survey_complete_tbl
+      - redcap_survey_complete_values
+      
