@@ -13,7 +13,6 @@ LazyData: true
 Imports: 
     shiny,
     golem,
-    processx,
     attempt,
     DT,
     glue,
