@@ -220,7 +220,6 @@ omop_table_drug_era <- function(table_map, db_connection, subject_id) {
 #' @keywords internal
 #' @export
 omop_table_drug_exposure <- function(table_map, db_connection, subject_id) {
-  browser()
   req(table_map(), db_connection(), subject_id() )
   message('Running Drug Exposure')
   subject <- as.integer(subject_id() )
