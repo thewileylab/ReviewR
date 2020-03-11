@@ -8,3 +8,6 @@ $run_dev.*
 ^README\.Rmd$
 ^CODE_OF_CONDUCT\.md$
 ^app\.R$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
