@@ -160,6 +160,6 @@ upload_redcap_logic(
 \item{all_instruments}{All data abstraction instruments in the project}
 }
 \description{
-This module will assist with selecting a patient. It keeps the patient search tab data table up todate, server side renders the select input on the patient chart tab, and displays in context information about the selected patient.
+This module contains all of the REDCap setup and instrument upload/download components.
 }
 \keyword{internal}

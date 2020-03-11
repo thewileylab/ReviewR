@@ -1,7 +1,7 @@
 #' REDCap Module
 #'
-#' This module will assist with selecting a patient. It keeps the patient search tab data table up todate, server side renders the select input on the patient chart tab, and displays in context information about the selected patient. 
-#'
+#' This module contains all of the REDCap setup and instrument upload/download components. 
+#' 
 #' @param id The namespace id for the UI output
 #' @param input internal
 #' @param output internal
