@@ -84,9 +84,8 @@ instrument_complete_logic <- function(input, output, session, rc_instrument, ins
       as.numeric()
     })
   
-  # Create "Instrument Complete" selectInput choices as a named list
-  dropdown_choices <- c(0,1,2)
-  names(dropdown_choices) <- c('Incomplete', 'Unverified', 'Complete')
+  # Create "Instrument Complete" selectInput choices based on Abstraction module in use
+  dropdown_choices <- redcap_survey_complete_values ## Currently, only REDCap
   
   # Initialize a select input that is hidden containing the "Instrument Complete" Choices
   output$abstraction_complete_ui <- renderUI({
