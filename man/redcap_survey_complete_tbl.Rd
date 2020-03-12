@@ -4,12 +4,14 @@
 \name{redcap_survey_complete_tbl}
 \alias{redcap_survey_complete_tbl}
 \title{REDCap Survey Complete Tbl}
-\format{A data frame with 2 rows and 2 variables:
+\format{
+A data frame with 2 rows and 2 variables:
 \describe{
   \item{redcap_survey_complete_names}{The human readable "Survey Complete" Responses}
   \item{redcap_survey_complete_values}{REDCap API values for "Survey Complete" Responses}
   ...
-}}
+}
+}
 \usage{
 redcap_survey_complete_tbl
 }

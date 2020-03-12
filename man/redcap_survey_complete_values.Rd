@@ -4,13 +4,15 @@
 \name{redcap_survey_complete_values}
 \alias{redcap_survey_complete_values}
 \title{REDCap Survey Complete Values}
-\format{A named list containing 3 items:
+\format{
+A named list containing 3 items:
 \describe{
   \item{Incomplete}{REDCap Survey Incomplete}
   \item{Unverified}{REDCap Survey needs verification}
   \item{Complete}{REDCap Survey answered completely}
   ...
-}}
+}
+}
 \usage{
 redcap_survey_complete_values
 }
