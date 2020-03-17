@@ -47,7 +47,7 @@ bq_project_auth_logic <- function(input, output, session) {
                    }
   port <- isolate(session$clientData$url_port)
   pathname <- isolate(session$clientData$url_pathname)
-  APP_URL <- if(is.null(port) ) {
+  APP_URL <- if(is.null(port) | port == '') {
     glue::glue('{protocol}//{hostname}{pathname}')
   } else {
     glue::glue('{protocol}//{hostname}:{port}{pathname}')
