@@ -18,6 +18,7 @@
 #' @importFrom dplyr filter
 #' @importFrom magrittr %>% 
 #' @importFrom DBI dbConnect
+#' @importFrom glue glue
 bq_auth_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -38,15 +39,28 @@ bq_project_auth_logic <- function(input, output, session) {
   ns <- session$ns
   allow_nav_jscode <- 'window.onbeforeunload = null;'
   
-  params <- parseQueryString(isolate(session$clientData$url_search))
-  
-  if (interactive()) {
-    # For use locally, ensure the app is running on port 8100
-    APP_URL <- "http://localhost:8100/"
+  ## URL Information
+  protocol <- isolate(session$clientData$url_protocol)
+  hostname <- if (isolate(session$clientData$url_hostname) == '127.0.0.1') {
+    'localhost'
+  } else { isolate(session$clientData$url_hostname)
+                   }
+  port <- isolate(session$clientData$url_port)
+  pathname <- isolate(session$clientData$url_pathname)
+  APP_URL <- if(is.null(port) ) {
+    glue::glue('{protocol}//{hostname}{pathname}')
   } else {
-    # deployed URL (server deploymnet)
-    APP_URL <- "http://localhost:3838/ReviewR/"
+    glue::glue('{protocol}//{hostname}:{port}{pathname}')
   }
+  params <- parseQueryString(isolate(session$clientData$url_search))
+  # browser()
+  # if (interactive()) {
+  #   # For use locally, ensure the app is running on port 8100
+  #   APP_URL <- "http://localhost:8100/"
+  # } else {
+  #   # deployed URL (server deploymnet)
+  #   APP_URL <- "http://localhost:3838/ReviewR/"
+  # }
   
   # Note that secret is not really secret, and it's fine to include inline
   app <- oauth_app(
