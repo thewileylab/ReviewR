@@ -11,3 +11,6 @@ $run_dev.*
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^ReviewR\.Rcheck$
+^ReviewR.*\.tar\.gz$
+^ReviewR.*\.tgz$
