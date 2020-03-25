@@ -34,7 +34,7 @@ To install the latest development release:
 
 ``` r
 # install.packages('devtools')
-devtools::install_github('thewileylab/ReviewR', ref = 'pkg_reorg')
+devtools::install_github('thewileylab/ReviewR')
 ```
 
 ## Shiny Server Deployment

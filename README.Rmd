@@ -34,7 +34,7 @@ Currently, ReviewR will connect to Google BigQuery as a database back-end, with 
 To install the latest development release:
 ```{r eval=FALSE}
 # install.packages('devtools')
-devtools::install_github('thewileylab/ReviewR', ref = 'pkg_reorg')
+devtools::install_github('thewileylab/ReviewR')
 ```
 
 ## Shiny Server Deployment
