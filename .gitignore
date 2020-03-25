@@ -11,3 +11,6 @@ tmp/
 *config*.yml
 dev/
 .DS_Store
+ReviewR.Rcheck/
+ReviewR*.tar.gz
+ReviewR*.tgz
