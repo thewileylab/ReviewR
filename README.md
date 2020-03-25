@@ -8,7 +8,9 @@ records
 
 <!-- badges: start -->
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1488535.svg)](https://doi.org/10.5281/zenodo.1488535)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1488534.svg)](https://doi.org/10.5281/zenodo.1488534)
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 <!-- badges: end -->
 
 ReviewR is a portable Shiny tool to help you explore patient data across
@@ -31,27 +33,37 @@ back-end, with support planned for:
 To install the latest development release:
 
 ``` r
-# install.packages('usethis')
-usethis::create_from_github("thewileylab/ReviewR")
+# install.packages('devtools')
+devtools::install_github('thewileylab/ReviewR')
 ```
 
 ## Shiny Server Deployment
 
-ReviewR can optionally be deployed to a Shiny Server. Follow the [Shiny
-Server Quick Start
-Guide](https://support.rstudio.com/hc/en-us/articles/360011458854-Shiny-Server-Quick-Start-Installation-and-Configuration)
-to get Shiny Server up and running. After cloning the repository as
-described above to your server, symlink the ReviewR directory to
-`/srv/shiny-server/ReviewR`. Note, for Google Authentication to work,
-your server must have a fully qualified domain name and link to a Google
-Project that you own to perform authorization.
+ReviewR can optionally be deployed to a Shiny Server.
+
+1.  Follow the [Shiny Server Quick Start
+    Guide](https://support.rstudio.com/hc/en-us/articles/360011458854-Shiny-Server-Quick-Start-Installation-and-Configuration)
+    to get Shiny Server up and running.
+2.  Next, clone the ReviewR repository to your server:
+
+<!-- end list -->
+
+``` r
+# install.packages('usethis')
+usethis::create_from_github('thewileylab/ReviewR')
+```
+
+3.  Finally, symlink the cloned ReviewR directory to
+    `/srv/shiny-server/ReviewR`. Note, for Google Authentication to
+    work, your server must have a fully qualified domain name and link
+    to a Google Project that you own to perform authorization.
 
 ## Usage
 
 To run the application from your local machine:
 
 ``` r
-shiny::runApp('app.R', port = 8100)
+ReviewR::run_app()
 ```
 
 Once the app has loaded, please complete the ‘Setup’ tab (found in the

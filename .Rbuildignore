@@ -1,1 +1,16 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^data-raw$
+dev_history.R
+^dev$
+$run_dev.*
+^LICENSE\.md$
 ^README\.Rmd$
+^CODE_OF_CONDUCT\.md$
+^app\.R$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^ReviewR\.Rcheck$
+^ReviewR.*\.tar\.gz$
+^ReviewR.*\.tgz$
