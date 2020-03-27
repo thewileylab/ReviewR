@@ -36,6 +36,7 @@ Imports:
     redcapAPI,
     pkgload,
     config,
+    RSQLite,
     dbplyr
 RoxygenNote: 7.1.0
 URL: https://github.com/thewileylab/ReviewR
@@ -43,4 +44,4 @@ BugReports: https://github.com/thewileylab/ReviewR/issues
 Suggests: 
     testthat (>= 2.1.0)
 Depends: 
-    R (>= 2.10)
+    R (>= 3.5.0)

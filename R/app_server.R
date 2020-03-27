@@ -5,13 +5,16 @@ app_server <- function(input, output, session) {
   db_type <- callModule(db_select_logic, 'db_setup_ns')
   ### Database
   db_connection_vars <- callModule(db_connect_logic, 'db_setup_ns', db_type$db_selection, table_map$db_disconnect )
+  
   ### Data Model Detection
   table_map <- callModule(data_model_detection_logic, 'model_ns', db_connection_vars$db_connection, db_connection_vars$connect_press, db_type$db_selection)
   
   ## Chart Abstraction Setup
   abstraction <- callModule(chart_abstraction_select_logic, 'abstraction_ns')
   abstraction_vars <- callModule(chart_abstraction_setup_logic, 'abstraction_ns', abstraction$abstraction_selection)
-  
+  # observeEvent(c(abstraction_vars$offline_press(),abstraction_vars$offline_new_session() ),{
+  #   browser()
+  # })
   ## REDCap Configuration
   instrument_selection <- callModule(redcap_instrument_select_logic, 'abstraction_ns', abstraction_vars$rc_press, abstraction_vars$rc_con)
   rc_project_vars <- callModule(redcap_instrument_config_logic, 'abstraction_ns', abstraction_vars$rc_con, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection)
@@ -19,6 +22,8 @@ app_server <- function(input, output, session) {
   rc_config_vars <- callModule(redcap_instrument_config_reviewer_logic, 'abstraction_ns', rc_project_vars$rc_instrument, rc_project_vars$rc_identifier, abstraction_vars$rc_con)
   rc_reconfig <- callModule(rc_instrument_configured_logic, 'abstraction_ns', rc_config_vars, instrument_selection$rc_instrument_selection)
   
+  ## Offline Abstraction Configuration
+  offline_connected_vars <- callModule(offline_connected_logic, 'offline_abstraction_ns', abstraction_vars)
   
   ## Call Patient Search Tab Modules ----
   ### Patient Search Module
@@ -42,14 +47,7 @@ app_server <- function(input, output, session) {
   observeEvent(input$quit, {
     stopApp()
   })
-  ### BigQuery Redirect Observer. When leaving the application after authenticating with BigQuery, take the user back to the Setup Tab to complete setup.
-  observeEvent(db_connection_vars$bq_token(), {
-    if (is.null(db_connection_vars$bq_token() ) ) { # Only redirect when the authorization token is present
-      return(NULL)
-    } else {
-      updateTabItems(session, 'main_tabs', selected = 'setup')
-    }
-  })
+
   ## Define Main UI Outputs ----
   ### Main UI
   ### Define a dynamic application menu
@@ -120,6 +118,33 @@ app_server <- function(input, output, session) {
     shinyjs::show('redcap_instrument_config_choices_div',anim = TRUE,animType = 'slide')
     shinyjs::reset('redcap_instrument_config_choices_div')
   })
+  ###   ###   ###   ###   ###   ###   ###   ###   ###   ###   ###   ###   ###   ###   ###   ### 
+  ### Hide/show the Offline Abstraction Setup ui
+  observeEvent(abstraction_vars$offline_press(), ignoreInit = TRUE, {
+    shinyjs::hide('chart_abstraction_setup_div',anim = TRUE,animType = 'fade')
+    # shinyjs::show('offline_instrument_config_div',anim = TRUE,animType = 'slide')
+    shinyjs::show('offline_connected_div',anim = TRUE,animType = 'slide')
+  })
+  
+  observeEvent(rc_connected_vars$rc_disconnect(), {
+    shinyjs::show('chart_abstraction_setup_div',anim = TRUE,animType = 'slide')
+    shinyjs::hide('redcap_instrument_config_div',anim = TRUE,animType = 'fade')
+    shinyjs::hide('rc_connected_div',anim = TRUE, animType = 'slide')
+    shinyjs::reset('chart_abstraction_setup_div')
+  })
+  
+  ### Hide/show the Offline Abstraction Configuration ui
+  observeEvent(rc_config_vars$rc_configure_btn_press(), {
+    shinyjs::show('rc_configured_div',anim = TRUE,animType = 'slide')
+    shinyjs::hide('redcap_instrument_config_choices_div',anim = TRUE,animType = 'fade')
+  })
+  
+  observeEvent(rc_reconfig$rc_reconfig(), {
+    shinyjs::hide('rc_configured_div',anim = TRUE,animType = 'fade')
+    shinyjs::show('redcap_instrument_config_choices_div',anim = TRUE,animType = 'slide')
+    shinyjs::reset('redcap_instrument_config_choices_div')
+  })
+  ###   ###   ###   ###   ###   ###   ###   ###   ###   ###   ###   ###   ###   ###   ###   ### 
   
   ## Define Setup Tab UI Outputs, to be controlled by above observers ----
   ### db_setup Outputs
@@ -134,7 +159,7 @@ app_server <- function(input, output, session) {
     )
   })
   
-  ### redcap_setup Outputs
+  ### abstraction_setup Outputs
   output$rc_setup <- renderUI({
     div(id = 'chart_abstraction_setup_div',
         chart_abstraction_setup_ui('abstraction_ns')
@@ -145,6 +170,13 @@ app_server <- function(input, output, session) {
       div(id = 'rc_connected_div',
           redcap_connected_ui('abstraction_ns')
       )
+    )
+  })
+  output$offline_connected <- renderUI({
+    shinyjs::hidden(
+      div(id = 'offline_connected_div',
+          offline_connected_ui('offline_abstraction_ns')
+          )
     )
   })
   
@@ -176,6 +208,8 @@ app_server <- function(input, output, session) {
       )
     )
   })
+  
+  ### offline_setup 
   
   
   # Patient Search Tab UI

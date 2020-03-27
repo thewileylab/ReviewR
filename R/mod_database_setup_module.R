@@ -30,8 +30,8 @@ db_setup_ui <- function(id) {
 db_select_logic <- function(input, output, session) {
   ns <- session$ns
 # Supported databases
-  db_choices <- c('BigQuery' = 'bigquery',
-                  'PostgreSQL' = 'pg_sql')
+  db_choices <- c('SQLite (Example Data)' = 'sq_lite',
+                  'Others' = 'other')
   db_ui <- 
     tagList(
       div("Please select a database type from the list of supported databases."),
@@ -62,40 +62,33 @@ db_select_logic <- function(input, output, session) {
 
 db_connect_logic <- function(input, output, session, db_type, db_disconnect){
   ns <- session$ns
-  
-# Load BigQuery Auth Module
-  bq_prj_connect_vars <- callModule(bq_project_auth_logic, id = 'bq_setup_ns')
-  bq_ds_connect_vars <- callModule(bq_dataset_auth_logic, id = 'bq_setup_ns', bq_prj_connect_vars$bq_project)
-  db_connection <- callModule(bq_initialize, id = 'bq_setup_ns', bq_prj_connect_vars$bq_project, bq_ds_connect_vars$bq_dataset, db_disconnect)
-  
+
+# Load SQLite Module
+  sq_connection <- callModule(sqlite_logic, id = 'sqlite_setup_ns', db_disconnect)
+
   db_connection_ui <- reactive({
   req(db_type() )
-    if(db_type() == 'bigquery') {
+    if (db_type() == 'sq_lite') {
       tagList(
-        bq_auth_ui(ns('bq_setup_ns'))
-      )
-  } else if(db_type() == 'pg_sql') {
-    renderUI({
-      tagList(
-        div('Error!!!'),
-        br(),
-        div('PostgreSQL Module is imaginary at this time. Do something about that eventually.') 
-      )
+        sqlite_ui(ns('sqlite_setup_ns'))
+        )
+      } else {
+        renderUI({
+          tagList(
+            HTML(paste('Other databases supported by the <a href="https://cran.r-project.org/web/packages/dbplyr/vignettes/dbplyr.html">dbplyr</a> backend. Modules have been developed for Google BigQuery and Microsoft SQL server. <br><br>Visit the <a href="https://github.com/thewileylab/ReviewR">ReviewR GitHub</a> for additional information.') )
+            )
+        })
+        }
     })
-    } else { return(NULL)}
-  })
   
   output$db_connect_ui <- renderUI({ 
     tagList(
       db_connection_ui()
       ) 
     })
-
+  
   return(list(
-    'bq_token' = bq_prj_connect_vars$token,
-    'bq_project' = bq_prj_connect_vars$bq_project,
-    'bq_dataset' = bq_ds_connect_vars$bq_dataset, 
-    'db_connection' = db_connection$db_connection,
-    'connect_press' = db_connection$connect_press
+    'db_connection' = sq_connection$db_connection,
+    'connect_press' = sq_connection$connect_press
   ))
 }
