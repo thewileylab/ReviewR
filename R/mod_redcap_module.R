@@ -301,7 +301,7 @@ redcap_instrument_config_logic <- function(input, output, session, rc_connection
 redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_instrument, rc_identifier, rc_connection) {
   ns <- session$ns
   
-  ## Create a select input for potential reviewer identifier coluimns. Remove patient identifier column and append 'Not applicable'
+  ## Create a select input for potential reviewer identifier columns. Remove patient identifier column and append 'Not applicable'
   rc_reviewer_id <- reactive({
     req(rc_instrument(), rc_identifier() )
     selectInput(inputId = ns('rc_reviewer_field'), 
