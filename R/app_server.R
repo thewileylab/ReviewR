@@ -22,6 +22,8 @@ app_server <- function(input, output, session) {
   
   ## Offline Abstraction Configuration
   offline_connected_vars <- callModule(offline_connected_logic, 'offline_abstraction_ns', abstraction_vars)
+  offline_config_vars <- callModule(offline_abs_config_logic, 'offline_abstraction_ns', abstraction_vars)
+  callModule(offline_abs_config_reviewer_logic, 'offline_abstraction_ns', offline_config_vars$offline_instrument, offline_config_vars$offline_identifier)
   
   ## Call Patient Search Tab Modules ----
   ### Patient Search Module
@@ -120,13 +122,13 @@ app_server <- function(input, output, session) {
   ### Hide/show the Offline Abstraction Setup ui
   observeEvent(abstraction_vars$offline_press(), ignoreInit = TRUE, {
     shinyjs::hide('chart_abstraction_setup_div',anim = TRUE,animType = 'fade')
-    # shinyjs::show('offline_instrument_config_div',anim = TRUE,animType = 'slide')
+    shinyjs::show('offline_instrument_config_div',anim = TRUE,animType = 'slide')
     shinyjs::show('offline_connected_div',anim = TRUE,animType = 'slide')
   })
   
   observeEvent(offline_connected_vars$offline_disconnect(), {
     shinyjs::show('chart_abstraction_setup_div',anim = TRUE,animType = 'slide')
-  #   shinyjs::hide('redcap_instrument_config_div',anim = TRUE,animType = 'fade')
+    shinyjs::hide('offline_instrument_config_div',anim = TRUE,animType = 'fade')
     shinyjs::hide('offline_connected_div',anim = TRUE, animType = 'slide')
     shinyjs::reset('chart_abstraction_setup_div')
   })
@@ -206,9 +208,26 @@ app_server <- function(input, output, session) {
       )
     )
   })
-  
-  ### offline_setup 
-  
+  ### offline_config Outputs
+  output$offline_config <- renderUI({
+        offline_abs_config_ui('offline_abstraction_ns')
+  })
+  output$offline_config_ui <- renderUI({
+    shinyjs::hidden(
+      div(id = 'offline_instrument_config_div',
+          box(
+            #Box Setup
+            title = 'Configure Offline Instrument',
+            width = '100%',
+            status = 'danger',
+            solidHeader = F,
+            #Box Contents
+            uiOutput('offline_config')
+            #uiOutput('offline_configured_ui')
+          )
+      )
+    )
+  })
   
   # Patient Search Tab UI
   ## Define Patient Search Tab UI observers ----

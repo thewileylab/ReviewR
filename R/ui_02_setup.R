@@ -41,7 +41,8 @@ setup_tab <- function() {
                    uiOutput('rc_connected'),
                    uiOutput('offline_connected')
                    ),
-               uiOutput('rc_config_ui')
+               uiOutput('rc_config_ui'),
+               uiOutput('offline_config_ui')
                )
         )
       )

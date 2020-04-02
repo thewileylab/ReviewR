@@ -149,3 +149,102 @@ offline_connected_logic <- function(input, output, session, abstraction_vars) {
     'offline_disconnect' = offline_disconnect
   ))
 }
+
+
+#' @param id The namespace id for the UI output
+#'
+#' @rdname mod_offline_abs_module
+#' 
+#' @keywords internal
+#' @export
+#' @importFrom readr read_csv
+
+offline_abs_config_ui <- function(id) {
+  ns <- NS(id)
+  tagList(
+    uiOutput(ns('offline_config_ui')), 
+    uiOutput(ns('offline_reviewer')), 
+    uiOutput(ns('offline_current_reviewer'))
+  )
+}
+
+offline_abs_config_logic <- function(input, output, session, abstraction_vars) {
+  ns <- session$ns
+  
+  instrument <- reactive({
+    if(abstraction_vars$offline_existing_session() == 'demo') {
+      read_csv(app_sys('extdata/shiny_contest_instrument.csv'))
+    } else {
+      read_csv(abstraction_vars$offline_new_session()$name)
+    }
+  })
+  
+  offline_instrument_patient_id <- reactive({
+    req(instrument() )
+    tagList(
+      selectInput(inputId = ns('offline_identifier_field'),
+                  label = 'Which variable contains your record identifier (e.g., MRN, subject ID)?',
+                  choices = instrument() %>%
+                    filter(.data$field_type == 'text') %>% 
+                    select(.data$field_label) %>%
+                    deframe()
+      )
+    )
+  })
+  
+  offline_identifier <- reactive({ input$offline_identifier_field })
+  
+  output$offline_config_ui <- renderUI({offline_instrument_patient_id() })
+  
+  return(list(
+    'offline_instrument' = instrument,
+    'offline_identifier' = offline_identifier
+  ))
+}
+
+offline_abs_config_reviewer_logic <- function(input, output, session, offline_instrument, offline_identifier) {
+  ns <- session$ns
+  
+  offline_reviewer_id <- reactive({
+    req(offline_instrument(), offline_identifier() )
+    selectInput(inputId = ns('offline_reviewer_field'), 
+                label = 'Which variable contains your reviewer identifier?',
+                choices = append('(Not Applicable)', 
+                                 offline_instrument() %>%
+                                   filter(.data$field_type == 'text' & .data$field_label != offline_identifier() ) %>% 
+                                   select(.data$field_label) %>%
+                                   deframe()
+                )
+    )
+  })
+  offline_reviewer <- reactive({ input$offline_reviewer_field })
+  
+  output$offline_reviewer <- renderUI({offline_reviewer_id() })
+  
+  offline_previous_reviewers <- reactive({
+    req(offline_instrument(), offline_reviewer() )
+    list('Bill' = 'bill',
+         'Ted' = 'ted')
+  })
+  
+  offline_current_reviewer_question <- reactive({
+    req(offline_reviewer())
+    if(offline_reviewer() == '(Not Applicable)' ) {
+      return(NULL)
+    } else {
+      selectizeInput(inputId = ns('offline_current_reviewer'),
+                     label = 'Select your name from the list, or enter a new one:',
+                     choices = append('',
+                                      offline_previous_reviewers()
+                     ), 
+                     options = list(create = TRUE,
+                                    placeholder = 'New Reviewer'))
+    }
+  })
+  
+  output$offline_current_reviewer <- renderUI( offline_current_reviewer_question() )
+  
+  return(list(
+    'offline_reviewer' = offline_reviewer
+  ))
+}

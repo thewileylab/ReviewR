@@ -6,6 +6,7 @@
 \alias{offline_setup_logic}
 \alias{offline_abs_connected_ui}
 \alias{offline_connected_logic}
+\alias{offline_abs_config_ui}
 \title{Offline Abstraction Module}
 \usage{
 offline_setup_ui(id)
@@ -17,6 +18,8 @@ offline_setup_logic(input, output, session, selection)
 offline_abs_connected_ui(id)
 
 offline_connected_logic(input, output, session, abstraction_vars)
+
+offline_abs_config_ui(id)
 }
 \arguments{
 \item{id}{The namespace id for the UI output}
