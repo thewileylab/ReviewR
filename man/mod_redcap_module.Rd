@@ -115,7 +115,7 @@ upload_redcap_logic(
 
 \item{connect}{A press of the REDCap connect button from the Setup Tab}
 
-\item{rc_project_info}{The project information assosciated with your REDCap API key}
+\item{rc_project_info}{The project information associated with your REDCap API key}
 
 \item{rc_connect_press}{A press of the REDCap connect button from the Setup Tab}
 

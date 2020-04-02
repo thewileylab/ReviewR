@@ -96,7 +96,7 @@ redcap_connected_ui <- function(id) {
 }
 
 #' @param connect A press of the REDCap connect button from the Setup Tab
-#' @param rc_project_info The project information assosciated with your REDCap API key
+#' @param rc_project_info The project information associated with your REDCap API key
 #'
 #' @rdname mod_redcap_module
 #' 
