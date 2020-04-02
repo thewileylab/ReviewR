@@ -12,9 +12,7 @@ app_server <- function(input, output, session) {
   ## Chart Abstraction Setup
   abstraction <- callModule(chart_abstraction_select_logic, 'abstraction_ns')
   abstraction_vars <- callModule(chart_abstraction_setup_logic, 'abstraction_ns', abstraction$abstraction_selection)
-  # observeEvent(c(abstraction_vars$offline_press(),abstraction_vars$offline_new_session() ),{
-  #   browser()
-  # })
+
   ## REDCap Configuration
   instrument_selection <- callModule(redcap_instrument_select_logic, 'abstraction_ns', abstraction_vars$rc_press, abstraction_vars$rc_con)
   rc_project_vars <- callModule(redcap_instrument_config_logic, 'abstraction_ns', abstraction_vars$rc_con, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection)
@@ -126,24 +124,24 @@ app_server <- function(input, output, session) {
     shinyjs::show('offline_connected_div',anim = TRUE,animType = 'slide')
   })
   
-  observeEvent(rc_connected_vars$rc_disconnect(), {
+  observeEvent(offline_connected_vars$offline_disconnect(), {
     shinyjs::show('chart_abstraction_setup_div',anim = TRUE,animType = 'slide')
-    shinyjs::hide('redcap_instrument_config_div',anim = TRUE,animType = 'fade')
-    shinyjs::hide('rc_connected_div',anim = TRUE, animType = 'slide')
+  #   shinyjs::hide('redcap_instrument_config_div',anim = TRUE,animType = 'fade')
+    shinyjs::hide('offline_connected_div',anim = TRUE, animType = 'slide')
     shinyjs::reset('chart_abstraction_setup_div')
   })
   
   ### Hide/show the Offline Abstraction Configuration ui
-  observeEvent(rc_config_vars$rc_configure_btn_press(), {
-    shinyjs::show('rc_configured_div',anim = TRUE,animType = 'slide')
-    shinyjs::hide('redcap_instrument_config_choices_div',anim = TRUE,animType = 'fade')
-  })
-  
-  observeEvent(rc_reconfig$rc_reconfig(), {
-    shinyjs::hide('rc_configured_div',anim = TRUE,animType = 'fade')
-    shinyjs::show('redcap_instrument_config_choices_div',anim = TRUE,animType = 'slide')
-    shinyjs::reset('redcap_instrument_config_choices_div')
-  })
+  # observeEvent(rc_config_vars$rc_configure_btn_press(), {
+  #   shinyjs::show('rc_configured_div',anim = TRUE,animType = 'slide')
+  #   shinyjs::hide('redcap_instrument_config_choices_div',anim = TRUE,animType = 'fade')
+  # })
+  # 
+  # observeEvent(rc_reconfig$rc_reconfig(), {
+  #   shinyjs::hide('rc_configured_div',anim = TRUE,animType = 'fade')
+  #   shinyjs::show('redcap_instrument_config_choices_div',anim = TRUE,animType = 'slide')
+  #   shinyjs::reset('redcap_instrument_config_choices_div')
+  # })
   ###   ###   ###   ###   ###   ###   ###   ###   ###   ###   ###   ###   ###   ###   ###   ### 
   
   ## Define Setup Tab UI Outputs, to be controlled by above observers ----
@@ -175,7 +173,7 @@ app_server <- function(input, output, session) {
   output$offline_connected <- renderUI({
     shinyjs::hidden(
       div(id = 'offline_connected_div',
-          offline_connected_ui('offline_abstraction_ns')
+          offline_abs_connected_ui('offline_abstraction_ns')
           )
     )
   })

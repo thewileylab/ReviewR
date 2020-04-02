@@ -1,3 +1,18 @@
+#' Offline Abstraction Module
+#'
+#' This module contains all of the Offline setup and instrumnet upload/download components.
+#' 
+#' @param id The namespace id for the UI output
+#' @param input internal
+#' @param output internal
+#' @param session internal
+#'
+#' @rdname mod_offline_abs_module
+#' 
+#' @keywords internal
+#' @export
+#' @import shiny
+#' 
 offline_setup_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -6,6 +21,10 @@ offline_setup_ui <- function(id) {
   )
 }
 
+#' @rdname mod_offline_abs_module
+#' 
+#' @keywords internal
+#' @export
 offline_setup_select_logic <-function(input, output, session) {
   ns <- session$ns
   
@@ -13,8 +32,6 @@ offline_setup_select_logic <-function(input, output, session) {
     c('Shiny Contest Demo' = 'demo',
       'New Session' = 'new')
   })
-  
-
   
   setup_ui <- reactive({
     tagList(
@@ -31,6 +48,15 @@ offline_setup_select_logic <-function(input, output, session) {
   ))
 }
 
+#' @param input internal
+#' @param output internal
+#' @param session internal
+#' @param selection Existing or new session?
+#'
+#' @rdname mod_offline_abs_module
+#' 
+#' @keywords internal
+#' @export
 offline_setup_logic <- function(input, output, session, selection) {
   ns <- session$ns
   
@@ -62,34 +88,53 @@ offline_setup_logic <- function(input, output, session, selection) {
   )
 }
 
-offline_connected_ui <- function(id) {
+#' @param id The namespace id for the UI output
+#'
+#' @rdname mod_offline_abs_module
+#' 
+#' @keywords internal
+#' @export
+
+offline_abs_connected_ui <- function(id) {
   ns <- NS(id)
   tagList(
     uiOutput(ns('offline_connected_ui'))
   )
 }
+
+#' @param input internal
+#' @param output internal
+#' @param session internal
+#' @param abstraction_vars Abstraction setup variables 
+#'
+#' @rdname mod_offline_abs_module
+#' 
+#' @keywords internal
+#' @export
 offline_connected_logic <- function(input, output, session, abstraction_vars) {
   ns <- session$ns
+  # 
+  # observeEvent(abstraction_vars$offline_press(), {
+  #   browser()
+  # })
+   offline_info <- reactive({
+     if(abstraction_vars$offline_existing_session() == 'demo') {
+       'Shiny Contest Demo Abstraction'
+     } else {
+       abstraction_vars$offline_new_session()$name
+     }
+   })
+
+   offline_connected_message <- eventReactive(abstraction_vars$offline_press(), {
+     req(offline_info() )
+     HTML(paste('<H3>Success!!</H3>',
+                'You have connected to the', offline_info(), ' Instrument.',
+                '<br>',
+                '<br>',
+                '<b>Please configure the Offline Instrument in the box below before continuing.</b>',
+                '<br><br>'))
+   })
   
-  offline_info <- reactive({
-    req(abstraction_vars$offline_existing_session() )
-    browser()
-    if(abstraction_vars$offline_existing_session() == 'demo') {
-      'Shiny Contest Demo Abstraction'
-    } else {
-      abstraction_vars$offline_new_session()$name
-    }
-  })
-  
-  offline_connected_message <- eventReactive(c(abstraction_vars$offline_press(),abstraction_vars$offline_new_session() ), {
-    browser()
-    HTML(paste('<H3>Success!!</H3>', 
-               'You have connected to the', offline_info(), ' Instrument.',
-               '<br>',
-               '<br>',
-               '<b>Please configure the Offline Instrument in the box below before continuing.</b>',
-               '<br><br>'))
-  })
   output$offline_connected_ui <- renderUI({
     req(offline_connected_message() )
     tagList(
