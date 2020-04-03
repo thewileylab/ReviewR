@@ -146,6 +146,7 @@ offline_connected_logic <- function(input, output, session, abstraction_vars) {
   offline_disconnect <- reactive({ input$offline_disconnect })
   
   return(list(
+    'offline_instrument' = offline_info,
     'offline_disconnect' = offline_disconnect
   ))
 }
@@ -164,7 +165,8 @@ offline_abs_config_ui <- function(id) {
   tagList(
     uiOutput(ns('offline_config_ui')), 
     uiOutput(ns('offline_reviewer')), 
-    uiOutput(ns('offline_current_reviewer'))
+    uiOutput(ns('offline_current_reviewer')),
+    uiOutput(ns('offline_configure_btn'))
   )
 }
 
@@ -243,8 +245,55 @@ offline_abs_config_reviewer_logic <- function(input, output, session, offline_in
   })
   
   output$offline_current_reviewer <- renderUI( offline_current_reviewer_question() )
+  output$offline_configure_btn <- renderUI({ actionButton(inputId = ns('offline_configure'), label = 'Configure Offline Instrument') })
+  offline_selected_reviewer <- reactive({ input$offline_current_reviewer })
+  offline_configure_btn_press <- reactive({ input$offline_configure})
   
   return(list(
-    'offline_reviewer' = offline_reviewer
+    'offline_identifier' = offline_identifier,
+    'offline_reviewer' = offline_reviewer,
+    'offline_selected_reviewer' = offline_selected_reviewer,
+    'offline_configure_btn_press' = offline_configure_btn_press
+  ))
+}
+
+offline_instrument_configured_ui <- function(id) {
+  ns <- NS(id)
+  tagList(
+    uiOutput(ns('offline_configured_ui'))
+    )
+}
+
+offline_instrument_configured_ui_logic <- function(input, output, session, offline_config_vars, offline_project_vars) {
+  ns <- session$ns
+  
+  offline_configured_message <- eventReactive(offline_config_vars$offline_configure_btn_press(), {
+    HTML(paste('<H3>Success!!</H3>', 
+               'You have configured the Offline Instrument.',
+               '<br>',
+               '<br>',
+               '<H4>Instrument Information:</H4>',
+               '<b>Instrument Name:</b>', offline_project_vars$offline_instrument(),
+               '<br>',
+               '<b>Identifier Field:</b>', offline_config_vars$offline_identifier(),
+               '<br>',
+               '<b>Reviewer Field:</b>', offline_config_vars$offline_reviewer(),
+               '<br>',
+               '<b>Reviewer Name:</b>', offline_config_vars$offline_selected_reviewer(),
+               '<br><br>',
+               '<b>You may now proceed to record review. Have fun and watch out for bugs!</b>',
+               '<br><br>'))
+  })
+  
+  output$offline_configured_ui <- renderUI({
+    req(offline_configured_message() )
+    tagList(
+      offline_configured_message(),
+      actionButton(inputId = ns('offline_reconfig'),label = 'Reconfigure Instrument')
+    )
+  })
+  offline_reconfig <- reactive({input$offline_reconfig})
+  return(list(
+    'offline_reconfig' = offline_reconfig
   ))
 }
