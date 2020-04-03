@@ -30,11 +30,12 @@ sqlite_ui <- function(id) {
 #' @keywords internal
 #' @return
 #' @export
-#' @importFrom DBI dbConnect dbWriteTable
+#' @importFrom DBI dbConnect dbWriteTable dbDisconnect
 #' @importFrom RSQLite SQLite
 #' @importFrom tibble enframe
 #' @importFrom dplyr mutate 
 #' @importFrom stringr str_remove
+#' @importFrom purrr map2
 #'
 sqlite_logic <- function(input, output, session, disconnect) {
   ns <- session$ns
@@ -63,15 +64,24 @@ sqlite_logic <- function(input, output, session, disconnect) {
   db_connection <- eventReactive(input$connect, {
     DBI::dbConnect(RSQLite::SQLite(), ":memory:")
   })
+  
   observeEvent(input$connect, {
     message('creating sqlite db')
     # Load each rda file in sequence, and write the table to SQLite
-    for(i in 1:nrow(table_list)) {
-      load(table_list$file_name[i])
-      DBI::dbWriteTable(conn = db_connection(), name = table_list$table[i],value = table,overwrite = T)
-      rm(table)
-      }
+    # for(i in 1:nrow(table_list)) {
+    #   load(table_list$file_name[i])
+    #   DBI::dbWriteTable(conn = db_connection(), name = table_list$table[i],value = table,overwrite = T)
+    #   rm(table)
+    #   }
+    map2(.x = table_list$file_name, 
+         .y = table_list$table, 
+         ~ write_sqlite_table(table_location = .x, 
+                              table_name = .y,
+                              db_connection = db_connection()
+                              )
+         )
     })
+  
   observeEvent(disconnect(), {
     DBI::dbDisconnect(db_connection() )
   })
