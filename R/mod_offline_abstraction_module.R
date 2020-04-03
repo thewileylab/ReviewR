@@ -63,17 +63,23 @@ offline_setup_logic <- function(input, output, session, selection) {
   config_button <- reactive({
     req(selection() )
    if (selection()  == 'new') {
+     tagList(
       fileInput(inputId = ns('new'),
                 label = 'Upload Abstraction Instrument CSV:',
                 buttonLabel = 'Browse',
                 multiple = F,
                 accept =  c("text/csv",
                             "text/comma-separated-values,text/plain",
-                            ".csv"))
+                            ".csv")),
+      actionButton(inputId = ns('connect'),
+                   label = 'Connect',
+                   icon = icon('notes-medical')) 
+     )
    } else  {
      actionButton(inputId = ns('connect'),
                   label = 'Connect',
-                  icon = icon('notes-medical')) }
+                  icon = icon('notes-medical')) 
+     }
   })
   
   connect <- reactive({ input$connect })
@@ -177,7 +183,7 @@ offline_abs_config_logic <- function(input, output, session, abstraction_vars) {
     if(abstraction_vars$offline_existing_session() == 'demo') {
       read_csv(app_sys('extdata/shiny_contest_instrument.csv'))
     } else {
-      read_csv(abstraction_vars$offline_new_session()$name)
+      read_csv(abstraction_vars$offline_new_session()$datapath)
     }
   })
   
