@@ -1,0 +1,19 @@
+---
+title: "Add a Custom Data Model"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{add_a_custom_data_model}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(ReviewR)
+```
