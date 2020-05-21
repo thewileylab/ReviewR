@@ -297,7 +297,7 @@ redcap_instrument_config_logic <- function(input, output, session, rc_connection
 #' @export
 #' @importFrom dplyr pull distinct
 #' @importFrom redcapAPI exportRecords
-#' @importFrom ggplot2 remove_missing
+#' @importFrom tidyr drop_na
 redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_instrument, rc_identifier, rc_connection) {
   ns <- session$ns
   
@@ -326,7 +326,7 @@ redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_i
     redcapAPI::exportRecords(rc_connection() ) %>% 
       select(reviewer_field) %>% 
       distinct() %>% 
-      remove_missing(na.rm = T)
+      tidyr::drop_na()
   })
   
   rc_current_reviewer_question <- reactive({
@@ -483,7 +483,7 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
         mutate(choice_value = map(.x = .data$choice_value, ~ NA)) %>% 
         pivot_wider(names_from = .data$export_field_name, values_from = .data$choice_value) %>% 
         flatten_dfr() %>% 
-        remove_missing(na.rm = TRUE)
+        tidyr::drop_na()
       } else if (redcapAPI::exportNextRecordName(rc_connection()) != 1 & is_empty(rc_reviewer_field() ) == T ) { ## Export existing Records, filtering to the subject and reviewer in context
       redcapAPI::exportRecords(rcon = rc_connection(), factors = F, labels = F ) %>% 
         as_tibble() %>% 
@@ -677,7 +677,7 @@ upload_redcap_logic <- function(input, output, session, rc_connection, rc_record
              ) %>%  
       arrange(desc(.data$values)) %>% 
       distinct(.data$col_names,.keep_all = T) %>% 
-      remove_missing(na.rm = TRUE) %>% 
+      tidyr::drop_na() %>% 
       pivot_wider(names_from = .data$col_names, values_from = .data$values) %>% 
       bind_cols(rc_id(), rc_complete() ) %>% 
       select(!!rc_recordID_field, everything() ) %>% ## RedCAP API likes the record identifier in the first column
@@ -777,7 +777,7 @@ upload_redcap_logic <- function(input, output, session, rc_connection, rc_record
                 select(.data$field_name, .data$field_label, .data$select_choices_or_calculations), 
               by =c('inputID' = 'field_name')) %>% 
     select(Question = .data$field_label, 'Previous Values' = .data$previous_values, 'New Values' = .data$current_values) %>% 
-    remove_missing(vars = 'Question', na.rm = TRUE) 
+    tidyr::drop_na(vars = 'Question') 
   })
 
   output$confirm_modal_dt <- DT::renderDataTable(

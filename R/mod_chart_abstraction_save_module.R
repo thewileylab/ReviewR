@@ -13,7 +13,7 @@
 #' @export
 #' @import shiny 
 #' @importFrom dplyr filter select mutate left_join
-#' @importFrom ggplot2 remove_missing
+#' @importFrom tidyr drop_na
 #' @importFrom magrittr extract2
 #' @importFrom shinyjs show hidden
 #' @importFrom rlang .data
@@ -56,7 +56,7 @@ instrument_complete_logic <- function(input, output, session, rc_instrument, ins
       mutate(inputID = .data$shiny_inputID) %>% 
       select(.data$inputID) %>% 
       left_join(instrumentData() , by = 'inputID') %>% 
-      remove_missing(na.rm = T) %>% 
+      tidyr::drop_na() %>% 
       filter(.data$values != '') %>% 
       nrow()
   })

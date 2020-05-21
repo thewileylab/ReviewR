@@ -31,9 +31,8 @@ data_model_detection_ui <- function(id) {
 #' @importFrom dplyr mutate rename select left_join filter ungroup arrange slice group_by desc
 #' @importFrom tibble tibble enframe
 #' @importFrom purrr map
-#' @importFrom tidyr unnest as_tibble separate
+#' @importFrom tidyr unnest as_tibble separate drop_na
 #' @importFrom stringr str_replace regex str_extract
-#' @importFrom ggplot2 remove_missing
 #' @importFrom rlang .data
 #' @importFrom utils data
 
@@ -79,7 +78,7 @@ data_model_detection_logic <- function(input, output, session, db_connection, co
     DBI::dbGetInfo(db_connection() ) %>% 
       tibble::enframe(name = NULL) %>% 
       separate(col = .data$value, into = c('project', 'dataset'),sep = '\\.',fill = 'right') %>% 
-      remove_missing(na.rm = TRUE)
+      tidyr::drop_na()
   })
   
   data_model_message <- eventReactive(connect(), {
