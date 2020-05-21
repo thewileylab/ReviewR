@@ -1,3 +1,10 @@
+navbar:
+  components:
+    home: ~
+    intro:
+      text: Getting started
+      href: articles/getting_started.html
+
 reference:
   - title: "Running the Application"
     desc: >
@@ -11,4 +18,3 @@ reference:
       - redcap_widget_map
       - redcap_survey_complete_tbl
       - redcap_survey_complete_values
-      

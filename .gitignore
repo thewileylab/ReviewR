@@ -15,3 +15,5 @@ ReviewR.Rcheck/
 ReviewR*.tar.gz
 ReviewR*.tgz
 rsconnect/
+inst/doc
+docs
