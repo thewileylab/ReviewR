@@ -1,8 +1,8 @@
 ---
-title: "How to ReviewR?"
+title: "Getting Started"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{what_is_reviewr}
+  %\VignetteIndexEntry{getting_started}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
