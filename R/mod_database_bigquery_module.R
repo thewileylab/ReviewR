@@ -75,8 +75,8 @@ bq_project_auth_logic <- function(input, output, session) {
   api <- oauth_endpoints("google")
   
   # Always request the minimal scope needed. Here, we are requesting access to BigQuery
-  scope <- "https://www.googleapis.com/auth/bigquery"
-  
+  scope <- "https://www.googleapis.com/auth/bigquery.readonly https://www.googleapis.com/auth/devstorage.read_only"
+
   # Craft some URL's
   url <- oauth2.0_authorize_url(api, app, scope = scope)
   redirect <- sprintf("location.replace(\"%s\");", url)
