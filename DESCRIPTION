@@ -11,41 +11,39 @@ License: BSD_3_clause + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports: 
-    shiny,
-    golem,
-    attempt,
+    config,
+    DBI,
     DT,
-    glue,
-    htmltools,
-    shinydashboard,
-    shinyjs,
+    bigrquery,
     dplyr,
+    dbplyr,
+    glue,
+    golem,
+    httr,
+    lubridate,
     magrittr,
     purrr,
-    rlang,
-    DBI,
-    bigrquery,
-    httr,
-    tibble,
-    tidyr,
-    ggplot2,
-    stringr,
-    snakecase,
-    shinycssloaders,
-    lubridate,
     redcapAPI,
-    pkgload,
-    config,
-    dbplyr,
-    processx
+    rlang,
+    shiny,
+    shinycssloaders,
+    shinydashboard,
+    shinyjs,
+    snakecase,
+    stringr,
+    tibble,
+    tidyr
 RoxygenNote: 7.1.0
 URL: https://github.com/thewileylab/ReviewR
 BugReports: https://github.com/thewileylab/ReviewR/issues
 Suggests: 
-    testthat (>= 2.1.0),
+    htmltools,
     knitr,
+    pkgload,
+    processx,
     rmarkdown,
-    spelling
+    spelling,
+    testthat (>= 2.1.0)
 Depends: 
     R (>= 2.10)
 VignetteBuilder: knitr
