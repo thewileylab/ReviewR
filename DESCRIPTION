@@ -11,12 +11,12 @@ License: BSD_3_clause + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports: 
+    bigrquery,
     config,
     DBI,
-    DT,
-    bigrquery,
     dplyr,
     dbplyr,
+    DT,
     glue,
     golem,
     httr,
