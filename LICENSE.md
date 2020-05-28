@@ -1,5 +1,3 @@
-# BSD 3-clause License
-
 Copyright (c) 2020, The Wiley Lab
 All rights reserved.
 
