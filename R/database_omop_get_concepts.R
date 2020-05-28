@@ -57,7 +57,7 @@ get_all_concept <- function(table_map, db_connection, concept_table, concept_id,
 #' @param joinable_id What variable is joinable between the concept table and the desired table
 #' @param table_concept_id The table concept id
 #' @param col_name Would you like to rename the retrieved concept?
-#' @param subject_id_field wWhich field contains the subject id?
+#' @param subject_id_field Which field contains the subject id?
 #' @param selected_subject Which subject would you like to retrieve concepts for
 #'
 #' @return The desired OMOP concepts based on the user data model for a particular subject

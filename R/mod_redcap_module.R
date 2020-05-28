@@ -96,7 +96,7 @@ redcap_connected_ui <- function(id) {
 }
 
 #' @param connect A press of the REDCap connect button from the Setup Tab
-#' @param rc_project_info The project information assosciated with your REDCap API key
+#' @param rc_project_info The project information associated with your REDCap API key
 #'
 #' @rdname mod_redcap_module
 #' 
@@ -203,7 +203,7 @@ redcap_instrument_select_logic <- function(input, output, session, rc_connect_pr
 }
 
 #' @param rc_connection A REDCap API connection object
-#' @param instruments All REDCap instruments assosciated with the project API key
+#' @param instruments All REDCap instruments associated with the project API key
 #' @param instrument_selection  The user selected REDCap Instrument
 #'
 #' @rdname mod_redcap_module
@@ -598,7 +598,7 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
 #' @param rc_recordID The REDCap Record ID for the currently selected subject 
 #' @param instrumentData The user entered data currently present in the REDCap instrument
 #' @param previousData Previous Abstraction "Instrument Complete" Value
-#' @param currentSubject Abstraction data assosciated with the currently selected subject
+#' @param currentSubject Abstraction data associated with the currently selected subject
 #' @param rc_upload_btn_press A press of the Upload to REDCap button
 #' @param abstraction_complete Person readable abstraction complete value
 #' @param abstraction_complete_val Machine readable abstraction complete value

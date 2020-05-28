@@ -9,7 +9,7 @@
 #' \describe{
 #'   \item{redcap_field_type}{A REDCap Question Type}
 #'   \item{redcap_field_val}{Custom REDCap Question Type Validation}
-#'   \item{reviewr_redcap_widget_function}{ReviewR functon to use when mapping to native Shiny widget}
+#'   \item{reviewr_redcap_widget_function}{ReviewR function to use when mapping to native Shiny widget}
 #'   ...
 #' }
 "redcap_widget_map"
