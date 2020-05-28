@@ -1,6 +1,6 @@
 #' Patient Navigation Module
 #'
-#' This module will assist with selecting a patient. It keeps the patient search tab data table up todate, server side renders the select input on the patient chart tab, and displays in context information about the selected patient. 
+#' This module will assist with selecting a patient. It keeps the patient search tab data table up to date, server side renders the select input on the patient chart tab, and displays in context information about the selected patient. 
 #'
 #' @param id The namespace id for the UI output
 #' @param input internal
@@ -21,7 +21,7 @@ patient_nav_ui <- function(id) {
 
 #' @param patient_table A reactive expression containing a DT of the current "All Patients" table
 #' @param selected_patient A reactive expression containing the currently selected patient subject ID
-#' @param parent the parent environement of this module
+#' @param parent the parent environment of this module
 #'
 #' @rdname mod_patient_nav_module
 #' 

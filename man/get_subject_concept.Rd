@@ -37,7 +37,7 @@ get_subject_concept(
 
 \item{col_name}{Would you like to rename the retrieved concept?}
 
-\item{subject_id_field}{wWhich field contains the subject id?}
+\item{subject_id_field}{Which field contains the subject id?}
 
 \item{selected_subject}{Which subject would you like to retrieve concepts for}
 }

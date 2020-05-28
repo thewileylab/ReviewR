@@ -515,7 +515,7 @@ chart_review_ui <- function(id){
 #' @rdname mod_patient_chart_module
 #' @param abstraction_vars a list containing data abstraction variables (REDCap currently: url, api token, connection, connect button press)
 #' @param table_map tibble containing a the cdm that most closely matches the user's database and a map of standard tables to user tables
-#' @param instrument_selection Which REDCap instrument in the projcet to use
+#' @param instrument_selection Which REDCap instrument in the project to use
 #' @export
 #' @keywords internal
 

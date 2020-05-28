@@ -115,13 +115,13 @@ upload_redcap_logic(
 
 \item{connect}{A press of the REDCap connect button from the Setup Tab}
 
-\item{rc_project_info}{The project information assosciated with your REDCap API key}
+\item{rc_project_info}{The project information associated with your REDCap API key}
 
 \item{rc_connect_press}{A press of the REDCap connect button from the Setup Tab}
 
 \item{rc_connection}{A REDCap API connection object}
 
-\item{instruments}{All REDCap instruments assosciated with the project API key}
+\item{instruments}{All REDCap instruments associated with the project API key}
 
 \item{instrument_selection}{The user selected REDCap Instrument}
 
@@ -149,7 +149,7 @@ upload_redcap_logic(
 
 \item{previousData}{Previous Abstraction "Instrument Complete" Value}
 
-\item{currentSubject}{Abstraction data assosciated with the currently selected subject}
+\item{currentSubject}{Abstraction data associated with the currently selected subject}
 
 \item{rc_upload_btn_press}{A press of the Upload to REDCap button}
 

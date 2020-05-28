@@ -44,7 +44,7 @@ subject_info_logic(
 
 \item{selected_patient}{A reactive expression containing the currently selected patient subject ID}
 
-\item{parent}{the parent environement of this module}
+\item{parent}{the parent environment of this module}
 
 \item{previousData}{Previous Abstraction "Instrument Complete" Value}
 
@@ -57,6 +57,6 @@ subject_info_logic(
 \item{subjectInfo}{Demographic information about the currently selected patient}
 }
 \description{
-This module will assist with selecting a patient. It keeps the patient search tab data table up todate, server side renders the select input on the patient chart tab, and displays in context information about the selected patient.
+This module will assist with selecting a patient. It keeps the patient search tab data table up to date, server side renders the select input on the patient chart tab, and displays in context information about the selected patient.
 }
 \keyword{internal}
