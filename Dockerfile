@@ -4,7 +4,6 @@ RUN echo "options(repos = c(CRAN = 'https://cran.rstudio.com/'), download.file.m
 RUN R -e 'install.packages("remotes")'
 RUN R -e 'remotes::install_github("r-lib/remotes", ref = "97bbf81")'
 RUN Rscript -e 'remotes::install_version("shiny",upgrade="never", version = "1.4.0.2")'
-RUN Rscript -e 'remotes::install_version("golem",upgrade="never", version = "0.2.1")'
 RUN Rscript -e 'remotes::install_version("attempt",upgrade="never", version = "0.3.1")'
 RUN Rscript -e 'remotes::install_version("DT",upgrade="never", version = "0.13")'
 RUN Rscript -e 'remotes::install_version("glue",upgrade="never", version = "1.4.1")'
@@ -29,9 +28,12 @@ RUN Rscript -e 'remotes::install_version("redcapAPI",upgrade="never", version = 
 RUN Rscript -e 'remotes::install_version("pkgload",upgrade="never", version = "1.0.2")'
 RUN Rscript -e 'remotes::install_version("config",upgrade="never", version = "0.3")'
 RUN Rscript -e 'remotes::install_version("dbplyr",upgrade="never", version = "1.4.4")'
+RUN Rscript -e 'remotes::install_version("processx",upgrade="never", version = "3.4.2")'
 RUN Rscript -e 'remotes::install_version("testthat",upgrade="never", version = "2.3.2")'
 RUN Rscript -e 'remotes::install_version("knitr",upgrade="never", version = "1.28")'
 RUN Rscript -e 'remotes::install_version("rmarkdown",upgrade="never", version = "2.1")'
+RUN Rscript -e 'remotes::install_version("spelling",upgrade="never", version = "2.1")'
+RUN Rscript -e 'remotes::install_github("Thinkr-open/golem@5fa9a92e2863c443cdbcd6d477ab97c6db717f79")'
 RUN mkdir /build_zone
 ADD . /build_zone
 WORKDIR /build_zone
