@@ -5,5 +5,6 @@ articles:
   add_a_custom_data_model: add_a_custom_data_model.html
   add_a_database_module: add_a_database_module.html
   getting_started: getting_started.html
-last_built: 2020-05-27T21:57Z
+  server_deployment: server_deployment.html
+last_built: 2020-06-02T14:16Z
 
