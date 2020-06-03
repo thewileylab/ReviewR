@@ -20,8 +20,9 @@ chart_abstraction_setup_ui <- function(id) {
 
 chart_abstraction_select_logic <- function(input, output, session) {
   ns <- session$ns
-  abstraction_choices <- c('REDCap' = 'redcap',
-                           'Offline' = 'offline')
+  abstraction_choices <- c('Offline' = 'offline',
+                           'REDCap' = 'redcap'
+                           )
   abstraction_select_ui <- reactive({
     selectInput(inputId = ns('abstraction_selection'),label = 'Configuration Type:',choices = abstraction_choices) 
     })
@@ -45,19 +46,16 @@ chart_abstraction_setup_logic <- function(input, output, session, abstraction_se
   ### REDCap
   rc_vars <- callModule(redcap_connect_logic, 'abstraction_ns')
   rc_con <- callModule(redcap_initialize_logic, 'abstraction_ns', rc_vars$rc_url, rc_vars$rc_token)
+  ### Offline
+  offline_vars <- callModule(offline_setup_select_logic, 'offline_abstraction_ns')
+  offline_con <- callModule(offline_setup_logic, 'offline_abstraction_ns', offline_vars$offline_selection)
   
   chart_abstraction_setup_ui <- reactive({
     req(abstraction_selection() )
     if(abstraction_selection() == 'redcap') {
       redcap_connect_ui(ns('abstraction_ns'))
     } else if (abstraction_selection() == 'offline') {
-      renderUI({
-        tagList(
-          div('Error!!!'),
-          br(),
-          div('Offline Module is imaginary at this time. Do something about that eventually.')
-        )
-      })
+      offline_setup_ui(ns('offline_abstraction_ns'))
     } else {
       return(NULL)
     }
@@ -73,6 +71,10 @@ chart_abstraction_setup_logic <- function(input, output, session, abstraction_se
     'rc_url' = rc_vars$rc_url,
     'rc_token' = rc_vars$rc_token,
     'rc_con' = rc_con$rc_con,
-    'rc_press' = rc_con$rc_connect_press
+    'rc_press' = rc_con$rc_connect_press,
+    'offline_press' = offline_con$existing_session_btn,
+    'offline_existing_session' = offline_con$existing_session,
+    'offline_new_session' = offline_con$new_session
   ))
+  
 }
