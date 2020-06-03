@@ -303,3 +303,206 @@ offline_instrument_configured_ui_logic <- function(input, output, session, offli
     'offline_reconfig' = offline_reconfig
   ))
 }
+
+
+## Offline Instrument ----
+#' @rdname mod_offline_abs_module
+#' 
+#' @keywords internal
+#' @export
+offline_instrument_ui <- function(id) {
+  ns <- NS(id)
+  tagList(
+    uiOutput(ns('offline_instrument')) %>% withSpinner(type = 5, color = '#e83a2f') ## 'danger red'
+  )
+}
+
+#' @param rc_reviewer The REDCap field that holds reviewer names
+#' @param rc_selected_reviewer The selected reviewer from the list of previous reviewers (if present)
+#' @param subject_id The currently selected patient identifier
+#' @param reviewr_upload_btn A button press of the REDCap upload button
+#' @param reviewr_connect_btn A button press of the REDCap Connect button
+#'
+#' @rdname mod_redcap_module
+#' 
+#' @keywords internal
+#' @export
+#' @importFrom magrittr extract2
+#' @importFrom redcapAPI exportFieldNames
+#' @importFrom purrr flatten_dfr map map2 pmap
+#' @importFrom tidyr as_tibble replace_na pivot_wider pivot_longer contains separate everything
+#' @importFrom dplyr mutate_all case_when
+#' @importFrom rlang is_empty :=
+#' @importFrom tibble add_row
+offline_instrument_logic <- function(input, output, session, db_connection, instruments, instrument_selection, offline_instrument, offline_identifier, offline_reviewer, rc_selected_reviewer, subject_id, reviewr_upload_btn, offline_connect_btn) {
+  ns <- session$ns
+  observeEvent(offline_connect_btn(), {
+    browser()
+  })
+  ## On redcap connection or subsequent upload, determine if there is any default data that needs to be displayed
+  offline_identifier_field <- reactive({
+    req(offline_instrument(), offline_identifier() )
+    offline_instrument() %>% 
+      select(.data$field_name, .data$field_label) %>% 
+      filter(.data$field_label == offline_identifier() ) %>% 
+      extract2(1)
+  })
+  offline_reviewer_field <- reactive({
+    req(offline_instrument(), offline_reviewer() )
+    offline_instrument() %>% 
+      select(.data$field_name, .data$field_label) %>% 
+      filter(.data$field_label == offline_reviewer() ) %>% 
+      extract2(1)
+  })
+  # selected_instrument <- reactive({
+  #   req(instruments(), instrument_selection() )
+  #   instruments() %>% 
+  #     filter(.data$instrument_label == instrument_selection() ) %>% 
+  #     extract2(1)
+  # })
+  ## Init Offline Storage
+  checkbox_instrument_columns <- instrument %>% 
+    left_join(ReviewR::redcap_widget_map, by = c("field_type" = "redcap_field_type", "text_validation_type_or_show_slider_number" = "redcap_field_val")) %>% 
+    select(field_name,select_choices_or_calculations,reviewr_redcap_widget_function) %>%
+    filter(reviewr_redcap_widget_function == 'reviewr_checkbox') %>% 
+    mutate(choices = stringr::str_split(select_choices_or_calculations,'\\|')) %>% 
+    unnest(cols = choices) %>% 
+    separate(choices, into = c('Values', 'Names'), sep = ',') %>% 
+    dplyr::mutate_at(vars('Values':'Names'), str_trim) %>% 
+    mutate(all_columns = paste0(field_name,'___',Values))
+  other_instrument_columns <- instrument %>% 
+    left_join(ReviewR::redcap_widget_map, by = c("field_type" = "redcap_field_type", "text_validation_type_or_show_slider_number" = "redcap_field_val")) %>% 
+    select(field_name,select_choices_or_calculations,reviewr_redcap_widget_function) %>%
+    filter(reviewr_redcap_widget_function != 'reviewr_checkbox') %>%
+    mutate(all_columns = field_name)
+  all_instrument_columns <- dplyr::bind_rows(checkbox_instrument_columns, other_instrument_columns)
+  complete_what <- glue::glue('{offline_instrument()}_complete')
+  all_instrument_columns %<>% add_row(all_columns = complete_what)
+  offline_storage <- tibble(!!!all_instrument_columns$all_columns,.rows = 0)
+  colnames(offline_storage) <- all_instrument_columns$all_columns
+  offline_abs_storage <- offline_storage %>% 
+    tibble::add_column('timestamp_utc') %>% 
+    rename('timestamp_utc' = '"timestamp_utc"') %>% 
+    dbWriteTable(conn = db_connection, name = 'offline_abs_storage')
+    # write_csv(file.path('offline_redcap_data',config$redcap_offline_session,config$redcap_offline_filename))
+  
+  ## Determine if there is any previous data to show. If a reviewer field is specified, make sure to filter to data belonging to that reviewer.
+  previous_data <- reactive({
+    req(rc_connection(), rc_identifier_field(), selected_instrument(), subject_id() )
+    if(nrow(tbl(db_connection, 'offline_abs_storage')) == 0) { ## Special case, when the REDCap Instrument has no previous data
+      redcapAPI::exportFieldNames(rc_connection() ) %>% 
+        select(.data$export_field_name, .data$choice_value) %>% 
+        mutate(choice_value = map(.x = .data$choice_value, ~ NA)) %>% 
+        pivot_wider(names_from = .data$export_field_name, values_from = .data$choice_value) %>% 
+        flatten_dfr() %>% 
+        remove_missing(na.rm = TRUE)
+    } else if (redcapAPI::exportNextRecordName(rc_connection()) != 1 & is_empty(rc_reviewer_field() ) == T ) { ## Export existing Records, filtering to the subject and reviewer in context
+      redcapAPI::exportRecords(rcon = rc_connection(), factors = F, labels = F ) %>% 
+        as_tibble() %>% 
+        mutate_all(as.character) %>% 
+        mutate_all(replace_na, replace = '') %>% # replace all NA values with blank character vectors, so that shiny radio buttons without a previous response will display empty
+        filter(!!as.name(rc_identifier_field() ) == subject_id() )
+    } else {
+      redcapAPI::exportRecords(rcon = rc_connection(), factors = F, labels = F ) %>% 
+        as_tibble() %>% 
+        mutate_all(as.character) %>% 
+        mutate_all(replace_na, replace = '') %>% # replace all NA values with blank character vectors, so that shiny radio buttons without a previous response will display empty
+        filter(!!as.name(rc_identifier_field() ) == subject_id() & !!as.name(rc_reviewer_field()) == rc_selected_reviewer() )
+    }
+  })
+  current_subject <- reactive({
+    req(previous_data() )
+    
+    if(nrow(previous_data() ) > 0 ){
+      previous_data() %>% 
+        # Turn wide data from RedCAP to long, collapsing checkbox type quesitions along the way
+        pivot_longer(cols = contains('___'),names_to = 'checkbox_questions',values_to = 'value_present') %>% 
+        separate(.data$checkbox_questions, into = c('checkbox_questions','checkbox_value'), sep = '___') %>% # Separate value from column name
+        mutate(checkbox_value = map2_chr(.x = .data$checkbox_value, .y = .data$value_present, ~ case_when(.y == 0 ~ '',
+                                                                                                          TRUE ~ .x)
+        )
+        ) %>%   
+        select(-.data$value_present) %>% # remove value presence variable
+        pivot_wider(names_from = .data$checkbox_questions, values_from = .data$checkbox_value, values_fn = list(checkbox_value = list)) %>% # pivot wider, utilizing list to preserve column types. Having collapsed the checkbox quesions, we now have a the original field_name as a joinable variable
+        pivot_longer(cols = everything(), names_to = 'field_name', values_to = 'default_value', values_ptypes = list(default_value = list())) # Pivot longer, utilizing a list as the column type to avoid variable coercion
+    } else if(nrow(previous_data() ) == 0 & is_empty(rc_reviewer_field()) ) {
+      previous_data() %>% 
+        add_row(!!rc_identifier_field() := subject_id() ) %>% # Add default data, without reviewer info, if present
+        mutate_all(replace_na, replace = '') %>% # replace all NA values with blank character vectors, so that shiny radio buttons without a previous response will display empty
+        pivot_longer(cols = contains('___'),names_to = 'checkbox_questions',values_to = 'value_present') %>% 
+        separate(.data$checkbox_questions, into = c('checkbox_questions','checkbox_value'), sep = '___') %>% # Separate value from column name
+        select(-.data$checkbox_value) %>% # remove checkbox value variable. Here, we know that nothing has been entered, so it is preferrable to end up with a blank character list
+        pivot_wider(names_from = .data$checkbox_questions, values_from = .data$value_present, values_fn = list(value_present = list)) %>% # pivot wider, utilizing list to preserve column types. Having collapsed the checkbox quesions, we now have a the original field_name as a joinable variable
+        pivot_longer(cols = everything(), names_to = 'field_name', values_to = 'default_value', values_ptypes = list(default_value = list())) # Pivot longer, utilizing a list as the column type to avoid variable coercion
+    } else {
+      previous_data() %>% 
+        add_row(!!rc_identifier_field() := subject_id(), !!rc_reviewer_field() := rc_selected_reviewer() ) %>% # Add default data, with reviewer info, if present
+        mutate_all(replace_na, replace = '') %>% # replace all NA values with blank character vectors, so that shiny radio buttons without a previous response will display empty
+        pivot_longer(cols = contains('___'),names_to = 'checkbox_questions',values_to = 'value_present') %>% 
+        separate(.data$checkbox_questions, into = c('checkbox_questions','checkbox_value'), sep = '___') %>% # Separate value from column name
+        select(-.data$checkbox_value) %>% # remove checkbox value variable. Here, we know that nothing has been entered, so it is preferrable to end up with a blank character list
+        pivot_wider(names_from = .data$checkbox_questions, values_from = .data$value_present, values_fn = list(value_present = list)) %>% # pivot wider, utilizing list to preserve column types. Having collapsed the checkbox quesions, we now have a the original field_name as a joinable variable
+        pivot_longer(cols = everything(), names_to = 'field_name', values_to = 'default_value', values_ptypes = list(default_value = list())) # Pivot longer, utilizing a list as the column type to avoid variable coercion
+    }
+  })
+  
+  # observeEvent(reviewr_upload_btn(), {
+  #   browser()
+  # })
+  
+  ## Create a Shiny tagList for each question type present in the instrument
+  rc_instrument_ui <- reactive({
+    req(rc_instrument(), current_subject() )
+    rc_instrument() %>% 
+      left_join(current_subject() ) %>% # add current subject info, if present, to the mix
+      mutate( ## mutate shiny tags/inputs
+        shiny_header = map(.data$section_header, h3),
+        shiny_field_label = case_when(is.na(.data$required_field) ~ .data$field_label,
+                                      TRUE ~ paste(.data$field_label,"<br/><font color='#FC0020'>* must provide value</font>")
+        ),
+        shiny_input = pmap(list(reviewr_type = .data$reviewr_redcap_widget_function, 
+                                field_name = ns(.data$shiny_inputID), 
+                                field_label = .data$shiny_field_label, 
+                                required = .data$required_field,
+                                choices = .data$select_choices_or_calculations,
+                                current_subject_data = .data$default_value
+        ), 
+        render_redcap
+        ),
+        shiny_note = map(.data$field_note, tags$sub),
+        shiny_taglist = pmap(list(.data$shiny_header,
+                                  .data$shiny_input,
+                                  .data$shiny_note
+        ),
+        tagList
+        )
+      )
+  })
+  
+  ## Create Instrument Output
+  output$redcap_instrument <- renderUI ({ 
+    req(rc_instrument_ui() )
+    div(
+      id = ns('redcap_form'),
+      rc_instrument_ui()$shiny_taglist
+    )
+  })
+  
+  # Collect Instrument data
+  redcap_module_inputs <- reactive({reactiveValuesToList(input)})
+  instrumentData <- reactive({
+    tibble(inputID = names(redcap_module_inputs() ),
+           values = unname(redcap_module_inputs() )
+    )
+  })
+  
+  # #Pause, verify collected data
+  # observeEvent(reviewr_upload_btn(), {
+  #   browser()
+  # })
+  return(list(
+    'instrument_data' = instrumentData,
+    'previous_data' = previous_data,
+    'current_subject' = current_subject
+  )) # Send to the Upload module
+}
