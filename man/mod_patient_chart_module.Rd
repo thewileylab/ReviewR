@@ -38,8 +38,10 @@ chart_review_ui_logic(
   output,
   session,
   abstraction_vars,
+  offline_vars,
   table_map,
-  instrument_selection
+  instrument_selection,
+  offline_instrument_selection
 )
 }
 \arguments{
