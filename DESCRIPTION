@@ -25,6 +25,7 @@ Imports:
     purrr,
     redcapAPI,
     rlang,
+    RSQLite,
     shiny,
     shinycssloaders,
     shinydashboard,
@@ -45,6 +46,6 @@ Suggests:
     spelling,
     testthat (>= 2.1.0)
 Depends: 
-    R (>= 2.10)
+    R (>= 3.5.0)
 VignetteBuilder: knitr
 Language: en-US
