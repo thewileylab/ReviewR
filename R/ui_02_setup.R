@@ -38,9 +38,11 @@ setup_tab <- function() {
                    solidHeader = F,
                    #Box Contents
                    uiOutput('rc_setup'),
-                   uiOutput('rc_connected')
+                   uiOutput('rc_connected'),
+                   uiOutput('offline_connected')
                    ),
-               uiOutput('rc_config_ui')
+               uiOutput('rc_config_ui'),
+               uiOutput('offline_config_ui')
                )
         )
       )
