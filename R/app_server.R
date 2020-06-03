@@ -36,7 +36,7 @@ app_server <- function(input, output, session) {
   callModule(subject_info_logic, 'chart_review', instrumentData$previous_data, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection, subject_info$selected_patient, subject_info$selected_patient_info)
   callModule(omop_chart_review_logic, 'chart_review', table_map$table_map, db_connection_vars$db_connection, subject_info$selected_patient)
   callModule(mimic_chart_review_logic, 'chart_review', table_map$table_map, db_connection_vars$db_connection, subject_info$selected_patient)
-  callModule(chart_review_ui_logic, 'chart_review', abstraction_vars, table_map, instrument_selection)
+  callModule(chart_review_ui_logic, 'chart_review', abstraction_vars, offline_config_vars, table_map, instrument_selection, offline_project_vars$offline_instrument)
   
   ### Call Chart Abstraction Modules
   instrumentData <- callModule(redcap_instrument_logic, 'chart_review_abstraction', abstraction_vars$rc_con, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection, rc_project_vars$rc_instrument, rc_config_vars$rc_identifier , rc_config_vars$rc_reviewer, rc_config_vars$rc_selected_reviewer, subject_info$selected_patient, upload$abstraction_save_btn_press, abstraction_vars$rc_press)
