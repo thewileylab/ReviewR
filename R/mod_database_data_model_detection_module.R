@@ -85,13 +85,8 @@ data_model_detection_logic <- function(input, output, session, db_connection, co
     req(db_connection() )
     if (table_map()$count_filtered !=0) {
         HTML(paste('<H3>Success!!</H3>', 
-                   'You have connected to a', ifelse(db_type() == 'bigquery', 'Google BigQuery', 'Unknown'), 'database.',
+                   'You have connected to a', ifelse(db_type() == 'sq_lite', 'SQLite', 'Unknown'), 'database.',
                    '<br>',
-                   '<br>',
-                   '<H4>Connection Information:</H4>',
-                   '<b>Project:</b>', db_info()$project,
-                   '<br>',
-                   '<b>Dataset:</b>', db_info()$dataset,
                    '<br>',
                    '<b>Data Model:</b>', table_map()$data_model,
                    '<br>',
