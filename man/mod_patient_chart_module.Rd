@@ -38,8 +38,10 @@ chart_review_ui_logic(
   output,
   session,
   abstraction_vars,
+  offline_vars,
   table_map,
-  instrument_selection
+  instrument_selection,
+  offline_instrument_selection
 )
 }
 \arguments{
@@ -59,7 +61,7 @@ chart_review_ui_logic(
 
 \item{abstraction_vars}{a list containing data abstraction variables (REDCap currently: url, api token, connection, connect button press)}
 
-\item{instrument_selection}{Which REDCap instrument in the project to use}
+\item{instrument_selection}{Which REDCap instrument in the projcet to use}
 }
 \description{
 This module will render a pre coordinated table with multiple tabsets containing patient information. If configured, a chart abstraction UI will also be presented.

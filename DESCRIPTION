@@ -23,6 +23,7 @@ Imports:
     lubridate,
     magrittr,
     purrr,
+    readr,
     redcapAPI,
     rlang,
     RSQLite,
