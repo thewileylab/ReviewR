@@ -7,10 +7,10 @@
 \format{
 A data frame with 9 rows and 3 variables:
 \describe{
-  \item{redcap_field_type}{A REDCap Question Type}
-  \item{redcap_field_val}{Custom REDCap Question Type Validation}
-  \item{reviewr_redcap_widget_function}{ReviewR function to use when mapping to native Shiny widget}
-  ...
+\item{redcap_field_type}{A REDCap Question Type}
+\item{redcap_field_val}{Custom REDCap Question Type Validation}
+\item{reviewr_redcap_widget_function}{ReviewR function to use when mapping to native Shiny widget}
+...
 }
 }
 \usage{
@@ -18,6 +18,6 @@ redcap_widget_map
 }
 \description{
 A dataset that maps REDCap question types and common validations
- to native shiny widgets through custom functions.
+to native shiny widgets through custom functions.
 }
 \keyword{datasets}

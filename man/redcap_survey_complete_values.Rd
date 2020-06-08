@@ -7,10 +7,10 @@
 \format{
 A named list containing 3 items:
 \describe{
-  \item{Incomplete}{REDCap Survey Incomplete}
-  \item{Unverified}{REDCap Survey needs verification}
-  \item{Complete}{REDCap Survey answered completely}
-  ...
+\item{Incomplete}{REDCap Survey Incomplete}
+\item{Unverified}{REDCap Survey needs verification}
+\item{Complete}{REDCap Survey answered completely}
+...
 }
 }
 \usage{
