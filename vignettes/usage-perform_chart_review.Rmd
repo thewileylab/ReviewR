@@ -1,5 +1,5 @@
 ---
-title: "usage-perform_chart_review"
+title: "Perform Chart Review"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{usage-perform_chart_review}

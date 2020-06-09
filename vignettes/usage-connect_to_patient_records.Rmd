@@ -1,5 +1,5 @@
 ---
-title: "usage-connect_to_patient_records"
+title: "Connect to Patient Records"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{usage-connect_to_patient_records}
