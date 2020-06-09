@@ -19,7 +19,7 @@
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="ReviewR: A light-weight, portable tool for reviewing individual patient records">
 <meta property="og:description" content="ReviewR is a portable Shiny tool to help you explore data across different data models. Within ReviewR, you can browse patient data stored in either the OMOP or MIMIC-III data model. In addition to viewing patient data, you may also connect to a REDCap project to perform a chart review.">
-<meta property="og:image" content="/logo.png">
+<meta property="og:image" content="reviewr.thewileylab.org/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -44,8 +44,53 @@
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Deploying ReviewR
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
 <li>
-  <a href="articles/getting_started.html">Getting started</a>
+      <a href="articles/deploy-single_user.html">Single User - Local Deployment</a>
+    </li>
+    <li>
+      <a href="articles/deploy-server.html">Server Deployment</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Using ReviewR
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+<li>
+      <a href="articles/usage-connect_to_patient_records.html">Connecting to Patient Record Database</a>
+    </li>
+    <li>
+      <a href="articles/usage-connect_to_redcap.html">Connecting to REDCap</a>
+    </li>
+    <li>
+      <a href="articles/usage-perform_chart_review.html">Performing Chart Review</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Customizing ReviewR
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+<li>
+      <a href="articles/customize-add_a_database_module.html">Support a New Relational Database Management System</a>
+    </li>
+    <li>
+      <a href="articles/customize-add_a_custom_data_model.html">Support a New Datamodel</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="reference/index.html">Reference</a>
@@ -58,16 +103,25 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="articles/add_a_custom_data_model.html">Add a Custom Data Model</a>
+      <a href="articles/customize-add_a_custom_data_model.html">Add a Custom Data Model</a>
     </li>
     <li>
-      <a href="articles/add_a_database_module.html">Add a Database Module</a>
+      <a href="articles/customize-add_a_database_module.html">Add a Database Module</a>
     </li>
     <li>
-      <a href="articles/getting_started.html">Getting Started</a>
+      <a href="articles/deploy-server.html">Server Deployment</a>
     </li>
     <li>
-      <a href="articles/server_deployment.html">Server Deployment</a>
+      <a href="articles/deploy-single_user.html">Single User Deployment</a>
+    </li>
+    <li>
+      <a href="articles/usage-connect_to_patient_records.html">usage-connect_to_patient_records</a>
+    </li>
+    <li>
+      <a href="articles/usage-connect_to_redcap.html">usage-connect_to_redcap</a>
+    </li>
+    <li>
+      <a href="articles/usage-perform_chart_review.html">usage-perform_chart_review</a>
     </li>
   </ul>
 </li>
@@ -95,9 +149,8 @@
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#reviewr-" class="anchor"></a>ReviewR <img src="reference/figures/logo.png" align="right" height="138.5">
 </h1></div>
-<p>A light-weight, portable tool for reviewing individual patient records</p>
 <!-- badges: start -->
-<p><a href="https://doi.org/10.5281/zenodo.1488534"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.1488534.svg" alt="DOI"></a> <a href="https://www.tidyverse.org/lifecycle/#experimental"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a> <!-- badges: end --></p>
+
 <p>ReviewR is a portable Shiny tool to help you explore patient data across different data models. Within ReviewR, you can browse data stored in either the OMOP or MIMIC-III data model.</p>
 <p>In addition to viewing patient data, you may also connect to a REDCap project to perform a chart review.</p>
 <p>Currently, ReviewR will connect to Google BigQuery as a database back-end, with support planned for:</p>
@@ -192,7 +245,13 @@
 </ul>
 </div>
 
-  </div>
+  <div class="dev-status">
+<h2>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://doi.org/10.5281/zenodo.1488534"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.1488534.svg" alt="DOI"></a></li>
+</ul>
+</div>
+</div>
 </div>
 
 

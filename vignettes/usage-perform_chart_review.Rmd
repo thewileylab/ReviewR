@@ -1,0 +1,19 @@
+---
+title: "usage-perform_chart_review"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{usage-perform_chart_review}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(ReviewR)
+```
