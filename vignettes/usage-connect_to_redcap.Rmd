@@ -1,5 +1,5 @@
 ---
-title: "Connect to REDCap"
+title: "Connecting to REDCap"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{usage-connect_to_redcap}
