@@ -3,8 +3,6 @@
 
 # ReviewR <img src='man/figures/logo.png' align="right" height="138.5" />
 
-A light-weight, portable tool for reviewing individual patient records
-
 <!-- badges: start -->
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1488534.svg)](https://doi.org/10.5281/zenodo.1488534)
