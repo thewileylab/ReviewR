@@ -16,3 +16,5 @@ $run_dev.*
 ^ReviewR.*\.tgz$
 ^rsconnect$
 ^Dockerfile$
+^doc$
+^Meta$

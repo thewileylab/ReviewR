@@ -1,8 +1,8 @@
 ---
-title: "Getting Started"
+title: "usage-connect_to_patient_records"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{getting_started}
+  %\VignetteIndexEntry{usage-connect_to_patient_records}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

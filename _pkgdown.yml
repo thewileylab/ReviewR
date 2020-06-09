@@ -1,10 +1,33 @@
+url: reviewr.thewileylab.org/
 navbar:
+  structure:
+    left:  [home, Deploying ReviewR, Using ReviewR, Customizing ReviewR, reference, articles, tutorials, news]
+    right: [github]
   components:
     home: ~
-    intro:
-      text: Getting started
-      href: articles/getting_started.html
-
+    Deploying ReviewR:
+      text: Deploying ReviewR
+      menu:
+      - text: Single User - Local Deployment
+        href: articles/deploy-single_user.html
+      - text: Server Deployment
+        href: articles/deploy-server.html
+    Using ReviewR:    
+      text: Using ReviewR
+      menu:
+      - text: Connecting to Patient Record Database
+        href: articles/usage-connect_to_patient_records.html
+      - text: Connecting to REDCap
+        href: articles/usage-connect_to_redcap.html
+      - text: Performing Chart Review
+        href: articles/usage-perform_chart_review.html
+    Customizing ReviewR:    
+      text: Customizing ReviewR
+      menu:
+      - text: Support a New Relational Database Management System
+        href: articles/customize-add_a_database_module.html
+      - text: Support a New Datamodel
+        href: articles/customize-add_a_custom_data_model.html
 reference:
   - title: "Running the Application"
     desc: >
