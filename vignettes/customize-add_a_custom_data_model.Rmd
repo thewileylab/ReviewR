@@ -1,5 +1,5 @@
 ---
-title: "Add a Custom Data Model"
+title: "Support a New Datamodel"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{add_a_custom_data_model}
