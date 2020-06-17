@@ -79,7 +79,7 @@ redcap_initialize_logic <- function(input, output, session, rc_url, rc_token) {
     req(rc_con(), input$rc_connect )
     if(is.character(rc_con() ) ) {
       if(rc_con() == 'redcap_url_error') {
-        return('Incorrect REDCap API URL. If Macbook >= 2015 model year, check for stuck keys. Otherwise, make sure you used the correct URL.')
+        return('Incorrect REDCap API URL. If Macbook is 2015-2020 model year, check for stuck keys. Otherwise, make sure you used the correct URL.')
       } else if (rc_con() == 'redcap_unknown_error') {
         return('An unexpected server response was received, please verify that a REDCap Instance exists at the specified URL.')
       } else if (rc_con() == 'redcap_token_error' ) {
