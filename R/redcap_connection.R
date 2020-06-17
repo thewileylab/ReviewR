@@ -21,7 +21,7 @@ redcap_connection <- function(url, token) {
   }, 
   error=function(error_cond) {
     if(str_detect(as.character(error_cond), pattern = regex('Could not resolve host:', ignore_case = T)) ) {
-      message("Incorrect REDCap API URL. If Macbook >= 2015 model year, check for stuck keys. Otherwise, make sure you used the correct URL.")
+      message("Incorrect REDCap API URL. If Macbook is 2015-2020 model year, check for stuck keys. Otherwise, make sure you used the correct URL.")
       return('redcap_url_error') 
     } else if (str_detect(as.character(error_cond), pattern = regex('You do not have permissions to use the API', ignore_case = T)) ) {
       message('Incorrect API key. Please ensure you have enabled API access to your project and/or double check your API credentials.')
