@@ -18,7 +18,8 @@ redcap_connect_ui <- function(id) {
   ns <- NS(id)
   tagList(
     uiOutput(ns('redcap_setup')),
-    uiOutput(ns('redcap_connect'))
+    uiOutput(ns('redcap_connect')),
+    uiOutput(ns('redcap_connect_error'))
     )
 }
 
@@ -70,10 +71,29 @@ redcap_initialize_logic <- function(input, output, session, rc_url, rc_token) {
   
   rc_con <- reactive({
     req(rc_url(), rc_token())
-    redcapAPI::redcapConnection(url = rc_url(), token = rc_token() )
+    # redcapAPI::redcapConnection(url = rc_url(), token = rc_token() )
+    redcap_connection(url = rc_url(), token = rc_token() )
+  })
+  
+  rc_connect_error <- reactive({
+    req(rc_con(), input$rc_connect )
+    if(is.character(rc_con() ) ) {
+      if(rc_con() == 'redcap_url_error') {
+        return('Incorrect REDCap API URL. If Macbook >= 2015 model year, check for stuck keys. Otherwise, make sure you used the correct URL.')
+      } else if (rc_con() == 'redcap_unknown_error') {
+        return('An unexpected server response was received, please verify that a REDCap Instance exists at the specified URL.')
+      } else if (rc_con() == 'redcap_token_error' ) {
+        return('Incorrect API key. Please ensure you have enabled API access to your project and/or double check your API credentials.')
+      } else {
+        return(NULL)
+      }
+    } else {
+      return(NULL)
+    }
   })
   
   output$redcap_connect <- renderUI({ rc_connect() })
+  output$redcap_connect_error <- renderUI({ rc_connect_error() })
   
   rc_connect_press <- reactive({ input$rc_connect })
   
@@ -173,7 +193,7 @@ redcap_instrument_select_logic <- function(input, output, session, rc_connect_pr
   
   # List the available instruments
   instruments <- reactive({
-    req(rc_connect_press(), rc_connection() )
+    req(rc_connect_press(), is.character(rc_connection() ) != TRUE )
     redcapAPI::exportInstruments(rc_connection() )
   })
   
@@ -258,7 +278,7 @@ redcap_instrument_config_logic <- function(input, output, session, rc_connection
   
   ## Gather project information for display WIP
   rc_project_info <- reactive({
-    req(rc_connection() )
+    req(is.character(rc_connection() ) != TRUE )
     redcapAPI::exportProjectInformation(rc_connection())
     })
   
