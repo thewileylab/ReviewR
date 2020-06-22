@@ -499,11 +499,11 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
     req(rc_connection(), rc_identifier_field(), selected_instrument() )
     instrument_complete_field <- paste0(selected_instrument(),'_complete')
     redcapAPI::exportRecords(rcon = rc_connection(), factors = F, labels = F) %>% 
-      select(!!as.name(rc_identifier_field() ), 'REDCap Review Status' = instrument_complete_field ) %>% 
+      select(!!as.name(rc_identifier_field() ), 'REDCap Record Status' = instrument_complete_field ) %>% 
       tidyr::drop_na() %>% 
       group_by(!!as.name(rc_identifier_field() )) %>% 
       summarise(qty_reviewers = n(),
-                'REDCap Review Status' = max(`REDCap Review Status`))
+                'REDCap Record Status' = max(`REDCap Record Status`))
   })
   previous_data <- reactive({
     req(rc_connection(), rc_identifier_field(), selected_instrument(), subject_id() )
