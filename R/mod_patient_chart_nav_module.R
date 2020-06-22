@@ -145,8 +145,9 @@ subject_info_logic <- function(input, output, session, previousData, all_instrum
   
   status_indicator <- reactive({
     ## If previous data doesn't exist, the reactive will throw a silent error. If this happens, set status_indicator() to null, to remove status indicator from output. 
-    tryCatch(
-      {img(id = 'subject_status', src = subject_status(), style='width: 20px' )},
+    tryCatch({
+      img(id = 'subject_status', src = subject_status(), style='width: 20px' )
+      },
       error=function(error_condition) {
         return(NULL)
       }
