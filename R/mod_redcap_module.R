@@ -321,7 +321,7 @@ redcap_instrument_config_logic <- function(input, output, session, rc_connection
 redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_instrument, rc_identifier, rc_connection) {
   ns <- session$ns
   
-  ## Create a select input for potential reviewer identifier coluimns. Remove patient identifier column and append 'Not applicable'
+  ## Create a select input for potential reviewer identifier columns. Remove patient identifier column and append 'Not applicable'
   rc_reviewer_id <- reactive({
     req(rc_instrument(), rc_identifier() )
     selectInput(inputId = ns('rc_reviewer_field'), 
@@ -466,7 +466,7 @@ redcap_instrument_ui <- function(id) {
 #' @importFrom redcapAPI exportFieldNames
 #' @importFrom purrr flatten_dfr map map2 pmap
 #' @importFrom tidyr as_tibble replace_na pivot_wider pivot_longer contains separate everything
-#' @importFrom dplyr mutate_all case_when
+#' @importFrom dplyr mutate_all case_when summarise group_by
 #' @importFrom rlang is_empty :=
 #' @importFrom tibble add_row
 redcap_instrument_logic <- function(input, output, session, rc_connection, instruments, instrument_selection, rc_instrument, rc_identifier, rc_reviewer, rc_selected_reviewer, subject_id, reviewr_upload_btn, reviewr_connect_btn) {
@@ -495,6 +495,16 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
   })
   
   ## Determine if there is any previous data to show. If a reviewer field is specified, make sure to filter to data belonging to that reviewer.
+  review_status <- reactive({
+    req(rc_connection(), rc_identifier_field(), selected_instrument() )
+    instrument_complete_field <- paste0(selected_instrument(),'_complete')
+    redcapAPI::exportRecords(rcon = rc_connection(), factors = F, labels = F) %>% 
+      select(!!as.name(rc_identifier_field() ), 'REDCap Review Status' = instrument_complete_field ) %>% 
+      tidyr::drop_na() %>% 
+      group_by(!!as.name(rc_identifier_field() )) %>% 
+      summarise(qty_reviewers = n(),
+                'REDCap Review Status' = max(`REDCap Review Status`))
+  })
   previous_data <- reactive({
     req(rc_connection(), rc_identifier_field(), selected_instrument(), subject_id() )
     if(redcapAPI::exportNextRecordName(rc_connection()) == 1) { ## Special case, when the REDCap Instrument has no previous data
@@ -611,7 +621,9 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
   return(list(
     'instrument_data' = instrumentData,
     'previous_data' = previous_data,
-    'current_subject' = current_subject
+    'current_subject' = current_subject,
+    'rc_identifier_field' = rc_identifier_field,
+    'review_status' = review_status
     )) # Send to the Upload module
 }
 

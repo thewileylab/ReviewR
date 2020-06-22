@@ -28,6 +28,7 @@ patient_search_ui <- function(id) {
 #' @param next_sub next subject button press
 #' @param selected_sub the selected subject
 #' @param parent the parent environment of this module
+#' @param rc_con REDCap project connection info
 #'
 #' @rdname mod_patient_search_module
 #' 
@@ -38,7 +39,7 @@ patient_search_ui <- function(id) {
 #' @importFrom dplyr rename slice filter select pull
 #' @importFrom tibble rowid_to_column
 #' @importFrom rlang .data
-patient_search_logic <- function(input, output, session, table_map, db_connection, disconnect, prev_sub, next_sub, selected_sub, parent) {
+patient_search_logic <- function(input, output, session, table_map, db_connection, disconnect, prev_sub, next_sub, selected_sub, parent, db_connect, rc_identifier, review_status) {
   ns <- session$ns
   
   #Replace Patient Search Table when table map changes
@@ -50,17 +51,41 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
   })
   
   # Extract patients based on presence of connection info and data model
-  patient_search_tbl <- eventReactive(table_map(), {
-    req(db_connection() )
+  patient_search_tbl <- eventReactive(db_connect(), {
+    req(db_connection(), table_map() )
+    # browser()
     if (table_map()$count_filtered != 0 & table_map()$data_model == 'omop') {
-      omop_table_all_patients(table_map, db_connection)
-    } else if(table_map()$count_filtered != 0 & table_map()$data_model == 'mimic3') {
-      ## MIMIC Patient Search
-      mimic_table_all_patients(table_map, db_connection)
-    } else {
-      return(NULL)
-    }
-  })
+      ## OMOP Patient Search
+      tryCatch({
+        omop_table_all_patients(table_map, db_connection) %>% 
+          left_join(review_status(), by = c('ID' = rc_identifier() )) %>% 
+          mutate('REDCap Review Status' = case_when(`REDCap Review Status` == 2 ~ 'Complete',
+                                                    `REDCap Review Status` == 1 ~ 'Unverified',
+                                                    `REDCap Review Status` == 0 ~ 'Incomplete',
+                                                    TRUE ~ 'Review Not Started'))
+        },
+        error=function(error_condition) {
+          omop_table_all_patients(table_map, db_connection)
+          }
+        )
+      } else if(table_map()$count_filtered != 0 & table_map()$data_model == 'mimic3') {
+        ## MIMIC Patient Search
+        tryCatch({
+          mimic_table_all_patients(table_map, db_connection) %>% 
+            left_join(review_status(), by = c('ID' = rc_identifier() )) %>% 
+            mutate('REDCap Review Status' = case_when(`REDCap Review Status` == 2 ~ 'Complete',
+                                                      `REDCap Review Status` == 1 ~ 'Unverified',
+                                                      `REDCap Review Status` == 0 ~ 'Incomplete',
+                                                      TRUE ~ 'Review Not Started'))
+          },
+          error=function(error_condition) {
+            mimic_table_all_patients(table_map, db_connection)
+            }
+          )
+        } else {
+          return(NULL)
+          }
+    })
   
   ## Render Patient Search Data Table
   output$patient_search_dt <- DT::renderDataTable({

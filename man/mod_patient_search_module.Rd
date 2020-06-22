@@ -17,7 +17,10 @@ patient_search_logic(
   prev_sub,
   next_sub,
   selected_sub,
-  parent
+  parent,
+  db_connect,
+  rc_identifier,
+  review_status
 )
 }
 \arguments{
@@ -42,6 +45,8 @@ patient_search_logic(
 \item{selected_sub}{the selected subject}
 
 \item{parent}{the parent environment of this module}
+
+\item{rc_con}{REDCap project connection info}
 }
 \description{
 This module will render the datatable on the 'Patient Search' tab containing all patients in the cohort. The selected patient in the DT is kept in sync with the 'Chart Review' tab.
