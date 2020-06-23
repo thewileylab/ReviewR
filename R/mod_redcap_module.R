@@ -494,17 +494,68 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
       extract2(1)
   })
   
-  ## Determine if there is any previous data to show. If a reviewer field is specified, make sure to filter to data belonging to that reviewer.
-  review_status <- reactive({
-    req(rc_connection(), rc_identifier_field(), selected_instrument() )
-    instrument_complete_field <- paste0(selected_instrument(),'_complete')
-    redcapAPI::exportRecords(rcon = rc_connection(), factors = F, labels = F) %>% 
-      select(!!as.name(rc_identifier_field() ), 'REDCap Record Status' = instrument_complete_field ) %>% 
-      tidyr::drop_na() %>% 
-      group_by(!!as.name(rc_identifier_field() )) %>% 
-      summarise(qty_reviewers = n(),
-                'REDCap Record Status' = max(`REDCap Record Status`))
+  instrument_complete_field <- reactive({
+    req(selected_instrument())
+    glue::glue('{selected_instrument()}_complete')
   })
+  
+  # Determine if there is any previous data to show. If a reviewer field is specified, make sure to filter to data belonging to that reviewer.
+   redcap_review_status <- reactive({
+    req(rc_connection(), rc_identifier_field(), instrument_complete_field() )
+    redcapAPI::exportRecords(rcon = rc_connection(), factors = F, labels = F)
+    })
+
+  ## Current Reviewer Overall Status
+  individual_review_status <- reactive({
+    req(redcap_review_status() )
+    review_status_field <- glue::glue('REDCap Record Status: {rc_selected_reviewer()}')
+    redcap_review_status() %>%
+    select(!!as.name(rc_identifier_field() ), !!as.name(rc_reviewer_field() ), instrument_complete_field() ) %>%
+    tidyr::drop_na() %>%
+    filter(name == rc_selected_reviewer() ) %>%
+    left_join(ReviewR::redcap_survey_complete_tbl, by = setNames('redcap_survey_complete_values', instrument_complete_field())) %>%
+    select(!!as.name(rc_identifier_field() ), redcap_survey_complete_names) %>% 
+    rename(!!review_status_field := redcap_survey_complete_names)
+    })
+
+  ## Other Reviewers Overall Status
+  other_review_status <- reactive({
+    req(redcap_review_status() )
+    redcap_review_status() %>%
+    select(!!as.name(rc_identifier_field() ), !!as.name(rc_reviewer_field() ), instrument_complete_field() ) %>%
+    tidyr::drop_na() %>%
+    filter(name != rc_selected_reviewer() ) %>%
+    left_join(ReviewR::redcap_survey_complete_tbl, by = setNames('redcap_survey_complete_values', instrument_complete_field() )) %>%
+    select(-!!instrument_complete_field() ) %>%
+    unite('status', redcap_survey_complete_names, !!as.name(rc_reviewer_field() ), sep = ' - ') %>%
+    group_by(!!as.name(rc_identifier_field() )) %>%
+    mutate(number = dplyr::row_number()) %>%
+    unite('other_status', number, status, sep = ') ') %>%
+    summarise('REDCap Other Reviewer Status' = glue::glue_collapse(other_status, sep = '<br>'))
+    })
+
+  ## All
+  review_status <- reactive({
+    review_status_field <- glue::glue('REDCap Record Status: {rc_selected_reviewer()}')
+    other_review_status() %>%
+    left_join(individual_review_status() ) %>%
+    mutate(!!review_status_field := case_when(is.na(!!as.name(review_status_field)) ~ 'Review Not Started',
+                                              TRUE ~ !!as.name(review_status_field)
+                                              )
+           )
+    })
+  
+  # review_status <- reactive({
+  #   browser()
+  #   req(rc_connection(), rc_identifier_field(), selected_instrument() )
+  #   instrument_complete_field <- paste0(selected_instrument(),'_complete')
+  #   redcapAPI::exportRecords(rcon = rc_connection(), factors = F, labels = F) %>%
+  #     select(!!as.name(rc_identifier_field() ), 'REDCap Record Status' = instrument_complete_field ) %>%
+  #     tidyr::drop_na() %>%
+  #     group_by(!!as.name(rc_identifier_field() )) %>%
+  #     summarise(qty_reviewers = n(),
+  #               'REDCap Record Status' = max(`REDCap Record Status`))
+  # })
   previous_data <- reactive({
     req(rc_connection(), rc_identifier_field(), selected_instrument(), subject_id() )
     if(redcapAPI::exportNextRecordName(rc_connection()) == 1) { ## Special case, when the REDCap Instrument has no previous data

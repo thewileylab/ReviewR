@@ -53,16 +53,13 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
   # Extract patients based on presence of connection info and data model
   patient_search_tbl <- eventReactive(db_connect(), {
     req(db_connection(), table_map() )
-    browser()
+    # browser()
     if (table_map()$count_filtered != 0 & table_map()$data_model == 'omop') {
       ## OMOP Patient Search
       tryCatch({
         omop_table_all_patients(table_map, db_connection) %>% 
           left_join(review_status(), by = c('ID' = rc_identifier() )) %>% 
-          mutate('REDCap Record Status' = case_when(`REDCap Record Status` == 2 ~ 'Complete',
-                                                    `REDCap Record Status` == 1 ~ 'Unverified',
-                                                    `REDCap Record Status` == 0 ~ 'Incomplete',
-                                                    TRUE ~ 'Review Not Started'))
+          mutate_at(vars(contains('REDCap')), replace_na, 'Review Not Started')
         },
         error=function(error_condition) {
           omop_table_all_patients(table_map, db_connection)
@@ -73,10 +70,7 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
         tryCatch({
           mimic_table_all_patients(table_map, db_connection) %>% 
             left_join(review_status(), by = c('ID' = rc_identifier() )) %>% 
-            mutate('REDCap Record Status' = case_when(`REDCap Record Status` == 2 ~ 'Complete',
-                                                      `REDCap Record Status` == 1 ~ 'Unverified',
-                                                      `REDCap Record Status` == 0 ~ 'Incomplete',
-                                                      TRUE ~ 'Review Not Started'))
+            mutate_at(vars(contains('REDCap')), replace_na, 'Review Not Started')
           },
           error=function(error_condition) {
             mimic_table_all_patients(table_map, db_connection)
