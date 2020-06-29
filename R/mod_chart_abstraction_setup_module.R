@@ -23,7 +23,7 @@ chart_abstraction_select_logic <- function(input, output, session) {
   abstraction_choices <- c('REDCap' = 'redcap',
                            'Offline' = 'offline')
   abstraction_select_ui <- reactive({
-    selectInput(inputId = ns('abstraction_selection'),label = 'Configuration Type:',choices = abstraction_choices) 
+    selectInput(inputId = ns('abstraction_selection'),label = 'Chart Abstraction Type:',choices = abstraction_choices) 
     })
   output$chart_abstraction_select <- renderUI({ abstraction_select_ui() })
   

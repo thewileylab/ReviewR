@@ -32,7 +32,7 @@ setup_tab <- function() {
                ),
         column(width = 6,
                #Box Setup
-               box(title = 'Configure Patient Chart Abstraction',
+               box(title = 'Connect Patient Chart Abstraction',
                    width = '100%',
                    status = 'danger',
                    solidHeader = F,
