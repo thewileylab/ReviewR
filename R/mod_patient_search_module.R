@@ -144,7 +144,7 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
     })
   
   return(list(
-    'patient_table' = patient_search_tbl,
+    'patient_table' = patient_search_output,
     'dt_selection_info' = select_patient_click,
     'selected_patient' = selected_patient,
     'selected_patient_info' = selected_patient_info

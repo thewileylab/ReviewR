@@ -33,15 +33,18 @@ patient_nav_ui <- function(id) {
 #' @importFrom rlang .data
 patient_nav_logic <- function(input, output, session, patient_table, selected_patient, parent) {
   ns <- session$ns
-  
-  observeEvent(c(patient_table(),selected_patient()), {
-    req(patient_table(), selected_patient() )
+  subject_choices <- reactive({
+    req(patient_table())
+    patient_table() %>% 
+      select(.data$ID) %>% 
+      deframe()
+    })
+  observeEvent(selected_patient(), {
+    req(selected_patient() )
     # browser()
     updateSelectizeInput(session = parent,
                          inputId = ns('subject_id'),
-                         choices = patient_table() %>% 
-                           select(.data$ID) %>% 
-                           deframe(),
+                         choices = subject_choices(),
                          selected = selected_patient(),
                          server = TRUE )
   })
