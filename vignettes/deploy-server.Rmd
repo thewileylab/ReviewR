@@ -14,6 +14,43 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(ReviewR)
+## Shiny Server OSE
+ReviewR is designed to support multiple users through the use of Shiny Server. When deployed, Shiny Server will serve an instance of ReviewR to each user in their own separate R session.
+
+1. Follow the [Shiny Server Quick Start Guide](https://support.rstudio.com/hc/en-us/articles/360011458854-Shiny-Server-Quick-Start-Installation-and-Configuration) to get Shiny Server up and running. 
+2. Next, clone the ReviewR repository to the home directory of your server. This can be done from the R console with the `usethis` package: 
+```{r eval=FALSE}
+# install.packages('usethis')
+usethis::create_from_github(repo_spec = 'thewileylab/ReviewR', destdir = '~/')
 ```
+3. Finally, using the terminal, create a  symlink from the cloned repository to the `/srv/shiny-server/` directory on your server.
+```{bash eval=FALSE}
+ln -s ~/ReviewR /srv/shiny-server/ReviewR
+```
+
+That's it! ReviewR can now be accessed from your browser at http://your.shiny.server.ip:3838/ReviewR
+
+## Docker
+ReviewR also ships with a Dockerfile, simplifying the deployment process. The Dockerfile will install R, Shiny, and all the necessary dependencies needed to run ReviewR. To start:
+
+1. Clone the ReviewR repository to the home directory of your server. This can be done from the R console with the `usethis` package: 
+```{r eval=FALSE}
+# install.packages('usethis')
+usethis::create_from_github(repo_spec = 'thewileylab/ReviewR', destdir = '~/')
+``` 
+2. Using the terminal, run:
+```{bash eval=FALSE}
+cd ~/ReviewR
+docker build --tag reviewr:latest .
+docker run --publish 8100:8100 --detach --name ReviewR reviewr:latest
+```
+
+That's it! ReviewR can now be accessed from your browser at http://your.shiny.server.ip:8100
+
+***
+
+*Note, if using the BigQuery module to connect to a Google BigQuery database with a server deployment, additional configuration is required. Please ensure that you meet the following minimum requirements:*
+
+* *Server hosting ReviewR has a configured fully qualified domain name*
+* *A Google Project with a configured [Auth 2.0 Client ID for a Web Application](https://developers.google.com/identity/protocols/oauth2/web-server)*
+* *Updated ReviewR/R/mod_database_bigquery.R with your OAuth Client ID and Secret*
