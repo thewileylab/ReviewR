@@ -7,7 +7,13 @@
 \usage{
 chart_abstraction_setup_ui(id)
 
-chart_abstraction_setup_logic(input, output, session, abstraction_selection)
+chart_abstraction_setup_logic(
+  input,
+  output,
+  session,
+  abstraction_selection,
+  rc_connected_vars
+)
 }
 \arguments{
 \item{id}{shiny id}

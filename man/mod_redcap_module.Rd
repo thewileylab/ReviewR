@@ -21,7 +21,14 @@ redcap_connect_ui(id)
 
 redcap_connect_logic(input, output, session)
 
-redcap_initialize_logic(input, output, session, rc_url, rc_token)
+redcap_initialize_logic(
+  input,
+  output,
+  session,
+  rc_url,
+  rc_token,
+  rc_disconnect
+)
 
 redcap_connected_ui(id)
 

@@ -57,7 +57,7 @@ redcap_connect_logic <- function(input, output, session) {
 #' @keywords internal
 #' @export
 #' @importFrom redcapAPI redcapConnection
-redcap_initialize_logic <- function(input, output, session, rc_url, rc_token) {
+redcap_initialize_logic <- function(input, output, session, rc_url, rc_token, rc_disconnect) {
 
   ns <- session$ns
   rc_connect <- reactive({
@@ -68,7 +68,7 @@ redcap_initialize_logic <- function(input, output, session, rc_url, rc_token) {
     actionButton(inputId = ns('rc_connect'),label = "Connect to REDCap",icon = icon('notes-medical'))
       }
   })
-  
+
   rc_con <- reactive({
     req(rc_url(), rc_token())
     # redcapAPI::redcapConnection(url = rc_url(), token = rc_token() )
@@ -90,6 +90,13 @@ redcap_initialize_logic <- function(input, output, session, rc_url, rc_token) {
     } else {
       return(NULL)
     }
+  })
+  
+  ## Clear REDCap connection info when disconnect button is pressed!
+  observeEvent(rc_disconnect(), {
+    # browser()
+    if ( rc_disconnect() == 0 ) return() 
+    rc_con <- NULL
   })
   
   output$redcap_connect <- renderUI({ rc_connect() })
@@ -536,6 +543,7 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
 
   ## All
   review_status <- reactive({
+    req(rc_connection(), rc_identifier_field(), instrument_complete_field() )
     review_status_field <- glue::glue('REDCap Record Status: {rc_selected_reviewer()}')
     other_review_status() %>%
     left_join(individual_review_status() ) %>%

@@ -39,12 +39,12 @@ chart_abstraction_select_logic <- function(input, output, session) {
 #' @param abstraction_selection Which abstraction backend has been selected?
 #' @export
 #' @keywords internal
-chart_abstraction_setup_logic <- function(input, output, session, abstraction_selection) {
+chart_abstraction_setup_logic <- function(input, output, session, abstraction_selection, rc_connected_vars) {
   ns <- session$ns
   
   ### REDCap
   rc_vars <- callModule(redcap_connect_logic, 'abstraction_ns')
-  rc_con <- callModule(redcap_initialize_logic, 'abstraction_ns', rc_vars$rc_url, rc_vars$rc_token)
+  rc_con <- callModule(redcap_initialize_logic, 'abstraction_ns', rc_vars$rc_url, rc_vars$rc_token, rc_connected_vars$rc_disconnect )
   
   chart_abstraction_setup_ui <- reactive({
     req(abstraction_selection() )

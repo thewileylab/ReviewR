@@ -10,7 +10,7 @@ app_server <- function(input, output, session) {
   
   ## Chart Abstraction Setup
   abstraction <- callModule(chart_abstraction_select_logic, 'abstraction_ns')
-  abstraction_vars <- callModule(chart_abstraction_setup_logic, 'abstraction_ns', abstraction$abstraction_selection)
+  abstraction_vars <- callModule(chart_abstraction_setup_logic, 'abstraction_ns', abstraction$abstraction_selection, rc_connected_vars)
   
   ## REDCap Configuration
   instrument_selection <- callModule(redcap_instrument_select_logic, 'abstraction_ns', abstraction_vars$rc_press, abstraction_vars$rc_con)
@@ -22,7 +22,7 @@ app_server <- function(input, output, session) {
   
   ## Call Patient Search Tab Modules ----
   ### Patient Search Module
-  subject_info <- callModule(patient_search_logic, 'patient_search_ns', table_map$table_map, db_connection_vars$db_connection, table_map$db_disconnect, subject_selection_vars$previous_sub, subject_selection_vars$next_sub, subject_selection_vars$subject_id, parent=session, db_connection_vars$connect_press, instrumentData$rc_identifier_field, instrumentData$review_status)
+  subject_info <- callModule(patient_search_logic, 'patient_search_ns', table_map$table_map, db_connection_vars$db_connection, table_map$db_disconnect, subject_selection_vars$previous_sub, subject_selection_vars$next_sub, subject_selection_vars$subject_id, parent=session, db_connection_vars$connect_press, rc_config_vars$rc_configure_btn_press, instrumentData$rc_identifier_field, instrumentData$review_status)
 
   ## Call ReviewR Chart Review Tab Modules ----
   ### Load Chart Review Modules

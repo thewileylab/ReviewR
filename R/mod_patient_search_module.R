@@ -36,14 +36,13 @@ patient_search_ui <- function(id) {
 #' @export
 #' @import shiny 
 #' @importFrom DT reloadData formatStyle selectRows dataTableProxy
-#' @importFrom dplyr rename slice filter select pull
+#' @importFrom dplyr rename slice filter select pull mutate_at
 #' @importFrom tibble rowid_to_column
 #' @importFrom rlang .data
 patient_search_logic <- function(input, output, session, table_map, db_connection, disconnect, prev_sub, next_sub, selected_sub, parent, db_connect, rc_config, rc_identifier, review_status) {
   ns <- session$ns
   
-  #Replace Patient Search Table when table map changes
-  observeEvent(c(table_map(),rc_config()), {
+  observeEvent(c(table_map(),rc_config(), status_test() ), {
     req(table_map() )
     DT::reloadData(proxy = patient_search_proxy,
                resetPaging = T,
@@ -51,50 +50,49 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
   })
   
   # Extract patients based on presence of connection info and data model
-  patient_search_tbl <- eventReactive(db_connect(), {
-    req(db_connection(), table_map() )
+  patient_search_tbl <- eventReactive(table_map(), {
+    req(db_connection() )
     # browser()
     if (table_map()$count_filtered != 0 & table_map()$data_model == 'omop') {
-      ## OMOP Patient Search
       omop_table_all_patients(table_map, db_connection)
-      } else if(table_map()$count_filtered != 0 & table_map()$data_model == 'mimic3') {
-        ## MIMIC Patient Search
-        mimic_table_all_patients(table_map, db_connection)
-        } else {
-          return(NULL)
-          }
-    })
-  patient_search_output <- eventReactive(c(patient_search_tbl(), review_status()), {
-    req(patient_search_tbl())
-    tryCatch({
-      patient_search_tbl() %>% 
-        left_join(review_status(), by = c('ID' = rc_identifier() )) %>% 
-        mutate_at(vars(contains('REDCap')), replace_na, 'Review Not Started') %>% 
-        rename('Subject ID' = .data$ID) %>% 
-        reviewr_datatable() %>% 
-        formatStyle('Subject ID', 
-                    color = '#0000EE', 
-                    cursor = 'pointer',  # Format the ID column to appear blue and change the mouse to a pointer
-                    textAlign = 'left'
-        )
-    }, 
-    error=function(error_condition) {
-      patient_search_tbl() %>% 
-        rename('Subject ID' = .data$ID) %>% 
-        reviewr_datatable() %>% 
-        formatStyle('Subject ID', 
-                    color = '#0000EE', 
-                    cursor = 'pointer',  # Format the ID column to appear blue and change the mouse to a pointer
-                    textAlign = 'left'
-        )
+    } else if(table_map()$count_filtered != 0 & table_map()$data_model == 'mimic3') {
+      ## MIMIC Patient Search
+      mimic_table_all_patients(table_map, db_connection)
+    } else {
+      return(NULL)
     }
-    )
+  })
+  status_test <- reactive({
+    tryCatch({
+      review_status()
+      return('abstraction')
+    },
+    error=function(error_condition) {
+      return('no_abstraction')
+    })
+  })
+  patient_search_output <- reactive({
+    if(status_test() == 'no_abstraction') {
+      patient_search_tbl() 
+    } else if ( status_test() == 'abstraction') {
+      patient_search_tbl() %>% 
+            left_join(review_status(), by = c('ID' = rc_identifier() )) %>%
+            mutate_at(vars(contains('REDCap')), replace_na, 'Review Not Started')
+    } else {return(NULL) }
     
   })
   ## Render Patient Search Data Table
-  output$patient_search_dt <- DT::renderDataTable({
-    patient_search_output()
+  output$patient_search_dt <-DT::renderDataTable({
+    patient_search_output() %>% 
+      rename('Subject ID' = .data$ID) %>%
+      reviewr_datatable() %>%
+      formatStyle('Subject ID',
+                  color = '#0000EE',
+                  cursor = 'pointer',  # Format the ID column to appear blue and change the mouse to a pointer
+                  textAlign = 'left'
+      )
     })
+ 
     # The next time you think about implementing FixedColumns, check the status of this issue first: https://github.com/rstudio/DT/issues/275
     
   outputOptions(output, 'patient_search_dt', suspendWhenHidden = F)
@@ -140,8 +138,8 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
     })
   
   selected_patient_info <- reactive({ 
-    req(patient_search_tbl(), input$patient_search_dt_rows_selected )
-    patient_search_tbl() %>% 
+    req(patient_search_output(), input$patient_search_dt_rows_selected )
+    patient_search_output() %>% 
       slice(input$patient_search_dt_rows_selected)
     })
   

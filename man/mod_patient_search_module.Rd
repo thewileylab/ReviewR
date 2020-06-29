@@ -19,6 +19,7 @@ patient_search_logic(
   selected_sub,
   parent,
   db_connect,
+  rc_config,
   rc_identifier,
   review_status
 )
