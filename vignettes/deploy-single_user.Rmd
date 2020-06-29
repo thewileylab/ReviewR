@@ -14,6 +14,12 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(ReviewR)
+## Installation
+
+To install the latest development release:
+```{r eval=FALSE}
+# install.packages('devtools')
+devtools::install_github('thewileylab/ReviewR')
 ```
+
+ReviewR is now installed as a package!

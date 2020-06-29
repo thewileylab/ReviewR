@@ -166,25 +166,11 @@
 <div class="sourceCode" id="cb1"><pre class="r"><span class="co"># install.packages('devtools')</span>
 <span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span>(<span class="st">'thewileylab/ReviewR'</span>)</pre></div>
 </div>
-<div id="shiny-server-deployment" class="section level2">
-<h2 class="hasAnchor">
-<a href="#shiny-server-deployment" class="anchor"></a>Shiny Server Deployment</h2>
-<p>ReviewR can optionally be deployed to a Shiny Server.</p>
-<ol>
-<li>Follow the <a href="https://support.rstudio.com/hc/en-us/articles/360011458854-Shiny-Server-Quick-Start-Installation-and-Configuration">Shiny Server Quick Start Guide</a> to get Shiny Server up and running.</li>
-<li>Next, clone the ReviewR repository to your server:</li>
-</ol>
-<!-- end list --><div class="sourceCode" id="cb2"><pre class="r"><span class="co"># install.packages('usethis')</span>
-<span class="kw pkg">usethis</span><span class="kw ns">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/create_from_github.html">create_from_github</a></span>(<span class="st">'thewileylab/ReviewR'</span>)</pre></div>
-<ol>
-<li>Finally, symlink the cloned ReviewR directory to <code>/srv/shiny-server/ReviewR</code>. Note, for Google Authentication to work, your server must have a fully qualified domain name and link to a Google Project that you own to perform authorization.</li>
-</ol>
-</div>
 <div id="usage" class="section level2">
 <h2 class="hasAnchor">
 <a href="#usage" class="anchor"></a>Usage</h2>
 <p>To run the application from your local machine:</p>
-<div class="sourceCode" id="cb3"><pre class="r"><span class="kw pkg">ReviewR</span><span class="kw ns">::</span><span class="fu"><a href="reference/run_app.html">run_app</a></span>()</pre></div>
+<div class="sourceCode" id="cb2"><pre class="r"><span class="kw pkg">ReviewR</span><span class="kw ns">::</span><span class="fu"><a href="reference/run_app.html">run_app</a></span>()</pre></div>
 <p>Once the app has loaded, please complete the ‘Setup’ tab (found in the left navigation menu) to connect to your patient database and optionally connect to a REDCap project.</p>
 <div id="view-mode" class="section level3">
 <h3 class="hasAnchor">
