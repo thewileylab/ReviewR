@@ -538,7 +538,7 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
     group_by(!!as.name(rc_identifier_field() )) %>%
     mutate(number = dplyr::row_number()) %>%
     unite('other_status', number, status, sep = ') ') %>%
-    summarise('REDCap Other Reviewer Status' = glue::glue_collapse(other_status, sep = '<br>'))
+    summarise('REDCap Record Status:<br>Other Reviewers' = glue::glue_collapse(other_status, sep = '<br>'))
     })
 
   ## All
@@ -550,7 +550,8 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
     mutate(!!review_status_field := case_when(is.na(!!as.name(review_status_field)) ~ 'Review Not Started',
                                               TRUE ~ !!as.name(review_status_field)
                                               )
-           )
+           ) %>% 
+    rename(!!as.name(str_replace(review_status_field,pattern = ': ',replacement = ':<br>')) := !!review_status_field) ## mutate and case when really don't like having <br> included. Thus, we process the column name first, and then rename it with the appropriate break.
     })
   
   # review_status <- reactive({
