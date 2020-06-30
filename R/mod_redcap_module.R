@@ -543,7 +543,7 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
 
   ## All
   review_status <- reactive({
-    req(rc_connection(), rc_identifier_field(), instrument_complete_field() )
+    req(rc_connection(), rc_identifier_field(), instrument_complete_field(), rc_reviewer() )
     review_status_field <- glue::glue('REDCap Record Status: {rc_selected_reviewer()}')
     # browser()
     if(rc_reviewer() == '(Not Applicable)'){
