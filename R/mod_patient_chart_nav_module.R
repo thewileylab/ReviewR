@@ -33,11 +33,25 @@ patient_nav_ui <- function(id) {
 #' @importFrom rlang .data
 patient_nav_logic <- function(input, output, session, patient_table, selected_patient, parent) {
   ns <- session$ns
-  subject_choices <- reactive({
-    req(patient_table())
+  subject_choices_test <- reactive({
+    req(patient_table() )
     patient_table() %>% 
-      select(.data$ID) %>% 
+      select(contains('Record Status')) %>% 
+      ncol()
+  })
+  subject_choices <- reactive({
+    req(patient_table(), subject_choices_test())
+    if(subject_choices_test() >= 1){
+    patient_table() %>% 
+      select(.data$ID, tail(names(.),1)) %>% 
+      unite(subject_choices, sep = ' - ') %>% 
       deframe()
+    } else {
+      patient_table() %>% 
+        select(.data$ID) %>% 
+        unite(subject_choices, sep = ' - ') %>% 
+        deframe()
+    }
     })
   observeEvent(selected_patient(), {
     req(selected_patient() )
