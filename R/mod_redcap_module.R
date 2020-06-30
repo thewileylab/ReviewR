@@ -514,7 +514,7 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
 
   ## Current Reviewer Overall Status
   individual_review_status <- reactive({
-    req(redcap_review_status() )
+    req(redcap_review_status(), rc_reviewer_field(), instrument_complete_field(), rc_selected_reviewer() )
     review_status_field <- glue::glue('REDCap Record Status: {rc_selected_reviewer()}')
     redcap_review_status() %>%
     select(!!as.name(rc_identifier_field() ), !!as.name(rc_reviewer_field() ), instrument_complete_field() ) %>%
@@ -527,7 +527,7 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
 
   ## Other Reviewers Overall Status
   other_review_status <- reactive({
-    req(redcap_review_status() )
+    req(redcap_review_status(), rc_reviewer_field(), instrument_complete_field(), rc_selected_reviewer() )
     redcap_review_status() %>%
     select(!!as.name(rc_identifier_field() ), !!as.name(rc_reviewer_field() ), instrument_complete_field() ) %>%
     tidyr::drop_na() %>%
@@ -545,13 +545,14 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
   review_status <- reactive({
     req(rc_connection(), rc_identifier_field(), instrument_complete_field() )
     review_status_field <- glue::glue('REDCap Record Status: {rc_selected_reviewer()}')
-    if(rc_selected_reviewer() == '(Not Applicable)'){
-      individual_review_status() %>% 
-        mutate(!!review_status_field := case_when(is.na(!!as.name(review_status_field)) ~ 'Review Not Started',
-                                                  TRUE ~ !!as.name(review_status_field)
-                                                  )
-               ) %>% 
-        rename(!!as.name(str_replace(review_status_field,pattern = ': ',replacement = ':<br>')) := !!review_status_field) ## mutate and case when really don't like having <br> included. Thus, we process the column name first, and then rename it with the appropriate break.
+    # browser()
+    if(rc_reviewer() == '(Not Applicable)'){
+      redcap_review_status() %>%
+        select(!!as.name(rc_identifier_field() ), instrument_complete_field() ) %>%
+        tidyr::drop_na() %>%
+        left_join(ReviewR::redcap_survey_complete_tbl, by = setNames('redcap_survey_complete_values', instrument_complete_field())) %>%
+        select(!!as.name(rc_identifier_field() ), redcap_survey_complete_names) %>% 
+        rename('REDCap Record Status' = redcap_survey_complete_names)
     } else{
     other_review_status() %>%
       full_join(individual_review_status() ) %>%
