@@ -42,10 +42,13 @@ patient_nav_logic <- function(input, output, session, patient_table, selected_pa
   subject_choices <- reactive({
     req(patient_table(), subject_choices_test())
     if(subject_choices_test() >= 1){
-    patient_table() %>% 
+    names<- patient_table() %>% 
       select(.data$ID, tail(names(.),1)) %>% 
       unite(subject_choices, sep = ' - ') %>% 
       deframe()
+    choices <- patient_table() %>% select(.data$ID) %>% deframe()
+    names(choices) <- names
+    return(choices)
     } else {
       patient_table() %>% 
         select(.data$ID) %>% 
@@ -53,31 +56,59 @@ patient_nav_logic <- function(input, output, session, patient_table, selected_pa
         deframe()
     }
     })
-  observeEvent(selected_patient(), {
-    req(selected_patient() )
+  selected_patient_status <- eventReactive(selected_patient(), {
+    req(patient_table(), subject_choices_test(), selected_patient())
+    if(subject_choices_test() >= 1 ) {
+      name <- patient_table() %>% 
+        select(.data$ID, tail(names(.),1)) %>% 
+        filter(.data$ID == selected_patient()) %>% 
+        unite(subject_choices, sep = ' - ') %>% 
+        deframe()
+      choice <- selected_patient()
+      names(choice) <- name
+      return(choice)
+      } else {
+        selected_patient()
+        }
+    })
+  
+  observeEvent(selected_patient_status(), {
+    # req(selected_patient_status() )
     # browser()
+    shinyjs::reset('jump_list_div') ## this is supposed to force the input to re-initialize, improving the consistency of the 'selected' option. Wishful thinking.
+    # shinyjs::reset(ns('subject_id'))
+    # message('resetting jump list')
     updateSelectizeInput(session = parent,
                          inputId = ns('subject_id'),
                          choices = subject_choices(),
-                         selected = selected_patient(),
+                         selected = selected_patient_status(), ## this is supposed supposed to update the selected value and it totally does... sometimes. 
                          server = TRUE )
   })
   
   output$patient_nav_ui <- renderUI({
     tagList(
-      selectizeInput(inputId = ns('subject_id'),
-                     width = '100%',
-                     label = 'Jump to Subject ID:',
-                     choices = NULL,
-                     selected = NULL
-                     ),
+      div(id=ns('jump_list_div'),
+        selectizeInput(inputId = ns('subject_id'),
+                       width = '100%',
+                       label = 'Jump to Subject ID:',
+                       choices = NULL,
+                       selected = NULL
+                       )
+        ),
       tags$head(tags$style("
                            #pt_nav_btns * {
                            display: inline;
                            }")),
-      div(id="pt_nav_btns", actionButton(inputId = ns('previous_sub'), label = '<--Previous', width = '125px'), actionButton(inputId = ns('next_sub'), label = 'Next-->', width = '125px'))
-  )
-  })
+      div(id="pt_nav_btns", 
+          actionButton(inputId = ns('previous_sub'), 
+                       label = '<--Previous', 
+                       width = '125px'), 
+          actionButton(inputId = ns('next_sub'), 
+                       label = 'Next-->', 
+                       width = '125px')
+          )
+      )
+    })
   outputOptions(output, 'patient_nav_ui', suspendWhenHidden = F) #This output needs to run all the time, so that it can receive data from the Patient Search tab
   
   subject_id_val <- reactive({ input$subject_id })
