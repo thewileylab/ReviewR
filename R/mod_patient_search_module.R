@@ -42,7 +42,7 @@ patient_search_ui <- function(id) {
 patient_search_logic <- function(input, output, session, table_map, db_connection, disconnect, prev_sub, next_sub, selected_sub, parent, db_connect, rc_config, rc_identifier, review_status) {
   ns <- session$ns
   
-  observeEvent(c(table_map(),rc_config(), status_test() ), {
+  observeEvent(c(table_map(),rc_config(), status_test(), review_status() ), {
     req(table_map() )
     DT::reloadData(proxy = patient_search_proxy,
                resetPaging = T,

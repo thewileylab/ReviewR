@@ -508,8 +508,9 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
   
   # Determine if there is any previous data to show. If a reviewer field is specified, make sure to filter to data belonging to that reviewer.
    redcap_review_status <- reactive({
-    req(rc_connection(), rc_identifier_field(), instrument_complete_field() )
-    redcapAPI::exportRecords(rcon = rc_connection(), factors = F, labels = F)
+     reviewr_upload_btn()
+     req(rc_connection(), rc_identifier_field(), instrument_complete_field() )
+     redcapAPI::exportRecords(rcon = rc_connection(), factors = F, labels = F)
     })
 
   ## Current Reviewer Overall Status
