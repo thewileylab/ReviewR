@@ -87,6 +87,7 @@ redcap_instrument_logic(
   rc_selected_reviewer,
   subject_id,
   reviewr_upload_btn,
+  modal_continue_button,
   reviewr_connect_btn
 )
 

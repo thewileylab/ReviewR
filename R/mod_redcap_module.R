@@ -476,7 +476,7 @@ redcap_instrument_ui <- function(id) {
 #' @importFrom dplyr mutate_all case_when summarise group_by
 #' @importFrom rlang is_empty :=
 #' @importFrom tibble add_row
-redcap_instrument_logic <- function(input, output, session, rc_connection, instruments, instrument_selection, rc_instrument, rc_identifier, rc_reviewer, rc_selected_reviewer, subject_id, reviewr_upload_btn, reviewr_connect_btn) {
+redcap_instrument_logic <- function(input, output, session, rc_connection, instruments, instrument_selection, rc_instrument, rc_identifier, rc_reviewer, rc_selected_reviewer, subject_id, reviewr_upload_btn, modal_continue_button, reviewr_connect_btn) {
   ns <- session$ns
   
   ## On redcap connection or subsequent upload, determine if there is any default data that needs to be displayed
@@ -509,6 +509,7 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
   # Determine if there is any previous data to show. If a reviewer field is specified, make sure to filter to data belonging to that reviewer.
    redcap_review_status <- reactive({
      reviewr_upload_btn()
+     modal_continue_button()
      req(rc_connection(), rc_identifier_field(), instrument_complete_field() )
      redcapAPI::exportRecords(rcon = rc_connection(), factors = F, labels = F)
     })
@@ -948,5 +949,8 @@ upload_redcap_logic <- function(input, output, session, rc_connection, rc_record
   observeEvent(input$go_back, {
     removeModal()
   })
-  
+  modal_continue_button <- reactive({ input$continue })
+  return(list(
+    'modal_continue_button' = modal_continue_button
+  ))
 }
