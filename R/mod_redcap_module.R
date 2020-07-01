@@ -880,7 +880,7 @@ upload_redcap_logic <- function(input, output, session, rc_connection, rc_record
                 select(.data$field_name, .data$field_label, .data$select_choices_or_calculations), 
               by =c('inputID' = 'field_name')) %>% 
     select(Question = .data$field_label, 'Previous Values' = .data$previous_values, 'New Values' = .data$current_values) %>% 
-    tidyr::drop_na(vars = 'Question') 
+    tidyr::drop_na('Question') 
   })
 
   output$confirm_modal_dt <- DT::renderDataTable(
