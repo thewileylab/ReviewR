@@ -345,12 +345,17 @@ redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_i
   
   output$rc_reviewer <- renderUI({rc_reviewer_id() })
   
+  rc_records_at_config <- reactive({
+    req(rc_connection())
+    # browser()
+    redcapAPI::exportRecords(rc_connection() )
+  })
   rc_previous_reviewers <- reactive({
-    req(rc_instrument(), rc_reviewer(), rc_connection() )
+    req(rc_instrument(), rc_reviewer(), rc_connection(), rc_records_at_config() )
     reviewer_field <- rc_instrument() %>% 
       filter(.data$field_label == rc_reviewer()) %>% 
       pull(.data$field_name) 
-    redcapAPI::exportRecords(rc_connection() ) %>% 
+    rc_records_at_config() %>% 
       select(reviewer_field) %>% 
       distinct() %>% 
       tidyr::drop_na()
@@ -370,19 +375,53 @@ redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_i
                                     placeholder = 'New Reviewer'))
     }
   })
-  
+  ## Test for unique id's to determine if a named reviewer is likely necessary
+  identifier_field <- reactive({
+    req(rc_instrument(), rc_identifier() )
+    rc_instrument() %>% 
+      select(field_name, field_label) %>% 
+      filter(field_label == rc_identifier()) %>% 
+      pull(field_name)
+    })
+  qty_id_at_config <- reactive({
+    req(rc_identifier(), rc_records_at_config())
+    rc_identifier()
+    rc_records_at_config() %>% 
+      select(identifier_field() ) %>% 
+      tidyr::drop_na() %>%  ## drop records that aren't from the selected instrument
+      nrow()
+  })
+  qty_unique_id_at_config <- reactive({
+    req(rc_identifier(), rc_records_at_config())
+    rc_identifier()
+    rc_records_at_config() %>% 
+      select(identifier_field() ) %>%
+      tidyr::drop_na() %>%  ## drop records that aren't from the selected instrument
+      distinct() %>% 
+      nrow()
+  })
   output$current_reviewer <- renderUI( rc_current_reviewer_question() )
       
   
   # output$current_reviewer <- renderUI( rc_current_reviewer_question() )
   
-  output$rc_configure_btn <- renderUI({ actionButton(inputId = ns('rc_configure'), label = 'Configure REDCap Instrument') })
+  output$rc_configure_btn <- renderUI({ 
+    req(rc_reviewer(), qty_id_at_config(), qty_unique_id_at_config())
+    if(rc_reviewer() == '(Not Applicable)' & qty_id_at_config() > qty_unique_id_at_config() ) {
+      return(HTML("<font color='#e83a2f'>Warning: Multiple REDCap records exist for unique record identifiers. Please configure a reviewer identifier.</font>"))
+    } else if (rc_selected_reviewer() == '') {
+      return(NULL)
+    } else {
+    actionButton(inputId = ns('rc_configure'), label = 'Configure REDCap Instrument') 
+    }
+    })
   
   rc_selected_reviewer <- reactive({ 
     if(rc_reviewer() == '(Not Applicable)' ) {
       ''
     } else{
-    input$rc_current_reviewer 
+    input$rc_current_reviewer
+      # browser()
       }
     })
   rc_configure_btn_press <- reactive({ input$rc_configure})
