@@ -87,7 +87,7 @@ patient_nav_logic <- function(input, output, session, patient_table, selected_pa
   
   output$patient_nav_ui <- renderUI({
     tagList(
-      div(id=ns('jump_list_div'),
+      div(id='jump_list_div',
         selectizeInput(inputId = ns('subject_id'),
                        width = '100%',
                        label = 'Jump to Subject ID:',
