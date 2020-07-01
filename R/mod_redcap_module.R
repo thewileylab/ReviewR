@@ -429,7 +429,7 @@ redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_i
     if(rc_reviewer() == '(Not Applicable)' & qty_id_at_config() != qty_unique_id_at_config() ) {
       return(HTML("<font color='#e83a2f'>Warning: Multiple REDCap records exist for unique record identifiers. Please configure a reviewer identifier.</font>"))
     } else if (rc_reviewer() == '(Not Applicable)' & qty_id_at_config() == qty_unique_id_at_config() ) {
-      actionButton(inputId = ns('rc_configure1'), label = 'Configure REDCap Instrument')
+      actionButton(inputId = ns('rc_configure'), label = 'Configure REDCap Instrument')
     } else if (rc_selected_reviewer() == '') {
       return(NULL)
     } else {
