@@ -350,21 +350,39 @@ redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_i
     # browser()
     redcapAPI::exportRecords(rc_connection() )
   })
-  rc_previous_reviewers <- reactive({
-    req(rc_instrument(), rc_reviewer(), rc_connection(), rc_records_at_config() )
-    reviewer_field <- rc_instrument() %>% 
+  reviewer_field <- reactive({
+    req(rc_instrument(), rc_reviewer())
+    rc_instrument() %>% 
       filter(.data$field_label == rc_reviewer()) %>% 
-      pull(.data$field_name) 
+      pull(.data$field_name)
+    })
+  
+  ## stop
+  too_many_reviewers_per_id <- reactive({
+    req(rc_records_at_config(), identifier_field(), reviewer_field())
     rc_records_at_config() %>% 
-      select(reviewer_field) %>% 
+      select(identifier_field(), reviewer_field()) %>% 
+      tidyr::drop_na() %>% 
+      group_by(!!as.name(identifier_field()), !!as.name(reviewer_field())) %>% 
+      count() %>% 
+      filter(n > 1) %>% 
+      flatten_dfr() %>% 
+      nrow()
+    })
+  rc_previous_reviewers <- reactive({
+    req(rc_records_at_config(), reviewer_field() )
+    reviewer_field()
+    rc_records_at_config() %>% 
+      select(reviewer_field()) %>% 
       distinct() %>% 
       tidyr::drop_na()
   })
-  
   rc_current_reviewer_question <- reactive({
-    req(rc_reviewer())
+    req(rc_reviewer(), too_many_reviewers_per_id())
     if(rc_reviewer() == '(Not Applicable)' ) {
       return(NULL)
+    } else if(too_many_reviewers_per_id() >= 1){
+      return(HTML("<font color='#e83a2f'>Warning: This REDCap instrument contains multiple records from the same reviewer for an individual record identifier. Please visit REDCap via the web to correct the instrument. </font>"))
     } else {
       selectizeInput(inputId = ns('rc_current_reviewer'),
                      label = 'Select your name from the list, or enter a new one:',
@@ -417,6 +435,7 @@ redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_i
     })
   
   rc_selected_reviewer <- reactive({ 
+    req(input$rc_current_reviewer)
     if(rc_reviewer() == '(Not Applicable)' ) {
       ''
     } else{
