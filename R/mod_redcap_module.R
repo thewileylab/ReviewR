@@ -718,6 +718,9 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
 #' @importFrom redcapAPI importRecords
 upload_redcap_logic <- function(input, output, session, rc_connection, rc_recordID, rc_instrument, instrumentData, previousData, currentSubject, rc_upload_btn_press, abstraction_complete, abstraction_complete_val, all_instruments, instrument_selection) {
   ns <- session$ns
+  # observeEvent(rc_upload_btn_press(), {
+  #   browser()
+  # })
   
   ## Process Shiny RedCAP inputs to match expected RedCAP API input
   rc_id <- reactive({
@@ -743,17 +746,14 @@ upload_redcap_logic <- function(input, output, session, rc_connection, rc_record
       tibble(!!instrument_complete_field := abstraction_complete_val() )
     }
   })
-  # observeEvent(rc_upload_btn_press(), {
-  #   browser()
-  # })
-  # 
+
   rc_uploadData <- reactive({
     req(rc_instrument(), instrumentData(), rc_id() )
     rc_recordID_field <- rc_recordID() %>% extract2(1)
     rc_instrument() %>% 
       mutate(shiny_inputID = .data$shiny_inputID) %>% ## Namespace
       select(.data$shiny_inputID, .data$field_name, .data$select_choices_or_calculations) %>% ## Include select_choices_or_calculations so that all columns can be sent back to REDCap. This allows for overwriting old data with blank ''
-      add_row(field_name = rc_recordID() %>% flatten()) %>% ## Add REDCap record ID field back into the instrument, so it can be joined with any previous data.
+      add_row(field_name = rc_recordID() %>% flatten() %>% unlist()) %>% ## Add REDCap record ID field back into the instrument, so it can be joined with any previous data.
       left_join(instrumentData(), by = c('shiny_inputID' = 'inputID')) %>% ## Join the instrument inputs with the selected instrument. This ensures inputs are collected only for the active instrument
       modify_depth(2, as.character) %>% ## the input values are all lists at this moment. Dive into each list (depth = 2) and make sure that the values within the list are coded as characters
       separate_rows(.data$select_choices_or_calculations, sep = '\\|') %>% ## Expand select_choices_or_calculations
