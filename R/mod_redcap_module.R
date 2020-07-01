@@ -402,16 +402,16 @@ redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_i
       pull(field_name)
     })
   qty_id_at_config <- reactive({
-    req(rc_identifier(), rc_records_at_config())
-    rc_identifier()
+    req(rc_identifier(), rc_records_at_config(), identifier_field())
+    identifier_field()
     rc_records_at_config() %>% 
       select(identifier_field() ) %>% 
       tidyr::drop_na() %>%  ## drop records that aren't from the selected instrument
       nrow()
   })
   qty_unique_id_at_config <- reactive({
-    req(rc_identifier(), rc_records_at_config())
-    rc_identifier()
+    req(rc_identifier(), rc_records_at_config(), identifier_field())
+    identifier_field()
     rc_records_at_config() %>% 
       select(identifier_field() ) %>%
       tidyr::drop_na() %>%  ## drop records that aren't from the selected instrument
@@ -425,12 +425,15 @@ redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_i
   
   output$rc_configure_btn <- renderUI({ 
     req(rc_reviewer(), qty_id_at_config(), qty_unique_id_at_config())
-    if(rc_reviewer() == '(Not Applicable)' & qty_id_at_config() > qty_unique_id_at_config() ) {
+    rc_reviewer()
+    if(rc_reviewer() == '(Not Applicable)' & qty_id_at_config() != qty_unique_id_at_config() ) {
       return(HTML("<font color='#e83a2f'>Warning: Multiple REDCap records exist for unique record identifiers. Please configure a reviewer identifier.</font>"))
+    } else if (rc_reviewer() == '(Not Applicable)' & qty_id_at_config() == qty_unique_id_at_config() ) {
+      actionButton(inputId = ns('rc_configure1'), label = 'Configure REDCap Instrument')
     } else if (rc_selected_reviewer() == '') {
       return(NULL)
     } else {
-    actionButton(inputId = ns('rc_configure'), label = 'Configure REDCap Instrument') 
+      actionButton(inputId = ns('rc_configure'), label = 'Configure REDCap Instrument') 
     }
     })
   
