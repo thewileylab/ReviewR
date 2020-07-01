@@ -322,7 +322,7 @@ redcap_instrument_config_logic <- function(input, output, session, rc_connection
 #' 
 #' @keywords internal
 #' @export
-#' @importFrom dplyr pull distinct
+#' @importFrom dplyr pull distinct count
 #' @importFrom redcapAPI exportRecords
 #' @importFrom tidyr drop_na
 redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_instrument, rc_identifier, rc_connection) {
