@@ -57,7 +57,7 @@ patient_nav_logic <- function(input, output, session, patient_table, selected_pa
     }
     })
   selected_patient_status <- eventReactive(selected_patient(), {
-    req(patient_table(), subject_choices_test(), selected_patient())
+    req(patient_table(), subject_choices_test(), selected_patient(),subject_choices())
     if(subject_choices_test() >= 1 ) {
       name <- patient_table() %>% 
         select(.data$ID, tail(names(.),1)) %>% 
