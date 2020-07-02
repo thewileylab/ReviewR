@@ -175,16 +175,17 @@ subject_info_logic <- function(input, output, session, previousData, all_instrum
   
   # Create a reactive to hold the previous Instrument Complete value.
   instrument_complete_val <-reactive({
-    # req(previousData(), instrument_complete_field() )
-    # previousData() %>%
-    #   select(instrument_complete_field() ) %>%
-    #   extract2(1) %>%
-    #   as.numeric()
+    # browser()
     req(subjectInfo() )
-    subjectInfo() %>% 
+    status_cols <- subjectInfo() %>% 
       select(contains('Record Status')) %>% 
-      select(ncol(.)) %>% 
-      extract2(1)
+      ncol()
+    if(status_cols > 0 ) {
+      subjectInfo() %>% 
+        select(contains('Record Status')) %>% 
+        select(status_cols) %>% 
+        extract2(1)
+    } else { return(NA) }
   })
 
   # Create text, with information about the subject
