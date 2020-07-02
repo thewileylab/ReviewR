@@ -556,14 +556,16 @@ redcap_instrument_ui <- function(id) {
 redcap_instrument_logic <- function(input, output, session, rc_connection, instruments, instrument_selection, rc_instrument, rc_identifier, rc_reviewer, rc_selected_reviewer, subject_id, reviewr_upload_btn, modal_continue_button, reviewr_connect_btn) {
   ns <- session$ns
   
-  ## On redcap connection or subsequent upload, determine if there is any default data that needs to be displayed
+  ## REDCap Configuration Variables
   rc_identifier_field <- reactive({
+    # browser()
     req(rc_instrument(), rc_identifier() )
     rc_instrument() %>% 
       select(.data$field_name, .data$field_label) %>% 
       filter(.data$field_label == rc_identifier() ) %>% 
       extract2(1)
     })
+  
   rc_reviewer_field <- reactive({
     req(rc_instrument(), rc_reviewer() )
     rc_instrument() %>% 
@@ -571,6 +573,7 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
       filter(.data$field_label == rc_reviewer() ) %>% 
       extract2(1)
   })
+  
   selected_instrument <- reactive({
     req(instruments(), instrument_selection() )
     instruments() %>% 
@@ -582,8 +585,8 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
     req(selected_instrument())
     glue::glue('{selected_instrument()}_complete')
   })
+  # Determine if there is any previous data to show in the patient search and jump lists. If a reviewer field is specified, make sure to filter to data belonging to that reviewer.
   
-  # Determine if there is any previous data to show. If a reviewer field is specified, make sure to filter to data belonging to that reviewer.
    redcap_review_status <- reactive({
      reviewr_upload_btn()
      modal_continue_button()
@@ -623,7 +626,6 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
   ## All
   review_status <- reactive({
     req(rc_connection(), rc_identifier_field(), instrument_complete_field(), rc_reviewer() )
-    review_status_field <- glue::glue('REDCap Record Status: {rc_selected_reviewer()}')
     # browser()
     if(rc_reviewer() == '(Not Applicable)'){
       redcap_review_status() %>%
@@ -633,28 +635,18 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
         select(!!as.name(rc_identifier_field() ), .data$redcap_survey_complete_names) %>% 
         rename('REDCap Record Status' = .data$redcap_survey_complete_names)
     } else{
-    other_review_status() %>%
-      full_join(individual_review_status() ) %>%
-      mutate(!!review_status_field := case_when(is.na(!!as.name(review_status_field)) ~ 'Review Not Started',
-                                                TRUE ~ !!as.name(review_status_field)
-                                                )
-             ) %>% 
-      rename(!!as.name(str_replace(review_status_field,pattern = ': ',replacement = ':<br>')) := !!review_status_field) ## mutate and case when really don't like having <br> included. Thus, we process the column name first, and then rename it with the appropriate break.
+      review_status_field <- glue::glue('REDCap Record Status: {rc_selected_reviewer()}')
+      other_review_status() %>%
+        full_join(individual_review_status() ) %>%
+        mutate(!!review_status_field := case_when(is.na(!!as.name(review_status_field)) ~ 'Review Not Started',
+                                                  TRUE ~ !!as.name(review_status_field)
+                                                  )
+               ) %>% 
+        rename(!!as.name(str_replace(review_status_field,pattern = ': ',replacement = ':<br>')) := !!review_status_field) ## mutate and case when really don't like having <br> included. Thus, we process the column name first, and then rename it with the appropriate break.
       }
     })
   
-  
-  # review_status <- reactive({
-  #   browser()
-  #   req(rc_connection(), rc_identifier_field(), selected_instrument() )
-  #   instrument_complete_field <- paste0(selected_instrument(),'_complete')
-  #   redcapAPI::exportRecords(rcon = rc_connection(), factors = F, labels = F) %>%
-  #     select(!!as.name(rc_identifier_field() ), 'REDCap Record Status' = instrument_complete_field ) %>%
-  #     tidyr::drop_na() %>%
-  #     group_by(!!as.name(rc_identifier_field() )) %>%
-  #     summarise(qty_reviewers = n(),
-  #               'REDCap Record Status' = max(`REDCap Record Status`))
-  # })
+  ## On redcap connection or subsequent upload, determine if there is any default data that needs to be displayed in the REDCap instrument representation
   previous_data <- reactive({
     req(rc_connection(), rc_identifier_field(), selected_instrument(), subject_id() )
     if(redcapAPI::exportNextRecordName(rc_connection()) == 1) { ## Special case, when the REDCap Instrument has no previous data
