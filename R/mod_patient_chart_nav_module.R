@@ -34,6 +34,7 @@ patient_nav_ui <- function(id) {
 patient_nav_logic <- function(input, output, session, patient_table, selected_patient, parent) {
   ns <- session$ns
   subject_choices_test <- reactive({
+    ## Check to see whether a Record Status Column exists in the patient table
     req(patient_table() )
     patient_table() %>% 
       select(contains('Record Status')) %>% 
@@ -42,13 +43,14 @@ patient_nav_logic <- function(input, output, session, patient_table, selected_pa
   subject_choices <- reactive({
     req(patient_table(), subject_choices_test())
     if(subject_choices_test() >= 1){
-    names<- patient_table() %>% 
-      select(.data$ID, tail(names(.),1)) %>% 
-      unite(subject_choices, sep = ' - ') %>% 
-      deframe()
-    choices <- patient_table() %>% select(.data$ID) %>% deframe()
-    names(choices) <- names
-    return(choices)
+      column_positions <- c(1,ncol(patient_table())) ## Create a vector of column positions for ID (always first) and Review Status (always last)
+      names<- patient_table() %>% 
+        select(column_positions) %>% 
+        unite(subject_choices, sep = ' - ') %>% 
+        deframe()
+      choices <- patient_table() %>% select(.data$ID) %>% deframe()
+      names(choices) <- names
+      return(choices)
     } else {
       patient_table() %>% 
         select(.data$ID) %>% 
@@ -59,8 +61,9 @@ patient_nav_logic <- function(input, output, session, patient_table, selected_pa
   selected_patient_status <- eventReactive(selected_patient(), {
     req(patient_table(), subject_choices_test(), selected_patient(),subject_choices())
     if(subject_choices_test() >= 1 ) {
+      column_positions <- c(1,ncol(patient_table())) ## Create a vector of column positions for ID (always first) and Review Status (always last)
       name <- patient_table() %>% 
-        select(.data$ID, tail(names(.),1)) %>% 
+        select(column_positions) %>% 
         filter(.data$ID == selected_patient()) %>% 
         unite(subject_choices, sep = ' - ') %>% 
         deframe()

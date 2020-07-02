@@ -365,7 +365,7 @@ redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_i
       tidyr::drop_na() %>% 
       group_by(!!as.name(identifier_field()), !!as.name(reviewer_field())) %>% 
       count() %>% 
-      filter(n > 1) %>% 
+      filter(.data$n > 1) %>% 
       flatten_dfr() %>% 
       nrow()
     })
@@ -397,9 +397,9 @@ redcap_instrument_config_reviewer_logic <- function(input, output, session, rc_i
   identifier_field <- reactive({
     req(rc_instrument(), rc_identifier() )
     rc_instrument() %>% 
-      select(field_name, field_label) %>% 
-      filter(field_label == rc_identifier()) %>% 
-      pull(field_name)
+      select(.data$field_name, .data$field_label) %>% 
+      filter(.data$field_label == rc_identifier()) %>% 
+      pull(.data$field_name)
     })
   qty_id_at_config <- reactive({
     req(rc_identifier(), rc_records_at_config(), identifier_field())
@@ -584,8 +584,8 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
     tidyr::drop_na() %>%
     filter(!!as.name(rc_reviewer_field()) == rc_selected_reviewer() ) %>%
     left_join(ReviewR::redcap_survey_complete_tbl, by = setNames('redcap_survey_complete_values', instrument_complete_field())) %>%
-    select(!!as.name(rc_identifier_field() ), redcap_survey_complete_names) %>% 
-    rename(!!review_status_field := redcap_survey_complete_names)
+    select(!!as.name(rc_identifier_field() ), .data$redcap_survey_complete_names) %>% 
+    rename(!!review_status_field := .data$redcap_survey_complete_names)
     })
 
   ## Other Reviewers Overall Status
@@ -597,11 +597,11 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
     filter(!!as.name(rc_reviewer_field()) != rc_selected_reviewer() ) %>%
     left_join(ReviewR::redcap_survey_complete_tbl, by = setNames('redcap_survey_complete_values', instrument_complete_field() )) %>%
     select(-!!instrument_complete_field() ) %>%
-    unite('status', redcap_survey_complete_names, !!as.name(rc_reviewer_field() ), sep = ' - ') %>%
+    unite('status', .data$redcap_survey_complete_names, !!as.name(rc_reviewer_field() ), sep = ' - ') %>%
     group_by(!!as.name(rc_identifier_field() )) %>%
     mutate(number = dplyr::row_number()) %>%
-    unite('other_status', number, status, sep = ') ') %>%
-    summarise('REDCap Record Status:<br>Other Reviewers' = glue::glue_collapse(other_status, sep = '<br>'))
+    unite('other_status', .data$number, .data$status, sep = ') ') %>%
+    summarise('REDCap Record Status:<br>Other Reviewers' = glue::glue_collapse(.data$other_status, sep = '<br>'))
     })
 
   ## All
@@ -614,8 +614,8 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
         select(!!as.name(rc_identifier_field() ), instrument_complete_field() ) %>%
         tidyr::drop_na() %>%
         left_join(ReviewR::redcap_survey_complete_tbl, by = setNames('redcap_survey_complete_values', instrument_complete_field())) %>%
-        select(!!as.name(rc_identifier_field() ), redcap_survey_complete_names) %>% 
-        rename('REDCap Record Status' = redcap_survey_complete_names)
+        select(!!as.name(rc_identifier_field() ), .data$redcap_survey_complete_names) %>% 
+        rename('REDCap Record Status' = .data$redcap_survey_complete_names)
     } else{
     other_review_status() %>%
       full_join(individual_review_status() ) %>%
