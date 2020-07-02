@@ -479,6 +479,21 @@ rc_instrument_configured_logic <- function(input, output, session, rc_instrument
   ns <- session$ns
   
   rc_configured_message <- eventReactive(rc_instrument_info$rc_configure_btn_press(), {
+    if(rc_instrument_info$rc_reviewer() == '(Not Applicable)') {
+      HTML(paste('<H3>Success!!</H3>', 
+                 'You have configured the REDCap Instrument.',
+                 '<br>',
+                 '<br>',
+                 '<H4>Instrument Information:</H4>',
+                 '<b>Instrument Name:</b>', selected_instrument(),
+                 '<br>',
+                 '<b>Identifier Field:</b>', rc_instrument_info$rc_identifier(),
+                 '<br>',
+                 '<b>Reviewer Field:</b>', rc_instrument_info$rc_reviewer(),
+                 '<br><br>',
+                 '<b>You may now proceed to record review. Have fun and watch out for bugs!</b>',
+                 '<br><br>'))
+    } else {
       HTML(paste('<H3>Success!!</H3>', 
                  'You have configured the REDCap Instrument.',
                  '<br>',
@@ -494,6 +509,7 @@ rc_instrument_configured_logic <- function(input, output, session, rc_instrument
                  '<br><br>',
                  '<b>You may now proceed to record review. Have fun and watch out for bugs!</b>',
                  '<br><br>'))
+      }
   })
   output$rc_configured_ui <- renderUI({
     req(rc_configured_message() )
