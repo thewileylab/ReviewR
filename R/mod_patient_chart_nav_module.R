@@ -175,11 +175,16 @@ subject_info_logic <- function(input, output, session, previousData, all_instrum
   
   # Create a reactive to hold the previous Instrument Complete value.
   instrument_complete_val <-reactive({
-    req(previousData(), instrument_complete_field() )
-    previousData() %>%
-      select(instrument_complete_field() ) %>%
-      extract2(1) %>%
-      as.numeric()
+    # req(previousData(), instrument_complete_field() )
+    # previousData() %>%
+    #   select(instrument_complete_field() ) %>%
+    #   extract2(1) %>%
+    #   as.numeric()
+    req(subjectInfo() )
+    subjectInfo() %>% 
+      select(contains('Record Status')) %>% 
+      select(ncol(.)) %>% 
+      extract2(1)
   })
 
   # Create text, with information about the subject
@@ -190,9 +195,10 @@ subject_info_logic <- function(input, output, session, previousData, all_instrum
   
   # Determine which icon is needed to depict the review status for the current subject
   subject_status <- reactive({
-    if (instrument_complete_val() == 0 || identical(instrument_complete_val(), numeric(0) )  == TRUE ) { 'www/status_incomplete.png'
-    } else if (instrument_complete_val() == 1) { 'www/status_unverified.png'
-        } else { 'www/status_complete.png' }
+    if (is.na(instrument_complete_val() ) ) { return(NULL)
+      } else if (instrument_complete_val() == 'Incomplete') { 'www/status_incomplete.png'
+      } else if (instrument_complete_val() == 'Unverified') { 'www/status_unverified.png'
+          } else { 'www/status_complete.png' }
     })
   
   status_indicator <- reactive({
