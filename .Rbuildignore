@@ -10,6 +10,7 @@ $run_dev.*
 ^app\.R$
 ^_pkgdown\.yml$
 ^docs$
+^doc$
 ^pkgdown$
 ^ReviewR\.Rcheck$
 ^ReviewR.*\.tar\.gz$
