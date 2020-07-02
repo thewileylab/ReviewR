@@ -559,7 +559,7 @@ chart_review_ui_logic <- function(input, output, session, abstraction_vars, tabl
             redcap_instrument_ui('chart_review_abstraction'),
             ## CSS to scroll the abstraction instrument, if necessary
             tags$head(
-              tags$style("#chart_review_abstraction-redcap_form{color:black; font-size:12px; overflow-y:scroll; max-height: 600px;}")
+              tags$style("#chart_review_abstraction-redcap_form{color:black; font-size:12px; overflow-y:scroll; max-height: 598px;}")
             )
           ),
           box(
