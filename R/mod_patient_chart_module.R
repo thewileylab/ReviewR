@@ -524,9 +524,57 @@ chart_review_ui_logic <- function(input, output, session, abstraction_vars, tabl
   
   ## Change layout based on presence or absence of abstraction connection info
   output$chart_review_ui <- renderUI({ 
-    req(abstraction_vars$rc_url(), abstraction_vars$rc_url(), table_map$table_map())
-    ## Revisit -- conditions should be dependent on valid information being provided.
-    if(abstraction_vars$rc_url() == '' | abstraction_vars$rc_token() == '' ) { ## No Abstraction
+    req(table_map$table_map())
+    ## Revisit -- Valid RC Connection info is now responsible for swapping btwn abstraction/not. 
+    tryCatch({
+      abstraction_vars$rc_con() ## On ReviewR load, rc_con() throws silent error. Proceed to 'error function' (no abstraction). Do not collect $200
+      if(abstraction_vars$rc_con() == '') { ## No Abstraction (after initial RC connect/disconnect cycle)
+        box(width = '100%',
+            status = 'primary',
+            ## Select patient chart ui based on data model
+            if(table_map$table_map()$data_model == 'omop') {
+              omop_chart_review_ui('chart_review')
+            } else if (table_map$table_map()$data_model == 'mimic3') {
+              mimic_chart_review_ui('chart_review')
+            } else {return(NULL)}
+        ) 
+      } else { ## Abstraction ----
+        fluidRow(
+          column(
+            width = 9,
+            box(width = '100%',
+                status = 'primary',
+                ## Select patient chart ui based on data model
+                if(table_map$table_map()$data_model == 'omop') {
+                  omop_chart_review_ui('chart_review')
+                } else if (table_map$table_map()$data_model == 'mimic3') {
+                  mimic_chart_review_ui('chart_review')
+                } else {return(NULL)}
+            )
+          ),
+          column(
+            width = 3,
+            box(
+              title = instrument_selection$rc_instrument_selection(),
+              width = '100%',
+              status = 'danger',
+              redcap_instrument_ui('chart_review_abstraction'),
+              ## CSS to scroll the abstraction instrument, if necessary
+              tags$head(
+                tags$style("#chart_review_abstraction-redcap_form{color:black; font-size:12px; overflow-y:scroll; max-height: 598px;}")
+              )
+            ),
+            box(
+              title = 'Save Form',
+              width = '100&',
+              status = 'danger',
+              instrument_complete_ui('chart_review_upload')
+            )
+          )
+        )
+      }
+    },
+    error=function(error_cond) { ## No Abstraction
       box(width = '100%',
           status = 'primary',
           ## Select patient chart ui based on data model
@@ -535,41 +583,7 @@ chart_review_ui_logic <- function(input, output, session, abstraction_vars, tabl
           } else if (table_map$table_map()$data_model == 'mimic3') {
             mimic_chart_review_ui('chart_review')
           } else {return(NULL)}
-      ) 
-    } else { ## Abstraction ----
-      fluidRow(
-        column(
-          width = 9,
-          box(width = '100%',
-              status = 'primary',
-              ## Select patient chart ui based on data model
-              if(table_map$table_map()$data_model == 'omop') {
-                omop_chart_review_ui('chart_review')
-              } else if (table_map$table_map()$data_model == 'mimic3') {
-                mimic_chart_review_ui('chart_review')
-              } else {return(NULL)}
-          )
-        ),
-        column(
-          width = 3,
-          box(
-            title = instrument_selection$rc_instrument_selection(),
-            width = '100%',
-            status = 'danger',
-            redcap_instrument_ui('chart_review_abstraction'),
-            ## CSS to scroll the abstraction instrument, if necessary
-            tags$head(
-              tags$style("#chart_review_abstraction-redcap_form{color:black; font-size:12px; overflow-y:scroll; max-height: 598px;}")
-            )
-          ),
-          box(
-            title = 'Save Form',
-            width = '100&',
-            status = 'danger',
-            instrument_complete_ui('chart_review_upload')
-          )
-        )
       )
-    }
+    })
   })
 }
