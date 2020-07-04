@@ -39,7 +39,9 @@ chart_review_ui_logic(
   session,
   abstraction_vars,
   table_map,
-  instrument_selection
+  instrument_selection,
+  rc_config,
+  review_status
 )
 }
 \arguments{

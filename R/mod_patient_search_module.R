@@ -52,7 +52,6 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
   # Extract patients based on presence of connection info and data model
   patient_search_tbl <- eventReactive(table_map(), {
     req(db_connection() )
-    # browser()
     if (table_map()$count_filtered != 0 & table_map()$data_model == 'omop') {
       omop_table_all_patients(table_map, db_connection)
     } else if(table_map()$count_filtered != 0 & table_map()$data_model == 'mimic3') {
@@ -61,11 +60,15 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
     } else {
       return(NULL)
     }
+    # browser()
   })
   status_test <- reactive({
     tryCatch({
-      review_status()
-      return('abstraction')
+      if(is.null(review_status()) ) {
+        return('no_abstraction')
+      } else {
+        return('abstraction')
+      }
     },
     error=function(error_condition) {
       return('no_abstraction')

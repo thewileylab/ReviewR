@@ -478,9 +478,20 @@ rc_instrument_configured_ui <- function(id) {
 rc_instrument_configured_logic <- function(input, output, session, rc_instrument_info, selected_instrument) {
   ns <- session$ns
   
-  rc_configured_message <- eventReactive(rc_instrument_info$rc_configure_btn_press(), {
-    if(rc_instrument_info$rc_reviewer() == '(Not Applicable)') {
-      HTML(paste('<H3>Success!!</H3>', 
+  ## Clear REDCap configuration info when reconfigure button is pressed!
+  observeEvent(input$rc_reconfig, {
+    if ( input$rc_reconfig == 0 ) return() 
+    rc_config$rc_configured_message <- NULL
+    # browser()
+  })
+  ## Configure
+  observeEvent(rc_instrument_info$rc_configure_btn_press(), {
+    if ( rc_instrument_info$rc_configure_btn_press() == 0 ) {
+      return()
+    } else {
+      if(rc_instrument_info$rc_reviewer() == '(Not Applicable)') {
+        rc_config$rc_configured_message <- HTML(
+          paste('<H3>Success!!</H3>', 
                  'You have configured the REDCap Instrument.',
                  '<br>',
                  '<br>',
@@ -494,7 +505,8 @@ rc_instrument_configured_logic <- function(input, output, session, rc_instrument
                  '<b>You may now proceed to record review. Have fun and watch out for bugs!</b>',
                  '<br><br>'))
     } else {
-      HTML(paste('<H3>Success!!</H3>', 
+      rc_config$rc_configured_message <- HTML(
+        paste('<H3>Success!!</H3>', 
                  'You have configured the REDCap Instrument.',
                  '<br>',
                  '<br>',
@@ -509,17 +521,24 @@ rc_instrument_configured_logic <- function(input, output, session, rc_instrument
                  '<br><br>',
                  '<b>You may now proceed to record review. Have fun and watch out for bugs!</b>',
                  '<br><br>'))
-      }
+    }
+    }
+    # browser()
   })
+  rc_config <- reactiveValues(
+    rc_configured_message = NULL
+  )
+  
   output$rc_configured_ui <- renderUI({
-    req(rc_configured_message() )
+    req(rc_config$rc_configured_message )
     tagList(
-      rc_configured_message(),
+      rc_config$rc_configured_message,
       actionButton(inputId = ns('rc_reconfig'),label = 'Reconfigure Instrument')
     )
   })
   rc_reconfig <- reactive({input$rc_reconfig})
   return(list(
+    'rc_configured_message' = rc_config,
     'rc_reconfig' = rc_reconfig
   ))
 }
@@ -553,7 +572,7 @@ redcap_instrument_ui <- function(id) {
 #' @importFrom dplyr mutate_all case_when summarise group_by
 #' @importFrom rlang is_empty :=
 #' @importFrom tibble add_row
-redcap_instrument_logic <- function(input, output, session, rc_connection, instruments, instrument_selection, rc_instrument, rc_identifier, rc_reviewer, rc_selected_reviewer, subject_id, reviewr_upload_btn, modal_continue_button, reviewr_connect_btn) {
+redcap_instrument_logic <- function(input, output, session, rc_connection, instruments, instrument_selection, rc_instrument, rc_identifier, rc_reviewer, rc_selected_reviewer, subject_id, reviewr_upload_btn, modal_continue_button, reviewr_connect_btn, rc_config) {
   ns <- session$ns
   
   ## REDCap Configuration Variables
@@ -590,13 +609,18 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
    redcap_review_status <- reactive({
      reviewr_upload_btn()
      modal_continue_button()
-     req(rc_connection(), rc_identifier_field(), instrument_complete_field() )
-     redcapAPI::exportRecords(rcon = rc_connection(), factors = F, labels = F)
+     rc_config$rc_reconfig()
+     req(rc_connection() )
+     if(is.null(rc_config$rc_configured_message$rc_configured_message) ) {
+       return(NULL)
+     } else {
+       redcapAPI::exportRecords(rcon = rc_connection(), factors = F, labels = F)
+     }
     })
 
   ## Current Reviewer Overall Status
   individual_review_status <- reactive({
-    req(redcap_review_status(), rc_reviewer_field(), instrument_complete_field(), rc_selected_reviewer() )
+    req(is.null(redcap_review_status()) == F, rc_reviewer_field(), instrument_complete_field(), rc_selected_reviewer() )
     review_status_field <- glue::glue('REDCap Record Status: {rc_selected_reviewer()}')
     redcap_review_status() %>%
     select(!!as.name(rc_identifier_field() ), !!as.name(rc_reviewer_field() ), instrument_complete_field() ) %>%
@@ -609,7 +633,7 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
 
   ## Other Reviewers Overall Status
   other_review_status <- reactive({
-    req(redcap_review_status(), rc_reviewer_field(), instrument_complete_field(), rc_selected_reviewer() )
+    req(is.null(redcap_review_status()) == F, rc_reviewer_field(), instrument_complete_field(), rc_selected_reviewer() )
     redcap_review_status() %>%
     select(!!as.name(rc_identifier_field() ), !!as.name(rc_reviewer_field() ), instrument_complete_field() ) %>%
     tidyr::drop_na() %>%
@@ -625,7 +649,7 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
 
   ## All
   review_status <- reactive({
-    req(rc_connection(), rc_identifier_field(), instrument_complete_field(), rc_reviewer() )
+    req(rc_connection(), rc_identifier_field(), instrument_complete_field(), rc_reviewer(), is.null(redcap_review_status()) == F  )
     # browser()
     if(rc_reviewer() == '(Not Applicable)'){
       redcap_review_status() %>%

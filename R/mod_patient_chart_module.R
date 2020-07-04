@@ -519,16 +519,19 @@ chart_review_ui <- function(id){
 #' @export
 #' @keywords internal
 
-chart_review_ui_logic <- function(input, output, session, abstraction_vars, table_map, instrument_selection) {
+chart_review_ui_logic <- function(input, output, session, abstraction_vars, table_map, instrument_selection, rc_config, review_status) {
   ns <- session$ns
   
   ## Change layout based on presence or absence of abstraction connection info
   output$chart_review_ui <- renderUI({ 
     req(table_map$table_map())
+    # rc_config$rc_reconfig() ## Refresh this every time RC instrument is reconfigured
+    # review_status() ## Refresh this everytime Review Status is updated
     ## Revisit -- Valid RC Connection info is now responsible for swapping btwn abstraction/not. 
     tryCatch({
       abstraction_vars$rc_con() ## On ReviewR load, rc_con() throws silent error. Proceed to 'error function' (no abstraction). Do not collect $200
-      if(abstraction_vars$rc_con() == '') { ## No Abstraction (after initial RC connect/disconnect cycle)
+      # browser()
+      if(abstraction_vars$rc_con() %>% class != 'redcapApiConnection' | is.null(rc_config$rc_configured_message$rc_configured_message ) ) { ## No Abstraction (after initial RC connect/disconnect cycle)
         box(width = '100%',
             status = 'primary',
             ## Select patient chart ui based on data model
