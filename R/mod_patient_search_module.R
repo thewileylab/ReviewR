@@ -39,10 +39,10 @@ patient_search_ui <- function(id) {
 #' @importFrom dplyr rename slice filter select pull mutate_at
 #' @importFrom tibble rowid_to_column
 #' @importFrom rlang .data
-patient_search_logic <- function(input, output, session, table_map, db_connection, disconnect, prev_sub, next_sub, selected_sub, parent, db_connect, rc_config, rc_identifier, review_status) {
+patient_search_logic <- function(input, output, session, table_map, db_connection, disconnect, prev_sub, next_sub, selected_sub, parent, db_connect, rc_config, rc_reconfig, rc_identifier, review_status) {
   ns <- session$ns
   
-  observeEvent(c(table_map(),rc_config(), status_test(), review_status() ), {
+  observeEvent(c(table_map(),rc_config(), abstraction_status_test(), review_status() ), {
     req(table_map() )
     DT::reloadData(proxy = patient_search_proxy,
                resetPaging = T,
@@ -62,7 +62,9 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
     }
     # browser()
   })
-  status_test <- reactive({
+  abstraction_status_test <- reactive({
+    rc_config()
+    rc_reconfig()
     tryCatch({
       if(is.null(review_status()) ) {
         return('no_abstraction')
@@ -75,9 +77,9 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
     })
   })
   patient_search_output <- reactive({
-    if(status_test() == 'no_abstraction') {
+    if(abstraction_status_test() == 'no_abstraction') {
       patient_search_tbl() 
-    } else if ( status_test() == 'abstraction') {
+    } else if ( abstraction_status_test() == 'abstraction') {
       patient_search_tbl() %>% 
             left_join(review_status(), by = c('ID' = rc_identifier() )) %>%
             mutate_at(vars(contains('REDCap')), replace_na, 'Review Not Started')
@@ -150,7 +152,8 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
     'patient_table' = patient_search_output,
     'dt_selection_info' = select_patient_click,
     'selected_patient' = selected_patient,
-    'selected_patient_info' = selected_patient_info
+    'selected_patient_info' = selected_patient_info,
+    'abstraction_status' = abstraction_status_test
   ))
 }
 

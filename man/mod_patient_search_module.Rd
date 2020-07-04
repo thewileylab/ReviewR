@@ -20,6 +20,7 @@ patient_search_logic(
   parent,
   db_connect,
   rc_config,
+  rc_reconfig,
   rc_identifier,
   review_status
 )

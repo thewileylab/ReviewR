@@ -53,13 +53,14 @@ patient_nav_logic <- function(input, output, session, patient_table, selected_pa
       return(choices)
     } else {
       patient_table() %>% 
-        select(.data$ID) %>% 
-        unite(subject_choices, sep = ' - ') %>% 
+        select(.data$ID) %>%
+        # unite(subject_choices, sep = ' - ') %>% 
         deframe()
     }
     })
-  selected_patient_status <- eventReactive(selected_patient(), {
+  selected_patient_status <- reactive({
     req(patient_table(), subject_choices_test(), selected_patient(),subject_choices())
+    selected_patient()
     if(subject_choices_test() >= 1 ) {
       column_positions <- c(1,ncol(patient_table())) ## Create a vector of column positions for ID (always first) and Review Status (always last)
       name <- patient_table() %>% 

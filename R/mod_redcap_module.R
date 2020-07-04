@@ -649,7 +649,7 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
 
   ## All
   review_status <- reactive({
-    req(rc_connection(), rc_identifier_field(), instrument_complete_field(), rc_reviewer(), is.null(redcap_review_status()) == F  )
+    req(rc_connection(), rc_identifier_field(), instrument_complete_field(), rc_reviewer(), redcap_review_status() )
     # browser()
     if(rc_reviewer() == '(Not Applicable)'){
       redcap_review_status() %>%

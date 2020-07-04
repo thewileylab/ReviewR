@@ -41,7 +41,7 @@ chart_review_ui_logic(
   table_map,
   instrument_selection,
   rc_config,
-  review_status
+  abstraction_status
 )
 }
 \arguments{

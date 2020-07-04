@@ -519,65 +519,16 @@ chart_review_ui <- function(id){
 #' @export
 #' @keywords internal
 
-chart_review_ui_logic <- function(input, output, session, abstraction_vars, table_map, instrument_selection, rc_config, review_status) {
+chart_review_ui_logic <- function(input, output, session, abstraction_vars, table_map, instrument_selection, rc_config, abstraction_status) {
   ns <- session$ns
-  
-  ## Change layout based on presence or absence of abstraction connection info
-  output$chart_review_ui <- renderUI({ 
-    req(table_map$table_map())
-    # rc_config$rc_reconfig() ## Refresh this every time RC instrument is reconfigured
-    # review_status() ## Refresh this everytime Review Status is updated
-    ## Revisit -- Valid RC Connection info is now responsible for swapping btwn abstraction/not. 
-    tryCatch({
-      abstraction_vars$rc_con() ## On ReviewR load, rc_con() throws silent error. Proceed to 'error function' (no abstraction). Do not collect $200
-      # browser()
-      if(abstraction_vars$rc_con() %>% class != 'redcapApiConnection' | is.null(rc_config$rc_configured_message$rc_configured_message ) ) { ## No Abstraction (after initial RC connect/disconnect cycle)
-        box(width = '100%',
-            status = 'primary',
-            ## Select patient chart ui based on data model
-            if(table_map$table_map()$data_model == 'omop') {
-              omop_chart_review_ui('chart_review')
-            } else if (table_map$table_map()$data_model == 'mimic3') {
-              mimic_chart_review_ui('chart_review')
-            } else {return(NULL)}
-        ) 
-      } else { ## Abstraction ----
-        fluidRow(
-          column(
-            width = 9,
-            box(width = '100%',
-                status = 'primary',
-                ## Select patient chart ui based on data model
-                if(table_map$table_map()$data_model == 'omop') {
-                  omop_chart_review_ui('chart_review')
-                } else if (table_map$table_map()$data_model == 'mimic3') {
-                  mimic_chart_review_ui('chart_review')
-                } else {return(NULL)}
-            )
-          ),
-          column(
-            width = 3,
-            box(
-              title = instrument_selection$rc_instrument_selection(),
-              width = '100%',
-              status = 'danger',
-              redcap_instrument_ui('chart_review_abstraction'),
-              ## CSS to scroll the abstraction instrument, if necessary
-              tags$head(
-                tags$style("#chart_review_abstraction-redcap_form{color:black; font-size:12px; overflow-y:scroll; max-height: 598px;}")
-              )
-            ),
-            box(
-              title = 'Save Form',
-              width = '100&',
-              status = 'danger',
-              instrument_complete_ui('chart_review_upload')
-            )
-          )
-        )
-      }
-    },
-    error=function(error_cond) { ## No Abstraction
+  # observeEvent(rc_config$rc_reconfig(),{
+  #   browser()
+  # })
+  chart_review_output <- reactive({
+    req(table_map$table_map(), abstraction_status())
+    abstraction_status()
+    # browser()
+    if(abstraction_status() == 'no_abstraction' ){
       box(width = '100%',
           status = 'primary',
           ## Select patient chart ui based on data model
@@ -587,6 +538,42 @@ chart_review_ui_logic <- function(input, output, session, abstraction_vars, tabl
             mimic_chart_review_ui('chart_review')
           } else {return(NULL)}
       )
-    })
+    } else if (abstraction_status() == 'abstraction') {
+      fluidRow(
+        column(
+          width = 9,
+          box(width = '100%',
+              status = 'primary',
+              ## Select patient chart ui based on data model
+              if(table_map$table_map()$data_model == 'omop') {
+                omop_chart_review_ui('chart_review')
+              } else if (table_map$table_map()$data_model == 'mimic3') {
+                mimic_chart_review_ui('chart_review')
+              } else {return(NULL)}
+          )
+        ),
+        column(
+          width = 3,
+          box(
+            title = instrument_selection$rc_instrument_selection(),
+            width = '100%',
+            status = 'danger',
+            redcap_instrument_ui('chart_review_abstraction'),
+            ## CSS to scroll the abstraction instrument, if necessary
+            tags$head(
+              tags$style("#chart_review_abstraction-redcap_form{color:black; font-size:12px; overflow-y:scroll; max-height: 598px;}")
+            )
+          ),
+          box(
+            title = 'Save Form',
+            width = '100&',
+            status = 'danger',
+            instrument_complete_ui('chart_review_upload')
+          )
+        )
+      )
+    }else { return('Please select a patient from the patient search tab.')}
   })
+  ## Change layout based on presence or absence of abstraction connection info
+  output$chart_review_ui <- renderUI({ chart_review_output() })
 }
