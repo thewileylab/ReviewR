@@ -196,10 +196,10 @@ subject_info_logic <- function(input, output, session, previousData, all_instrum
   
   # Determine which icon is needed to depict the review status for the current subject
   subject_status <- reactive({
-    if (is.na(instrument_complete_val() ) ) { return(NULL)
+    if (instrument_complete_val() == 'Complete') { 'www/status_complete.png'
       } else if (instrument_complete_val() == 'Incomplete') { 'www/status_incomplete.png'
       } else if (instrument_complete_val() == 'Unverified') { 'www/status_unverified.png'
-          } else { 'www/status_complete.png' }
+          } else { return(NULL) }
     })
   
   status_indicator <- reactive({
