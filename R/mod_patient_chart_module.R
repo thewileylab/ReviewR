@@ -519,26 +519,16 @@ chart_review_ui <- function(id){
 #' @export
 #' @keywords internal
 
-chart_review_ui_logic <- function(input, output, session, abstraction_vars, table_map, instrument_selection, rc_config, abstraction_status) {
+chart_review_ui_logic <- function(input, output, session, table_map, instrument_selection, subjectInfo) {
   ns <- session$ns
-  # observeEvent(rc_config$rc_reconfig(),{
-  #   browser()
-  # })
   chart_review_output <- reactive({
-    req(table_map$table_map(), abstraction_status())
-    abstraction_status()
     # browser()
-    if(abstraction_status() == 'no_abstraction' ){
-      box(width = '100%',
-          status = 'primary',
-          ## Select patient chart ui based on data model
-          if(table_map$table_map()$data_model == 'omop') {
-            omop_chart_review_ui('chart_review')
-          } else if (table_map$table_map()$data_model == 'mimic3') {
-            mimic_chart_review_ui('chart_review')
-          } else {return(NULL)}
-      )
-    } else if (abstraction_status() == 'abstraction') {
+    req(subjectInfo() )
+    # subjectInfo()
+    status_cols <- subjectInfo() %>% 
+      select(contains('Record Status')) %>% 
+      ncol()
+    if(status_cols > 0 ) {
       fluidRow(
         column(
           width = 9,
@@ -572,8 +562,19 @@ chart_review_ui_logic <- function(input, output, session, abstraction_vars, tabl
           )
         )
       )
-    }else { return('Please select a patient from the patient search tab.')}
+    } else { 
+      box(width = '100%',
+          status = 'primary',
+          ## Select patient chart ui based on data model
+          if(table_map$table_map()$data_model == 'omop') {
+            omop_chart_review_ui('chart_review')
+          } else if (table_map$table_map()$data_model == 'mimic3') {
+            mimic_chart_review_ui('chart_review')
+          } else {return(NULL)}
+      ) 
+      }
   })
-  ## Change layout based on presence or absence of abstraction connection info
+  
   output$chart_review_ui <- renderUI({ chart_review_output() })
+  outputOptions(output, 'chart_review_ui', suspendWhenHidden = F)
 }

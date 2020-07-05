@@ -160,20 +160,20 @@ subject_info_logic <- function(input, output, session, previousData, all_instrum
   #   browser()
   # })
   
-  # Determine the variable name of the currently selected instrument
-  selected_instrument_name <- reactive({
-    req(all_instruments(), instrument_selection() )
-    all_instruments() %>%
-      filter(.data$instrument_label == instrument_selection() ) %>%
-      extract2(1,1)
-  })
-  
-  # Create a variable containing the instrument complete field name, following the REDCap convention of instrument_name_complete
-  instrument_complete_field <- reactive({
-    req(selected_instrument_name() )
-    paste0(selected_instrument_name(),'_complete')
-  })
-  
+  # # Determine the variable name of the currently selected instrument
+  # selected_instrument_name <- reactive({
+  #   req(all_instruments(), instrument_selection() )
+  #   all_instruments() %>%
+  #     filter(.data$instrument_label == instrument_selection() ) %>%
+  #     extract2(1,1)
+  # })
+  # 
+  # # Create a variable containing the instrument complete field name, following the REDCap convention of instrument_name_complete
+  # instrument_complete_field <- reactive({
+  #   req(selected_instrument_name() )
+  #   paste0(selected_instrument_name(),'_complete')
+  # })
+  # 
   # Create a reactive to hold the previous Instrument Complete value.
   instrument_complete_val <-reactive({
     # browser()
