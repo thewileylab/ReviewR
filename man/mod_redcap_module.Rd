@@ -69,7 +69,8 @@ rc_instrument_configured_logic(
   output,
   session,
   rc_instrument_info,
-  selected_instrument
+  selected_instrument,
+  rc_disconnect
 )
 
 redcap_instrument_ui(id)

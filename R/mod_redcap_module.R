@@ -475,15 +475,25 @@ rc_instrument_configured_ui <- function(id) {
 #' 
 #' @keywords internal
 #' @export
-rc_instrument_configured_logic <- function(input, output, session, rc_instrument_info, selected_instrument) {
+rc_instrument_configured_logic <- function(input, output, session, rc_instrument_info, selected_instrument, rc_disconnect) {
   ns <- session$ns
   
+  rc_config <- reactiveValues(
+    rc_configured_message = NULL
+  )
   ## Clear REDCap configuration info when reconfigure button is pressed!
-  observeEvent(input$rc_reconfig, {
-    if ( input$rc_reconfig == 0 ) return() 
-    rc_config$rc_configured_message <- NULL
-    # browser()
-  })
+  observeEvent(
+    input$rc_reconfig, {
+    if ( input$rc_reconfig == 0 ) return()
+      rc_config$rc_configured_message <- NULL
+      # browser()
+    })
+  observeEvent(
+    rc_disconnect(), {
+      if ( rc_disconnect() == 0 ) return()
+      rc_config$rc_configured_message <- NULL
+      # browser()
+    })
   ## Configure
   observeEvent(rc_instrument_info$rc_configure_btn_press(), {
     if ( rc_instrument_info$rc_configure_btn_press() == 0 ) {
@@ -525,9 +535,6 @@ rc_instrument_configured_logic <- function(input, output, session, rc_instrument
     }
     # browser()
   })
-  rc_config <- reactiveValues(
-    rc_configured_message = NULL
-  )
   
   output$rc_configured_ui <- renderUI({
     req(rc_config$rc_configured_message )

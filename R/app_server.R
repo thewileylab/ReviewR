@@ -17,12 +17,12 @@ app_server <- function(input, output, session) {
   rc_project_vars <- callModule(redcap_instrument_config_logic, 'abstraction_ns', abstraction_vars$rc_con, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection)
   rc_connected_vars <- callModule(redcap_connected_logic, 'abstraction_ns', abstraction_vars$rc_press, rc_project_vars$rc_project_info)
   rc_config_vars <- callModule(redcap_instrument_config_reviewer_logic, 'abstraction_ns', rc_project_vars$rc_instrument, rc_project_vars$rc_identifier, abstraction_vars$rc_con)
-  rc_reconfig <- callModule(rc_instrument_configured_logic, 'abstraction_ns', rc_config_vars, instrument_selection$rc_instrument_selection)
+  rc_reconfig <- callModule(rc_instrument_configured_logic, 'abstraction_ns', rc_config_vars, instrument_selection$rc_instrument_selection, rc_connected_vars$rc_disconnect)
   
   
   ## Call Patient Search Tab Modules ----
   ### Patient Search Module
-  subject_info <- callModule(patient_search_logic, 'patient_search_ns', table_map$table_map, db_connection_vars$db_connection, table_map$db_disconnect, subject_selection_vars$previous_sub, subject_selection_vars$next_sub, subject_selection_vars$subject_id, parent=session, db_connection_vars$connect_press, rc_config_vars$rc_configure_btn_press, rc_reconfig$rc_reconfig, instrumentData$rc_identifier_field, instrumentData$review_status)
+  subject_info <- callModule(patient_search_logic, 'patient_search_ns', table_map$table_map, db_connection_vars$db_connection, table_map$db_disconnect, subject_selection_vars$previous_sub, subject_selection_vars$next_sub, subject_selection_vars$subject_id, parent=session, db_connection_vars$connect_press, rc_config_vars$rc_configure_btn_press, rc_reconfig$rc_reconfig, rc_connected_vars$rc_disconnect, instrumentData$rc_identifier_field, instrumentData$review_status)
 
   ## Call ReviewR Chart Review Tab Modules ----
   ### Load Chart Review Modules
@@ -104,9 +104,11 @@ app_server <- function(input, output, session) {
   
   observeEvent(rc_connected_vars$rc_disconnect(), {
     shinyjs::show('chart_abstraction_setup_div',anim = TRUE,animType = 'slide')
+    shinyjs::show('redcap_instrument_config_choices_div')
     shinyjs::hide('redcap_instrument_config_div',anim = TRUE,animType = 'fade')
     shinyjs::hide('rc_connected_div',anim = TRUE, animType = 'slide')
     shinyjs::reset('chart_abstraction_setup_div')
+    
   })
   
   ### Hide/show the REDCap Configuration ui

@@ -21,6 +21,7 @@ patient_search_logic(
   db_connect,
   rc_config,
   rc_reconfig,
+  rc_disconnect,
   rc_identifier,
   review_status
 )

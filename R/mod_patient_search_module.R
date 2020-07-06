@@ -39,10 +39,10 @@ patient_search_ui <- function(id) {
 #' @importFrom dplyr rename slice filter select pull mutate_at
 #' @importFrom tibble rowid_to_column
 #' @importFrom rlang .data
-patient_search_logic <- function(input, output, session, table_map, db_connection, disconnect, prev_sub, next_sub, selected_sub, parent, db_connect, rc_config, rc_reconfig, rc_identifier, review_status) {
+patient_search_logic <- function(input, output, session, table_map, db_connection, disconnect, prev_sub, next_sub, selected_sub, parent, db_connect, rc_config, rc_reconfig, rc_disconnect, rc_identifier, review_status) {
   ns <- session$ns
   
-  observeEvent(c(table_map(), rc_config(), rc_reconfig(), review_status() ), {
+  observeEvent(c(table_map(), rc_config(), rc_reconfig(), rc_disconnect(), review_status() ), {
     req(table_map() )
     DT::reloadData(proxy = patient_search_proxy,
                resetPaging = T,
@@ -62,7 +62,7 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
     }
     # browser()
   })
-  abstraction_status_test <- eventReactive(c(rc_config(),rc_reconfig(), review_status()), {
+  abstraction_status_test <- eventReactive(c(rc_config(),rc_reconfig(), review_status(), rc_disconnect()), {
     # rc_config()
     # rc_reconfig()
     # browser()
