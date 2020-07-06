@@ -606,17 +606,18 @@ redcap_instrument_logic <- function(input, output, session, rc_connection, instr
   })
   # Determine if there is any previous data to show in the patient search and jump lists. If a reviewer field is specified, make sure to filter to data belonging to that reviewer.
   
-   redcap_review_status <- reactive({
-     reviewr_upload_btn()
-     modal_continue_button()
-     rc_config$rc_reconfig()
-     req(rc_connection() )
-     if(is.null(rc_config$rc_configured_message$rc_configured_message) ) {
-       return(NULL)
-     } else {
-       redcapAPI::exportRecords(rcon = rc_connection(), factors = F, labels = F)
-     }
-    })
+   redcap_review_status <- eventReactive(
+     c(reviewr_upload_btn(),
+       modal_continue_button(),
+       rc_config$rc_reconfig() ), {
+         # browser()
+         req(rc_connection() )
+         if(is.null(rc_config$rc_configured_message$rc_configured_message) ) {
+           return(NULL)
+           } else {
+             redcapAPI::exportRecords(rcon = rc_connection(), factors = F, labels = F)
+             }
+         })
 
   ## Current Reviewer Overall Status
   individual_review_status <- reactive({

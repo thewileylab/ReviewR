@@ -42,11 +42,11 @@ patient_search_ui <- function(id) {
 patient_search_logic <- function(input, output, session, table_map, db_connection, disconnect, prev_sub, next_sub, selected_sub, parent, db_connect, rc_config, rc_reconfig, rc_identifier, review_status) {
   ns <- session$ns
   
-  observeEvent(c(table_map(), rc_config(), abstraction_status_test(), review_status() ), {
+  observeEvent(c(table_map(), rc_config(), rc_reconfig(), review_status() ), {
     req(table_map() )
     DT::reloadData(proxy = patient_search_proxy,
                resetPaging = T,
-               clearSelection = 'all')
+               clearSelection = 'none')
   })
   
   # Extract patients based on presence of connection info and data model
@@ -62,9 +62,10 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
     }
     # browser()
   })
-  abstraction_status_test <- reactive({
-    rc_config()
-    rc_reconfig()
+  abstraction_status_test <- eventReactive(c(rc_config(),rc_reconfig(), review_status()), {
+    # rc_config()
+    # rc_reconfig()
+    # browser()
     tryCatch({
       if(is.null(review_status()) ) {
         return('no_abstraction')
@@ -76,15 +77,29 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
       return('no_abstraction')
     })
   })
+  # patient_search_output <- reactive({
+  #   rc_config()
+  #   rc_reconfig()
+  #   # req(abstraction_status_test() )
+  #   if(abstraction_status_test() == 'no_abstraction') {
+  #     patient_search_tbl() 
+  #   } else if ( abstraction_status_test() == 'abstraction') {
+  #     patient_search_tbl() %>% 
+  #           left_join(review_status(), by = c('ID' = rc_identifier() )) %>%
+  #           mutate_at(vars(contains('REDCap')), replace_na, 'Review Not Started')
+  #   } else {return(NULL) }
+  # })
   patient_search_output <- reactive({
-    if(abstraction_status_test() == 'no_abstraction') {
-      patient_search_tbl() 
-    } else if ( abstraction_status_test() == 'abstraction') {
+    req(patient_search_tbl())
+    # browser()
+    tryCatch({
       patient_search_tbl() %>% 
-            left_join(review_status(), by = c('ID' = rc_identifier() )) %>%
-            mutate_at(vars(contains('REDCap')), replace_na, 'Review Not Started')
-    } else {return(NULL) }
-    
+        left_join(review_status(), by = c('ID' = rc_identifier() )) %>%
+        mutate_at(vars(contains('REDCap')), replace_na, 'Review Not Started')
+    },
+    error=function(error_condition) {
+      patient_search_tbl()
+    })
   })
   ## Render Patient Search Data Table
   output$patient_search_dt <-DT::renderDataTable({

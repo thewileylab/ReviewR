@@ -39,7 +39,7 @@ chart_review_ui_logic(
   session,
   table_map,
   instrument_selection,
-  subjectInfo
+  abstraction_status
 )
 }
 \arguments{
