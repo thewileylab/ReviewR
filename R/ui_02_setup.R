@@ -32,15 +32,16 @@ setup_tab <- function() {
                ),
         column(width = 6,
                #Box Setup
-               box(title = 'Configure Patient Chart Abstraction',
-                   width = '100%',
-                   status = 'danger',
-                   solidHeader = F,
-                   #Box Contents
-                   uiOutput('rc_setup'),
-                   uiOutput('rc_connected')
-                   ),
-               uiOutput('rc_config_ui')
+               # box(title = 'Configure Patient Chart Abstraction',
+               #     width = '100%',
+               #     status = 'danger',
+               #     solidHeader = F,
+               #     #Box Contents
+               #     uiOutput('rc_setup'),
+               #     uiOutput('rc_connected')
+               #     ),
+               # uiOutput('rc_config_ui')
+               shinyREDCap::redcap_setup_ui('redcap_setup_namespace')
                )
         )
       )

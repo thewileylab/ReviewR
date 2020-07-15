@@ -33,14 +33,7 @@ mimic_chart_review_logic(
 
 chart_review_ui(id)
 
-chart_review_ui_logic(
-  input,
-  output,
-  session,
-  abstraction_vars,
-  table_map,
-  instrument_selection
-)
+chart_review_ui_logic(input, output, session, abstraction_vars, table_map)
 }
 \arguments{
 \item{id}{The namespace id for the UI output}

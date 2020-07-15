@@ -100,7 +100,7 @@ subject_info <- function(id) {
 #' @importFrom magrittr extract2
 #' @importFrom dplyr mutate_all
 
-subject_info_logic <- function(input, output, session, previousData, all_instruments, instrument_selection, subject, subjectInfo) {
+subject_info_logic <- function(input, output, session, redcap_setup, redcap_instrument, subject, subjectInfo) {
   ns <- session$ns
   
   # observeEvent(subject(), {
@@ -108,27 +108,27 @@ subject_info_logic <- function(input, output, session, previousData, all_instrum
   # })
   
   # Determine the variable name of the currently selected instrument
-  selected_instrument_name <- reactive({
-    req(all_instruments(), instrument_selection() )
-    all_instruments() %>%
-      filter(.data$instrument_label == instrument_selection() ) %>%
-      extract2(1,1)
-  })
+  # selected_instrument_name <- reactive({
+  #   req(all_instruments(), instrument_selection() )
+  #   all_instruments() %>%
+  #     filter(.data$instrument_label == instrument_selection() ) %>%
+  #     extract2(1,1)
+  # })
   
-  # Create a variable containing the instrument complete field name, following the REDCap convention of instrument_name_complete
-  instrument_complete_field <- reactive({
-    req(selected_instrument_name() )
-    paste0(selected_instrument_name(),'_complete')
-  })
-  
-  # Create a reactive to hold the previous Instrument Complete value.
-  instrument_complete_val <-reactive({
-    req(previousData(), instrument_complete_field() )
-    previousData() %>%
-      select(instrument_complete_field() ) %>%
-      extract2(1) %>%
-      as.numeric()
-  })
+  # # Create a variable containing the instrument complete field name, following the REDCap convention of instrument_name_complete
+  # instrument_complete_field <- reactive({
+  #   req(selected_instrument_name() )
+  #   paste0(selected_instrument_name(),'_complete')
+  # })
+  # 
+  # # Create a reactive to hold the previous Instrument Complete value.
+  # instrument_complete_val <-reactive({
+  #   req(previousData(), instrument_complete_field() )
+  #   previousData() %>%
+  #     select(instrument_complete_field() ) %>%
+  #     extract2(1) %>%
+  #     as.numeric()
+  # })
 
   # Create text, with information about the subject
   subject_info_text <- reactive({ 
@@ -138,10 +138,11 @@ subject_info_logic <- function(input, output, session, previousData, all_instrum
   
   # Determine which icon is needed to depict the review status for the current subject
   subject_status <- reactive({
-    if (instrument_complete_val() == 0 || identical(instrument_complete_val(), numeric(0) )  == TRUE ) { 'www/status_incomplete.png'
-    } else if (instrument_complete_val() == 1) { 'www/status_unverified.png'
-        } else { 'www/status_complete.png' }
-    })
+    if(redcap_instrument$previous_selected_instrument_complete_val == 0) { 'www/status_incomplete.png'
+      } else if(redcap_instrument$previous_selected_instrument_complete_val == 1) { 'www/status_unverified.png'
+        } else if(redcap_instrument$previous_selected_instrument_complete_val == 2) { 'www/status_complete.png' 
+          } else {return(NULL)}
+      })
   
   status_indicator <- reactive({
     ## If previous data doesn't exist, the reactive will throw a silent error. If this happens, set status_indicator() to null, to remove status indicator from output. 

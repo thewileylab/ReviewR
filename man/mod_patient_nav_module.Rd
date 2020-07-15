@@ -24,9 +24,8 @@ subject_info_logic(
   input,
   output,
   session,
-  previousData,
-  all_instruments,
-  instrument_selection,
+  redcap_setup,
+  redcap_instrument,
   subject,
   subjectInfo
 )
@@ -46,15 +45,15 @@ subject_info_logic(
 
 \item{parent}{the parent environment of this module}
 
+\item{subject}{A reactive expression containing the currently selected patient subject ID}
+
+\item{subjectInfo}{Demographic information about the currently selected patient}
+
 \item{previousData}{Previous Abstraction "Instrument Complete" Value}
 
 \item{all_instruments}{All data abstraction instruments in the project}
 
 \item{instrument_selection}{The selected data abstraction instrument}
-
-\item{subject}{A reactive expression containing the currently selected patient subject ID}
-
-\item{subjectInfo}{Demographic information about the currently selected patient}
 }
 \description{
 This module will assist with selecting a patient. It keeps the patient search tab data table up to date, server side renders the select input on the patient chart tab, and displays in context information about the selected patient.

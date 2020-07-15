@@ -8,17 +8,8 @@ app_server <- function(input, output, session) {
   ### Data Model Detection
   table_map <- callModule(data_model_detection_logic, 'model_ns', db_connection_vars$db_connection, db_connection_vars$connect_press, db_type$db_selection)
   
-  ## Chart Abstraction Setup
-  abstraction <- callModule(chart_abstraction_select_logic, 'abstraction_ns')
-  abstraction_vars <- callModule(chart_abstraction_setup_logic, 'abstraction_ns', abstraction$abstraction_selection)
-  
-  ## REDCap Configuration
-  instrument_selection <- callModule(redcap_instrument_select_logic, 'abstraction_ns', abstraction_vars$rc_press, abstraction_vars$rc_con)
-  rc_project_vars <- callModule(redcap_instrument_config_logic, 'abstraction_ns', abstraction_vars$rc_con, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection)
-  rc_connected_vars <- callModule(redcap_connected_logic, 'abstraction_ns', abstraction_vars$rc_press, rc_project_vars$rc_project_info)
-  rc_config_vars <- callModule(redcap_instrument_config_reviewer_logic, 'abstraction_ns', rc_project_vars$rc_instrument, rc_project_vars$rc_identifier, abstraction_vars$rc_con)
-  rc_reconfig <- callModule(rc_instrument_configured_logic, 'abstraction_ns', rc_config_vars, instrument_selection$rc_instrument_selection)
-  
+  ## Chart Abstraction
+  redcap_setup_vars <- shinyREDCap::redcap_setup_server('redcap_setup_namespace')
   
   ## Call Patient Search Tab Modules ----
   ### Patient Search Module
@@ -27,15 +18,13 @@ app_server <- function(input, output, session) {
   ## Call ReviewR Chart Review Tab Modules ----
   ### Load Chart Review Modules
   subject_selection_vars <- callModule(patient_nav_logic, 'chart_review', subject_info$patient_table, subject_info$selected_patient, parent = session)
-  callModule(subject_info_logic, 'chart_review', instrumentData$previous_data, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection, subject_info$selected_patient, subject_info$selected_patient_info)
+  callModule(subject_info_logic, 'chart_review', redcap_setup_vars, redcap_instrument_vars, subject_info$selected_patient, subject_info$selected_patient_info)
   callModule(omop_chart_review_logic, 'chart_review', table_map$table_map, db_connection_vars$db_connection, subject_info$selected_patient)
   callModule(mimic_chart_review_logic, 'chart_review', table_map$table_map, db_connection_vars$db_connection, subject_info$selected_patient)
-  callModule(chart_review_ui_logic, 'chart_review', abstraction_vars, table_map, instrument_selection)
+  callModule(chart_review_ui_logic, 'chart_review', redcap_setup_vars, table_map)
   
   ### Call Chart Abstraction Modules
-  instrumentData <- callModule(redcap_instrument_logic, 'chart_review_abstraction', abstraction_vars$rc_con, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection, rc_project_vars$rc_instrument, rc_config_vars$rc_identifier , rc_config_vars$rc_reviewer, rc_config_vars$rc_selected_reviewer, subject_info$selected_patient, upload$abstraction_save_btn_press, abstraction_vars$rc_press)
-  upload <- callModule(instrument_complete_logic, 'chart_review_upload', rc_project_vars$rc_instrument, instrumentData$instrument_data, instrumentData$previous_data, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection, subject_info$selected_patient)
-  callModule(upload_redcap_logic, 'chart_review_abstraction', abstraction_vars$rc_con, rc_project_vars$rc_record_id, rc_project_vars$rc_instrument, instrumentData$instrument_data, instrumentData$previous_data, instrumentData$current_subject, upload$abstraction_save_btn_press, upload$abstraction_complete, upload$abstraction_complete_val, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection)
+  redcap_instrument_vars <- shinyREDCap::redcap_instrument_server('redcap_instrument_namespace', redcap_setup_vars, subject_info$selected_patient)
   
   ## Define Main UI observers ---- 
   ## Close Application when "Leave ReviewR" button is clicked
@@ -93,33 +82,7 @@ app_server <- function(input, output, session) {
     shinyjs::reset('db_setup_div')
   })
   
-  ### Hide/show the REDCap Setup ui
-  observeEvent(abstraction_vars$rc_press(), ignoreInit = TRUE, {
-    if(nrow(rc_project_vars$rc_project_info()) > 0 ) {
-      shinyjs::hide('chart_abstraction_setup_div',anim = TRUE,animType = 'fade')
-      shinyjs::show('redcap_instrument_config_div',anim = TRUE,animType = 'slide')
-      shinyjs::show('rc_connected_div',anim = TRUE,animType = 'slide')
-    }
-  })
   
-  observeEvent(rc_connected_vars$rc_disconnect(), {
-    shinyjs::show('chart_abstraction_setup_div',anim = TRUE,animType = 'slide')
-    shinyjs::hide('redcap_instrument_config_div',anim = TRUE,animType = 'fade')
-    shinyjs::hide('rc_connected_div',anim = TRUE, animType = 'slide')
-    shinyjs::reset('chart_abstraction_setup_div')
-  })
-  
-  ### Hide/show the REDCap Configuration ui
-  observeEvent(rc_config_vars$rc_configure_btn_press(), {
-    shinyjs::show('rc_configured_div',anim = TRUE,animType = 'slide')
-    shinyjs::hide('redcap_instrument_config_choices_div',anim = TRUE,animType = 'fade')
-  })
-  
-  observeEvent(rc_reconfig$rc_reconfig(), {
-    shinyjs::hide('rc_configured_div',anim = TRUE,animType = 'fade')
-    shinyjs::show('redcap_instrument_config_choices_div',anim = TRUE,animType = 'slide')
-    shinyjs::reset('redcap_instrument_config_choices_div')
-  })
   
   ## Define Setup Tab UI Outputs, to be controlled by above observers ----
   ### db_setup Outputs
@@ -133,51 +96,7 @@ app_server <- function(input, output, session) {
         data_model_detection_ui('model_ns')
     )
   })
-  
-  ### redcap_setup Outputs
-  output$rc_setup <- renderUI({
-    div(id = 'chart_abstraction_setup_div',
-        chart_abstraction_setup_ui('abstraction_ns')
-    )
-  })
-  output$rc_connected <- renderUI({
-    shinyjs::hidden(
-      div(id = 'rc_connected_div',
-          redcap_connected_ui('abstraction_ns')
-      )
-    )
-  })
-  
-  ### redcap_config Outputs
-  output$rc_config <- renderUI({
-    div(id = 'redcap_instrument_config_choices_div',
-        redcap_instrument_config_ui('abstraction_ns'))
-  })
-  output$rc_configured_ui <- renderUI({
-    shinyjs::hidden(
-      div(id = 'rc_configured_div',
-          rc_instrument_configured_ui('abstraction_ns')
-      )
-    )
-  })
-  output$rc_config_ui<- renderUI({
-    shinyjs::hidden(
-      div(id = 'redcap_instrument_config_div',
-          box(
-            #Box Setup
-            title = 'Configure REDCap Instrument',
-            width = '100%',
-            status = 'danger',
-            solidHeader = F,
-            #Box Contents
-            uiOutput('rc_config'),
-            uiOutput('rc_configured_ui')
-          )
-      )
-    )
-  })
-  
-  
+
   # Patient Search Tab UI
   ## Define Patient Search Tab UI observers ----
   

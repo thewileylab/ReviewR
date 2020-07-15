@@ -114,7 +114,8 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
     req(patient_search_tbl(), input$patient_search_dt_rows_selected )
     patient_search_tbl() %>% 
       slice(input$patient_search_dt_rows_selected) %>% 
-      pull(.data$ID)
+      pull(.data$ID) %>% 
+      as.character() ## Pass this value as a character
     })
   
   selected_patient_info <- reactive({ 
