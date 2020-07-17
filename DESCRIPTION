@@ -34,7 +34,9 @@ Imports:
     snakecase,
     stringr,
     tibble,
-    tidyr
+    tidyr,
+    shinyREDCap
+Remotes: thewileylab/shinyREDCap
 Suggests: 
     htmltools,
     knitr,
