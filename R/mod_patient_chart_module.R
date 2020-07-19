@@ -552,22 +552,6 @@ chart_review_ui_logic <- function(input, output, session, abstraction_vars, tabl
         ),
         column(
           width = 3,
-          # box(
-          #   title = instrument_selection$rc_instrument_selection(),
-          #   width = '100%',
-          #   status = 'danger',
-          #   redcap_instrument_ui('chart_review_abstraction'),
-          #   ## CSS to scroll the abstraction instrument, if necessary
-          #   tags$head(
-          #     tags$style("#abstraction{color:black; font-size:12px; font-style:italic; overflow-y:scroll; max-height: 600px; background: ghostwhite;}")
-          #   )
-          # ),
-          # box(
-          #   title = 'Save Form',
-          #   width = '100&',
-          #   status = 'danger',
-          #   instrument_complete_ui('chart_review_upload')
-          # )
           shinyREDCap::redcap_instrument_ui('redcap_instrument_namespace')
         )
       )
