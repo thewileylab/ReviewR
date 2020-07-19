@@ -14,6 +14,8 @@ patient_search_logic(
   table_map,
   db_connection,
   disconnect,
+  redcap_setup_vars,
+  redcap_instrument_vars,
   prev_sub,
   next_sub,
   selected_sub,

@@ -13,7 +13,7 @@ app_server <- function(input, output, session) {
   
   ## Call Patient Search Tab Modules ----
   ### Patient Search Module
-  subject_info <- callModule(patient_search_logic, 'patient_search_ns', table_map$table_map, db_connection_vars$db_connection, table_map$db_disconnect, subject_selection_vars$previous_sub, subject_selection_vars$next_sub, subject_selection_vars$subject_id, parent=session)
+  subject_info <- callModule(patient_search_logic, 'patient_search_ns', table_map$table_map, db_connection_vars$db_connection, table_map$db_disconnect, redcap_setup_vars, redcap_instrument_vars, subject_selection_vars$previous_sub, subject_selection_vars$next_sub, subject_selection_vars$subject_id, parent=session)
 
   ## Call ReviewR Chart Review Tab Modules ----
   ### Load Chart Review Modules
@@ -29,7 +29,8 @@ app_server <- function(input, output, session) {
   ## Define Main UI observers ---- 
   ## Close Application when "Leave ReviewR" button is clicked
   observeEvent(input$quit, {
-    stopApp()
+    browser()
+    # stopApp()
   })
   ### BigQuery Redirect Observer. When leaving the application after authenticating with BigQuery, take the user back to the Setup Tab to complete setup.
   observeEvent(db_connection_vars$bq_token(), {
@@ -66,8 +67,7 @@ app_server <- function(input, output, session) {
       tabItem(tabName = 'chart_review', uiOutput('chart_review_tab'))
     )
   })
-  
-  
+
   # Setup UI
   ## Define Setup Tab UI observers which animate the ReviewR Setup Elements based on user interaction ----
   ### Hide/show the db_setup ui
@@ -117,4 +117,9 @@ app_server <- function(input, output, session) {
     req(table_map$data_model_text() )
     table_map$data_model_text() 
   })
+  
+  ###redcap
+  # output$rc_instrument <- renderUI({ shinyREDCap::redcap_instrument_ui('redcap_instrument_namespace') })
+  # outputOptions(output, 'rc_instrument', suspendWhenHidden = F)
 }
+  

@@ -35,18 +35,19 @@ patient_search_ui <- function(id) {
 #' @export
 #' @import shiny 
 #' @importFrom DT reloadData formatStyle selectRows dataTableProxy
-#' @importFrom dplyr rename slice filter select pull
+#' @importFrom dplyr rename slice filter select pull mutate_at
 #' @importFrom tibble rowid_to_column
 #' @importFrom rlang .data
-patient_search_logic <- function(input, output, session, table_map, db_connection, disconnect, prev_sub, next_sub, selected_sub, parent) {
+patient_search_logic <- function(input, output, session, table_map, db_connection, disconnect, redcap_setup_vars, redcap_instrument_vars, prev_sub, next_sub, selected_sub, parent) {
   ns <- session$ns
   
   #Replace Patient Search Table when table map changes
-  observeEvent(table_map(), {
+  observeEvent(c(table_map(), redcap_setup_vars$is_configured, redcap_instrument_vars$upload_status), {
     req(table_map() )
+    # browser()
     DT::reloadData(proxy = patient_search_proxy,
                resetPaging = T,
-               clearSelection = T)
+               clearSelection = 'none')
   })
   
   # Extract patients based on presence of connection info and data model
@@ -62,11 +63,22 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
     }
   })
   
+  patient_search_output <- reactive({
+    req(patient_search_tbl(), redcap_setup_vars$is_configured)
+    if(redcap_setup_vars$is_configured == 'yes') {
+      patient_search_tbl() %>% 
+        left_join(redcap_instrument_vars$all_review_status) %>% 
+        dplyr::mutate_at(vars(contains('REDCap')), replace_na, '<em>Review Not Started</em>')
+    } else {
+      patient_search_tbl()
+    }
+  })
+  
   ## Render Patient Search Data Table
   output$patient_search_dt <- DT::renderDataTable({
-    req(patient_search_tbl())
+    req(patient_search_output() )
     # The next time you think about implementing FixedColumns, check the status of this issue first: https://github.com/rstudio/DT/issues/275
-    patient_search_tbl() %>% 
+    patient_search_output() %>% 
       rename('Subject ID' = .data$ID) %>% 
       reviewr_datatable() %>% 
       formatStyle('Subject ID', 
@@ -82,16 +94,16 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
   
   ## On Previous Subject Button Press, update selected row in DT
   observeEvent(prev_sub(), {
-    req(patient_search_tbl(), input$patient_search_dt_rows_selected )
+    req(patient_search_output(), input$patient_search_dt_rows_selected )
     if(input$patient_search_dt_rows_selected == 1){ ## Special case when at the beginning of the list, cycle to last
-      DT::selectRows(patient_search_proxy, nrow(patient_search_tbl() ))
+      DT::selectRows(patient_search_proxy, nrow(patient_search_output() ))
     } else { DT::selectRows(patient_search_proxy, input$patient_search_dt_rows_selected - 1)
         }
   })
   ## On Next Subject Button Press, updated selected row in DT
   observeEvent(next_sub(), {
-    req(patient_search_tbl(), input$patient_search_dt_rows_selected )
-    if(input$patient_search_dt_rows_selected == nrow(patient_search_tbl() )){ ## Special case when at the end of the list, cycle to beginning
+    req(patient_search_output(), input$patient_search_dt_rows_selected )
+    if(input$patient_search_dt_rows_selected == nrow(patient_search_output() )){ ## Special case when at the end of the list, cycle to beginning
       DT::selectRows(patient_search_proxy, 1)
     } else { DT::selectRows(patient_search_proxy, input$patient_search_dt_rows_selected + 1)
     }
@@ -99,8 +111,8 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
 
   ## When a choice is made from the patient nav dropdown, update the selected row in DT
   observeEvent(selected_sub(), {
-    req(patient_search_tbl(), selected_sub(), input$patient_search_dt_rows_selected )
-    sub_row_id <- patient_search_tbl() %>%
+    req(patient_search_output(), selected_sub(), input$patient_search_dt_rows_selected )
+    sub_row_id <- patient_search_output() %>%
       rowid_to_column(var = 'row_id') %>%
       filter(.data$ID == selected_sub() ) %>%
       select(.data$row_id) %>%
@@ -111,16 +123,16 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
   ## Extract the selected patient id from the patient data table when clicked and store as a reactive
   select_patient_click <- reactive({ input$patient_search_dt_cell_clicked })
   selected_patient <- reactive({ 
-    req(patient_search_tbl(), input$patient_search_dt_rows_selected )
-    patient_search_tbl() %>% 
+    req(patient_search_output(), input$patient_search_dt_rows_selected )
+    patient_search_output() %>% 
       slice(input$patient_search_dt_rows_selected) %>% 
       pull(.data$ID) %>% 
       as.character() ## Pass this value as a character
     })
   
   selected_patient_info <- reactive({ 
-    req(patient_search_tbl(), input$patient_search_dt_rows_selected )
-    patient_search_tbl() %>% 
+    req(patient_search_output(), input$patient_search_dt_rows_selected )
+    patient_search_output() %>% 
       slice(input$patient_search_dt_rows_selected)
     })
   
