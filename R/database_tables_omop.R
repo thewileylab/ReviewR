@@ -8,7 +8,7 @@
 #' @rdname omop_tables
 #' @keywords internal
 #' @export
-#' @importFrom dplyr select everything arrange matches mutate_if rename_at collect filter inner_join vars left_join
+#' @importFrom dplyr select everything arrange matches mutate_if mutate_all rename_at collect filter inner_join vars left_join
 #' @importFrom snakecase to_title_case
 #' @importFrom stringr str_replace regex str_replace_all
 #' @importFrom rlang .data
@@ -34,7 +34,8 @@ omop_table_all_patients <- function(table_map, db_connection) {
     left_join(race_concepts) %>% 
     left_join(ethnicity_concepts) %>% 
     left_join(provider_concepts) %>%
-    mutate_if(is.integer, as.character) %>%
+    # mutate_if(is.integer, as.character) %>%
+    mutate_all(as.character) %>% 
     collect() %>% 
     unite(col = 'Birth_Date', c('year_of_birth','month_of_birth','day_of_birth')) %>% 
     mutate(Birth_Date = as_date(.data$Birth_Date)) %>% 
