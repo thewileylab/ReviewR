@@ -15,7 +15,7 @@ chart_review_tab <- function() {
           column(width = 9,
                  #Box Setup
                  box(width = '100%',
-                     height = '130px',
+                     # height = '130px',
                      status = 'primary', 
                      solidHeader = F,
                      #Box Contents
@@ -26,7 +26,7 @@ chart_review_tab <- function() {
           column(width = 3,
                  #Box Setup
                  box(width = '100%',
-                     height = '130px',
+                     # height = '130px',
                      status = 'primary', 
                      solidHeader = F,
                      #Box Contents

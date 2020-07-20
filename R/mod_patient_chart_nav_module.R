@@ -158,7 +158,16 @@ subject_info_logic <- function(input, output, session, redcap_setup, redcap_inst
     tagList(
       tags$div(subject_info_text(), style='display:inline-block;vertical-align:middle'),
       tags$div(status_indicator(), style='display:inline-block;vertical-align:middle'),
-      renderTable(subjectInfo() %>% mutate_all(as.character) %>% select(-.data$ID), width = '100%', align = 'l', digits = 0)
+      div(style='height:100px; overflow-y: scroll',
+      renderTable(subjectInfo() %>% 
+                    mutate_all(as.character) %>% 
+                    select(-.data$ID), 
+                  width = '100%', 
+                  align = 'l', 
+                  digits = 0,
+                  sanitize.text.function=identity
+                  )
+      )
       )
     }) 
 }
