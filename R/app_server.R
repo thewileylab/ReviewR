@@ -9,11 +9,11 @@ app_server <- function(input, output, session) {
   table_map <- callModule(data_model_detection_logic, 'model_ns', db_connection_vars$db_connection, db_connection_vars$connect_press, db_type$db_selection)
   
   ## Chart Abstraction
-  redcap_setup_vars <- shinyREDCap::redcap_setup_server('redcap_setup_namespace')
+  redcap_setup_vars <- shinyREDCap::redcap_setup_server('redcap_setup_namespace', reset = redcap_instrument_vars$reset)
   
   ## Call Patient Search Tab Modules ----
   ### Patient Search Module
-  subject_info <- callModule(patient_search_logic, 'patient_search_ns', table_map$table_map, db_connection_vars$db_connection, table_map$db_disconnect, redcap_setup_vars, redcap_instrument_vars, subject_selection_vars$previous_sub, subject_selection_vars$next_sub, subject_selection_vars$subject_id, parent=session)
+  subject_info <- callModule(patient_search_logic, 'patient_search_ns', table_map$table_map, db_connection_vars$db_connection, table_map$db_disconnect, redcap_setup_vars, redcap_instrument_vars$all_review_status, subject_selection_vars$previous_sub, subject_selection_vars$next_sub, subject_selection_vars$subject_id, parent=session)
 
   ## Call ReviewR Chart Review Tab Modules ----
   ### Load Chart Review Modules
