@@ -55,6 +55,7 @@ app_server <- function(input, output, session) {
   output$welcome_tab <- welcome_tab() 
   output$setup_tab <- setup_tab()
   output$patient_search_tab <- patient_search_tab()
+  outputOptions(output, 'patient_search_tab', suspendWhenHidden = F)
   output$chart_review_tab <- chart_review_tab()
   outputOptions(output, 'chart_review_tab', suspendWhenHidden = F)
 

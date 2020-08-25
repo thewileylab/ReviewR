@@ -38,11 +38,11 @@ patient_search_ui <- function(id) {
 #' @importFrom dplyr rename slice filter select pull mutate_at
 #' @importFrom tibble rowid_to_column
 #' @importFrom rlang .data
-patient_search_logic <- function(input, output, session, table_map, db_connection, disconnect, redcap_setup_vars, redcap_instrument_vars, prev_sub, next_sub, selected_sub, parent) {
+patient_search_logic <- function(input, output, session, table_map, db_connection, disconnect, redcap_setup_vars, all_review_status, prev_sub, next_sub, selected_sub, parent) {
   ns <- session$ns
   
   #Replace Patient Search Table when table map changes
-  observeEvent(c(table_map(), redcap_setup_vars$is_configured, redcap_instrument_vars$upload_status), {
+  observeEvent(c(table_map(), redcap_setup_vars$is_configured, all_review_status()), {
     req(table_map() )
     # browser()
     DT::reloadData(proxy = patient_search_proxy,
@@ -64,10 +64,12 @@ patient_search_logic <- function(input, output, session, table_map, db_connectio
   })
   
   patient_search_output <- reactive({
-    req(patient_search_tbl(), redcap_setup_vars$is_configured)
-    if(redcap_setup_vars$is_configured == 'yes') {
+    req(patient_search_tbl())
+    all_review_status()
+    if(redcap_setup_vars$is_configured == 'yes' & is.null(all_review_status() ) == F) {
+      # browser()
       patient_search_tbl() %>% 
-        left_join(redcap_instrument_vars$all_review_status) %>% 
+        left_join(all_review_status() ) %>% 
         dplyr::mutate_at(vars(contains('REDCap')), replace_na, '<em>Review Not Started</em>')
     } else {
       patient_search_tbl()
