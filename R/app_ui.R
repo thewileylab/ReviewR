@@ -39,6 +39,9 @@ golem_add_external_resources <- function(){
             # Add here all the external resources
             # If you have a custom.css in the inst/app/www
             # Or for example, you can add shinyalert::useShinyalert() here
-            tags$link(rel="stylesheet", type="text/css", href="www/custom.css")
+            # tags$link(rel="stylesheet", type="text/css", href="www/custom.css"),
+            shinyWidgets::useShinydashboard(),
+            shinyWidgets::useSweetAlert(),
+            shinyjs::useShinyjs()
             )
   }
