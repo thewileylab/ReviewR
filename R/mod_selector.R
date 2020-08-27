@@ -29,7 +29,7 @@ mod_selector_ui <- function(id, type = c('database', 'abstraction'), color = '#e
       HTML(glue::glue('To begin, please select a ReviewR {type} module:')),
       br(),
       br(),
-      selectInput(inputId = ns('modules'),label = snakecase::to_title_case(glue::glue('{type} Module Selector')), choices = NULL),
+      selectInput(inputId = ns('modules'),label = snakecase::to_title_case(glue::glue('{type} Module Selector:')), choices = NULL),
       uiOutput(ns('db_module'))
     )
  
