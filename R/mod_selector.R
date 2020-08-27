@@ -11,13 +11,25 @@
 #' @export
 #'
 #' @importFrom shiny NS tagList 
-mod_selector_ui <- function(id, type = c('Database', 'Abstraction'), color = '#ebf0f6') {
+#' @importFrom dplyr if_else
+#' @importFrom snakecase to_title_case
+mod_selector_ui <- function(id, type = c('database', 'abstraction'), color = '#ebf0f6') {
   ns <- NS(id)
+  # Evaluate Type Selection ----
+  type <- match.arg(type)
+  # message(type)
   tagList(
     wellPanel(
+      h4(dplyr::if_else(type == 'database',
+                        'Connect to Patient Database',
+                        'Configure Patient Chart Abstraction'
+                        )
+         ),
       style = glue::glue('background: {color}'),
-      selectInput(inputId = ns('modules'),label = glue::glue('{type} Module Selector'), choices = NULL),
-      shiny::helpText(glue::glue('To begin, please select a ReviewR {type} Module.')),
+      HTML(glue::glue('To begin, please select a ReviewR {type} module:')),
+      br(),
+      br(),
+      selectInput(inputId = ns('modules'),label = snakecase::to_title_case(glue::glue('{type} Module Selector')), choices = NULL),
       uiOutput(ns('db_module'))
     )
  

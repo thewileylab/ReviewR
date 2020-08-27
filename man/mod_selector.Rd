@@ -5,12 +5,14 @@
 \alias{mod_selector_server}
 \title{Module Selector}
 \usage{
-mod_selector_ui(id, type = c("Database", "Abstraction"), color = "#ebf0f6")
+mod_selector_ui(id, type = c("database", "abstraction"), color = "#ebf0f6")
 
 mod_selector_server(id, database_vars)
 }
 \arguments{
 \item{id}{}
+
+\item{database_vars}{A reactiveValues() object containing the return values from modules in your Shiny application.}
 }
 \description{
 A Shiny module to select from available ReviewR modules
