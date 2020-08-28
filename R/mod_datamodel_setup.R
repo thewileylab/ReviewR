@@ -30,6 +30,7 @@ data_model_detection_ui <- function(id) {
 #' @importFrom magrittr %>% 
 #' @importFrom DBI dbListTables dbListFields
 #' @importFrom dplyr mutate rename select left_join filter ungroup arrange slice group_by desc
+#' @importFrom glue glue
 #' @importFrom tibble tibble enframe
 #' @importFrom purrr map
 #' @importFrom tidyr unnest as_tibble separate drop_na
