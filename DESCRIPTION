@@ -1,6 +1,6 @@
 Package: ReviewR
 Title: ReviewR: A light-weight, portable tool for reviewing individual patient records
-Version: 2.0.0.9000
+Version: 2.0.1.9000
 Authors@R: c(
             person('Laura', 'Wiley', email = 'laura.wiley@cuanschutz.edu', role = c('aut')),
             person('Luke', 'Rasmussen', email = 'luke.rasmussen@northwestern.edu', role = c('aut')),
@@ -13,28 +13,33 @@ BugReports: https://github.com/thewileylab/ReviewR/issues
 Depends: 
     R (>= 3.2.0)
 Imports: 
-    bigrquery,
     config,
+    dashboardthemes,
     DBI,
-    dplyr,
+    dplyr (>= 1.0.0),
     dbplyr,
     DT,
     glue,
-    golem,
+    golem (>= 0.2.1.90),
     httr,
     lubridate,
     magrittr,
     purrr,
-    redcapAPI,
-    rlang,
-    shiny,
-    shinycssloaders,
+    rlang (>= 0.4.7),
+    shiny (>= 1.5.0),
+    shinycssloaders (>= 1.0.0),
     shinydashboard,
     shinyjs,
     snakecase,
     stringr,
     tibble,
-    tidyr
+    tidyr (>= 1.1.0),
+    shinyWidgets
+Remotes: 
+    Thinkr-open/golem,
+    thewileylab/shinyBigQuery,
+    thewileylab/shinyPostgreSQL,
+    thewileylab/shinyREDCap
 Suggests: 
     htmltools,
     knitr,
@@ -42,6 +47,9 @@ Suggests:
     processx,
     rmarkdown,
     spelling,
+    shinyBigQuery,
+    shinyREDCap,
+    shinyPostgreSQL
     testthat (>= 2.1.0)
 VignetteBuilder: knitr
 Encoding: UTF-8
