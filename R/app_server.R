@@ -18,6 +18,7 @@ app_server <- function(input, output, session) {
   # output$chart_review_tab <- chart_review_tab()
   
   ## Run everything all the time
+  ### Certain observers won't fire correctly without this set and if they are located on a tab that isn't in focus
   outputOptions(output, 'setup_tab', suspendWhenHidden = F)
   # outputOptions(output, 'patient_search_tab', suspendWhenHidden = F)
   # outputOptions(output, 'chart_review_tab', suspendWhenHidden = F)
