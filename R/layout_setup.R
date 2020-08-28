@@ -20,13 +20,19 @@ setup_tab <- function() {
         ),
       fluidRow(
         column(width = 6,
-               ## Database Module Selector
-               mod_selector_ui(id = 'selector',type = 'database', color = '#f0fcff')
+               wellPanel(
+                 style = 'background: #ebf0f6',
+                 ## Database Module Selector
+                 mod_selector_ui(id = 'selector',type = 'database') 
+                 )
                ),
         column(width = 6,
-               # Abstraction Module Selector
-               mod_selector_ui(id = 'rc-selector',type = 'abstraction',  color = '#f0fcff'),
-               selectInput(inputId = 'subject_id',label = 'Subject ID',choices = NULL)
+               wellPanel(
+                 style = 'background: #ebf0f6',
+                 # Abstraction Module Selector
+                 mod_selector_ui(id = 'rc-selector',type = 'abstraction'),
+                 selectInput(inputId = 'subject_id',label = 'Subject ID',choices = NULL) 
+                 )
                )
         )
       )
