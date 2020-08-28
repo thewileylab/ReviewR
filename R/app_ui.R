@@ -13,7 +13,7 @@ app_ui <- function() {
                                                  tags$img(src='www/logo.png', width = '125px', height = '50px')
                                                  ),
                                   tags$li(class = 'dropdown', 
-                                          actionButton(inputId = 'quit',label = 'Leave ReviewR',
+                                          actionButton(inputId = 'quit', label = 'Leave ReviewR',
                                                        icon = icon('suitcase-rolling')
                                                        )
                                           )
