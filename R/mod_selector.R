@@ -20,6 +20,7 @@ mod_selector_ui <- function(id, type = c('database', 'abstraction'), color = '#e
   # message(type)
   tagList(
     wellPanel(
+      # actionButton(inputId = ns('debug'), label = 'Debug'),
       h4(dplyr::if_else(type == 'database',
                         'Connect to Patient Database',
                         'Configure Patient Chart Abstraction'
@@ -29,7 +30,7 @@ mod_selector_ui <- function(id, type = c('database', 'abstraction'), color = '#e
       HTML(glue::glue('To begin, please select a ReviewR {type} module:')),
       br(),
       br(),
-      selectInput(inputId = ns('modules'),label = glue::glue('{snakecase::to_title_case(type)} Module:'), choices = NULL),
+      selectInput(inputId = ns('modules'), label = glue::glue('{snakecase::to_title_case(type)} Module:'), choices = NULL),
       uiOutput(ns('db_module'))
     )
  
@@ -52,21 +53,28 @@ mod_selector_server <- function(id, database_vars){
   moduleServer(
     id,
     function(input, output, session) {
+      # observeEvent(input$debug, {
+      #   browser()
+      # })
+      selector_vals <- reactiveValues(
+        module_names = '<empty>'
+        )
       # Identify Modules ----
       ## Parse module names from reactive values object
-      module_names <- reactive({
+      observe({
         values <- database_vars %>% names()
         names <- map(database_vars %>% names(), ~extract2(database_vars[[.x]], 'moduleName'))
         names(values) <- names
-        return(values)
+        selector_vals$module_names <- values
         })
       
       # Update selectInput ----
       ## Add Module names as choices for selectInput
-      observeEvent(module_names(), {
+      observeEvent(selector_vals$module_names,{
+        req(selector_vals$module_names != '<empty>')
         updateSelectInput(session = session,
                           inputId = 'modules', 
-                          choices = module_names()
+                          choices = selector_vals$module_names
         )
       })
       
