@@ -34,7 +34,7 @@ data_model_detection_ui <- function(id) {
 #' @importFrom tibble tibble enframe
 #' @importFrom purrr map
 #' @importFrom tidyr unnest as_tibble separate drop_na
-#' @importFrom stringr str_replace regex str_extract
+#' @importFrom stringr str_replace str_replace_all regex str_extract
 #' @importFrom rlang .data
 #' @importFrom utils data
 
