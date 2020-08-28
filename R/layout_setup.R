@@ -23,14 +23,15 @@ setup_tab <- function() {
                wellPanel(
                  style = 'background: #ebf0f6',
                  ## Database Module Selector
-                 mod_selector_ui(id = 'selector',type = 'database') 
+                 mod_selector_ui(id = 'db-selector',type = 'database'),
+                 data_model_detection_ui('data-model')
                  )
                ),
         column(width = 6,
                wellPanel(
                  style = 'background: #ebf0f6',
                  # Abstraction Module Selector
-                 mod_selector_ui(id = 'rc-selector',type = 'abstraction'),
+                 mod_selector_ui(id = 'abs-selector',type = 'abstraction'),
                  selectInput(inputId = 'subject_id',label = 'Subject ID',choices = NULL) 
                  )
                )

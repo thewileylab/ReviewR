@@ -53,9 +53,11 @@ app_server <- function(input, output, session) {
   abs_setup <- reactiveValues(redcap = rc_setup_vars)
   
   # Setup Tab Selector Modules ----
-  database_vars <- mod_selector_server('selector', database_setup)
-  abstract_vars <- mod_selector_server('rc-selector', abs_setup)
+  database_vars <- mod_selector_server('db-selector', database_setup)
+  abstract_vars <- mod_selector_server('abs-selector', abs_setup)
   
+  # Database Detection Module ----
+  data_model_vars <- mod_data_model_detection_server('data-model', database_vars)
   
   ## Call Patient Search Tab Modules ----
   ### Patient Search Module
