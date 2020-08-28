@@ -13,28 +13,24 @@
 #' @importFrom shiny NS tagList 
 #' @importFrom dplyr if_else
 #' @importFrom snakecase to_title_case
-mod_selector_ui <- function(id, type = c('database', 'abstraction'), color = '#ebf0f6') {
+mod_selector_ui <- function(id, type = c('database', 'abstraction')) {
   ns <- NS(id)
   # Evaluate Type Selection ----
   type <- match.arg(type)
   # message(type)
   tagList(
-    wellPanel(
-      # actionButton(inputId = ns('debug'), label = 'Debug'),
-      h4(dplyr::if_else(type == 'database',
-                        'Connect to Patient Database',
-                        'Configure Patient Chart Abstraction'
-                        )
-         ),
-      style = glue::glue('background: {color}'),
-      HTML(glue::glue('To begin, please select a ReviewR {type} module:')),
-      br(),
-      br(),
-      selectInput(inputId = ns('modules'), label = glue::glue('{snakecase::to_title_case(type)} Module:'), choices = NULL),
-      uiOutput(ns('selected_module'))
+    # actionButton(inputId = ns('debug'), label = 'Debug'),
+    h4(dplyr::if_else(type == 'database',
+                      'Connect to Patient Database',
+                      'Configure Patient Chart Abstraction'
+                      )
+       ),
+    HTML(glue::glue('To begin, please select a ReviewR {type} module:')),
+    br(),
+    br(),
+    selectInput(inputId = ns('modules'), label = glue::glue('{snakecase::to_title_case(type)} Module:'), choices = NULL),
+    uiOutput(ns('selected_module'))
     )
- 
-  )
 }
 
 # Server ----    

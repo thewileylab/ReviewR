@@ -5,7 +5,7 @@
 \alias{mod_selector_server}
 \title{Module Selector}
 \usage{
-mod_selector_ui(id, type = c("database", "abstraction"), color = "#ebf0f6")
+mod_selector_ui(id, type = c("database", "abstraction"))
 
 mod_selector_server(id, database_vars)
 }
