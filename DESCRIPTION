@@ -32,6 +32,9 @@ Imports:
     shinyjs,
     snakecase,
     stringr,
+    shinyBigQuery,
+    shinyREDCap,
+    shinyPostgreSQL,
     tibble,
     tidyr (>= 1.1.0),
     shinyWidgets
@@ -47,9 +50,6 @@ Suggests:
     processx,
     rmarkdown,
     spelling,
-    shinyBigQuery,
-    shinyREDCap,
-    shinyPostgreSQL
     testthat (>= 2.1.0)
 VignetteBuilder: knitr
 Encoding: UTF-8
