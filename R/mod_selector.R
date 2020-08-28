@@ -31,7 +31,7 @@ mod_selector_ui <- function(id, type = c('database', 'abstraction'), color = '#e
       br(),
       br(),
       selectInput(inputId = ns('modules'), label = glue::glue('{snakecase::to_title_case(type)} Module:'), choices = NULL),
-      uiOutput(ns('db_module'))
+      uiOutput(ns('selected_module'))
     )
  
   )
@@ -86,8 +86,8 @@ mod_selector_server <- function(id, database_vars){
       })
       
       # UI Outputs ----
-      output$db_module <- renderUI({ selected_module() })
-      
+      output$selected_module <- renderUI({ selected_module() })
+
       # Return ----
       ## Return setup variables from the selected module
       module_vars <- reactive({
