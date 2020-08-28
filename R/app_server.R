@@ -1,4 +1,7 @@
 #' @import shiny
+#' @importFrom shinyBigQuery bigquery_setup_server
+#' @importFrom shinyPostgreSQL postgresql_setup_server
+#' @importFrom shinyREDCap redcap_setup_server redcap_instrument_server
 app_server <- function(input, output, session) {
   # Define Main UI Outputs ----
   ## Define a dynamic application menu
