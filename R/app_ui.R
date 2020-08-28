@@ -1,6 +1,6 @@
 #' @import shiny
 #' @import shinydashboard
-#' @importFrom shinyjs useShinyjs
+#' @importFrom dashboardthemes shinyDashboardThemes
 app_ui <- function() {
   stop_nav_jscode <- 'window.onbeforeunload = function() { return true; };'
   
@@ -9,7 +9,6 @@ app_ui <- function() {
     golem_add_external_resources(),
     # List the first level UI elements here 
     dashboardPage(title = 'ReviewR',
-                  skin = 'red',
                   dashboardHeader(title = tags$a(href='https://github.com/orgs/thewileylab', target='_blank',
                                                  tags$img(src='www/logo.png', width = '125px', height = '50px')
                                                  ),
@@ -23,8 +22,8 @@ app_ui <- function() {
                                                sidebarMenuOutput('application_menu')
                                                )
                                    ),
-                  dashboardBody(tags$script(stop_nav_jscode), #Prevent navigation using browser buttons (back, reload, close tab)
-                                shinyjs::useShinyjs(),
+                  dashboardBody(shinyDashboardThemes(theme = "blue_gradient"),
+                                tags$script(stop_nav_jscode), #Prevent navigation using browser buttons (back, reload, close tab)
                                 uiOutput('main_ui')
                                 )
                   )
@@ -32,6 +31,8 @@ app_ui <- function() {
   }
 
 #' @import shiny
+#' @importFrom shinyjs useShinyjs
+#' @importFrom shinyWidgets useShinydashboard useSweetAlert
 golem_add_external_resources <- function(){
   addResourcePath('www', system.file('app/www', package = 'ReviewR') )
   tags$head(golem::activate_js(),
