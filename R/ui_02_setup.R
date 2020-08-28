@@ -20,27 +20,13 @@ setup_tab <- function() {
         ),
       fluidRow(
         column(width = 6,
-               #Box Setup
-               box(title = 'Connect to Patient Database',
-                   width = '100%',
-                   status = 'primary',
-                   solidHeader = F,
-                   #Box Contents
-                   uiOutput('db_setup'),
-                   uiOutput('model')
-                   )
+               ## Database Module Selector
+               mod_selector_ui(id = 'selector',type = 'database', color = '#f0fcff')
                ),
         column(width = 6,
-               #Box Setup
-               box(title = 'Configure Patient Chart Abstraction',
-                   width = '100%',
-                   status = 'danger',
-                   solidHeader = F,
-                   #Box Contents
-                   uiOutput('rc_setup'),
-                   uiOutput('rc_connected')
-                   ),
-               uiOutput('rc_config_ui')
+               # Abstraction Module Selector
+               mod_selector_ui(id = 'rc-selector',type = 'abstraction',  color = '#f0fcff'),
+               selectInput(inputId = 'subject_id',label = 'Subject ID',choices = c('922873','922874', '922875','922876','922877','922878'))
                )
         )
       )
