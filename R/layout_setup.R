@@ -6,7 +6,7 @@
 #' @export
 #' @keywords internal
 #'
-setup_tab <- function() {
+setup <- function() {
   renderUI({
     # Define Setup Tab UI ----
     tagList(
@@ -30,7 +30,7 @@ setup_tab <- function() {
         column(width = 6,
                wellPanel(
                  style = 'background: #ebf0f6',
-                 # Abstraction Module Selector
+                 ## Abstraction Module Selector
                  mod_selector_ui(id = 'abs-selector',type = 'abstraction'),
                  selectInput(inputId = 'subject_id',label = 'Subject ID',choices = NULL) 
                  )

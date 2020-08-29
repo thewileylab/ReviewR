@@ -6,7 +6,7 @@
 #' @export
 #' @keywords internal
 #'
-welcome_tab <- function() {
+homepage <- function() {
   renderUI({
     tagList(
       fluidRow(

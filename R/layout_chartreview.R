@@ -6,7 +6,7 @@
 #' @export
 #' @keywords internal
 #'
-chart_review_tab <- function() {
+chart_review <- function() {
   renderUI({
     tagList(
       fluidPage(

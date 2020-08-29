@@ -7,7 +7,7 @@ app_server <- function(input, output, session) {
   ## Define a dynamic application menu
   output$application_menu <- renderMenu({
     sidebarMenu(id = 'main_tabs',
-                menuItem(tabName = 'welcome', text = 'Welcome',icon = icon('home')),
+                menuItem(tabName = 'homepage', text = 'Homepage',icon = icon('home')),
                 menuItem(tabName = 'setup', text = 'Setup', icon = icon('cog')),
                 menuItem(tabName = 'patient_search', text = 'Patient Search', icon = icon('users')),
                 menuItem(tabName = 'chart_review', text ='Chart Review', icon = icon('table'))
@@ -15,23 +15,23 @@ app_server <- function(input, output, session) {
   })
   
   ## Render Application Menu Outputs
-  output$welcome_tab <- welcome_tab() 
-  output$setup_tab <- setup_tab()
-  # output$patient_search_tab <- patient_search_tab()
-  # output$chart_review_tab <- chart_review_tab()
+  output$welcome_tab <- homepage() 
+  output$setup_tab <- setup()
+  output$patient_search_tab <- patient_search()
+  # output$chart_review_tab <- chart_review()
   
   ## Run everything all the time
   ### Certain observers won't fire correctly without this set and if they are located on a tab that isn't in focus
   outputOptions(output, 'setup_tab', suspendWhenHidden = F)
-  # outputOptions(output, 'patient_search_tab', suspendWhenHidden = F)
+  outputOptions(output, 'patient_search_tab', suspendWhenHidden = F)
   # outputOptions(output, 'chart_review_tab', suspendWhenHidden = F)
   
   # Render Main UI ----
   output$main_ui <- renderUI({
     tabItems(
       tabItem(tabName = 'welcome', uiOutput('welcome_tab'), class = 'active'), #https://stackoverflow.com/questions/36817407/content-doesnt-show-up-in-the-dashboard-body-if-the-sidebar-menu-is-dynamically/36819190#36819190
-      tabItem(tabName = 'setup', uiOutput('setup_tab'))
-      # tabItem(tabName = 'patient_search', uiOutput('patient_search_tab')),
+      tabItem(tabName = 'setup', uiOutput('setup_tab')),
+      tabItem(tabName = 'patient_search', uiOutput('patient_search_tab'))
       # tabItem(tabName = 'chart_review', uiOutput('chart_review_tab'))
     )
   })
