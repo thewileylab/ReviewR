@@ -36,6 +36,23 @@ app_server <- function(input, output, session) {
     )
   })
   
+  # Main UI observers ---- 
+  ## Quit ReviewR Observer 
+  ### Close Application when "Leave ReviewR" button is clicked
+  observeEvent(input$quit, {
+    browser()
+    # stopApp()
+  })
+  ## BigQuery Redirect Observer. 
+  ### When leaving the application after authenticating with BigQuery, take the user back to the Setup Tab to complete setup.
+  observeEvent(database_vars()$user_info, {
+    if (is.null(database_vars()$user_info ) ) { # Only redirect when user information is present
+      return(NULL)
+    } else {
+      updateTabItems(session, 'main_tabs', selected = 'setup')
+    }
+  })
+  
   # Setup Modules ----
   ## Database Module Setup
   bq_setup_vars <- shinyBigQuery::bigquery_setup_server(id = 'bq-setup-namespace')
@@ -68,7 +85,7 @@ app_server <- function(input, output, session) {
     data_model_vars$message
     })
   
-  # Call Patient Search Tab Modules ----
+  # Patient Search Modules ----
   ## Patient Search Module
   # subject_info <- callModule(patient_search_logic, 'patient_search_ns', table_map$table_map, db_connection_vars$db_connection, table_map$db_disconnect, subject_selection_vars$previous_sub, subject_selection_vars$next_sub, subject_selection_vars$subject_id, parent=session)
   # 
@@ -85,20 +102,5 @@ app_server <- function(input, output, session) {
   # upload <- callModule(instrument_complete_logic, 'chart_review_upload', rc_project_vars$rc_instrument, instrumentData$instrument_data, instrumentData$previous_data, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection, subject_info$selected_patient)
   # callModule(upload_redcap_logic, 'chart_review_abstraction', abstraction_vars$rc_con, rc_project_vars$rc_record_id, rc_project_vars$rc_instrument, instrumentData$instrument_data, instrumentData$previous_data, instrumentData$current_subject, upload$abstraction_save_btn_press, upload$abstraction_complete, upload$abstraction_complete_val, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection)
   
-  ## Main UI observers ---- 
-  ## Quit ReviewR Observer 
-  ### Close Application when "Leave ReviewR" button is clicked
-  observeEvent(input$quit, {
-    browser()
-    # stopApp()
-  })
-  ## BigQuery Redirect Observer. 
-  ### When leaving the application after authenticating with BigQuery, take the user back to the Setup Tab to complete setup.
-  observeEvent(database_vars()$user_info, {
-    if (is.null(database_vars()$user_info ) ) { # Only redirect when user information is present
-      return(NULL)
-    } else {
-      updateTabItems(session, 'main_tabs', selected = 'setup')
-    }
-  })
+
 }
