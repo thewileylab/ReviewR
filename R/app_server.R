@@ -11,28 +11,29 @@ app_server <- function(input, output, session) {
                 menuItem(tabName = 'setup', text = 'Setup', icon = icon('cog')),
                 menuItem(tabName = 'patient_search', text = 'Patient Search', icon = icon('users')),
                 menuItem(tabName = 'chart_review', text ='Chart Review', icon = icon('table'))
-    )
-  })
+                )
+    })
   
   ## Render Application Menu Outputs
-  output$welcome_tab <- homepage() 
-  output$setup_tab <- setup()
-  output$patient_search_tab <- patient_search()
-  output$chart_review_tab <- chart_review()
+  output$homepage <- homepage()
+  output$setup <- setup()
+  output$patient_search <- patient_search()
+  output$chart_review <- chart_review()
   
   ## Run everything all the time
   ### Certain observers won't fire correctly without this set and if they are located on a tab that isn't in focus
-  outputOptions(output, 'setup_tab', suspendWhenHidden = F)
-  outputOptions(output, 'patient_search_tab', suspendWhenHidden = F)
-  outputOptions(output, 'chart_review_tab', suspendWhenHidden = F)
+  outputOptions(output, 'homepage', suspendWhenHidden = F)
+  outputOptions(output, 'setup', suspendWhenHidden = F)
+  outputOptions(output, 'patient_search', suspendWhenHidden = F)
+  outputOptions(output, 'chart_review', suspendWhenHidden = F)
   
   ## Render Main UI
   output$main_ui <- renderUI({
     tabItems(
-      tabItem(tabName = 'welcome', uiOutput('welcome_tab'), class = 'active'), #https://stackoverflow.com/questions/36817407/content-doesnt-show-up-in-the-dashboard-body-if-the-sidebar-menu-is-dynamically/36819190#36819190
-      tabItem(tabName = 'setup', uiOutput('setup_tab')),
-      tabItem(tabName = 'patient_search', uiOutput('patient_search_tab')),
-      tabItem(tabName = 'chart_review', uiOutput('chart_review_tab'))
+      tabItem(tabName = 'welcome', uiOutput('homepage'), class = 'active'), #https://stackoverflow.com/questions/36817407/content-doesnt-show-up-in-the-dashboard-body-if-the-sidebar-menu-is-dynamically/36819190#36819190
+      tabItem(tabName = 'setup', uiOutput('setup')),
+      tabItem(tabName = 'patient_search', uiOutput('patient_search')),
+      tabItem(tabName = 'chart_review', uiOutput('chart_review'))
     )
   })
   
@@ -42,13 +43,14 @@ app_server <- function(input, output, session) {
   observeEvent(input$quit, {
     browser()
     # stopApp()
-  })
+    })
+  
   ## BigQuery Redirect  
   ### After leaving ReviewR to authenticate with Google, take the user back to the Setup Tab to complete database configuration.
   observeEvent(database_vars()$user_info, {
     req(database_vars()$user_info)
     updateTabItems(session, 'main_tabs', selected = 'setup')
-  })
+    })
   
   # Setup Modules ---- 
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Add Setup Modules Here!!! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
@@ -56,7 +58,7 @@ app_server <- function(input, output, session) {
   bq_setup_vars <- shinyBigQuery::bigquery_setup_server(id = 'bq-setup-namespace')
   pg_setup_vars <- shinyPostgreSQL::postgresql_setup_server(id = 'pg-setup-namespace')
   
-  ## DB Var Config
+  ## Collect Database Setup Variables
   database_setup <- reactiveValues(bigquery = bq_setup_vars,
                                    postgresql = pg_setup_vars
                                    )
@@ -64,21 +66,21 @@ app_server <- function(input, output, session) {
   ## Abstraction Module Setup
   rc_setup_vars <- shinyREDCap::redcap_setup_server(id = 'rc-setup', reset = rc_instrument_vars$reset)
   
-  ## Abstraction Var Config
-  abs_setup <- reactiveValues(redcap = rc_setup_vars)
+  ## Collect Abstraction Variables
+  abstraction_setup <- reactiveValues(redcap = rc_setup_vars)
   
   # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
   
   ## Setup Tab Selector Modules
   database_vars <- mod_selector_server('db-selector', database_setup)
-  abstract_vars <- mod_selector_server('abs-selector', abs_setup)
+  abstract_vars <- mod_selector_server('abs-selector', abstraction_setup)
   
   ## Database Detection Module
   ### Module
   data_model_vars <- mod_data_model_detection_server('data-model', database_vars)
   ### Output for Patient Search
   output$data_model_message <- renderText({
-    req(data_model_vars$message )
+    req(data_model_vars$message)
     data_model_vars$message
     })
   
