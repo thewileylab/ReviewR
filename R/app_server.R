@@ -53,8 +53,8 @@ app_server <- function(input, output, session) {
     }
   })
   
-  # Add Setup Modules Here!!! ---- 
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  #
+  # Setup Modules ---- 
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Add Setup Modules Here!!! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
   ## Database Module Setup
   bq_setup_vars <- shinyBigQuery::bigquery_setup_server(id = 'bq-setup-namespace')
   pg_setup_vars <- shinyPostgreSQL::postgresql_setup_server(id = 'pg-setup-namespace')
@@ -70,11 +70,7 @@ app_server <- function(input, output, session) {
   ## Abstraction Var Config
   abs_setup <- reactiveValues(redcap = rc_setup_vars)
   
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ /#
-  
-  ## Abstraction Instrument
-  subject_id <- reactive({ input$subject_id }) ## Pass to instrument function
-  rc_instrument_vars <- shinyREDCap::redcap_instrument_server(id = 'rc-setup', redcap_vars = rc_setup_vars, subject_id = subject_id)
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
   
   ## Setup Tab Selector Modules
   database_vars <- mod_selector_server('db-selector', database_setup)
@@ -93,7 +89,10 @@ app_server <- function(input, output, session) {
   ## Patient Search Module
   # subject_info <- callModule(patient_search_logic, 'patient_search_ns', table_map$table_map, db_connection_vars$db_connection, table_map$db_disconnect, subject_selection_vars$previous_sub, subject_selection_vars$next_sub, subject_selection_vars$subject_id, parent=session)
   # 
-  # ## Call ReviewR Chart Review Tab Modules ----
+  # Chart Review Modules ----
+  ## Abstraction Instrument
+  subject_id <- reactive({ input$subject_id }) ## Pass to instrument function
+  rc_instrument_vars <- shinyREDCap::redcap_instrument_server(id = 'rc-setup', redcap_vars = rc_setup_vars, subject_id = subject_id)
   # ### Load Chart Review Modules
   # subject_selection_vars <- callModule(patient_nav_logic, 'chart_review', subject_info$patient_table, subject_info$selected_patient, parent = session)
   # callModule(subject_info_logic, 'chart_review', instrumentData$previous_data, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection, subject_info$selected_patient, subject_info$selected_patient_info)
@@ -105,6 +104,4 @@ app_server <- function(input, output, session) {
   # instrumentData <- callModule(redcap_instrument_logic, 'chart_review_abstraction', abstraction_vars$rc_con, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection, rc_project_vars$rc_instrument, rc_config_vars$rc_identifier , rc_config_vars$rc_reviewer, rc_config_vars$rc_selected_reviewer, subject_info$selected_patient, upload$abstraction_save_btn_press, abstraction_vars$rc_press)
   # upload <- callModule(instrument_complete_logic, 'chart_review_upload', rc_project_vars$rc_instrument, instrumentData$instrument_data, instrumentData$previous_data, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection, subject_info$selected_patient)
   # callModule(upload_redcap_logic, 'chart_review_abstraction', abstraction_vars$rc_con, rc_project_vars$rc_record_id, rc_project_vars$rc_instrument, instrumentData$instrument_data, instrumentData$previous_data, instrumentData$current_subject, upload$abstraction_save_btn_press, upload$abstraction_complete, upload$abstraction_complete_val, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection)
-  
-
 }
