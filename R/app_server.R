@@ -53,10 +53,12 @@ app_server <- function(input, output, session) {
     }
   })
   
-  # Setup Modules ----
+  # Add Setup Modules Here!!! ---- 
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  #
   ## Database Module Setup
   bq_setup_vars <- shinyBigQuery::bigquery_setup_server(id = 'bq-setup-namespace')
   pg_setup_vars <- shinyPostgreSQL::postgresql_setup_server(id = 'pg-setup-namespace')
+  
   ## DB Var Config
   database_setup <- reactiveValues(bigquery = bq_setup_vars,
                                    postgresql = pg_setup_vars
@@ -65,12 +67,14 @@ app_server <- function(input, output, session) {
   ## Abstraction Module Setup
   rc_setup_vars <- shinyREDCap::redcap_setup_server(id = 'rc-setup', reset = rc_instrument_vars$reset)
   
+  ## Abstraction Var Config
+  abs_setup <- reactiveValues(redcap = rc_setup_vars)
+  
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ /#
+  
   ## Abstraction Instrument
   subject_id <- reactive({ input$subject_id }) ## Pass to instrument function
   rc_instrument_vars <- shinyREDCap::redcap_instrument_server(id = 'rc-setup', redcap_vars = rc_setup_vars, subject_id = subject_id)
-  
-  ## Abstraction Var Config
-  abs_setup <- reactiveValues(redcap = rc_setup_vars)
   
   ## Setup Tab Selector Modules
   database_vars <- mod_selector_server('db-selector', database_setup)
