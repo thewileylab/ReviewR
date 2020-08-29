@@ -18,21 +18,21 @@ app_server <- function(input, output, session) {
   output$welcome_tab <- homepage() 
   output$setup_tab <- setup()
   output$patient_search_tab <- patient_search()
-  # output$chart_review_tab <- chart_review()
+  output$chart_review_tab <- chart_review()
   
   ## Run everything all the time
   ### Certain observers won't fire correctly without this set and if they are located on a tab that isn't in focus
   outputOptions(output, 'setup_tab', suspendWhenHidden = F)
   outputOptions(output, 'patient_search_tab', suspendWhenHidden = F)
-  # outputOptions(output, 'chart_review_tab', suspendWhenHidden = F)
+  outputOptions(output, 'chart_review_tab', suspendWhenHidden = F)
   
   ## Render Main UI
   output$main_ui <- renderUI({
     tabItems(
       tabItem(tabName = 'welcome', uiOutput('welcome_tab'), class = 'active'), #https://stackoverflow.com/questions/36817407/content-doesnt-show-up-in-the-dashboard-body-if-the-sidebar-menu-is-dynamically/36819190#36819190
       tabItem(tabName = 'setup', uiOutput('setup_tab')),
-      tabItem(tabName = 'patient_search', uiOutput('patient_search_tab'))
-      # tabItem(tabName = 'chart_review', uiOutput('chart_review_tab'))
+      tabItem(tabName = 'patient_search', uiOutput('patient_search_tab')),
+      tabItem(tabName = 'chart_review', uiOutput('chart_review_tab'))
     )
   })
   
