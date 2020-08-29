@@ -3,7 +3,7 @@
 #' @importFrom shinyPostgreSQL postgresql_setup_server
 #' @importFrom shinyREDCap redcap_setup_server redcap_instrument_server
 app_server <- function(input, output, session) {
-  # Define Main UI Outputs ----
+  # Main UI  ----
   ## Define a dynamic application menu
   output$application_menu <- renderMenu({
     sidebarMenu(id = 'main_tabs',
@@ -26,7 +26,7 @@ app_server <- function(input, output, session) {
   outputOptions(output, 'patient_search_tab', suspendWhenHidden = F)
   # outputOptions(output, 'chart_review_tab', suspendWhenHidden = F)
   
-  # Render Main UI ----
+  ## Render Main UI
   output$main_ui <- renderUI({
     tabItems(
       tabItem(tabName = 'welcome', uiOutput('welcome_tab'), class = 'active'), #https://stackoverflow.com/questions/36817407/content-doesnt-show-up-in-the-dashboard-body-if-the-sidebar-menu-is-dynamically/36819190#36819190
@@ -44,23 +44,26 @@ app_server <- function(input, output, session) {
   database_setup <- reactiveValues(bigquery = bq_setup_vars,
                                    postgresql = pg_setup_vars
                                    )
+  
   ## Abstraction Module Setup
   rc_setup_vars <- shinyREDCap::redcap_setup_server(id = 'rc-setup', reset = rc_instrument_vars$reset)
+  
   ## Abstraction Instrument
   subject_id <- reactive({ input$subject_id }) ## Pass to instrument function
   rc_instrument_vars <- shinyREDCap::redcap_instrument_server(id = 'rc-setup', redcap_vars = rc_setup_vars, subject_id = subject_id)
+  
   ## Abstraction Var Config
   abs_setup <- reactiveValues(redcap = rc_setup_vars)
   
-  # Setup Tab Selector Modules ----
+  ## Setup Tab Selector Modules
   database_vars <- mod_selector_server('db-selector', database_setup)
   abstract_vars <- mod_selector_server('abs-selector', abs_setup)
   
-  # Database Detection Module ----
+  ## Database Detection Module
   data_model_vars <- mod_data_model_detection_server('data-model', database_vars)
   
-  ## Call Patient Search Tab Modules ----
-  ### Patient Search Module
+  # Call Patient Search Tab Modules ----
+  ## Patient Search Module
   # subject_info <- callModule(patient_search_logic, 'patient_search_ns', table_map$table_map, db_connection_vars$db_connection, table_map$db_disconnect, subject_selection_vars$previous_sub, subject_selection_vars$next_sub, subject_selection_vars$subject_id, parent=session)
   # 
   # ## Call ReviewR Chart Review Tab Modules ----
