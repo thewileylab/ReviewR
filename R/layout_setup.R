@@ -32,7 +32,7 @@ setup <- function() {
                  style = 'background: #ebf0f6',
                  ## Abstraction Module Selector
                  mod_selector_ui(id = 'abs-selector',type = 'abstraction'),
-                 selectInput(inputId = 'subject_id',label = 'Subject ID',choices = NULL) 
+                 selectInput(inputId = 'subject_id',label = 'Subject ID',choices = NULL)
                  )
                )
         )
