@@ -46,11 +46,8 @@ app_server <- function(input, output, session) {
   ## BigQuery Redirect  
   ### After leaving ReviewR to authenticate with Google, take the user back to the Setup Tab to complete database configuration.
   observeEvent(database_vars()$user_info, {
-    if (is.null(database_vars()$user_info ) ) { # Only redirect when user information is present
-      return(NULL)
-    } else {
-      updateTabItems(session, 'main_tabs', selected = 'setup')
-    }
+    req(database_vars()$user_info)
+    updateTabItems(session, 'main_tabs', selected = 'setup')
   })
   
   # Setup Modules ---- 
