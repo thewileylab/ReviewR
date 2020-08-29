@@ -19,7 +19,7 @@ chart_review <- function() {
                      status = 'primary', 
                      solidHeader = F,
                      #Box Contents
-                     subject_info('chart_review')
+                     # subject_info('chart_review')
                      )
                  ),
           #Column Setup
@@ -30,14 +30,14 @@ chart_review <- function() {
                      status = 'primary', 
                      solidHeader = F,
                      #Box Contents
-                     patient_nav_ui('chart_review')
+                     # patient_nav_ui('chart_review')
                      )
                  )
           ),
         fluidRow(
           # Column Setup
           column(width = 12,
-                 chart_review_ui('chart_review')
+                 # chart_review_ui('chart_review')
                  )
           )
         )
