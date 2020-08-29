@@ -60,7 +60,13 @@ app_server <- function(input, output, session) {
   abstract_vars <- mod_selector_server('abs-selector', abs_setup)
   
   ## Database Detection Module
+  ### Module
   data_model_vars <- mod_data_model_detection_server('data-model', database_vars)
+  ### Output for Patient Search
+  output$data_model_message <- renderText({
+    req(data_model_vars$message )
+    data_model_vars$message
+    })
   
   # Call Patient Search Tab Modules ----
   ## Patient Search Module
