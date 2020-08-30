@@ -15,4 +15,4 @@
 #' }
 #' @source \url{https://github.com/OHDSI/CommonDataModel/}
 #' @source \url{https://github.com/MIT-LCP/mimic-code}
-"supported_models"
+"supported_datamodels"
