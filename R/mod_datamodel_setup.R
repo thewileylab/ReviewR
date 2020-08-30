@@ -76,7 +76,7 @@ mod_data_model_detection_server <- function(id, database_vars) {
                  count_filtered = unlist(.data$count_filtered)
                  )
         
-        ### Select and store the most likely mapping based on matchine fields
+        ### Select and store the most likely mapping based on matching fields
         data_model_vars$table_map <- user_joined %>% 
           ungroup() %>% 
           filter(.data$count_filtered == max(.data$count_filtered)) %>% 
