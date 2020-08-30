@@ -19,6 +19,13 @@ patient_search_ui <- function(id) {
   ns <- NS(id)
   tagList(
     DT::dataTableOutput(ns('patient_search_dt')) %>% withSpinner() 
+    )
+  }
+
+patient_nav_ui <- function(id) {
+  ns <- NS(id)
+  tagList(
+    uiOutput(ns('patient_nav_ui'))
   )
 }
 
@@ -43,7 +50,9 @@ patient_search_ui <- function(id) {
 patient_search_logic <- function(id) {
   moduleServer(
     id,
-    function(input, output, session, table_map, db_connection, disconnect, prev_sub, next_sub, selected_sub, parent) {
+    # function(input, output, session, table_map, db_connection, disconnect, prev_sub, next_sub, selected_sub, parent) {
+    function(input, output, session, database_vars, datamodel_vars, abstract_vars) {
+      
       ns <- session$ns
       
       #Replace Patient Search Table when table map changes

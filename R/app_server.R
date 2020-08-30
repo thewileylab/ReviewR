@@ -74,11 +74,11 @@ app_server <- function(input, output, session) {
   
   ## Database Detection Module
   ### Module
-  data_model_vars <- mod_data_model_detection_server('data-model', database_vars)
+  datamodel_vars <- mod_datamodel_detection_server('data-model', database_vars)
   ### Output for Patient Search
-  output$data_model_message <- renderText({
-    req(data_model_vars$message)
-    data_model_vars$message
+  output$datamodel_message <- renderText({
+    req(datamodel_vars$message)
+    datamodel_vars$message
     })
   
   # Patient Search Modules ----
