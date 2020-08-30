@@ -15,7 +15,7 @@ chart_review <- function() {
           column(width = 9,
                  #Box Setup
                  box(width = '100%',
-                     height = '130px',
+                     # height = '130px',
                      status = 'primary', 
                      solidHeader = F,
                      #Box Contents
@@ -26,11 +26,12 @@ chart_review <- function() {
           column(width = 3,
                  #Box Setup
                  box(width = '100%',
-                     height = '130px',
+                     # height = '130px',
                      status = 'primary', 
                      solidHeader = F,
                      #Box Contents
                      # patient_nav_ui('chart_review')
+                     chart_review_navigation('pt-navigation')
                      )
                  )
           ),

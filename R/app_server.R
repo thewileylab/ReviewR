@@ -81,8 +81,9 @@ app_server <- function(input, output, session) {
     datamodel_vars$message
     })
   
-  # Patient Search Modules ----
-  ## Patient Search Module
+  # Patient Navigation Module ----
+  ## Patient Navigation
+  patient_search_logic(id = 'pt-navigation', database_vars, datamodel_vars, abstract_vars)
   # subject_info <- callModule(patient_search_logic, 'patient_search_ns', table_map$table_map, db_connection_vars$db_connection, table_map$db_disconnect, subject_selection_vars$previous_sub, subject_selection_vars$next_sub, subject_selection_vars$subject_id, parent=session)
   # 
   # Chart Review Modules ----
