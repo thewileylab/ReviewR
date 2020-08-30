@@ -18,7 +18,7 @@
 all_patient_search_dt <- function(id) {
   ns <- NS(id)
   tagList(
-    DT::dataTableOutput(ns('patient_search_dt')) %>% withSpinner() 
+    DT::dataTableOutput(ns('all_patient_search_dt')) %>% withSpinner() 
     )
   }
 
@@ -64,6 +64,8 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars) 
     function(input, output, session) {
       
       ns <- session$ns
+      
+      # Navigation Vars ----
       navigation_vars <- reactiveValues(
         all_patients = NULL
         )
@@ -80,6 +82,20 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars) 
                                                     !!!all_patients_args
                                                     )
         })
+      
+      # Patient Search Data Table ----
+        output$all_patient_search_dt <- DT::renderDataTable({
+          req(navigation_vars$all_patients, database_vars()$is_connected == 'yes')
+          # The next time you think about implementing FixedColumns, check the status of this issue first: https://github.com/rstudio/DT/issues/275
+          navigation_vars$all_patients %>%
+            rename('Subject ID' = .data$ID) %>%
+            reviewr_datatable() %>%
+            formatStyle('Subject ID',
+                        color = '#0000EE',
+                        cursor = 'pointer',  # Format the ID column to appear blue and change the mouse to a pointer
+                        textAlign = 'left'
+                        )
+          })
       
     #   #Replace Patient Search Table when table map changes
     #   observeEvent(table_map(), {
