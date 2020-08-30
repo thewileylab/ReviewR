@@ -8,7 +8,7 @@
 A data frame with 12 rows and 4 variables:
 \describe{
 \item{file_path}{Where schema was imported from}
-\item{data_model}{Data model name, OMOP or MIMIC}
+\item{datamodel}{Data model name, OMOP or MIMIC}
 \item{model_version}{Version of the data model}
 \item{data}{Nested database schemas, including included table and field mappings}
 ...

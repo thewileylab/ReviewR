@@ -15,10 +15,10 @@
 #' @importFrom shiny NS tagList HTML
 #' 
 
-data_model_detection_ui <- function(id) {
+datamodel_detection_ui <- function(id) {
   ns <- NS(id)
   tagList(
-    uiOutput(ns('data_model_ui'))
+    uiOutput(ns('datamodel_ui'))
     )
 }
 
@@ -38,12 +38,12 @@ data_model_detection_ui <- function(id) {
 #' @importFrom rlang .data
 #' @importFrom utils data
 
-mod_data_model_detection_server <- function(id, database_vars) {
+mod_datamodel_detection_server <- function(id, database_vars) {
   moduleServer(
     id,
     function(input, output, session) {
       ns <- session$n
-      data_model_vars <- reactiveValues(
+      datamodel_vars <- reactiveValues(
         table_map = NULL,
         message = NULL
         )
@@ -77,33 +77,33 @@ mod_data_model_detection_server <- function(id, database_vars) {
                  )
         
         ### Select and store the most likely mapping based on matching fields
-        data_model_vars$table_map <- user_joined %>% 
+        datamodel_vars$table_map <- user_joined %>% 
           ungroup() %>% 
           filter(.data$count_filtered == max(.data$count_filtered)) %>% 
-          select(.data$data_model, .data$model_version, .data$data, .data$model_match, .data$count_filtered) %>%
+          select(.data$datamodel, .data$model_version, .data$data, .data$model_match, .data$count_filtered) %>%
           arrange(desc(.data$model_version)) %>%
           slice(1)
         })
       
       # Create UI Message ----
-      observeEvent(data_model_vars$table_map, {
-        req(data_model_vars$table_map)
-        data_model_vars$message <-if (data_model_vars$table_map$count_filtered !=0) {
-            HTML(glue::glue('<em>Data Model: {data_model_vars$table_map$data_model} {str_replace_all(data_model_vars$table_map$model_version,"_",".")}</em>'))
+      observeEvent(datamodel_vars$table_map, {
+        req(datamodel_vars$table_map)
+        datamodel_vars$message <-if (datamodel_vars$table_map$count_filtered !=0) {
+            HTML(glue::glue('<em>Data Model: {datamodel_vars$table_map$datamodel} {str_replace_all(datamodel_vars$table_map$model_version,"_",".")}</em>'))
             } else {HTML(paste('<em>The selected database does not appear to be in OMOP or MIMIC III format. Please disconnect and select another database.</em>'))
               }
         })
       
       # UI Outputs ----
-      output$data_model_ui <- renderUI({
+      output$datamodel_ui <- renderUI({
         req(database_vars()$is_connected == 'yes')
         tagList(
-          data_model_vars$message
+          datamodel_vars$message
           )
         })
       
       # Return ----
-      return(data_model_vars)
+      return(datamodel_vars)
       }
     )
 }

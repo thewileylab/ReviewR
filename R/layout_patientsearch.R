@@ -18,7 +18,7 @@ patient_search <- function() {
             #Box Contents
             HTML('To select a patient, please click the desired Subject ID in the table below:'),
             # patient_search_ui('patient_search_ns'),
-            uiOutput('data_model_message')
+            uiOutput('datamodel_message')
             )
         )
       )
