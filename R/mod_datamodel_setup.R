@@ -150,7 +150,7 @@ mod_datamodel_detection_server <- function(id, database_vars) {
             HTML(glue::glue('<em>Data Model: {datamodel_vars$table_map$datamodel} {str_replace_all(datamodel_vars$table_map$model_version,"_",".")}</em>'))
             } else {HTML(paste('<em>The selected database does not appear to be in OMOP or MIMIC III format. Please disconnect and select another database.</em>'))
             }
-        ## All patients function
+        ## Datamodel Table Functions
         datamodel_vars$table_functions <- lsf.str('package:ReviewR') %>% 
           tibble::enframe(name = NULL, value = 'function_name') %>% 
           filter(stringr::str_detect(function_name, glue::glue('{datamodel_vars$table_map$datamodel}_table') )) %>% 
