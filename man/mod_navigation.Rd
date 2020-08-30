@@ -2,12 +2,12 @@
 % Please edit documentation in R/mod_navigation.R
 \name{all_patient_search_dt}
 \alias{all_patient_search_dt}
-\alias{patient_search_logic}
+\alias{navigation_server}
 \title{Patient Navigation}
 \usage{
 all_patient_search_dt(id)
 
-patient_search_logic(id, database_vars, datamodel_vars, abstract_vars)
+navigation_server(id, database_vars, datamodel_vars, abstract_vars)
 }
 \arguments{
 \item{id}{The namespace id for the UI output}

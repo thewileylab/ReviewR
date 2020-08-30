@@ -56,14 +56,30 @@ chart_review_navigation <- function(id) {
 #' @importFrom DT reloadData formatStyle selectRows dataTableProxy
 #' @importFrom dplyr rename slice filter select pull
 #' @importFrom tibble rowid_to_column
-#' @importFrom rlang .data
-patient_search_logic <- function(id, database_vars, datamodel_vars, abstract_vars) {
+#' @importFrom rlang .data exec
+navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars) {
   moduleServer(
     id,
     # function(input, output, session, table_map, db_connection, disconnect, prev_sub, next_sub, selected_sub, parent) {
     function(input, output, session) {
       
       ns <- session$ns
+      navigation_vars <- reactiveValues(
+        all_patients = NULL
+        )
+      
+      observeEvent(datamodel_vars$table_functions, {
+        req(datamodel_vars$table_functions)
+        # browser()
+        all_patients_args <- list(table_map = datamodel_vars$table_map, 
+                                  db_connection = database_vars()$db_con
+                                  )
+        navigation_vars$all_patients <- rlang::exec(datamodel_vars$table_functions %>% 
+                                                      filter(table_name == 'all_patients') %>% 
+                                                      extract2('function_name'),
+                                                    !!!all_patients_args
+                                                    )
+        })
       
     #   #Replace Patient Search Table when table map changes
     #   observeEvent(table_map(), {
@@ -153,6 +169,8 @@ patient_search_logic <- function(id, database_vars, datamodel_vars, abstract_var
     #     'selected_patient' = selected_patient,
     #     'selected_patient_info' = selected_patient_info
     #     ))
+      # Return ----
+      return(navigation_vars)
       }
     )
   }
