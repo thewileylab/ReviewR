@@ -1,6 +1,6 @@
 ## code to prepare `DATASET` dataset goes here
 
-supported_models <- list.files(path = file.path('data-raw/data_models'),full.names = T,recursive = T) %>% 
+supported_datamodels <- list.files(path = file.path('data-raw/data_models'),full.names = T,recursive = T) %>% 
   tibble(file_path = .) %>% 
   mutate(data_model = str_extract(string = file_path, pattern = regex('(mimic3)|(omop)',ignore_case = T)),
          data_model = tolower(data_model),
@@ -17,4 +17,4 @@ supported_models <- list.files(path = file.path('data-raw/data_models'),full.nam
   group_by(file_path,data_model,model_version) %>% 
   nest()
 
-usethis::use_data(supported_models)
+usethis::use_data(supported_datamodels)
