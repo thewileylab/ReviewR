@@ -94,7 +94,9 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
       # Navigation Vars ----
       navigation_vars <- reactiveValues(
         dt_proxy = NULL,
-        all_patients = NULL
+        all_patients = NULL,
+        subject_choices = NULL,
+        selected_subject = NULL
         )
       
       observeEvent(datamodel_vars$table_functions, ignoreNULL = F, {
@@ -135,18 +137,34 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
             }
           })
       
+      
+      
+      
+      
+      # Chart Review Dropdown ----
       observeEvent(navigation_vars$all_patients, ignoreNULL = FALSE, {
         # browser()
-        subject_choices <- if(is.null(navigation_vars$all_patients) ) {
+        navigation_vars$subject_choices <- if(is.null(navigation_vars$all_patients) ) {
           c('<empty>')
           } else { navigation_vars$all_patients$ID }
         updateSelectizeInput(session = session, 
                              inputId = 'subject_id',
-                             choices = subject_choices,
+                             choices = navigation_vars$subject_choices,
                              server = T
                              )
         })
       
+      observeEvent(input$all_patient_search_dt_rows_selected, { 
+        # browser()
+        navigation_vars$selected_patient <- navigation_vars$all_patients %>%
+          slice(input$all_patient_search_dt_rows_selected) %>%
+          pull(.data$ID)
+        updateSelectizeInput(session = session, 
+                             inputId = 'subject_id',
+                             choices = navigation_vars$subject_choices,
+                             selected = navigation_vars$selected_patient,
+                             server = T)
+      })
     #   #Replace Patient Search Table when table map changes
     #   observeEvent(table_map(), {
     #     req(table_map() )
