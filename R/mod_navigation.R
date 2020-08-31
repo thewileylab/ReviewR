@@ -135,6 +135,18 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
             }
           })
       
+      observeEvent(navigation_vars$all_patients, ignoreNULL = FALSE, {
+        # browser()
+        subject_choices <- if(is.null(navigation_vars$all_patients) ) {
+          c('<empty>')
+          } else { navigation_vars$all_patients$ID }
+        updateSelectizeInput(session = session, 
+                             inputId = 'subject_id',
+                             choices = subject_choices,
+                             server = T
+                             )
+        })
+      
     #   #Replace Patient Search Table when table map changes
     #   observeEvent(table_map(), {
     #     req(table_map() )

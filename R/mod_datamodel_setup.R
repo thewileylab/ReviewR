@@ -107,39 +107,42 @@ mod_datamodel_detection_server <- function(id, database_vars) {
       # Calculate Table Map ----
       ## Determine which user fields map to known CDM field values
       observeEvent(database_vars()$is_connected, {
-        req(database_vars()$is_connected == 'yes', database_vars()$db_con)
-        
-        ### Load user tables and nest fields. 
-        user_tables <- dbListTables(database_vars()$db_con) %>% 
-          tibble(user_database_table = .data$.) %>% 
-          mutate(user_fields_long = map(.x = .data$user_database_table,.f = dbListFields,conn=database_vars()$db_con),
-                 user_fields_long = map(.x = .data$user_fields_long,.f = as_tibble)
-                 ) %>% 
-          #### Unnest user tables and coerce to match cdm standards
-          unnest(cols = c(.data$user_fields_long)) %>% 
-          rename(user_fields = .data$value) %>% 
-          mutate(clean_user_fields = tolower(.data$user_fields),
-                 clean_user_fields = str_replace(string = .data$clean_user_fields, pattern = regex(pattern = '[.!?\\-]'),replacement = '_'),
-                 clean_table = tolower(.data$user_database_table),
-                 clean_table = str_replace(string = .data$clean_table, pattern = regex(pattern = '[.!?\\-]'),replacement = '_')) %>% 
-          select(.data$user_database_table, .data$clean_table, .data$user_fields, .data$clean_user_fields)
-        
-        ### Join user tables with supported data models, determine which one the user is likely running
-        user_joined <- ReviewR::supported_datamodels %>% 
-          mutate(model_match = map(.x = data,.f = left_join, user_tables, by = c('table'='clean_table', 'field'='clean_user_fields')))%>% 
-          mutate(filtered = map(.x = .data$model_match,.f = filter, is.na(.data$user_fields)!=T),
-                 count_filtered = map(.x = .data$filtered,.f = nrow), 
-                 count_filtered = unlist(.data$count_filtered)
-                 )
-        
-        ### Select and store the most likely mapping based on matching fields
-        datamodel_vars$table_map <- user_joined %>% 
-          ungroup() %>% 
-          filter(.data$count_filtered == max(.data$count_filtered)) %>% 
-          select(.data$datamodel, .data$model_version, .data$data, .data$model_match, .data$count_filtered) %>%
-          arrange(desc(.data$model_version)) %>%
-          slice(1) %>% 
-          filter(.data$count_filtered > 0)
+        req(database_vars()$is_connected)
+        if(is.null(database_vars()$db_con)) {
+          datamodel_vars$table_map <- tibble(.rows = 0)
+        } else {
+          ### Load user tables and nest fields. 
+          user_tables <- dbListTables(database_vars()$db_con) %>% 
+            tibble(user_database_table = .data$.) %>% 
+            mutate(user_fields_long = map(.x = .data$user_database_table,.f = dbListFields,conn=database_vars()$db_con),
+                   user_fields_long = map(.x = .data$user_fields_long,.f = as_tibble)
+                   ) %>% 
+            #### Unnest user tables and coerce to match cdm standards
+            unnest(cols = c(.data$user_fields_long)) %>% 
+            rename(user_fields = .data$value) %>% 
+            mutate(clean_user_fields = tolower(.data$user_fields),
+                   clean_user_fields = str_replace(string = .data$clean_user_fields, pattern = regex(pattern = '[.!?\\-]'),replacement = '_'),
+                   clean_table = tolower(.data$user_database_table),
+                   clean_table = str_replace(string = .data$clean_table, pattern = regex(pattern = '[.!?\\-]'),replacement = '_')) %>% 
+            select(.data$user_database_table, .data$clean_table, .data$user_fields, .data$clean_user_fields)
+          
+          ### Join user tables with supported data models, determine which one the user is likely running
+          user_joined <- ReviewR::supported_datamodels %>% 
+            mutate(model_match = map(.x = data,.f = left_join, user_tables, by = c('table'='clean_table', 'field'='clean_user_fields')))%>% 
+            mutate(filtered = map(.x = .data$model_match,.f = filter, is.na(.data$user_fields)!=T),
+                   count_filtered = map(.x = .data$filtered,.f = nrow), 
+                   count_filtered = unlist(.data$count_filtered)
+                   )
+          
+          ### Select and store the most likely mapping based on matching fields
+          datamodel_vars$table_map <- user_joined %>% 
+            ungroup() %>% 
+            filter(.data$count_filtered == max(.data$count_filtered)) %>% 
+            select(.data$datamodel, .data$model_version, .data$data, .data$model_match, .data$count_filtered) %>%
+            arrange(desc(.data$model_version)) %>%
+            slice(1) %>% 
+            filter(.data$count_filtered > 0)
+          }
         })
       
       # Store Additional Vars ----

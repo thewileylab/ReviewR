@@ -11,7 +11,7 @@ patient_search <- function() {
     tagList(
       fluidPage(
         #Box Setup
-        box(title = h2('Select A Patient'),
+        box(title = h2('Select a Patient'),
             width = '100%', 
             status = 'primary', 
             solidHeader = F,
