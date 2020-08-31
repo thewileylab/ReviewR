@@ -77,7 +77,7 @@ app_server <- function(input, output, session) {
   datamodel_vars <- mod_datamodel_detection_server('data-model', database_vars)
   ### Output for Patient Search
   output$datamodel_message <- renderText({
-    req(datamodel_vars$message)
+    req(database_vars()$is_connected == 'yes')
     datamodel_vars$message
     })
   

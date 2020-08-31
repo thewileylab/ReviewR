@@ -157,7 +157,7 @@ mod_datamodel_detection_server <- function(id, database_vars) {
             tibble::enframe(name = NULL, value = 'function_name') %>% 
             filter(stringr::str_detect(function_name, glue::glue('{datamodel_vars$table_map$datamodel}_table') )) %>% 
             mutate(table_name = stringr::str_remove(function_name, glue::glue('{datamodel_vars$table_map$datamodel}_table_') ))
-          } else { return(NULL) }
+          } else { NULL }
         })
       
       # UI Outputs ----

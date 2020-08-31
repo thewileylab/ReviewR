@@ -1,3 +1,32 @@
+# Helper Functions ---- 
+#' ReviewR Datatable
+#'
+#' @param .data A local tibble or dataframe to be rendered in the ReviewR UI
+#'
+#' @return return a DT with custom options
+#' @keywords internal
+#' @export 
+#' @importFrom DT datatable
+#'
+reviewr_datatable <- function(.data) {
+  DT::datatable(data = .data,
+                extensions = list('Scroller' = NULL),
+                options = list(scrollX = TRUE,
+                               deferRender = TRUE,
+                               scrollY = '600px',
+                               scroller = TRUE,
+                               searchHighlight = TRUE, 
+                               search = list(regex = TRUE, 
+                                             caseInsensitive = TRUE)
+                ),
+                rownames = F, 
+                selection = 'single',
+                escape = F,
+                filter = 'top',
+                class = 'cell-border strip hover'
+  )
+}
+
 # UI ----
 #' Patient Navigation
 #'
@@ -68,32 +97,42 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
         all_patients = NULL
         )
       
-      observeEvent(datamodel_vars$table_functions, {
-        req(datamodel_vars$table_functions)
+      observeEvent(datamodel_vars$table_functions, ignoreNULL = F, {
+        # req(datamodel_vars$table_functions)
         # browser()
-        navigation_vars$dt_proxy <- DT::dataTableProxy(outputId = ns('all_patient_search_dt'), session = parent_session)
-        all_patients_args <- list(table_map = datamodel_vars$table_map, 
-                                  db_connection = database_vars()$db_con
-                                  )
-        navigation_vars$all_patients <- rlang::exec(datamodel_vars$table_functions %>% 
-                                                      filter(table_name == 'all_patients') %>% 
-                                                      extract2('function_name'),
-                                                    !!!all_patients_args
-                                                    )
+        if(is.null(datamodel_vars$table_functions) == FALSE) {
+          navigation_vars$dt_proxy <- DT::dataTableProxy(outputId = ns('all_patient_search_dt'), session = parent_session)
+          all_patients_args <- list(table_map = datamodel_vars$table_map, 
+                                    db_connection = database_vars()$db_con
+          )
+          navigation_vars$all_patients <- rlang::exec(datamodel_vars$table_functions %>% 
+                                                        filter(table_name == 'all_patients') %>% 
+                                                        extract2('function_name'),
+                                                      !!!all_patients_args
+                                                      )
+          } else {
+            navigation_vars$dt_proxy <- NULL
+            navigation_vars$all_patients <- NULL
+            }
         })
       
       # Patient Search Data Table ----
         output$all_patient_search_dt <- DT::renderDataTable({
-          req(navigation_vars$all_patients, database_vars()$is_connected == 'yes', datamodel_vars$table_functions)
-          # The next time you think about implementing FixedColumns, check the status of this issue first: https://github.com/rstudio/DT/issues/275
-          navigation_vars$all_patients %>%
-            rename('Subject ID' = .data$ID) %>%
-            reviewr_datatable() %>%
-            formatStyle('Subject ID',
-                        color = '#0000EE',
-                        cursor = 'pointer',  # Format the ID column to appear blue and change the mouse to a pointer
-                        textAlign = 'left'
-                        )
+          req(database_vars()$is_connected == 'yes')
+          if(is.null(navigation_vars$all_patients)) {
+            tibble::tibble(.rows = 0) %>% 
+              reviewr_datatable()
+          } else {
+            # The next time you think about implementing FixedColumns, check the status of this issue first: https://github.com/rstudio/DT/issues/275
+            navigation_vars$all_patients %>%
+              rename('Subject ID' = .data$ID) %>%
+              reviewr_datatable() %>%
+              formatStyle('Subject ID',
+                          color = '#0000EE',
+                          cursor = 'pointer',  # Format the ID column to appear blue and change the mouse to a pointer
+                          textAlign = 'left'
+                          )
+            }
           })
       
     #   #Replace Patient Search Table when table map changes
