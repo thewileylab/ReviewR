@@ -84,7 +84,7 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
       
       # Patient Search Data Table ----
         output$all_patient_search_dt <- DT::renderDataTable({
-          req(navigation_vars$all_patients, database_vars()$is_connected == 'yes')
+          req(navigation_vars$all_patients, database_vars()$is_connected == 'yes', datamodel_vars$table_functions)
           # The next time you think about implementing FixedColumns, check the status of this issue first: https://github.com/rstudio/DT/issues/275
           navigation_vars$all_patients %>%
             rename('Subject ID' = .data$ID) %>%
