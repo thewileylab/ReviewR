@@ -138,7 +138,8 @@ mod_datamodel_detection_server <- function(id, database_vars) {
           filter(.data$count_filtered == max(.data$count_filtered)) %>% 
           select(.data$datamodel, .data$model_version, .data$data, .data$model_match, .data$count_filtered) %>%
           arrange(desc(.data$model_version)) %>%
-          slice(1)
+          slice(1) %>% 
+          filter(.data$count_filtered > 0)
         })
       
       # Store Additional Vars ----
@@ -146,15 +147,17 @@ mod_datamodel_detection_server <- function(id, database_vars) {
         req(datamodel_vars$table_map)
         # browser()
         ## Datamodel Message
-        datamodel_vars$message <-if (datamodel_vars$table_map$count_filtered !=0) {
+        datamodel_vars$message <-if (nrow(datamodel_vars$table_map) > 0) {
             HTML(glue::glue('<em>Data Model: {datamodel_vars$table_map$datamodel} {str_replace_all(datamodel_vars$table_map$model_version,"_",".")}</em>'))
-            } else {HTML(paste('<em>The selected database does not appear to be in OMOP or MIMIC III format. Please disconnect and select another database.</em>'))
+            } else {HTML(paste("<font color='#e83a2f'><em>The selected database does not appear to contain a supported datamodel. Please disconnect and select another database.</em></font>"))
             }
         ## Datamodel Table Functions
-        datamodel_vars$table_functions <- lsf.str('package:ReviewR') %>% 
-          tibble::enframe(name = NULL, value = 'function_name') %>% 
-          filter(stringr::str_detect(function_name, glue::glue('{datamodel_vars$table_map$datamodel}_table') )) %>% 
-          mutate(table_name = stringr::str_remove(function_name, glue::glue('{datamodel_vars$table_map$datamodel}_table_') ))
+        datamodel_vars$table_functions <- if (nrow(datamodel_vars$table_map) > 0) {
+          lsf.str('package:ReviewR') %>% 
+            tibble::enframe(name = NULL, value = 'function_name') %>% 
+            filter(stringr::str_detect(function_name, glue::glue('{datamodel_vars$table_map$datamodel}_table') )) %>% 
+            mutate(table_name = stringr::str_remove(function_name, glue::glue('{datamodel_vars$table_map$datamodel}_table_') ))
+          } else { return(NULL) }
         })
       
       # UI Outputs ----
