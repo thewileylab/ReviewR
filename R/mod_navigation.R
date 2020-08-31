@@ -40,13 +40,10 @@ chart_review_navigation <- function(id) {
 }
 
 # Server ---- 
-#' @param table_map tibble containing a the cdm that most closely matches the user's database and a map of standard tables to user tables
-#' @param db_connection Connection info received from the database setup module
-#' @param disconnect disconnect button press
-#' @param prev_sub previous subject button press
-#' @param next_sub next subject button press
-#' @param selected_sub the selected subject
-#' @param parent the parent environment of this module
+#' @param database_vars Database variables returned from user selected database setup module
+#' @param datamodel_vars Datamodel variablese returned from mod_datamodel_setup
+#' @param abstract_vars Abstraction variables reeturned from user selected abstraction module
+#' @param parent_session the parent environment of this module
 #'
 #' @rdname mod_navigation
 #' 
@@ -57,7 +54,7 @@ chart_review_navigation <- function(id) {
 #' @importFrom dplyr rename slice filter select pull
 #' @importFrom tibble rowid_to_column
 #' @importFrom rlang .data exec
-navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars) {
+navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, parent_session) {
   moduleServer(
     id,
     # function(input, output, session, table_map, db_connection, disconnect, prev_sub, next_sub, selected_sub, parent) {
@@ -67,12 +64,14 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars) 
       
       # Navigation Vars ----
       navigation_vars <- reactiveValues(
+        dt_proxy = NULL,
         all_patients = NULL
         )
       
       observeEvent(datamodel_vars$table_functions, {
         req(datamodel_vars$table_functions)
         # browser()
+        navigation_vars$dt_proxy <- DT::dataTableProxy(outputId = ns('all_patient_search_dt'), session = parent_session)
         all_patients_args <- list(table_map = datamodel_vars$table_map, 
                                   db_connection = database_vars()$db_con
                                   )

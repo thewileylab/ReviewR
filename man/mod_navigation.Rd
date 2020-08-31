@@ -7,30 +7,30 @@
 \usage{
 all_patient_search_dt(id)
 
-navigation_server(id, database_vars, datamodel_vars, abstract_vars)
+navigation_server(
+  id,
+  database_vars,
+  datamodel_vars,
+  abstract_vars,
+  parent_session
+)
 }
 \arguments{
 \item{id}{The namespace id for the UI output}
+
+\item{database_vars}{Database variables returned from user selected database setup module}
+
+\item{datamodel_vars}{Datamodel variablese returned from mod_datamodel_setup}
+
+\item{abstract_vars}{Abstraction variables reeturned from user selected abstraction module}
+
+\item{parent_session}{the parent environment of this module}
 
 \item{input}{internal}
 
 \item{output}{internal}
 
 \item{session}{internal}
-
-\item{table_map}{tibble containing a the cdm that most closely matches the user's database and a map of standard tables to user tables}
-
-\item{db_connection}{Connection info received from the database setup module}
-
-\item{disconnect}{disconnect button press}
-
-\item{prev_sub}{previous subject button press}
-
-\item{next_sub}{next subject button press}
-
-\item{selected_sub}{the selected subject}
-
-\item{parent}{the parent environment of this module}
 }
 \description{
 This module will render the datatable on the 'Patient Search' tab containing all patients in the cohort. The selected patient in the DT is kept in sync with the 'Chart Review' tab.
