@@ -2,7 +2,7 @@
 #' @importFrom glue glue
 #' @importFrom shinyBigQuery bigquery_setup_server
 #' @importFrom shinyPostgreSQL postgresql_setup_server
-#' @importFrom shinyREDCap redcap_setup_server redcap_instrument_server
+#' @importFrom shinyREDCap redcap_server 
 #' @importFrom utils packageDescription
 app_server <- function(input, output, session) {
   # Main UI  ----
@@ -60,24 +60,8 @@ app_server <- function(input, output, session) {
     })
   
   # Setup Modules ---- 
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Add Setup Modules Here!!! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
-  ## Database Module Setup
-  ### Collect Database Setup Variables
-  database_setup <- reactiveValues(bigquery = shinyBigQuery::bigquery_setup_server(id = 'bq-setup-namespace'),
-                                   postgresql = shinyPostgreSQL::postgresql_setup_server(id = 'pg-setup-namespace')
-                                   )
-  
-  ## Abstraction Module Setup
-  ## in this instance, the REDCap instrument needs these variables too. Eventually, will need mod selector for abstraction instruments
-  rc_setup_vars <- shinyREDCap::redcap_setup_server(id = 'rc-setup', reset = rc_instrument_vars$reset) 
-  ## Collect Abstraction Variables
-  abstraction_setup <- reactiveValues(redcap = rc_setup_vars)
-  
-  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
-  
-  ## Setup Tab Selector Modules
-  database_vars <- mod_selector_server('db-selector', database_setup)
-  abstract_vars <- mod_selector_server('abs-selector', abstraction_setup)
+  database_vars <- mod_database_setup_server(id = 'db-selector')
+  abstract_vars <- mod_abstraction_setup_server('abs-selector', subject_id)
   
   ## Database Detection Module
   ### Module
@@ -95,8 +79,9 @@ app_server <- function(input, output, session) {
   # 
   # Chart Review Modules ----
   ## Abstraction Instrument
+  
   subject_id <- reactive({ input$subject_id }) ## Pass to instrument function
-  rc_instrument_vars <- shinyREDCap::redcap_instrument_server(id = 'rc-setup', redcap_vars = rc_setup_vars, subject_id = subject_id)
+
   # ### Load Chart Review Modules
   # subject_selection_vars <- callModule(patient_nav_logic, 'chart_review', subject_info$patient_table, subject_info$selected_patient, parent = session)
   # callModule(subject_info_logic, 'chart_review', instrumentData$previous_data, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection, subject_info$selected_patient, subject_info$selected_patient_info)
