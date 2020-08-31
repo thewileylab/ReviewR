@@ -20,7 +20,8 @@ app_ui <- function() {
                                   ),
                   dashboardSidebar(sidebarMenu(id = 'main_tabs',
                                                sidebarMenuOutput('application_menu')
-                                               )
+                                               ),
+                                   uiOutput('reviewr_version')
                                    ),
                   dashboardBody(shinyDashboardThemes(theme = "blue_gradient"),
                                 tags$script(stop_nav_jscode), #Prevent navigation using browser buttons (back, reload, close tab)

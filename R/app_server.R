@@ -1,7 +1,9 @@
 #' @import shiny
+#' @importFrom glue glue
 #' @importFrom shinyBigQuery bigquery_setup_server
 #' @importFrom shinyPostgreSQL postgresql_setup_server
 #' @importFrom shinyREDCap redcap_setup_server redcap_instrument_server
+#' @importFrom utils packageDescription
 app_server <- function(input, output, session) {
   # Main UI  ----
   ## Define a dynamic application menu
@@ -19,6 +21,11 @@ app_server <- function(input, output, session) {
   output$setup <- setup()
   output$patient_search <- patient_search()
   output$chart_review <- chart_review()
+  
+  ## Render ReviewR Version Info
+  output$reviewr_version <- renderUI({ 
+    HTML(glue::glue("<small>Version: {packageDescription(pkg = 'ReviewR', fields = 'Version')}</small>") )
+    })
   
   ## Run everything all the time
   ### Certain observers won't fire correctly without this set and if they are located on a tab that isn't in focus
