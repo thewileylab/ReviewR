@@ -22,16 +22,16 @@ setup <- function() {
         column(width = 6,
                wellPanel(
                  style = 'background: #ebf0f6',
-                 ## Database Module Selector
-                 mod_selector_ui(id = 'db-selector',type = 'database'),
+                 ## Database Setup
+                 database_setup_ui(id = 'db-selector'),
                  datamodel_detection_ui('data-model')
                  )
                ),
         column(width = 6,
                wellPanel(
                  style = 'background: #ebf0f6',
-                 ## Abstraction Module Selector
-                 mod_selector_ui(id = 'abs-selector',type = 'abstraction'),
+                 ## Abstraction Setup
+                 abstraction_setup_ui(id = 'abs-selector'),
                  selectInput(inputId = 'subject_id',label = 'Subject ID',choices = NULL)
                  )
                )
