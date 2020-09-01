@@ -23,7 +23,8 @@ setup <- function() {
                wellPanel(
                  style = 'background: #ebf0f6',
                  ## Database Setup
-                 database_setup_ui(id = 'db-selector'),
+                 database_setup_ui('db-selector'),
+                 ## Datamodel Detection
                  datamodel_detection_ui('data-model')
                  )
                ),
@@ -31,7 +32,7 @@ setup <- function() {
                wellPanel(
                  style = 'background: #ebf0f6',
                  ## Abstraction Setup
-                 abstraction_setup_ui(id = 'abs-selector')
+                 abstraction_setup_ui('abs-selector')
                  )
                )
         )
