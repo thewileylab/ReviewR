@@ -116,18 +116,19 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
       )
       
       observeEvent(datamodel_vars$table_functions, ignoreNULL = F, ignoreInit = T, {
+        ## When disconnecting, reset module to initial state
         if(is.null(datamodel_vars$table_functions) == TRUE) {
           message('Removing "all patients" table')
-          ## Clear general "all patients" info
+          ## Clear Navigation Vars
           navigation_vars$dt_proxy <- NULL
           navigation_vars$all_patients <- NULL
           navigation_vars$all_patients_max_rows = NULL
           navigation_vars$row_ids = NULL
           navigation_vars$subject_ids = NULL
-          ## Clear info about selected Patient
+          ## Clear Subject Info Vars
           subject_vars$selected_subject_info <- NULL
           subject_vars$selected_subject_id = NULL
-          
+          ## When connecting, collect necessary vars
           } else {
             message('Retrieving "all patients" table...')
             ## Create DT Proxy
