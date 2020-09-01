@@ -19,7 +19,6 @@ chart_review <- function() {
                      status = 'primary', 
                      solidHeader = F,
                      #Box Contents
-                     # subject_info('chart_review')
                      chart_review_subject_info('pt-navigation')
                      )
                  ),
@@ -31,7 +30,6 @@ chart_review <- function() {
                      status = 'primary', 
                      solidHeader = F,
                      #Box Contents
-                     # patient_nav_ui('chart_review')
                      chart_review_navigation('pt-navigation')
                      )
                  )
