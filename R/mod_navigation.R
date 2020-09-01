@@ -68,9 +68,9 @@ chart_review_navigation <- function(id) {
                    selected = NULL
                    ),
     fluidRow( 
-        actionButton(inputId = ns('prev_subject'), label = '<-- Previous', width = '125px'), 
-        actionButton(inputId = ns('next_subject'), label = 'Next -->', width = '125px'),
-        style = 'display:inline;margin:auto;width:50%'
+        actionButton(inputId = ns('prev_subject'), label = '<-- Previous', width = '120px'), 
+        actionButton(inputId = ns('next_subject'), label = 'Next -->', width = '120px'),
+        style = 'display:flex;justify-content:center'
         )
     )
 }
@@ -185,7 +185,7 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
         # req(navigation_vars$selected_subject)
         if(is.null(navigation_vars$selected_subject)) {
           tagList(
-            h3('Connect to Patient Database to Begin')
+            HTML('Please complete Database Setup to view patient info')
           )
         } else {
           tagList(
