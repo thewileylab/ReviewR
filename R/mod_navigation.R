@@ -51,6 +51,13 @@ all_patient_search_dt <- function(id) {
     )
   }
 
+chart_review_subject_info <- function(id) {
+  ns <- NS(id)
+  tagList(
+    uiOutput(ns('subject_info'))
+  )
+}
+
 chart_review_navigation <- function(id) {
   ns <- NS(id)
   tagList(
@@ -80,6 +87,7 @@ chart_review_navigation <- function(id) {
 #' @export
 #' @import shiny 
 #' @importFrom DT reloadData formatStyle selectRows dataTableProxy
+#' @importFrom glue glue
 #' @importFrom dplyr rename slice filter select pull
 #' @importFrom tibble rowid_to_column
 #' @importFrom rlang .data exec
@@ -96,7 +104,8 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
         dt_proxy = NULL,
         all_patients = NULL,
         subject_choices = NULL,
-        selected_subject = NULL
+        selected_subject = NULL,
+        selected_subject_id = NULL
         )
       
       observeEvent(datamodel_vars$table_functions, ignoreNULL = F, {
@@ -137,11 +146,8 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
             }
           })
       
-      
-      
-      
-      
       # Chart Review Dropdown ----
+      ## Populate dropdown with ID column from 'all_patients' table
       observeEvent(navigation_vars$all_patients, ignoreNULL = FALSE, {
         # browser()
         navigation_vars$subject_choices <- if(is.null(navigation_vars$all_patients) ) {
@@ -153,17 +159,33 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
                              server = T
                              )
         })
-      
+      ## Extract Patient Info Based on which row is clicked in the DT
       observeEvent(input$all_patient_search_dt_rows_selected, { 
         # browser()
-        navigation_vars$selected_patient <- navigation_vars$all_patients %>%
-          slice(input$all_patient_search_dt_rows_selected) %>%
+        navigation_vars$selected_subject <- navigation_vars$all_patients %>%
+          slice(input$all_patient_search_dt_rows_selected) 
+        navigation_vars$selected_subject_id <- navigation_vars$selected_subject %>%
           pull(.data$ID)
         updateSelectizeInput(session = session, 
                              inputId = 'subject_id',
                              choices = navigation_vars$subject_choices,
-                             selected = navigation_vars$selected_patient,
+                             selected = navigation_vars$selected_subject_id,
                              server = T)
+      })
+      
+      output$subject_info <- renderUI({
+        tagList(
+          div(h3(glue::glue('Subject ID: {navigation_vars$selected_subject_id}'), 
+                 style='padding:0px;'
+                 ), 
+              style='display:inline-block;vertical-align:middle'
+              ),
+          # tags$div(status_indicator(), style='display:inline-block;vertical-align:middle'),
+          renderTable(navigation_vars$selected_subject %>% 
+                        mutate_all(as.character) %>% 
+                        select(-.data$ID), 
+                      width = '100%', align = 'l', digits = 0)
+        )
       })
     #   #Replace Patient Search Table when table map changes
     #   observeEvent(table_map(), {

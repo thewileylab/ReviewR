@@ -20,6 +20,7 @@ chart_review <- function() {
                      solidHeader = F,
                      #Box Contents
                      # subject_info('chart_review')
+                     chart_review_subject_info('pt-navigation')
                      )
                  ),
           #Column Setup
