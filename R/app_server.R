@@ -60,12 +60,12 @@ app_server <- function(input, output, session) {
     })
   
   # Setup Modules ---- 
-  database_vars <- mod_database_setup_server(id = 'db-selector')
-  abstract_vars <- mod_abstraction_setup_server(id = 'abs-selector', selected_subject)
+  database_vars <- mod_database_setup_server('db-selector')
+  abstract_vars <- mod_abstraction_setup_server('abs-selector', selected_subject)
   
   ## Database Detection Module
   ### Module
-  datamodel_vars <- mod_datamodel_detection_server(id = 'data-model', database_vars)
+  datamodel_vars <- mod_datamodel_detection_server('data-model', database_vars)
   ### Output for Patient Search
   output$datamodel_message <- renderText({
     req(database_vars()$is_connected == 'yes')
@@ -74,7 +74,7 @@ app_server <- function(input, output, session) {
   
   # Patient Navigation Module ----
   ## Patient Navigation
-  navigation_vars <- navigation_server(id = 'pt-navigation', database_vars, datamodel_vars, abstract_vars, session)
+  navigation_vars <- navigation_server('pt-navigation', database_vars, datamodel_vars, abstract_vars, session)
   selected_subject <- reactive({ navigation_vars$selected_subject })
   # subject_info <- callModule(patient_search_logic, 'patient_search_ns', table_map$table_map, db_connection_vars$db_connection, table_map$db_disconnect, subject_selection_vars$previous_sub, subject_selection_vars$next_sub, subject_selection_vars$subject_id, parent=session)
   # 
