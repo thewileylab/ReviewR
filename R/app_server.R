@@ -41,8 +41,8 @@ app_server <- function(input, output, session) {
       tabItem(tabName = 'setup', uiOutput('setup')),
       tabItem(tabName = 'patient_search', uiOutput('patient_search')),
       tabItem(tabName = 'chart_review', uiOutput('chart_review'))
-    )
-  })
+      )
+    })
   
   # Main UI Observers ---- 
   ## Quit ReviewR  
@@ -60,13 +60,13 @@ app_server <- function(input, output, session) {
     })
   
   # Setup Modules ---- 
+  ## Database
   database_vars <- mod_database_setup_server('db-selector')
-  abstract_vars <- mod_abstraction_setup_server('abs-selector', selected_subject)
-  
+  ## Abstraction
+  abstract_vars <- mod_abstraction_setup_server('abs-selector', selected_subject_id)
   ## Database Detection Module
-  ### Module
   datamodel_vars <- mod_datamodel_detection_server('data-model', database_vars)
-  ### Output for Patient Search
+  ## Patient Search Output
   output$datamodel_message <- renderText({
     req(database_vars()$is_connected == 'yes')
     datamodel_vars$message
@@ -75,7 +75,7 @@ app_server <- function(input, output, session) {
   # Patient Navigation Module ----
   ## Patient Navigation
   navigation_vars <- navigation_server('pt-navigation', database_vars, datamodel_vars, abstract_vars, session)
-  selected_subject <- reactive({ navigation_vars$selected_subject })
+  selected_subject_id <- reactive({ navigation_vars$selected_subject_id })
   # subject_info <- callModule(patient_search_logic, 'patient_search_ns', table_map$table_map, db_connection_vars$db_connection, table_map$db_disconnect, subject_selection_vars$previous_sub, subject_selection_vars$next_sub, subject_selection_vars$subject_id, parent=session)
   # 
   # Chart Review Modules ----
