@@ -185,8 +185,17 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
                         mutate_all(as.character) %>% 
                         select(-.data$ID), 
                       width = '100%', align = 'l', digits = 0)
-        )
+          )
+        })
+      
+      ## When ID column is clicked, head to the Chart Review Tab
+      observeEvent(input$all_patient_search_dt_cell_clicked, {
+        ### Only redirect if clicked cell contains value and is in column 0 (Subject ID)
+        req(input$all_patient_search_dt_cell_clicked$value, input$all_patient_search_dt_cell_clicked$col == 0)
+        updateTabItems(parent_session, 'main_tabs', selected = 'chart_review')
       })
+      
+      
     #   #Replace Patient Search Table when table map changes
     #   observeEvent(table_map(), {
     #     req(table_map() )
