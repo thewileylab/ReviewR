@@ -31,8 +31,7 @@ setup <- function() {
                wellPanel(
                  style = 'background: #ebf0f6',
                  ## Abstraction Setup
-                 abstraction_setup_ui(id = 'abs-selector'),
-                 selectInput(inputId = 'subject_id',label = 'Subject ID',choices = NULL)
+                 abstraction_setup_ui(id = 'abs-selector')
                  )
                )
         )

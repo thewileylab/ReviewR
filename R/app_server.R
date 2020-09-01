@@ -61,11 +61,11 @@ app_server <- function(input, output, session) {
   
   # Setup Modules ---- 
   database_vars <- mod_database_setup_server(id = 'db-selector')
-  abstract_vars <- mod_abstraction_setup_server('abs-selector', subject_id)
+  abstract_vars <- mod_abstraction_setup_server(id = 'abs-selector', selected_subject)
   
   ## Database Detection Module
   ### Module
-  datamodel_vars <- mod_datamodel_detection_server('data-model', database_vars)
+  datamodel_vars <- mod_datamodel_detection_server(id = 'data-model', database_vars)
   ### Output for Patient Search
   output$datamodel_message <- renderText({
     req(database_vars()$is_connected == 'yes')
@@ -75,13 +75,12 @@ app_server <- function(input, output, session) {
   # Patient Navigation Module ----
   ## Patient Navigation
   navigation_vars <- navigation_server(id = 'pt-navigation', database_vars, datamodel_vars, abstract_vars, session)
+  selected_subject <- reactive({ navigation_vars$selected_subject })
   # subject_info <- callModule(patient_search_logic, 'patient_search_ns', table_map$table_map, db_connection_vars$db_connection, table_map$db_disconnect, subject_selection_vars$previous_sub, subject_selection_vars$next_sub, subject_selection_vars$subject_id, parent=session)
   # 
   # Chart Review Modules ----
   ## Abstraction Instrument
   
-  subject_id <- reactive({ input$subject_id }) ## Pass to instrument function
-
   # ### Load Chart Review Modules
   # subject_selection_vars <- callModule(patient_nav_logic, 'chart_review', subject_info$patient_table, subject_info$selected_patient, parent = session)
   # callModule(subject_info_logic, 'chart_review', instrumentData$previous_data, instrument_selection$rc_instruments, instrument_selection$rc_instrument_selection, subject_info$selected_patient, subject_info$selected_patient_info)
