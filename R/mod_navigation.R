@@ -136,12 +136,12 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
             ## Retrieve "all patients" table
             all_patients_args <- list(table_map = datamodel_vars$table_map, 
                                       db_connection = database_vars()$db_con
-            )
+                                      )
             navigation_vars$all_patients <- rlang::exec(datamodel_vars$table_functions %>% 
                                                           filter(.data$table_name == 'all_patients') %>% 
                                                           extract2('function_name'),
                                                         !!!all_patients_args
-            )
+                                                        )
             ## Determine "all patients" table stats
             navigation_vars$all_patients_max_rows <- nrow(navigation_vars$all_patients)
             navigation_vars$row_ids <- navigation_vars$all_patients %>% 
