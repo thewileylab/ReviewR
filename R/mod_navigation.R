@@ -96,46 +96,48 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
     id,
     # function(input, output, session, table_map, db_connection, disconnect, prev_sub, next_sub, selected_sub, parent) {
     function(input, output, session) {
-      
       ns <- session$ns
       
       # Navigation Vars ----
       navigation_vars <- reactiveValues(
         dt_proxy = NULL,
         all_patients = NULL,
-        subject_choices = NULL,
+        subject_choices = list('<empty' = ''),
         selected_subject = NULL,
         selected_subject_id = NULL
         )
       
-      observeEvent(datamodel_vars$table_functions, ignoreNULL = F, {
-        # req(datamodel_vars$table_functions)
-        # browser()
-        if(is.null(datamodel_vars$table_functions) == FALSE) {
-          navigation_vars$dt_proxy <- DT::dataTableProxy(outputId = ns('all_patient_search_dt'), session = parent_session)
-          all_patients_args <- list(table_map = datamodel_vars$table_map, 
-                                    db_connection = database_vars()$db_con
-          )
-          navigation_vars$all_patients <- rlang::exec(datamodel_vars$table_functions %>% 
-                                                        filter(.data$table_name == 'all_patients') %>% 
-                                                        extract2('function_name'),
-                                                      !!!all_patients_args
-                                                      )
-          navigation_vars$all_patients_max_rows <- nrow(navigation_vars$all_patients)
+      observeEvent(datamodel_vars$table_functions, ignoreNULL = F, ignoreInit = T, {
+        if(is.null(datamodel_vars$table_functions) == TRUE) {
+          message('Removing "all patients" table')
+          navigation_vars$dt_proxy <- NULL
+          navigation_vars$all_patients <- NULL
+          navigation_vars$selected_subject <- NULL
           } else {
-            navigation_vars$dt_proxy <- NULL
-            navigation_vars$all_patients <- NULL
+            message('Retrieving "all patients" table...')
+            navigation_vars$dt_proxy <- DT::dataTableProxy(outputId = ns('all_patient_search_dt'), session = parent_session)
+            all_patients_args <- list(table_map = datamodel_vars$table_map, 
+                                      db_connection = database_vars()$db_con
+            )
+            navigation_vars$all_patients <- rlang::exec(datamodel_vars$table_functions %>% 
+                                                          filter(.data$table_name == 'all_patients') %>% 
+                                                          extract2('function_name'),
+                                                        !!!all_patients_args
+            )
+            navigation_vars$all_patients_max_rows <- nrow(navigation_vars$all_patients)
+            message('Complete')
             }
         })
       
-      # All Patients Data Table ----
+      # All Patients DT ----
         output$all_patient_search_dt <- DT::renderDataTable({
-          req(database_vars()$is_connected == 'yes')
           if(is.null(navigation_vars$all_patients)) {
             tibble::tibble(.rows = 0) %>% 
               reviewr_datatable()
-          } else {
-            # The next time you think about implementing FixedColumns, check the status of this issue first: https://github.com/rstudio/DT/issues/275
+            } else {
+            ## Future Developer: 
+            ##  Salutations. If you are ever asked about implementing FixedColumns, 
+            ## check the status of this issue first: https://github.com/rstudio/DT/issues/275
             navigation_vars$all_patients %>%
               rename('Subject ID' = .data$ID) %>%
               reviewr_datatable() %>%
@@ -148,11 +150,12 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
           })
       
       ## Populate Chart Review dropdown with ID column from 'all_patients' table
-      observeEvent(navigation_vars$all_patients, ignoreNULL = FALSE, {
+      observeEvent(navigation_vars$all_patients, ignoreNULL = FALSE, ignoreInit = T, {
         # browser()
         navigation_vars$subject_choices <- if(is.null(navigation_vars$all_patients) ) {
-          c('<empty>')
-        } else { navigation_vars$all_patients$ID }
+          list('<empty>' = '')
+        } else { 
+          navigation_vars$all_patients$ID }
         ### Update Chart Review Dropdown Choices
         updateSelectizeInput(session = session, 
                              inputId = 'subject_id',
@@ -163,8 +166,7 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
       
       ## Subject Info
       ### Extract Subject Info Based on which row is clicked in the DT
-      observeEvent(input$all_patient_search_dt_rows_selected, { 
-        # browser()
+      observeEvent(input$all_patient_search_dt_rows_selected, {
         navigation_vars$selected_subject <- navigation_vars$all_patients %>%
           slice(input$all_patient_search_dt_rows_selected) 
         navigation_vars$selected_subject_id <- navigation_vars$selected_subject %>%
@@ -175,27 +177,33 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
                              choices = navigation_vars$subject_choices,
                              selected = navigation_vars$selected_subject_id,
                              server = T)
-      })
+        })
       
       ## Subject Info Header
       ### Create Subject Info Header UI
       output$subject_info <- renderUI({
-        req(navigation_vars$selected_subject)
-        tagList(
-          div(h3(glue::glue('Subject ID: {navigation_vars$selected_subject_id}'), 
-                 style='padding:0px;'
-                 ), 
-              style='display:inline-block;vertical-align:middle'
-              ),
-          # tags$div(status_indicator(), style='display:inline-block;vertical-align:middle'),
-          renderTable(navigation_vars$selected_subject %>% 
-                        mutate_all(as.character) %>% 
-                        select(-.data$ID), 
-                      width = '100%', align = 'l', digits = 0)
+        # req(navigation_vars$selected_subject)
+        if(is.null(navigation_vars$selected_subject)) {
+          tagList(
+            h3('Connect to Patient Database to Begin')
           )
+        } else {
+          tagList(
+            div(h3(glue::glue('Subject ID: {navigation_vars$selected_subject_id}'), 
+                   style='padding:0px;'
+                   ), 
+                style='display:inline-block;vertical-align:middle'
+                ),
+            # tags$div(status_indicator(), style='display:inline-block;vertical-align:middle'),
+            renderTable(navigation_vars$selected_subject %>% 
+                          mutate_all(as.character) %>% 
+                          select(-.data$ID), 
+                        width = '100%', align = 'l', digits = 0)
+            )
+          }
         })
       
-      # Navigation ----
+      # Navigation Inputs ----
       ## When DT loads, select the first row
       observeEvent(input$all_patient_search_dt_rows_all, {
         req(input$all_patient_search_dt_rows_all)
@@ -233,7 +241,7 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
       
       ## When a choice is made from the patient nav dropdown, update the selected row in DT
         observeEvent(input$subject_id, {
-          req(input$all_patient_search_dt_rows_selected, input$subject_id != '')
+          req(input$all_patient_search_dt_rows_selected, input$subject_id != '', navigation_vars$all_patients)
           dropdown_row <- navigation_vars$all_patients %>%
             rowid_to_column(var = 'row_id') %>%
             filter(.data$ID == input$subject_id ) %>%
