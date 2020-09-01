@@ -54,7 +54,7 @@ all_patient_search_dt <- function(id) {
 chart_review_subject_info <- function(id) {
   ns <- NS(id)
   tagList(
-    uiOutput(ns('subject_info'))
+    uiOutput(ns('subject_info')) %>% withSpinner(type = 7, proxy.height = 100, size = .5)
   )
 }
 
@@ -65,7 +65,9 @@ chart_review_navigation <- function(id) {
                    width = '100%',
                    label = 'Jump to Subject ID:',
                    choices = NULL,
-                   selected = NULL
+                   selected = NULL,
+                   options = list(create = FALSE,
+                                  placeholder = '<empty>')
                    ),
     fluidRow( 
         actionButton(inputId = ns('prev_subject'), label = '<-- Previous', width = '120px'), 
@@ -102,7 +104,9 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
       navigation_vars <- reactiveValues(
         dt_proxy = NULL,
         all_patients = NULL,
-        subject_choices = list('<empty' = ''),
+        all_patients_max_rows = NULL, 
+        row_id = NULL,
+        subject_choices = NULL,
         selected_subject = NULL,
         selected_subject_id = NULL
         )
@@ -112,7 +116,12 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
           message('Removing "all patients" table')
           navigation_vars$dt_proxy <- NULL
           navigation_vars$all_patients <- NULL
+          navigation_vars$all_patients_max_rows = NULL
+          navigation_vars$row_id = NULL
+          navigation_vars$subject_choices = NULL
           navigation_vars$selected_subject <- NULL
+          navigation_vars$selected_subject_id = NULL
+          
           } else {
             message('Retrieving "all patients" table...')
             navigation_vars$dt_proxy <- DT::dataTableProxy(outputId = ns('all_patient_search_dt'), session = parent_session)
@@ -125,6 +134,17 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
                                                         !!!all_patients_args
             )
             navigation_vars$all_patients_max_rows <- nrow(navigation_vars$all_patients)
+            ## Populate Chart Review dropdown with ID column from 'all_patients' table
+            navigation_vars$row_id <- navigation_vars$all_patients %>% 
+              rowid_to_column(var = 'row_id') %>% 
+              pull(.data$row_id)
+            navigation_vars$subject_choices <- setNames(navigation_vars$row_id, navigation_vars$all_patients$ID)
+            ## Update Chart Review Dropdown Choices
+            updateSelectizeInput(session = session, 
+                                 inputId = 'subject_id',
+                                 choices = navigation_vars$subject_choices,
+                                 server = T
+                                 )
             message('Complete')
             }
         })
@@ -149,24 +169,10 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
             }
           })
       
-      ## Populate Chart Review dropdown with ID column from 'all_patients' table
-      observeEvent(navigation_vars$all_patients, ignoreNULL = FALSE, ignoreInit = T, {
-        # browser()
-        navigation_vars$subject_choices <- if(is.null(navigation_vars$all_patients) ) {
-          list('<empty>' = '')
-        } else { 
-          navigation_vars$all_patients$ID }
-        ### Update Chart Review Dropdown Choices
-        updateSelectizeInput(session = session, 
-                             inputId = 'subject_id',
-                             choices = navigation_vars$subject_choices,
-                             server = T
-                             )
-        })
-      
       ## Subject Info
       ### Extract Subject Info Based on which row is clicked in the DT
       observeEvent(input$all_patient_search_dt_rows_selected, {
+        # browser()
         navigation_vars$selected_subject <- navigation_vars$all_patients %>%
           slice(input$all_patient_search_dt_rows_selected) 
         navigation_vars$selected_subject_id <- navigation_vars$selected_subject %>%
@@ -175,7 +181,7 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
         updateSelectizeInput(session = session, 
                              inputId = 'subject_id',
                              choices = navigation_vars$subject_choices,
-                             selected = navigation_vars$selected_subject_id,
+                             selected = input$all_patient_search_dt_rows_selected,
                              server = T)
         })
       
@@ -241,13 +247,10 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
       
       ## When a choice is made from the patient nav dropdown, update the selected row in DT
         observeEvent(input$subject_id, {
-          req(input$all_patient_search_dt_rows_selected, input$subject_id != '', navigation_vars$all_patients)
-          dropdown_row <- navigation_vars$all_patients %>%
-            rowid_to_column(var = 'row_id') %>%
-            filter(.data$ID == input$subject_id ) %>%
-            pull(row_id)
-          if(dropdown_row != input$all_patient_search_dt_rows_selected) {
-            DT::selectRows(navigation_vars$dt_proxy, dropdown_row) }
+          req(input$all_patient_search_dt_rows_selected, input$subject_id != '')
+          # browser()
+          if(input$subject_id != input$all_patient_search_dt_rows_selected) {
+            DT::selectRows(navigation_vars$dt_proxy, input$subject_id) }
           })
       
       
