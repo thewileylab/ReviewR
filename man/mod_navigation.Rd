@@ -25,12 +25,6 @@ navigation_server(
 \item{abstract_vars}{Abstraction variables reeturned from user selected abstraction module}
 
 \item{parent_session}{the parent environment of this module}
-
-\item{input}{internal}
-
-\item{output}{internal}
-
-\item{session}{internal}
 }
 \description{
 This module will render the datatable on the 'Patient Search' tab containing all patients in the cohort. The selected patient in the DT is kept in sync with the 'Chart Review' tab.
