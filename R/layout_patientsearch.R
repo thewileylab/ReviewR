@@ -16,7 +16,7 @@ patient_search <- function() {
             status = 'primary', 
             solidHeader = F,
             #Box Contents
-            HTML('To select a patient, please click the desired Subject ID from the table below:'),
+            navigation_message('pt-navigation'),
             all_patient_search_dt('pt-navigation')
             )
         )

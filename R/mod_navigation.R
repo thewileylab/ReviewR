@@ -41,6 +41,14 @@ reviewr_datatable <- function(.data) {
 #' @import shiny 
 #' @importFrom shinycssloaders withSpinner
 #' 
+
+navigation_message <- function(id) {
+  ns <- NS(id)
+  tagList(
+    uiOutput(ns('nav_message'))
+    )
+  }
+
 all_patient_search_dt <- function(id) {
   ns <- NS(id)
   tagList(
@@ -108,8 +116,12 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
         all_patients_max_rows = NULL, 
         row_ids = NULL,
         subject_ids = NULL,
-        selected_row = 0
+        selected_row = 0,
+        message = HTML('Please complete Setup to connect to a patient database.')
         )
+      
+      # Navigation Message ----
+      output$nav_message <- renderUI({ navigation_vars$message })
       
       # Subject Vars ----
       subject_vars <- reactiveValues(
@@ -129,6 +141,7 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
           navigation_vars$row_ids = NULL
           navigation_vars$subject_ids = NULL
           navigation_vars$selected_row = 0
+          navigation_vars$message = HTML('Please complete Setup to connect to a patient database.')
           # Update Chart Review Dropdown Choices
           updateSelectizeInput(session = session, 
                                inputId = 'subject_id',
@@ -164,6 +177,7 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
                                  choices = navigation_vars$subject_ids,
                                  server = T
                                  )
+            navigation_vars$message <- HTML('To select a patient, please click the desired Subject ID from the table below:') 
             message('Complete')
             }
         })
