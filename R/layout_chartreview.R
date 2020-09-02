@@ -38,6 +38,7 @@ chart_review <- function() {
           # Column Setup
           column(width = 12,
                  # chart_review_ui('chart_review')
+                 abstraction_instrument_ui('abs-selector')
                  )
           )
         )
