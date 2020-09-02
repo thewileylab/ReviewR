@@ -109,7 +109,7 @@ mod_abstraction_setup_server <- function(id, subject_id){
         ### with ns() wrapped namespace
         rlang::exec(abstraction_setup_vars[[input$abstraction_modules]]$instrument_ui,
                     !!!module_ui_args)
-      })
+        })
       
       
       # UI Outputs ----
