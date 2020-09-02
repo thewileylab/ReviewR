@@ -33,9 +33,6 @@ reviewr_datatable <- function(.data) {
 #' This module will render the datatable on the 'Patient Search' tab containing all patients in the cohort. The selected patient in the DT is kept in sync with the 'Chart Review' tab.
 #' 
 #' @param id The namespace id for the UI output
-#' @param input internal
-#' @param output internal
-#' @param session internal
 #'
 #' @rdname mod_navigation
 #' 
@@ -106,14 +103,15 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
         all_patients = NULL,
         all_patients_max_rows = NULL, 
         row_ids = NULL,
-        subject_ids = NULL
+        subject_ids = NULL,
+        selected_row = 1
         )
       
       # Subject Vars ----
       subject_vars <- reactiveValues(
         selected_subject = NULL,
         selected_subject_id = NULL
-      )
+        )
       
       observeEvent(datamodel_vars$table_functions, ignoreNULL = F, ignoreInit = T, {
         ## When disconnecting, reset module to initial state
@@ -125,6 +123,7 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
           navigation_vars$all_patients_max_rows = NULL
           navigation_vars$row_ids = NULL
           navigation_vars$subject_ids = NULL
+          navigation_vars$selected_row = 1
           # Update Chart Review Dropdown Choices
           updateSelectizeInput(session = session, 
                                inputId = 'subject_id',
@@ -164,7 +163,7 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
             }
         })
       
-      # All Patients DT ----
+      # Create All Patients DT ----
         output$all_patient_search_dt <- DT::renderDataTable({
           if(is.null(navigation_vars$all_patients)) {
             tibble::tibble(.rows = 0) %>% 
@@ -188,84 +187,92 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
       ## When DT loads, select the first row
       observeEvent(input$all_patient_search_dt_rows_all, {
         req(input$all_patient_search_dt_rows_all)
-        DT::selectRows(navigation_vars$dt_proxy, 1)
+        DT::selectRows(navigation_vars$dt_proxy, navigation_vars$selected_row)
         })
       
       # Subject Info ----
-      ## Extract Subject Info Based on which row is clicked in the DT
-      observeEvent(input$all_patient_search_dt_rows_selected, {
-        # browser()
-        subject_vars$selected_subject_info <- navigation_vars$all_patients %>%
-          slice(input$all_patient_search_dt_rows_selected) 
-        subject_vars$selected_subject_id <- subject_vars$selected_subject_info %>%
-          pull(.data$ID)
-        ## Update Chart Review Dropdown Selection
-        updateSelectizeInput(session = session, 
-                             inputId = 'subject_id',
-                             choices = navigation_vars$subject_ids,
-                             selected = input$all_patient_search_dt_rows_selected,
-                             server = T)
-        })
-      
-      ## Subject Info Header
       ### Create Subject Info Header UI
       output$subject_info <- renderUI({
         if(is.null(subject_vars$selected_subject_info)) {
           tagList(
             HTML('Please complete Database Setup to view patient info')
-          )
-        } else {
-          tagList(
-            div(h3(glue::glue('Subject ID: {subject_vars$selected_subject_id}'), 
-                   style='padding:0px;'
-                   ), 
-                style='display:inline-block;vertical-align:middle'
-                ),
-            # tags$div(status_indicator(), style='display:inline-block;vertical-align:middle'),
-            renderTable(subject_vars$selected_subject_info %>% 
-                          mutate_all(as.character) %>% 
-                          select(-.data$ID), 
-                        width = '100%', align = 'l', digits = 0)
             )
-          }
+          } else {
+            tagList(
+              div(h3(glue::glue('Subject ID: {subject_vars$selected_subject_id}'), 
+                     style='padding:0px;'
+                     ), 
+                  style='display:inline-block;vertical-align:middle'
+                  ),
+              # tags$div(status_indicator(), style='display:inline-block;vertical-align:middle'),
+              renderTable(subject_vars$selected_subject_info %>% 
+                            mutate_all(as.character) %>% 
+                            select(-.data$ID), 
+                          width = '100%', align = 'l', digits = 0
+                          )
+              )
+            }
         })
       
-      # Navigation Inputs ----
+      # Monitor DT ----
+      observeEvent(input$all_patient_search_dt_rows_selected, {
+        req(input$all_patient_search_dt_rows_selected != navigation_vars$selected_row)
+        navigation_vars$selected_row <- input$all_patient_search_dt_rows_selected
+        })
       ## When ID column is clicked, head to the Chart Review Tab
       observeEvent(input$all_patient_search_dt_cell_clicked, {
         ### Only redirect if clicked cell contains value and is in column 0 (Subject ID)
         req(input$all_patient_search_dt_cell_clicked$value, input$all_patient_search_dt_cell_clicked$col == 0)
         updateTabItems(parent_session, 'main_tabs', selected = 'chart_review')
-        })
-      
-      ## Previous Subject
-      ### On Previous Subject Button Press, update selected row in DT
-      observeEvent(input$prev_subject, {
-        req(input$all_patient_search_dt_rows_selected)
-        ## Special case when at the beginning of the list, cycle to last
-        if(input$all_patient_search_dt_rows_selected == 1){ 
-          DT::selectRows(navigation_vars$dt_proxy, navigation_vars$all_patients_max_rows )
-          ## Else, select the previous row in the table
-          } else { DT::selectRows(navigation_vars$dt_proxy, input$all_patient_search_dt_rows_selected - 1) }
-        })
-      
-      ## Next Subject
-      ### On Next Subject Button Press, updated selected row in DT
-      observeEvent(input$next_subject, {
-        req(input$all_patient_search_dt_rows_selected)
-        ## Special case when at the end of the list, cycle to beginning
-        if(input$all_patient_search_dt_rows_selected == navigation_vars$all_patients_max_rows){ 
-          DT::selectRows(navigation_vars$dt_proxy, 1 )
-          ## Else, select the next row in the table
-        } else { DT::selectRows(navigation_vars$dt_proxy, input$all_patient_search_dt_rows_selected + 1) }
       })
       
-      ## When a choice is made from the patient nav dropdown, update the selected row in DT
+      # Update DT ----
+      observeEvent(navigation_vars$selected_row, {
+        req(navigation_vars$all_patients)
+        ## Update Chart Review Dropdown Selection
+        updateSelectizeInput(session = session, 
+                             inputId = 'subject_id',
+                             choices = navigation_vars$subject_ids,
+                             selected = navigation_vars$selected_row,
+                             server = T)
+        ## Update Subject Info
+        subject_vars$selected_subject_info <- navigation_vars$all_patients %>%
+          slice(navigation_vars$selected_row) 
+        subject_vars$selected_subject_id <- subject_vars$selected_subject_info %>%
+          pull(.data$ID)
+        ## Update DT Selection
+        DT::selectRows(navigation_vars$dt_proxy, navigation_vars$selected_row)
+      })
+      
+      # Navigation Inputs ----
+      ## On Previous Subject Button Press, update selected row in DT
+      observeEvent(input$prev_subject, {
+        # browser()
+        temp <- navigation_vars$selected_row - 1
+        if(temp < 1) {
+          navigation_vars$selected_row <- navigation_vars$all_patients_max_rows
+          } else {
+            navigation_vars$selected_row <- temp
+            }
+        })
+      
+      ## On Next Subject Button Press, updated selected row in DT
+      observeEvent(input$next_subject, {
+        # browser()
+        temp <- navigation_vars$selected_row + 1
+        if(temp > navigation_vars$all_patients_max_rows) {
+          navigation_vars$selected_row <- 1
+          } else {
+            navigation_vars$selected_row <- temp
+            }
+        })
+      
+      ## When a choice is made from the chart review dropdown, update the selected row in DT
         observeEvent(input$subject_id, {
-          req(input$all_patient_search_dt_rows_selected, input$subject_id != '')
           # browser()
-          if(input$subject_id != input$all_patient_search_dt_rows_selected) {
-            DT::selectRows(navigation_vars$dt_proxy, input$subject_id) }
+          req(input$all_patient_search_dt_rows_selected, input$subject_id != '')
+          if(as.integer(input$subject_id) != navigation_vars$selected_row) {
+            navigation_vars$selected_row <- as.integer(input$subject_id) }
           })
       
       
