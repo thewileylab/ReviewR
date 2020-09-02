@@ -102,7 +102,7 @@ chart_review_navigation <- function(id) {
 #' @importFrom rlang .data exec
 #' @importFrom shinyjs disable enable
 #' @importFrom utils tail
-navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, parent_session) {
+mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, parent_session) {
   moduleServer(
     id,
     # function(input, output, session, table_map, db_connection, disconnect, prev_sub, next_sub, selected_sub, parent) {
@@ -283,9 +283,9 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
         })
       
       # Abstraction ----
-      observeEvent(abstract_vars()$all_review_status, {
-        req(abstract_vars()$all_review_status)
-        })
+      # observeEvent(abstract_vars()$all_review_status, {
+      #   req(abstract_vars()$all_review_status)
+      #   })
       
       # Monitor DT ----
       observeEvent(input$all_patient_search_dt_rows_selected, {

@@ -71,7 +71,7 @@ app_server <- function(input, output, session) {
   
   # Patient Navigation Module ----
   ## Patient Navigation
-  navigation_vars <- navigation_server('pt-navigation', database_vars, datamodel_vars, abstract_vars, session)
+  navigation_vars <- mod_navigation_server('pt-navigation', database_vars, datamodel_vars, abstract_vars, session)
   selected_subject_id <- reactive({ navigation_vars$selected_subject_id })
 
   # Chart Review Modules ----
