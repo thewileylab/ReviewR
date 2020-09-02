@@ -75,12 +75,5 @@ app_server <- function(input, output, session) {
   selected_subject_id <- reactive({ navigation_vars$selected_subject_id })
 
   # Chart Review Modules ----
-  ## Abstraction Instrument
-  
-  # ### Load Chart Review Modules
-  # callModule(omop_chart_review_logic, 'chart_review', table_map$table_map, db_connection_vars$db_connection, subject_info$selected_patient)
-  # callModule(mimic_chart_review_logic, 'chart_review', table_map$table_map, db_connection_vars$db_connection, subject_info$selected_patient)
-  # callModule(chart_review_ui_logic, 'chart_review', abstraction_vars, table_map, instrument_selection)
-  # 
-  
-}
+  mod_chartreview_server('chart-review', database_vars, datamodel_vars, abstract_vars)
+  }
