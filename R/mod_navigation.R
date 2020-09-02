@@ -104,7 +104,7 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
         all_patients_max_rows = NULL, 
         row_ids = NULL,
         subject_ids = NULL,
-        selected_row = 1
+        selected_row = 0
         )
       
       # Subject Vars ----
@@ -123,7 +123,7 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
           navigation_vars$all_patients_max_rows = NULL
           navigation_vars$row_ids = NULL
           navigation_vars$subject_ids = NULL
-          navigation_vars$selected_row = 1
+          navigation_vars$selected_row = 0
           # Update Chart Review Dropdown Choices
           updateSelectizeInput(session = session, 
                                inputId = 'subject_id',
@@ -187,6 +187,7 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
       ## When DT loads, select the first row
       observeEvent(input$all_patient_search_dt_rows_all, {
         req(input$all_patient_search_dt_rows_all)
+        navigation_vars$selected_row <- 1
         DT::selectRows(navigation_vars$dt_proxy, navigation_vars$selected_row)
         })
       
@@ -268,7 +269,7 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
         })
       
       ## When a choice is made from the chart review dropdown, update the selected row in DT
-        observeEvent(input$subject_id, {
+        observeEvent(input$subject_id, ignoreInit = T, {
           # browser()
           req(input$all_patient_search_dt_rows_selected, input$subject_id != '')
           if(as.integer(input$subject_id) != navigation_vars$selected_row) {
