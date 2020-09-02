@@ -62,14 +62,10 @@ app_server <- function(input, output, session) {
   # Setup Modules ---- 
   ## Database
   database_vars <- mod_database_setup_server('db-selector')
+  
   ## Database Detection Module
   datamodel_vars <- mod_datamodel_detection_server('data-model', database_vars)
-  ## Datamodel Output
-  ### For Patient Search Tab
-  output$datamodel_message <- renderText({
-    req(database_vars()$is_connected == 'yes')
-    datamodel_vars$message
-    })
+  
   ## Abstraction
   abstract_vars <- mod_abstraction_setup_server('abs-selector', selected_subject_id)
   
