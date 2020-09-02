@@ -7,7 +7,13 @@
 \usage{
 chartreview_ui(id)
 
-mod_chartreview_server(id, database_vars, datamodel_vars, abstract_vars)
+mod_chartreview_server(
+  id,
+  database_vars,
+  datamodel_vars,
+  abstract_vars,
+  navigation_vars
+)
 }
 \arguments{
 \item{id}{The namespace id for the UI output}
@@ -17,6 +23,8 @@ mod_chartreview_server(id, database_vars, datamodel_vars, abstract_vars)
 \item{datamodel_vars}{Datamodel variables returned from mod_datamodel_setup}
 
 \item{abstract_vars}{Abstraction variables returned from user selected abstraction module}
+
+\item{navigation_vars}{Navigation variables returned from mod_navigation}
 }
 \description{
 Chart Review
