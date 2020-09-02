@@ -125,7 +125,6 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
       
       # Subject Vars ----
       subject_vars <- reactiveValues(
-        selected_subject = NULL,
         selected_subject_id = NULL,
         selected_subject_status = NULL
         )
