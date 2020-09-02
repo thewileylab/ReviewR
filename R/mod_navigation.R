@@ -85,8 +85,8 @@ chart_review_navigation <- function(id) {
 
 # Server ---- 
 #' @param database_vars Database variables returned from user selected database setup module
-#' @param datamodel_vars Datamodel variablese returned from mod_datamodel_setup
-#' @param abstract_vars Abstraction variables reeturned from user selected abstraction module
+#' @param datamodel_vars Datamodel variables returned from mod_datamodel_setup
+#' @param abstract_vars Abstraction variables returned from user selected abstraction module
 #' @param parent_session the parent environment of this module
 #'
 #' @rdname mod_navigation
