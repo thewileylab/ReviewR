@@ -91,6 +91,7 @@ chart_review_navigation <- function(id) {
 #' @importFrom tibble rowid_to_column
 #' @importFrom tidyr replace_na
 #' @importFrom rlang .data exec
+#' @importFrom shinyjs disable enable
 #' @importFrom utils tail
 navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, parent_session) {
   moduleServer(
@@ -207,7 +208,9 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
       ## When DT loads, select the first row
       observeEvent(input$all_patient_search_dt_rows_all, {
         req(input$all_patient_search_dt_rows_all)
-        navigation_vars$selected_row <- 1
+        if(navigation_vars$selected_row == 0){
+          navigation_vars$selected_row <- 1
+          }
         DT::selectRows(navigation_vars$dt_proxy, navigation_vars$selected_row)
         })
       
@@ -290,12 +293,21 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
           pull(.data$ID)
         ## Update DT Selection
         DT::selectRows(navigation_vars$dt_proxy, navigation_vars$selected_row)
+        Sys.sleep(2)
+        shinyjs::enable('prev_subject')
+        shinyjs::enable('next_subject')
+        shinyjs::enable('subject_id')
+        shinyjs::enable('all_patient_search_dt_rows_selected')
         })
       
       # Navigation Inputs ----
       ## On Previous Subject Button Press, update selected row in DT
       observeEvent(input$prev_subject, {
         browser()
+        shinyjs::disable('prev_subject')
+        shinyjs::disable('next_subject')
+        shinyjs::disable('subject_id')
+        shinyjs::disable('all_patient_search_dt_rows_selected')
         temp <- navigation_vars$selected_row - 1
         if(temp < 1) {
           navigation_vars$selected_row <- navigation_vars$all_patients_max_rows
@@ -307,6 +319,10 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
       ## On Next Subject Button Press, updated selected row in DT
       observeEvent(input$next_subject, {
         # browser()
+        shinyjs::disable('prev_subject')
+        shinyjs::disable('next_subject')
+        shinyjs::disable('subject_id')
+        shinyjs::disable('all_patient_search_dt_rows_selected')
         temp <- navigation_vars$selected_row + 1
         if(temp > navigation_vars$all_patients_max_rows) {
           navigation_vars$selected_row <- 1
@@ -320,6 +336,10 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
           # browser()
           req(input$subject_id != '')
           if(as.integer(input$subject_id) != navigation_vars$selected_row) {
+            shinyjs::disable('prev_subject')
+            shinyjs::disable('next_subject')
+            shinyjs::disable('subject_id')
+            shinyjs::disable('all_patient_search_dt_rows_selected')
             navigation_vars$selected_row <- as.integer(input$subject_id) }
           })
       
