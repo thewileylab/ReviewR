@@ -27,6 +27,7 @@ mod_navigation_server(
 \item{parent_session}{the parent environment of this module}
 }
 \description{
-This module will render the datatable on the 'Patient Search' tab containing all patients in the cohort. The selected patient in the DT is kept in sync with the 'Chart Review' tab.
+This module will render the datatable on the 'Patient Search' tab containing all patients in the cohort.
+The selected patient in the DT is kept in sync with the 'Chart Review' tab.
 }
 \keyword{internal}
