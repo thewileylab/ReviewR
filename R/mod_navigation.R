@@ -170,12 +170,13 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
             navigation_vars$all_patients %>%
               rename('Subject ID' = .data$ID) %>%
               reviewr_datatable() %>%
-              formatStyle('Subject ID',
-                          color = '#0000EE',
-                          cursor = 'pointer',  # Format the ID column to appear blue and change the mouse to a pointer
-                          textAlign = 'left'
-                          )
-            }
+                # Format the ID column to appear blue and change the mouse to a pointer
+                formatStyle('Subject ID',
+                            color = '#0000EE',
+                            cursor = 'pointer',
+                            textAlign = 'left'
+                            )
+              }
           })
       
       ## When DT loads, select the first row
