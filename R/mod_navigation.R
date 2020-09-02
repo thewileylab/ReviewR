@@ -111,7 +111,8 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
       # Subject Vars ----
       subject_vars <- reactiveValues(
         selected_subject = NULL,
-        selected_subject_id = NULL
+        selected_subject_id = NULL,
+        selected_subject_status = NULL
         )
       
       observeEvent(datamodel_vars$table_functions, ignoreNULL = F, ignoreInit = T, {
@@ -175,6 +176,7 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
               ## check the status of this issue first: https://github.com/rstudio/DT/issues/275
               navigation_vars$all_patients %>%
                 left_join(abstract_vars()$all_review_status) %>% 
+                ## The last two rows will contain 'review status'
                 dplyr::mutate_at(tail(names(.), 2), tidyr::replace_na, '<em>Review Not Started</em>') %>% 
                 rename('Subject ID' = .data$ID) %>%
                 reviewr_datatable() %>%
@@ -208,26 +210,48 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
         })
       
       # Subject Info ----
+      ### Determine Abstraction Status
+      observeEvent(abstract_vars()$previous_selected_instrument_complete_val, ignoreInit = T, {
+        subject_vars$selected_subject_status <- if(redcap_instrument$previous_selected_instrument_complete_val == 0) { 'www/status_incomplete.png'
+          } else if(redcap_instrument$previous_selected_instrument_complete_val == 1) { 'www/status_unverified.png'
+          } else if(redcap_instrument$previous_selected_instrument_complete_val == 2) { 'www/status_complete.png' 
+              } else {return(NULL)}
+        })
       ### Create Subject Info Header UI
       output$subject_info <- renderUI({
         if(is.null(subject_vars$selected_subject_info)) {
           tagList(
-            HTML('Please complete Database Setup to view patient info')
+            HTML('Please complete Setup to connect to a patient database.')
             )
-          } else {
+          } else if (abstract_vars()$is_configured == 'yes') {
             tagList(
               div(h3(glue::glue('Subject ID: {subject_vars$selected_subject_id}'), 
                      style='padding:0px;'
                      ), 
                   style='display:inline-block;vertical-align:middle'
                   ),
-              # tags$div(status_indicator(), style='display:inline-block;vertical-align:middle'),
+              div(subject_vars$selected_subject_status, 
+                  style='display:inline-block;vertical-align:middle'
+                  ),
               renderTable(subject_vars$selected_subject_info %>% 
                             mutate_all(as.character) %>% 
                             select(-.data$ID), 
                           width = '100%', align = 'l', digits = 0
                           )
               )
+            } else {
+              tagList(
+                div(h3(glue::glue('Subject ID: {subject_vars$selected_subject_id}'), 
+                       style='padding:0px;'
+                       ), 
+                    style='display:inline-block;vertical-align:middle'
+                    ),
+                renderTable(subject_vars$selected_subject_info %>% 
+                              mutate_all(as.character) %>% 
+                              select(-.data$ID), 
+                            width = '100%', align = 'l', digits = 0
+                            )
+                )
             }
         })
       
