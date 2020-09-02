@@ -44,7 +44,8 @@ reviewr_datatable <- function(.data) {
 all_patient_search_dt <- function(id) {
   ns <- NS(id)
   tagList(
-    DT::dataTableOutput(ns('all_patient_search_dt')) %>% withSpinner() 
+    DT::dataTableOutput(ns('all_patient_search_dt')) %>% withSpinner() ,
+    uiOutput(ns('datamodel_message'))
     )
   }
 
@@ -214,6 +215,13 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
         DT::selectRows(navigation_vars$dt_proxy, navigation_vars$selected_row)
         })
       
+      # Datamodel ----
+      ## Render Datamodel Output
+      output$datamodel_message <- renderText({
+        req(database_vars()$is_connected == 'yes')
+        datamodel_vars$message
+      })
+      
       # Subject Info ----
       ### Determine Abstraction Status
       observeEvent(abstract_vars()$previous_selected_instrument_complete_val, ignoreInit = T, {
@@ -303,7 +311,7 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
       # Navigation Inputs ----
       ## On Previous Subject Button Press, update selected row in DT
       observeEvent(input$prev_subject, {
-        browser()
+        # browser()
         shinyjs::disable('prev_subject')
         shinyjs::disable('next_subject')
         shinyjs::disable('subject_id')

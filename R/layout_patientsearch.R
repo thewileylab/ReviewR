@@ -17,8 +17,7 @@ patient_search <- function() {
             solidHeader = F,
             #Box Contents
             HTML('To select a patient, please click the desired Subject ID from the table below:'),
-            all_patient_search_dt('pt-navigation'),
-            uiOutput('datamodel_message')
+            all_patient_search_dt('pt-navigation')
             )
         )
       )
