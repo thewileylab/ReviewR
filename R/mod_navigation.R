@@ -89,6 +89,7 @@ chart_review_navigation <- function(id) {
 #' @importFrom glue glue
 #' @importFrom dplyr rename slice filter select pull
 #' @importFrom tibble rowid_to_column
+#' @importFrom tidyr replace_na
 #' @importFrom rlang .data exec
 navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, parent_session) {
   moduleServer(
@@ -168,20 +169,35 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
           if(is.null(navigation_vars$all_patients)) {
             tibble::tibble(.rows = 0) %>% 
               reviewr_datatable()
-            } else {
-            ## Future Developer: 
-            ## Salutations. If you are ever asked about implementing FixedColumns, 
-            ## check the status of this issue first: https://github.com/rstudio/DT/issues/275
-            navigation_vars$all_patients %>%
-              rename('Subject ID' = .data$ID) %>%
-              reviewr_datatable() %>%
-                # Format the ID column to appear blue and change the mouse to a pointer
-                formatStyle('Subject ID',
-                            color = '#0000EE',
-                            cursor = 'pointer',
-                            textAlign = 'left'
-                            )
-              }
+            } else if (abstract_vars()$is_configured == 'yes') {
+              ## Future Developer: 
+              ## Salutations. If you are ever asked about implementing FixedColumns, 
+              ## check the status of this issue first: https://github.com/rstudio/DT/issues/275
+              navigation_vars$all_patients %>%
+                left_join(abstract_vars()$all_review_status) %>% 
+                dplyr::mutate_at(tail(names(.), 2), tidyr::replace_na, '<em>Review Not Started</em>') %>% 
+                rename('Subject ID' = .data$ID) %>%
+                reviewr_datatable() %>%
+                  # Format the ID column to appear blue and change the mouse to a pointer
+                  formatStyle('Subject ID',
+                              color = '#0000EE',
+                              cursor = 'pointer',
+                              textAlign = 'left'
+                              )
+                } else {
+                ## Future Developer: 
+                ## Salutations. If you are ever asked about implementing FixedColumns, 
+                ## check the status of this issue first: https://github.com/rstudio/DT/issues/275
+                navigation_vars$all_patients %>%
+                  rename('Subject ID' = .data$ID) %>%
+                  reviewr_datatable() %>%
+                  # Format the ID column to appear blue and change the mouse to a pointer
+                  formatStyle('Subject ID',
+                              color = '#0000EE',
+                              cursor = 'pointer',
+                              textAlign = 'left'
+                              )
+                  }
           })
       
       ## When DT loads, select the first row
@@ -215,6 +231,11 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
             }
         })
       
+      # Abstraction ----
+      observeEvent(abstract_vars()$all_review_status, {
+        req(abstract_vars()$all_review_status)
+        })
+      
       # Monitor DT ----
       observeEvent(input$all_patient_search_dt_rows_selected, {
         req(input$all_patient_search_dt_rows_selected != navigation_vars$selected_row)
@@ -225,7 +246,7 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
         ### Only redirect if clicked cell contains value and is in column 0 (Subject ID)
         req(input$all_patient_search_dt_cell_clicked$value, input$all_patient_search_dt_cell_clicked$col == 0)
         updateTabItems(parent_session, 'main_tabs', selected = 'chart_review')
-      })
+        })
       
       # Update DT ----
       observeEvent(navigation_vars$selected_row, {
@@ -248,7 +269,7 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
       # Navigation Inputs ----
       ## On Previous Subject Button Press, update selected row in DT
       observeEvent(input$prev_subject, {
-        # browser()
+        browser()
         temp <- navigation_vars$selected_row - 1
         if(temp < 1) {
           navigation_vars$selected_row <- navigation_vars$all_patients_max_rows
