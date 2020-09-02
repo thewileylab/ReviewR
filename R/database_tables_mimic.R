@@ -8,7 +8,7 @@
 #' @rdname mimic3_tables
 #' @keywords internal
 #' @export
-#' @importFrom dplyr select everything arrange matches mutate_if rename_at collect filter inner_join vars 
+#' @importFrom dplyr select everything arrange matches mutate_all mutate_if rename_at collect filter inner_join vars 
 #' @importFrom snakecase to_title_case
 #' @importFrom stringr str_replace regex str_replace_all
 #' @importFrom rlang .data

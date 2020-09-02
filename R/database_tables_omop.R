@@ -96,7 +96,7 @@ get_subject_concept <- function(table_map, db_connection, concept_table, concept
 #' @rdname omop_tables
 #' @keywords internal
 #' @export
-#' @importFrom dplyr select everything arrange matches mutate_if rename_at collect filter inner_join vars left_join
+#' @importFrom dplyr select everything arrange matches mutate_all mutate_if rename_at collect filter inner_join vars left_join
 #' @importFrom snakecase to_title_case
 #' @importFrom stringr str_replace regex str_replace_all
 #' @importFrom rlang .data
