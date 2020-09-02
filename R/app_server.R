@@ -70,10 +70,9 @@ app_server <- function(input, output, session) {
   abstract_vars <- mod_abstraction_setup_server('abs-selector', selected_subject_id)
   
   # Patient Navigation Module ----
-  ## Patient Navigation
   navigation_vars <- mod_navigation_server('pt-navigation', database_vars, datamodel_vars, abstract_vars, session)
   selected_subject_id <- reactive({ navigation_vars$selected_subject_id })
 
-  # Chart Review Modules ----
-  mod_chartreview_server('chart-review', database_vars, datamodel_vars, abstract_vars)
+  # Chart Review Module ----
+  mod_chartreview_server('chart-review', database_vars, datamodel_vars, abstract_vars, navigation_vars)
   }
