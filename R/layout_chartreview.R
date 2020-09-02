@@ -35,11 +35,7 @@ chart_review <- function() {
                  )
           ),
         fluidRow(
-          # Column Setup
-          column(width = 12,
-                 # chart_review_ui('chart_review')
-                 abstraction_instrument_ui('abs-selector')
-                 )
+          chartreview_ui('chart-review')
           )
         )
       )
