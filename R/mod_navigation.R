@@ -105,7 +105,6 @@ chart_review_navigation <- function(id) {
 mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, parent_session) {
   moduleServer(
     id,
-    # function(input, output, session, table_map, db_connection, disconnect, prev_sub, next_sub, selected_sub, parent) {
     function(input, output, session) {
       ns <- session$ns
       
