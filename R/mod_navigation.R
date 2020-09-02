@@ -243,7 +243,7 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
           pull(.data$ID)
         ## Update DT Selection
         DT::selectRows(navigation_vars$dt_proxy, navigation_vars$selected_row)
-      })
+        })
       
       # Navigation Inputs ----
       ## On Previous Subject Button Press, update selected row in DT
@@ -271,7 +271,7 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
       ## When a choice is made from the chart review dropdown, update the selected row in DT
         observeEvent(input$subject_id, ignoreInit = T, {
           # browser()
-          req(input$all_patient_search_dt_rows_selected, input$subject_id != '')
+          req(input$subject_id != '')
           if(as.integer(input$subject_id) != navigation_vars$selected_row) {
             navigation_vars$selected_row <- as.integer(input$subject_id) }
           })
@@ -284,39 +284,6 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
     #                    resetPaging = T,
     #                    clearSelection = T)
     #     })
-    #   
-    #   # Extract patients based on presence of connection info and data model
-    #   patient_search_tbl <- eventReactive(table_map(), {
-    #     req(db_connection() )
-    #     if (table_map()$count_filtered != 0 & table_map()$data_model == 'omop') {
-    #       omop_table_all_patients(table_map, db_connection)
-    #       } else if(table_map()$count_filtered != 0 & table_map()$data_model == 'mimic3') {
-    #         ## MIMIC Patient Search
-    #         mimic_table_all_patients(table_map, db_connection)
-    #         } else {
-    #           return(NULL)
-    #           }
-    #     })
-    #   
-    #   ## Render Patient Search Data Table
-    #   output$patient_search_dt <- DT::renderDataTable({
-    #     req(patient_search_tbl())
-    #     # The next time you think about implementing FixedColumns, check the status of this issue first: https://github.com/rstudio/DT/issues/275
-    #     patient_search_tbl() %>% 
-    #       rename('Subject ID' = .data$ID) %>% 
-    #       reviewr_datatable() %>% 
-    #       formatStyle('Subject ID', 
-    #                   color = '#0000EE', 
-    #                   cursor = 'pointer',  # Format the ID column to appear blue and change the mouse to a pointer
-    #                   textAlign = 'left'
-    #                   )
-    #     })
-    #   
-    #   outputOptions(output, 'patient_search_dt', suspendWhenHidden = F)
-    #   
-    #   ## Create a DT Proxy to keep DT selection up to date with Patient Nav on Chart Review Tab
-    #   patient_search_proxy <- DT::dataTableProxy(outputId = ns('patient_search_dt'), session = parent)
-    #   
     
       # Return ----
       return(subject_vars)
