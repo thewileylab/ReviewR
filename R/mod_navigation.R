@@ -91,6 +91,7 @@ chart_review_navigation <- function(id) {
 #' @importFrom tibble rowid_to_column
 #' @importFrom tidyr replace_na
 #' @importFrom rlang .data exec
+#' @importFrom utils tail
 navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, parent_session) {
   moduleServer(
     id,
@@ -177,7 +178,7 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
               navigation_vars$all_patients %>%
                 left_join(abstract_vars()$all_review_status) %>% 
                 ## The last two rows will contain 'review status'
-                dplyr::mutate_at(tail(names(.), 2), tidyr::replace_na, '<em>Review Not Started</em>') %>% 
+                dplyr::mutate_at(tail(names(.data), 2), tidyr::replace_na, '<em>Review Not Started</em>') %>% 
                 rename('Subject ID' = .data$ID) %>%
                 reviewr_datatable() %>%
                   # Format the ID column to appear blue and change the mouse to a pointer
@@ -201,6 +202,7 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
                               )
                   }
           })
+      # outputOptions(output, 'all_patient_search_dt', suspendWhenHidden = F)
       
       ## When DT loads, select the first row
       observeEvent(input$all_patient_search_dt_rows_all, {
@@ -212,9 +214,9 @@ navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, 
       # Subject Info ----
       ### Determine Abstraction Status
       observeEvent(abstract_vars()$previous_selected_instrument_complete_val, ignoreInit = T, {
-        subject_vars$selected_subject_status <- if(redcap_instrument$previous_selected_instrument_complete_val == 0) { 'www/status_incomplete.png'
-          } else if(redcap_instrument$previous_selected_instrument_complete_val == 1) { 'www/status_unverified.png'
-          } else if(redcap_instrument$previous_selected_instrument_complete_val == 2) { 'www/status_complete.png' 
+        subject_vars$selected_subject_status <- if(abstract_vars()$previous_selected_instrument_complete_val == 0) { img(src = 'www/status_incomplete.png', style='width: 20px')
+          } else if(abstract_vars()$previous_selected_instrument_complete_val == 1) { img(src = 'www/status_unverified.png', style='width: 20px')
+          } else if(abstract_vars()$previous_selected_instrument_complete_val == 2) { img(src = 'www/status_complete.png', style='width: 20px') 
               } else {return(NULL)}
         })
       ### Create Subject Info Header UI
