@@ -20,9 +20,9 @@ mod_navigation_server(
 
 \item{database_vars}{Database variables returned from user selected database setup module}
 
-\item{datamodel_vars}{Datamodel variablese returned from mod_datamodel_setup}
+\item{datamodel_vars}{Datamodel variables returned from mod_datamodel_setup}
 
-\item{abstract_vars}{Abstraction variables reeturned from user selected abstraction module}
+\item{abstract_vars}{Abstraction variables returned from user selected abstraction module}
 
 \item{parent_session}{the parent environment of this module}
 }
