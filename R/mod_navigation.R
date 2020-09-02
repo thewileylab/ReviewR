@@ -18,14 +18,14 @@ reviewr_datatable <- function(.data) {
                                searchHighlight = TRUE, 
                                search = list(regex = TRUE, 
                                              caseInsensitive = TRUE)
-                ),
+                               ),
                 rownames = F, 
                 selection = 'single',
                 escape = F,
                 filter = 'top',
                 class = 'cell-border strip hover'
-  )
-}
+                )
+  }
 
 # UI ----
 #' Patient Navigation
