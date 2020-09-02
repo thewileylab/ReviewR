@@ -179,8 +179,8 @@ mod_datamodel_detection_server <- function(id, database_vars) {
         datamodel_vars$table_functions <- if (nrow(datamodel_vars$table_map) > 0) {
           lsf.str('package:ReviewR') %>% 
             tibble::enframe(name = NULL, value = 'function_name') %>% 
-            filter(stringr::str_detect(function_name, glue::glue('{datamodel_vars$table_map$datamodel}_table') )) %>% 
-            mutate(table_name = stringr::str_remove(function_name, glue::glue('{datamodel_vars$table_map$datamodel}_table_') ))
+            filter(stringr::str_detect(.data$function_name, glue::glue('{datamodel_vars$table_map$datamodel}_table') )) %>% 
+            mutate(table_name = stringr::str_remove(.data$function_name, glue::glue('{datamodel_vars$table_map$datamodel}_table_') ))
           } else { NULL }
         })
       
