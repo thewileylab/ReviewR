@@ -76,7 +76,8 @@ user_field <- function(table_map, desired_cdm_table, desired_cdm_field){
 # UI ----
 #' Data Model Detection Module
 #'
-#' This module is designed to connect to a user supplied database, compare it with known common data models and determine the most likely version of the user's database.
+#' This module is designed to connect to a user supplied database, compare it with 
+#' known common data models and determine the most likely version of the user's database.
 #'
 #' @param id The namespace id for the UI output
 #' @param input internal

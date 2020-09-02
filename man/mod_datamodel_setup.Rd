@@ -21,6 +21,7 @@ mod_datamodel_detection_server(id, database_vars)
 \item{db_connection}{Connection info received from the database setup module}
 }
 \description{
-This module is designed to connect to a user supplied database, compare it with known common data models and determine the most likely version of the user's database.
+This module is designed to connect to a user supplied database, compare it with
+known common data models and determine the most likely version of the user's database.
 }
 \keyword{internal}
