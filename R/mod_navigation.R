@@ -30,7 +30,8 @@ reviewr_datatable <- function(.data) {
 # UI ----
 #' Patient Navigation
 #'
-#' This module will render the datatable on the 'Patient Search' tab containing all patients in the cohort. The selected patient in the DT is kept in sync with the 'Chart Review' tab.
+#' This module will render the datatable on the 'Patient Search' tab containing all patients in the cohort. 
+#' The selected patient in the DT is kept in sync with the 'Chart Review' tab.
 #' 
 #' @param id The namespace id for the UI output
 #'
