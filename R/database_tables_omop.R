@@ -69,8 +69,6 @@ get_all_concept <- function(table_map, db_connection, concept_table, concept_id,
 #' @importFrom rlang := 
 #'
 get_subject_concept <- function(table_map, db_connection, concept_table, concept_id, concept_name, table, joinable_id, table_concept_id, col_name, subject_id_field, selected_subject) {
-  # req(table_map(), db_connection() )
-  
   user_table(table_map, db_connection, concept_table) %>% 
     select(user_field(table_map, concept_table, concept_id), 
            user_field(table_map, concept_table, concept_name)
@@ -108,7 +106,6 @@ get_subject_concept <- function(table_map, db_connection, concept_table, concept
 ## OMOP All Patient Table -----
 
 omop_table_all_patients <- function(table_map, db_connection) {
-  # req(table_map(), db_connection() )
   ## Build Concepts
   gender_concepts <- get_all_concept(table_map = table_map,  db_connection = db_connection,  concept_table = 'concept', concept_id = 'concept_id',  concept_name = 'concept_name',  table = 'person', joinable_id = 'person_id', table_concept_id = 'gender_concept_id',  col_name = 'Gender')
   race_concepts <- get_all_concept(table_map = table_map, db_connection = db_connection, concept_table = 'concept', concept_id = 'concept_id', concept_name = 'concept_name',table = 'person', joinable_id = 'person_id', table_concept_id = 'race_concept_id', col_name = 'Race')
@@ -138,7 +135,6 @@ omop_table_all_patients <- function(table_map, db_connection) {
 #' @keywords internal
 #' @export
 omop_table_condition_era <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   message('Running Condition Era')
   subject <- as.integer(subject_id() )
   
@@ -166,7 +162,6 @@ omop_table_condition_era <- function(table_map, db_connection, subject_id) {
 #' @keywords internal
 #' @export
 omop_table_condition_occurrence <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   message('Running Condition Occurrence')
   subject <- as.integer(subject_id() )
   
@@ -197,7 +192,6 @@ omop_table_condition_occurrence <- function(table_map, db_connection, subject_id
 #' @keywords internal
 #' @export
 omop_table_death <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   message('Running Death')
   subject <- as.integer(subject_id() )
 
@@ -224,7 +218,6 @@ omop_table_death <- function(table_map, db_connection, subject_id) {
 #' @keywords internal
 #' @export
 omop_table_device_exposure <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   message('Running Device Exposure')
   subject <- as.integer(subject_id() )
   
@@ -253,7 +246,6 @@ omop_table_device_exposure <- function(table_map, db_connection, subject_id) {
 #' @keywords internal
 #' @export
 omop_table_dose_era <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   message('Running Dose Era')
   subject <- as.integer(subject_id() )
 
@@ -281,7 +273,6 @@ omop_table_dose_era <- function(table_map, db_connection, subject_id) {
 #' @keywords internal
 #' @export
 omop_table_drug_era <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   message('Running Drug Era')
   subject <- as.integer(subject_id() )
   
@@ -308,7 +299,6 @@ omop_table_drug_era <- function(table_map, db_connection, subject_id) {
 #' @keywords internal
 #' @export
 omop_table_drug_exposure <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   message('Running Drug Exposure')
   subject <- as.integer(subject_id() )
   
@@ -343,7 +333,6 @@ omop_table_drug_exposure <- function(table_map, db_connection, subject_id) {
 #' @keywords internal
 #' @export
 omop_table_measurement <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   message('Running Measurement')
   subject <- as.integer(subject_id() )
   
@@ -379,7 +368,6 @@ omop_table_measurement <- function(table_map, db_connection, subject_id) {
 #' @keywords internal
 #' @export
 omop_table_note <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   message('Running Note')
   subject <- as.integer(subject_id() )
   
@@ -414,7 +402,6 @@ omop_table_note <- function(table_map, db_connection, subject_id) {
 #' @keywords internal
 #' @export
 omop_table_observation <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   message('Running Observation')
   subject <- as.integer(subject_id() )
 
@@ -452,7 +439,6 @@ omop_table_observation <- function(table_map, db_connection, subject_id) {
 #' @keywords internal
 #' @export
 omop_table_observation_period <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   message('Running Observation Period')
   subject <- as.integer(subject_id() )
   
@@ -478,7 +464,6 @@ omop_table_observation_period <- function(table_map, db_connection, subject_id) 
 #' @keywords internal
 #' @export
 omop_table_payer_plan_period <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   message('Running Payer Plan Period')
   subject <- as.integer(subject_id() )
   
@@ -499,7 +484,6 @@ omop_table_payer_plan_period <- function(table_map, db_connection, subject_id) {
 #' @keywords internal
 #' @export
 omop_table_procedure_occurrence <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   message('Running Procedure Occurrence')
   subject <- as.integer(subject_id() )
   
@@ -532,7 +516,6 @@ omop_table_procedure_occurrence <- function(table_map, db_connection, subject_id
 #' @keywords internal
 #' @export
 omop_table_specimen <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   message('Running Specimen')
   subject <- as.integer(subject_id() )
   
@@ -566,7 +549,6 @@ omop_table_specimen <- function(table_map, db_connection, subject_id) {
 #' @keywords internal
 #' @export
 omop_table_visit_occurrence <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   message('Running Visit Occurrence')
   subject <- as.integer(subject_id() )
   

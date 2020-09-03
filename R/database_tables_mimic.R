@@ -16,7 +16,6 @@
 ## MIMIC All Patient Table ----
 
 mimic3_table_all_patients <- function(table_map, db_connection) {
-  # req(table_map(), db_connection() )
   user_table(table_map, db_connection, 'patients') %>% 
     select(ID = user_field(table_map, 'patients', 'subject_id'), 
            .data$GENDER, 
@@ -40,7 +39,6 @@ mimic3_table_all_patients <- function(table_map, db_connection) {
 #' @keywords internal
 #' @export
 mimic3_table_admissions <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   subject <- as.integer(subject_id() )
   user_table(table_map, db_connection, 'admissions') %>% 
     select(person_id = user_field(table_map, 'admissions', 'subject_id'), ID = user_field(table_map, 'admissions', 'hadm_id'), everything()) %>% 
@@ -57,7 +55,6 @@ mimic3_table_admissions <- function(table_map, db_connection, subject_id) {
 #' @keywords internal
 #' @export
 mimic3_table_callout <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   subject <- as.integer(subject_id() )
   user_table(table_map, db_connection, 'callout') %>% 
     select(person_id = user_field(table_map, 'callout', 'subject_id'), ID = user_field(table_map, 'callout', 'hadm_id'), everything()) %>% 
@@ -75,7 +72,6 @@ mimic3_table_callout <- function(table_map, db_connection, subject_id) {
 #' @keywords internal
 #' @export
 mimic3_table_chart_events <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   subject <- as.integer(subject_id() )
   user_table(table_map, db_connection, 'chartevents') %>%
     select(person_id = user_field(table_map, 'chartevents', 'subject_id'), ID = user_field(table_map, 'chartevents', 'hadm_id'), everything()) %>% 
@@ -92,7 +88,6 @@ mimic3_table_chart_events <- function(table_map, db_connection, subject_id) {
 #' @keywords internal
 #' @export
 mimic3_table_cpt_events <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   subject <- as.integer(subject_id() )
   user_table(table_map, db_connection, 'cptevents') %>% 
     select(person_id = user_field(table_map, 'cptevents', 'subject_id'), ID = user_field(table_map, 'cptevents', 'hadm_id'), everything()) %>% 
@@ -109,7 +104,6 @@ mimic3_table_cpt_events <- function(table_map, db_connection, subject_id) {
 #' @keywords internal
 #' @export
 mimic3_table_diagnoses_icd <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   subject <- as.integer(subject_id() )
   user_table(table_map, db_connection, 'diagnoses_icd') %>% 
     select(person_id = user_field(table_map, 'diagnoses_icd', 'subject_id'), ID = user_field(table_map, 'diagnoses_icd', 'hadm_id'), everything()) %>% 
@@ -129,7 +123,6 @@ mimic3_table_diagnoses_icd <- function(table_map, db_connection, subject_id) {
 #' @keywords internal
 #' @export
 mimic3_table_drg_codes <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   subject <- as.integer(subject_id() )
   user_table(table_map, db_connection, 'drgcodes') %>% 
     select(person_id = user_field(table_map, 'drgcodes', 'subject_id'), ID = user_field(table_map, 'drgcodes', 'hadm_id'), everything()) %>% 
@@ -146,7 +139,6 @@ mimic3_table_drg_codes <- function(table_map, db_connection, subject_id) {
 #' @keywords internal
 #' @export
 mimic3_table_icu_stays <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   subject <- as.integer(subject_id() )
   user_table(table_map, db_connection, 'icustays') %>% 
     select(person_id = user_field(table_map, 'icustays', 'subject_id'), ID = user_field(table_map, 'icustays', 'hadm_id'), everything()) %>% 
@@ -164,7 +156,6 @@ mimic3_table_icu_stays <- function(table_map, db_connection, subject_id) {
 #' @keywords internal
 #' @export
 mimic3_table_lab_events <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection() )
   subject <- as.integer(subject_id(), subject_id() )
   user_table(table_map, db_connection, 'labevents') %>% 
     select(person_id = user_field(table_map, 'labevents', 'subject_id'), ID = user_field(table_map, 'labevents', 'hadm_id'), everything()) %>% 
@@ -186,7 +177,6 @@ mimic3_table_lab_events <- function(table_map, db_connection, subject_id) {
 #' @keywords internal
 #' @export
 mimic3_table_microbiology_events <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   subject <- as.integer(subject_id(), subject_id() )
   user_table(table_map, db_connection, 'microbiologyevents') %>% 
     select(person_id = user_field(table_map, 'microbiologyevents', 'subject_id'), ID = user_field(table_map, 'microbiologyevents', 'hadm_id'), everything()) %>% 
@@ -204,7 +194,6 @@ mimic3_table_microbiology_events <- function(table_map, db_connection, subject_i
 #' @keywords internal
 #' @export
 mimic3_table_note_events <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   subject <- as.integer(subject_id() )
   user_table(table_map, db_connection, 'noteevents') %>% 
     select(person_id = user_field(table_map, 'noteevents', 'subject_id'), ID = user_field(table_map, 'noteevents', 'hadm_id'), iserror = user_field(table_map, 'noteevents', 'iserror'),everything()) %>% 
@@ -222,7 +211,6 @@ mimic3_table_note_events <- function(table_map, db_connection, subject_id) {
 #' @keywords internal
 #' @export
 mimic3_table_prescriptions <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   subject <- as.integer(subject_id() )
   user_table(table_map, db_connection, 'prescriptions') %>% 
     select(person_id = user_field(table_map, 'prescriptions', 'subject_id'), ID = user_field(table_map, 'prescriptions', 'hadm_id'), everything()) %>% 
@@ -239,7 +227,6 @@ mimic3_table_prescriptions <- function(table_map, db_connection, subject_id) {
 #' @keywords internal
 #' @export
 mimic3_table_procedure_events <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   subject <- as.integer(subject_id() )
   user_table(table_map, db_connection, 'procedureevents_mv') %>% 
     select(person_id = user_field(table_map, 'procedureevents_mv', 'subject_id'), ID = user_field(table_map, 'procedureevents_mv', 'hadm_id'), everything()) %>% 
@@ -261,7 +248,6 @@ mimic3_table_procedure_events <- function(table_map, db_connection, subject_id) 
 #' @keywords internal
 #' @export
 mimic3_table_procedures_icd <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   subject <- as.integer(subject_id() )
   user_table(table_map, db_connection, 'procedures_icd') %>% 
     select(person_id = user_field(table_map, 'procedures_icd', 'subject_id'), ID = user_field(table_map, 'procedures_icd', 'hadm_id'), everything()) %>% 
@@ -283,7 +269,6 @@ mimic3_table_procedures_icd <- function(table_map, db_connection, subject_id) {
 #' @keywords internal
 #' @export
 mimic3_table_services <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   subject <- as.integer(subject_id() )
   SERVICE = c("CMED","CSURG","DENT","ENT","GU","GYN","MED","NB","NBB","NMED","NSURG","OBS","ORTHO","OMED", "PSURG","PSYCH","SURG","TRAUMA","TSURG","VSURG")
   DESCRIPTION = c("Cardiac Medical - for non-surgical cardiac related admissions", "Cardiac Surgery - for surgical cardiac admissions", "Dental - for dental/jaw related admissions", "Ear, nose, and throat - conditions primarily affecting these areas", "Genitourinary - reproductive organs/urinary system", "Gynecological - female reproductive systems and breasts", "Medical - general service for internal medicine", "Newborn - infants born at the hospital", "Newborn baby - infants born at the hospital", "Neurologic Medical - non-surgical, relating to the brain", "Neurologic Surgical - surgical, relating to the brain", "Obstetrics - conerned with childbirth and the care of women giving birth", "Orthopaedic - surgical, relating to the musculoskeletal system", "Orthopaedic medicine - non-surgical, relating to musculoskeletal system", "Plastic - restortation/reconstruction of the human body (including cosmetic or aesthetic)", "Psychiatric - mental disorders relating to mood, behaviour, cognition, or perceptions", "Surgical - general surgical service not classified elsewhere", "Trauma - injury or damage caused by physical harm from an external source", "Thoracic Surgical - surgery on the thorax, located between the neck and the abdomen", "Vascular Surgical - surgery relating to the circulatory system")
@@ -309,7 +294,6 @@ mimic3_table_services <- function(table_map, db_connection, subject_id) {
 #' @keywords internal
 #' @export
 mimic3_table_transfers <- function(table_map, db_connection, subject_id) {
-  req(table_map(), db_connection(), subject_id() )
   subject <- as.integer(subject_id() )
   user_table(table_map, db_connection, 'transfers') %>% 
     select(person_id = user_field(table_map, 'transfers', 'subject_id'), ID = user_field(table_map, 'transfers', 'hadm_id'), everything()) %>% 
