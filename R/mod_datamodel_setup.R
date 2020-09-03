@@ -96,29 +96,38 @@ datamodel_detection_ui <- function(id) {
   tagList(
     uiOutput(ns('datamodel_ui'))
     )
-}
+  }
+
+patient_chart_ui <- function(id) {
+  ns <- NS(id)
+  tagList(
+    uiOutput(ns('patient_chart'))
+    )
+  }
 
 # Server ----
 #' @rdname mod_datamodel_setup
 #' @param db_connection Connection info received from the database setup module
+#' @param navigation_vars Navigation variables returned from mod_navigation
 #' @export
 #' @keywords internal
 #' @importFrom magrittr %>% 
 #' @importFrom DBI dbListTables dbListFields
 #' @importFrom dplyr mutate rename select left_join filter ungroup arrange slice group_by desc
 #' @importFrom glue glue
-#' @importFrom purrr map
+#' @importFrom purrr map map map2 iwalk imap
 #' @importFrom stringr str_detect str_replace str_replace_all regex str_extract
 #' @importFrom tidyr unnest as_tibble separate drop_na
 #' @importFrom tibble tibble enframe
 #' @importFrom rlang .data
+#' @importFrom snakecase to_title_case
 #' @importFrom utils data lsf.str
 
-mod_datamodel_detection_server <- function(id, database_vars) {
+mod_datamodel_detection_server <- function(id, database_vars, navigation_vars) {
   moduleServer(
     id,
     function(input, output, session) {
-      ns <- session$n
+      ns <- session$ns
       datamodel_vars <- reactiveValues(
         table_map = NULL,
         message = NULL,
@@ -190,13 +199,63 @@ mod_datamodel_detection_server <- function(id, database_vars) {
           } else { NULL }
         })
       
-      # UI Outputs ----
+      # Datamodel UI ----
       output$datamodel_ui <- renderUI({
         req(database_vars()$is_connected == 'yes')
         tagList(
           datamodel_vars$message
           )
         })
+      
+      # Patient Chart ----
+      ## Big Thanks: https://tbradley1013.github.io/2018/08/10/create-a-dynamic-number-of-ui-elements-in-shiny-with-purrr/
+      observeEvent(navigation_vars$selected_subject_id, {
+        req(navigation_vars$selected_subject_id)
+        ## Create Arguments for database table functions
+        datamodel_vars$table_args <- list(table_map = datamodel_vars$table_map,
+                                             db_connection = database_vars()$db_con,
+                                             subject_id = navigation_vars$selected_subject_id
+        )
+        ## Create Reactives containing tables for the detected datamodel
+        datamodel_vars$patient_tables <- datamodel_vars$subject_tables %>%
+          mutate(tab_name = snakecase::to_title_case(.data$table_name),
+                 reactive = map(.data$function_name,
+                                ~reactive({
+                                  rlang::exec(.x, !!!datamodel_vars$table_args)
+                                })
+                 )
+          ) %>% 
+          pull(reactive)
+        
+        ## Create a DT Outputs
+        purrr::iwalk(datamodel_vars$patient_tables, ~{
+          output_name <- glue::glue('dt_{.y}')
+          output[[output_name]] <- DT::renderDataTable(rlang::exec(.x) %>% reviewr_datatable())
+        })
+        
+      })
+      
+      ## Patient Chart UI ---- 
+      output$patient_chart <- renderUI({
+        req(datamodel_vars$patient_tables)
+        # browser()
+        
+        datamodel_vars$tabset_panels <- datamodel_vars$subject_tables %>% 
+          mutate(tab_name = snakecase::to_title_case(.data$table_name),
+                 dt_list = imap(datamodel_vars$patient_tables, ~{
+                   tagList(
+                     DT::DTOutput(outputId = ns(glue::glue('dt_{.y}') )) %>% withSpinner(type = 6, proxy.height = '760px')
+                   )
+                 }),
+                 tab_panels = purrr::map2(
+                   .data$tab_name, 
+                   .data$dt_list,
+                   ~tabPanel(title = .x, .y)
+                 )
+          ) %>% 
+          pull(tab_panels)
+        do.call(tabsetPanel, datamodel_vars$tabset_panels)
+      })
       
       # Return ----
       return(datamodel_vars)

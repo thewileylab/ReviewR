@@ -64,7 +64,7 @@ app_server <- function(input, output, session) {
   database_vars <- mod_database_setup_server('db-selector')
   
   ## Database Detection Module
-  datamodel_vars <- mod_datamodel_detection_server('data-model', database_vars)
+  datamodel_vars <- mod_datamodel_detection_server('data-model', database_vars, navigation_vars)
   
   ## Abstraction
   abstract_vars <- mod_abstraction_setup_server('abs-selector', selected_subject_id)
@@ -74,5 +74,5 @@ app_server <- function(input, output, session) {
   selected_subject_id <- reactive({ navigation_vars$selected_subject_id })
 
   # Chart Review Module ----
-  mod_chartreview_server('chart-review', database_vars, datamodel_vars, abstract_vars, navigation_vars)
+  mod_chartreview_server('chart-review', database_vars, abstract_vars)
   }

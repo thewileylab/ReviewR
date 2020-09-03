@@ -7,10 +7,12 @@
 \usage{
 datamodel_detection_ui(id)
 
-mod_datamodel_detection_server(id, database_vars)
+mod_datamodel_detection_server(id, database_vars, navigation_vars)
 }
 \arguments{
 \item{id}{The namespace id for the UI output}
+
+\item{navigation_vars}{Navigation variables returned from mod_navigation}
 
 \item{input}{internal}
 
