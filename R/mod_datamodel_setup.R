@@ -207,7 +207,7 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars) {
           )
         })
       
-      # Patient Chart ----
+      # Dynamic Patient Chart ----
       ## Big Thanks: https://tbradley1013.github.io/2018/08/10/create-a-dynamic-number-of-ui-elements-in-shiny-with-purrr/
       observeEvent(navigation_vars$selected_subject_id, {
         req(navigation_vars$selected_subject_id)
