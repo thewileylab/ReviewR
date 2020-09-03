@@ -173,7 +173,7 @@ mod_datamodel_detection_server <- function(id, database_vars) {
         ## Datamodel Message
         datamodel_vars$message <-if (nrow(datamodel_vars$table_map) > 0) {
             HTML(glue::glue('<em>Data Model: {datamodel_vars$table_map$datamodel} {str_replace_all(datamodel_vars$table_map$model_version,"_",".")}</em>'))
-            } else {HTML(paste("<font color='#e83a2f'><em>The selected database does not appear to contain a supported datamodel. Please disconnect and select another database.</em></font>"))
+            } else {HTML(paste("<font color='#e83a2f'><em>The connected database does not appear to contain a supported datamodel. Please disconnect and select another database.</em></font>"))
             }
         ## Datamodel Table Functions
         datamodel_vars$table_functions <- if (nrow(datamodel_vars$table_map) > 0) {
