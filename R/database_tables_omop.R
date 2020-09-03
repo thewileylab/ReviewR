@@ -136,7 +136,7 @@ omop_table_all_patients <- function(table_map, db_connection) {
 #' @export
 omop_table_condition_era <- function(table_map, db_connection, subject_id) {
   message('Running Condition Era')
-  subject <- as.integer(subject_id() )
+  subject <- as.integer(subject_id)
   
   user_table(table_map, db_connection, 'concept') %>%
     select(user_field(table_map, 'concept', 'concept_id'),
@@ -163,7 +163,7 @@ omop_table_condition_era <- function(table_map, db_connection, subject_id) {
 #' @export
 omop_table_condition_occurrence <- function(table_map, db_connection, subject_id) {
   message('Running Condition Occurrence')
-  subject <- as.integer(subject_id() )
+  subject <- as.integer(subject_id)
   
   ## Build Concepts
   condition_concepts <- get_subject_concept(table_map, db_connection, 'concept','concept_id','concept_name','condition_occurrence','condition_occurrence_id','condition_concept_id','Condition','person_id', subject)
@@ -193,7 +193,7 @@ omop_table_condition_occurrence <- function(table_map, db_connection, subject_id
 #' @export
 omop_table_death <- function(table_map, db_connection, subject_id) {
   message('Running Death')
-  subject <- as.integer(subject_id() )
+  subject <- as.integer(subject_id)
 
   ## Build Concepts
   death_type_concepts <- get_subject_concept(table_map, db_connection, 'concept','concept_id','concept_name','death','person_id','death_type_concept_id','Type','person_id', subject)
@@ -219,7 +219,7 @@ omop_table_death <- function(table_map, db_connection, subject_id) {
 #' @export
 omop_table_device_exposure <- function(table_map, db_connection, subject_id) {
   message('Running Device Exposure')
-  subject <- as.integer(subject_id() )
+  subject <- as.integer(subject_id)
   
   ## Build Concepts
   device_concepts <- get_subject_concept(table_map, db_connection, 'concept','concept_id','concept_name','device_exposure','device_exposure_id','device_concept_id','Device','person_id', subject)
@@ -247,7 +247,7 @@ omop_table_device_exposure <- function(table_map, db_connection, subject_id) {
 #' @export
 omop_table_dose_era <- function(table_map, db_connection, subject_id) {
   message('Running Dose Era')
-  subject <- as.integer(subject_id() )
+  subject <- as.integer(subject_id)
 
   ## Build Concepts
   dose_concepts <- get_subject_concept(table_map, db_connection, 'concept','concept_id','concept_name','dose_era','dose_era_id','drug_concept_id','Drug','person_id', subject)
@@ -274,7 +274,7 @@ omop_table_dose_era <- function(table_map, db_connection, subject_id) {
 #' @export
 omop_table_drug_era <- function(table_map, db_connection, subject_id) {
   message('Running Drug Era')
-  subject <- as.integer(subject_id() )
+  subject <- as.integer(subject_id)
   
   ## Build Concepts
   drug_concepts <- get_subject_concept(table_map, db_connection, 'concept','concept_id','concept_name','drug_era','drug_era_id','drug_concept_id','Drug','person_id', subject)
@@ -300,7 +300,7 @@ omop_table_drug_era <- function(table_map, db_connection, subject_id) {
 #' @export
 omop_table_drug_exposure <- function(table_map, db_connection, subject_id) {
   message('Running Drug Exposure')
-  subject <- as.integer(subject_id() )
+  subject <- as.integer(subject_id)
   
   ## Build Concepts
   drug_concepts <- get_subject_concept(table_map, db_connection, 'concept','concept_id','concept_name','drug_exposure','drug_exposure_id','drug_concept_id','Drug','person_id', subject)
@@ -334,7 +334,7 @@ omop_table_drug_exposure <- function(table_map, db_connection, subject_id) {
 #' @export
 omop_table_measurement <- function(table_map, db_connection, subject_id) {
   message('Running Measurement')
-  subject <- as.integer(subject_id() )
+  subject <- as.integer(subject_id)
   
   ## Build Concepts
   measurement_concepts <- get_subject_concept(table_map, db_connection, 'concept','concept_id','concept_name','measurement','measurement_id','measurement_concept_id','Measurement','person_id', subject)
@@ -369,7 +369,7 @@ omop_table_measurement <- function(table_map, db_connection, subject_id) {
 #' @export
 omop_table_note <- function(table_map, db_connection, subject_id) {
   message('Running Note')
-  subject <- as.integer(subject_id() )
+  subject <- as.integer(subject_id)
   
   ## Build Concepts
   note_type_concepts <- get_subject_concept(table_map, db_connection, 'concept','concept_id','concept_name','note','note_id','note_type_concept_id','Type','person_id', subject)
@@ -403,7 +403,7 @@ omop_table_note <- function(table_map, db_connection, subject_id) {
 #' @export
 omop_table_observation <- function(table_map, db_connection, subject_id) {
   message('Running Observation')
-  subject <- as.integer(subject_id() )
+  subject <- as.integer(subject_id)
 
   ## Build Concepts
   observation_concepts <- get_subject_concept(table_map, db_connection, 'concept','concept_id','concept_name','observation','observation_id','observation_concept_id','Observation','person_id', subject)
@@ -440,7 +440,7 @@ omop_table_observation <- function(table_map, db_connection, subject_id) {
 #' @export
 omop_table_observation_period <- function(table_map, db_connection, subject_id) {
   message('Running Observation Period')
-  subject <- as.integer(subject_id() )
+  subject <- as.integer(subject_id)
   
   ## Build Concepts
   observation_type_concepts <- get_subject_concept(table_map, db_connection, 'concept','concept_id','concept_name','observation_period','observation_period_id','period_type_concept_id','Period','person_id', subject)
@@ -465,7 +465,7 @@ omop_table_observation_period <- function(table_map, db_connection, subject_id) 
 #' @export
 omop_table_payer_plan_period <- function(table_map, db_connection, subject_id) {
   message('Running Payer Plan Period')
-  subject <- as.integer(subject_id() )
+  subject <- as.integer(subject_id)
   
   user_table(table_map, db_connection, 'payer_plan_period') %>% 
     filter(!!as.name(user_field(table_map, 'payer_plan_period','person_id')) == subject ) %>%
@@ -485,7 +485,7 @@ omop_table_payer_plan_period <- function(table_map, db_connection, subject_id) {
 #' @export
 omop_table_procedure_occurrence <- function(table_map, db_connection, subject_id) {
   message('Running Procedure Occurrence')
-  subject <- as.integer(subject_id() )
+  subject <- as.integer(subject_id)
   
   ## Build Concepts
   procedure_concepts <- get_subject_concept(table_map, db_connection, 'concept','concept_id','concept_name','procedure_occurrence','procedure_occurrence_id','procedure_concept_id','Procedure','person_id', subject)
@@ -517,7 +517,7 @@ omop_table_procedure_occurrence <- function(table_map, db_connection, subject_id
 #' @export
 omop_table_specimen <- function(table_map, db_connection, subject_id) {
   message('Running Specimen')
-  subject <- as.integer(subject_id() )
+  subject <- as.integer(subject_id)
   
   ## Build Concepts
   specimen_concepts <- get_subject_concept(table_map, db_connection, 'concept','concept_id','concept_name','specimen','specimen_id','specimen_concept_id','Specimen','person_id', subject)
@@ -550,7 +550,7 @@ omop_table_specimen <- function(table_map, db_connection, subject_id) {
 #' @export
 omop_table_visit_occurrence <- function(table_map, db_connection, subject_id) {
   message('Running Visit Occurrence')
-  subject <- as.integer(subject_id() )
+  subject <- as.integer(subject_id)
   
   ## Build Concepts
   visit_concepts <- get_subject_concept(table_map, db_connection, 'concept','concept_id','concept_name','visit_occurrence','visit_occurrence_id','visit_concept_id','Visit','person_id', subject)
