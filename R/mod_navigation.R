@@ -370,16 +370,7 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
             shinyjs::disable('all_patient_search_dt_rows_selected')
             navigation_vars$selected_row <- as.integer(input$subject_id) }
           })
-      
-      
-    #   #Replace Patient Search Table when table map changes
-    #   observeEvent(table_map(), {
-    #     req(table_map() )
-    #     DT::reloadData(proxy = patient_search_proxy,
-    #                    resetPaging = T,
-    #                    clearSelection = T)
-    #     })
-    
+        
       # Return ----
       return(subject_vars)
       }
