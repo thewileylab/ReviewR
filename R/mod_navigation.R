@@ -102,7 +102,7 @@ chart_review_navigation <- function(id) {
 #' @importFrom magrittr %>% extract2
 #' @importFrom tibble rowid_to_column tibble
 #' @importFrom tidyr replace_na
-#' @importFrom rlang .data exec
+#' @importFrom rlang .data exec is_empty
 #' @importFrom shinyjs disable enable
 #' @importFrom utils tail
 mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, parent_session) {
@@ -240,10 +240,15 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
       # Subject Info ----
       ### Determine Abstraction Status
       observeEvent(abstract_vars()$previous_selected_instrument_complete_val, ignoreInit = T, {
-        subject_vars$selected_subject_status <- if(abstract_vars()$previous_selected_instrument_complete_val == 0) { img(src = 'www/status_incomplete.png', style='width: 20px')
-          } else if(abstract_vars()$previous_selected_instrument_complete_val == 1) { img(src = 'www/status_unverified.png', style='width: 20px')
-          } else if(abstract_vars()$previous_selected_instrument_complete_val == 2) { img(src = 'www/status_complete.png', style='width: 20px') 
-              } else {return(NULL)}
+        # browser()
+        if (abstract_vars()$previous_selected_instrument_complete_val %>% rlang::is_empty() == T ) {
+          subject_vars$selected_subject_status <- NULL
+        } else {
+          subject_vars$selected_subject_status <- if(abstract_vars()$previous_selected_instrument_complete_val == 0) { img(src = 'www/status_incomplete.png', style='width: 20px')
+            } else if(abstract_vars()$previous_selected_instrument_complete_val == 1) { img(src = 'www/status_unverified.png', style='width: 20px')
+              } else if(abstract_vars()$previous_selected_instrument_complete_val == 2) { img(src = 'www/status_complete.png', style='width: 20px') 
+                } else {return(NULL)}
+          }
         })
       ### Create Subject Info Header UI
       output$subject_info <- renderUI({
