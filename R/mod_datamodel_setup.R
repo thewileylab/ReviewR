@@ -122,7 +122,9 @@ mod_datamodel_detection_server <- function(id, database_vars) {
       datamodel_vars <- reactiveValues(
         table_map = NULL,
         message = NULL,
-        table_functions = NULL
+        table_functions = NULL,
+        all_patients_table = NULL, 
+        subject_tables = NULL
         )
       
       # Calculate Table Map ----
@@ -167,7 +169,7 @@ mod_datamodel_detection_server <- function(id, database_vars) {
         })
       
       # Store Additional Vars ----
-      observeEvent(datamodel_vars$table_map, {
+      observeEvent(datamodel_vars$table_map, ignoreInit = T, {
         req(datamodel_vars$table_map)
         # browser()
         ## Datamodel Message
@@ -176,11 +178,15 @@ mod_datamodel_detection_server <- function(id, database_vars) {
             } else {HTML(paste("<font color='#e83a2f'><em>The connected database does not appear to contain a supported datamodel. Please disconnect and select another database.</em></font>"))
             }
         ## Datamodel Table Functions
-        datamodel_vars$table_functions <- if (nrow(datamodel_vars$table_map) > 0) {
-          lsf.str('package:ReviewR') %>% 
+        if (nrow(datamodel_vars$table_map) > 0) {
+          datamodel_vars$table_functions <- lsf.str('package:ReviewR') %>% 
             tibble::enframe(name = NULL, value = 'function_name') %>% 
             filter(stringr::str_detect(.data$function_name, glue::glue('{datamodel_vars$table_map$datamodel}_table') )) %>% 
             mutate(table_name = stringr::str_remove(.data$function_name, glue::glue('{datamodel_vars$table_map$datamodel}_table_') ))
+          datamodel_vars$all_patients_table <- datamodel_vars$table_functions %>% 
+            filter(table_name == 'all_patients')
+          datamodel_vars$subject_tables <- datamodel_vars$table_functions %>% 
+            filter(table_name != 'all_patients')
           } else { NULL }
         })
       

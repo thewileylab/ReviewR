@@ -161,9 +161,8 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
             all_patients_args <- list(table_map = datamodel_vars$table_map, 
                                       db_connection = database_vars()$db_con
                                       )
-            navigation_vars$all_patients <- rlang::exec(datamodel_vars$table_functions %>% 
-                                                          filter(.data$table_name == 'all_patients') %>% 
-                                                          extract2('function_name'),
+            navigation_vars$all_patients <- rlang::exec(datamodel_vars$all_patients_table %>% 
+                                                          pull('function_name'),
                                                         !!!all_patients_args
                                                         )
             ## Determine "all patients" table stats
