@@ -97,8 +97,10 @@ chart_review_navigation <- function(id) {
 #' @import shiny 
 #' @importFrom DT reloadData formatStyle selectRows dataTableProxy
 #' @importFrom glue glue
-#' @importFrom dplyr rename slice filter select pull
-#' @importFrom tibble rowid_to_column
+#' @importFrom dplyr left_join mutate_at pull rename slice filter select 
+#' @importFrom glue glue
+#' @importFrom magrittr %>% extract2
+#' @importFrom tibble rowid_to_column tibble
 #' @importFrom tidyr replace_na
 #' @importFrom rlang .data exec
 #' @importFrom shinyjs disable enable
@@ -193,7 +195,7 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
               navigation_vars$all_patients %>%
                 left_join(abstract_vars()$all_review_status) %>% 
                 ## The last two rows will contain 'review status'
-                dplyr::mutate_at(tail(names(.data), 2), tidyr::replace_na, '<em>Review Not Started</em>') %>% 
+                dplyr::mutate_at(tail(names(.), 2), tidyr::replace_na, '<em>Review Not Started</em>') %>% 
                 rename('Subject ID' = .data$ID) %>%
                 reviewr_datatable() %>%
                   # Format the ID column to appear blue and change the mouse to a pointer
