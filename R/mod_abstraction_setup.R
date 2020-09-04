@@ -49,13 +49,14 @@ mod_abstraction_setup_server <- function(id, subject_id){
     id,
     function(input, output, session) {
       ns <- session$ns
-      namespace <- 'abs-selector-ns'
+      
       # Abstraction Module Setup ----
-      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Add Database Setup Modules Here!!! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+      namespace <- 'abs-selector-ns'
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Add Abstraction Setup Modules Here!!! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
       ## Add Abstraction Setup Modules Here
       abstraction_setup_vars <- reactiveValues(redcap = shinyREDCap::redcap_server(id = namespace, subject_id = subject_id) )
       
-      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+      # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
       
       # observeEvent(input$debug, {
       #   browser()
