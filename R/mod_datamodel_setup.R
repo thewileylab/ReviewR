@@ -196,7 +196,10 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars) {
             filter(table_name == 'all_patients')
           datamodel_vars$subject_tables <- datamodel_vars$table_functions %>% 
             filter(table_name != 'all_patients')
-          } else { NULL }
+          } else { 
+            datamodel_vars$table_functions <- NULL 
+            datamodel_vars$all_patients_table <- NULL
+            datamodel_vars$subject_tables <- NULL}
         })
       
       # Datamodel UI ----
