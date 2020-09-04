@@ -11,7 +11,6 @@
 chartreview_ui <- function(id) {
   ns <- NS(id)
   tagList(
-    actionButton(inputId = ns('debug'), label = "I'm alive!"),
     uiOutput(ns('view_review'))
     )
   }
@@ -33,10 +32,6 @@ mod_chartreview_server <- function(id, database_vars, abstract_vars) {
     id,
     function(input, output, session) {
       ns <- session$ns
-      # Debug ----
-      observeEvent(input$debug, {
-        browser()
-        })
       
       # Render View/Review ----
       ## Determine if View or Review interface is needed based on presence or absence of 
