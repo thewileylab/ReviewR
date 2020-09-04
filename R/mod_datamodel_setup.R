@@ -193,9 +193,9 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars) {
             filter(stringr::str_detect(.data$function_name, glue::glue('{datamodel_vars$table_map$datamodel}_table') )) %>% 
             mutate(table_name = stringr::str_remove(.data$function_name, glue::glue('{datamodel_vars$table_map$datamodel}_table_') ))
           datamodel_vars$all_patients_table <- datamodel_vars$table_functions %>% 
-            filter(table_name == 'all_patients')
+            filter(.data$table_name == 'all_patients')
           datamodel_vars$subject_tables <- datamodel_vars$table_functions %>% 
-            filter(table_name != 'all_patients')
+            filter(.data$table_name != 'all_patients')
           } else { 
             datamodel_vars$table_functions <- NULL 
             datamodel_vars$all_patients_table <- NULL
@@ -221,14 +221,13 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars) {
         )
         ## Create Reactives containing tables for the detected datamodel
         datamodel_vars$patient_tables <- datamodel_vars$subject_tables %>%
-          mutate(tab_name = snakecase::to_title_case(.data$table_name),
-                 reactive = map(.data$function_name,
+          mutate(reactive = map(.data$function_name,
                                 ~reactive({
                                   rlang::exec(.x, !!!datamodel_vars$table_args)
                                 })
                  )
           ) %>% 
-          pull(reactive)
+          pull(.data$reactive)
         
         ## Create a DT Outputs
         purrr::iwalk(datamodel_vars$patient_tables, ~{
@@ -256,7 +255,7 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars) {
                    ~tabPanel(title = .x, .y)
                  )
           ) %>% 
-          pull(tab_panels)
+          pull(.data$tab_panels)
         do.call(tabsetPanel, datamodel_vars$tabset_panels)
       })
       
