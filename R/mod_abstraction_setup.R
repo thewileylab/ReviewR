@@ -82,7 +82,7 @@ mod_abstraction_setup_server <- function(id, subject_id){
         req(selector_vals$module_names != '<empty>')
         updateSelectInput(session = session,
                           inputId = 'abstraction_modules', 
-                          choices = selector_vals$module_names
+                          choices = selector_vals$module_names %>% sort()
                           )
         })
       
