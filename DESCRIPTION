@@ -24,20 +24,21 @@ Imports:
     httr,
     lubridate,
     magrittr,
+    pkgload,
     purrr,
     rlang (>= 0.4.7),
     shiny (>= 1.5.0),
     shinycssloaders (>= 1.0.0),
     shinydashboard,
     shinyjs,
-    snakecase,
-    stringr,
+    shinyWidgets,
     shinyBigQuery,
     shinyREDCap,
     shinyPostgreSQL,
+    snakecase,
+    stringr,
     tibble,
-    tidyr (>= 1.1.0),
-    shinyWidgets
+    tidyr (>= 1.1.0)
 Remotes: 
     Thinkr-open/golem,
     thewileylab/shinyBigQuery,
@@ -46,7 +47,6 @@ Remotes:
 Suggests: 
     htmltools,
     knitr,
-    pkgload,
     processx,
     rmarkdown,
     spelling,
