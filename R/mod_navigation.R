@@ -265,11 +265,17 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
               div(subject_vars$selected_subject_status, 
                   style='display:inline-block;vertical-align:middle'
                   ),
-              renderTable(subject_vars$selected_subject_info %>% 
-                            mutate_all(as.character) %>% 
-                            select(-.data$ID), 
-                          width = '100%', align = 'l', digits = 0
-                          )
+              div(style='height:100px; overflow-y: scroll',
+                renderTable(subject_vars$selected_subject_info %>% 
+                              left_join(abstract_vars()$all_review_status) %>% 
+                              ## The last two rows will contain 'review status'
+                              dplyr::mutate_at(vars(dplyr::last_col(1), dplyr::last_col()), tidyr::replace_na, '<em>Review Not Started</em>') %>% 
+                              mutate_all(as.character) %>% 
+                              select(-.data$ID), 
+                            width = '100%', align = 'l', digits = 0,
+                            sanitize.text.function=identity
+                            )
+                )
               )
             } else {
               tagList(
