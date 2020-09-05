@@ -76,7 +76,7 @@ mod_database_setup_server <- function(id){
         req(selector_vals$module_names != '<empty>')
         updateSelectInput(session = session,
                           inputId = 'database_modules', 
-                          choices = selector_vals$module_names
+                          choices = selector_vals$module_names %>% sort()
                           )
         })
       
