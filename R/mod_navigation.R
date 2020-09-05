@@ -193,7 +193,7 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
               ## check the status of this issue first: https://github.com/rstudio/DT/issues/275
               navigation_vars$all_patients %>%
                 left_join(abstract_vars()$all_review_status) %>% 
-                ## The last two rows will contain 'review status'
+                ## The last two columns will contain 'review status'
                 dplyr::mutate_at(vars(dplyr::last_col(1), dplyr::last_col()), tidyr::replace_na, '<em>Review Not Started</em>') %>% 
                 rename('Subject ID' = .data$ID) %>%
                 reviewr_datatable() %>%
@@ -268,7 +268,7 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
               div(style='height:100px; overflow-y: scroll',
                 renderTable(subject_vars$selected_subject_info %>% 
                               left_join(abstract_vars()$all_review_status) %>% 
-                              ## The last two rows will contain 'review status'
+                              ## The last two columns will contain 'review status'
                               dplyr::mutate_at(vars(dplyr::last_col(1), dplyr::last_col()), tidyr::replace_na, '<em>Review Not Started</em>') %>% 
                               mutate_all(as.character) %>% 
                               select(-.data$ID), 
