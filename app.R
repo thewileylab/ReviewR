@@ -4,4 +4,4 @@
 
 pkgload::load_all()
 options( "golem.app.prod" = TRUE)
-ReviewR::run_app() # add parameters here (if any)
+shiny::shinyApp(ui = app_ui(), server = app_server)
