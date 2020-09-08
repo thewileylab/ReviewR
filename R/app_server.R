@@ -34,7 +34,7 @@ app_server <- function(input, output, session) {
   output$main_ui <- renderUI({
     tabItems(
       ### https://stackoverflow.com/questions/36817407/content-doesnt-show-up-in-the-dashboard-body-if-the-sidebar-menu-is-dynamically/36819190#36819190
-      tabItem(tabName = 'welcome', uiOutput('homepage'), class = 'active'), 
+      tabItem(tabName = 'homepage', uiOutput('homepage'), class = 'active'), 
       tabItem(tabName = 'setup', uiOutput('setup')),
       tabItem(tabName = 'patient_search', uiOutput('patient_search')),
       tabItem(tabName = 'chart_review', uiOutput('chart_review'))
