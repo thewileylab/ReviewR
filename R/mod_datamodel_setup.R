@@ -135,6 +135,11 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars) {
         all_patients_table = NULL, 
         subject_tables = NULL
         )
+      patient_table_vars <- reactiveValues(
+        table_map = NULL,
+        db_connection = NULL,
+        subject_id = NULL
+        )
       
       # Calculate Table Map ----
       ## Determine which user fields map to known CDM field values
@@ -196,10 +201,16 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars) {
             filter(.data$table_name == 'all_patients')
           datamodel_vars$subject_tables <- datamodel_vars$table_functions %>% 
             filter(.data$table_name != 'all_patients')
+          ## Create Arguments for database table functions
+          patient_table_vars$table_map = datamodel_vars$table_map
+          patient_table_vars$db_connection = database_vars()$db_con
           } else { 
             datamodel_vars$table_functions <- NULL 
             datamodel_vars$all_patients_table <- NULL
-            datamodel_vars$subject_tables <- NULL}
+            datamodel_vars$subject_tables <- NULL
+            patient_table_vars$table_map <- NULL
+            patient_table_vars$db_connection <- NULL
+            patient_table_vars$subject_id <- NULL}
         })
       
       # Datamodel UI ----
@@ -211,53 +222,53 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars) {
         })
       
       # Dynamic Patient Chart ----
-      ## Big Thanks: https://tbradley1013.github.io/2018/08/10/create-a-dynamic-number-of-ui-elements-in-shiny-with-purrr/
+      ## Add Subject ID to patient_table_vars reactiveValues object
       observeEvent(navigation_vars$selected_subject_id, {
         req(navigation_vars$selected_subject_id)
-        ## Create Arguments for database table functions
-        datamodel_vars$table_args <- list(table_map = datamodel_vars$table_map,
-                                             db_connection = database_vars()$db_con,
-                                             subject_id = navigation_vars$selected_subject_id
-        )
-        ## Create Reactives containing tables for the detected datamodel
-        datamodel_vars$patient_tables <- datamodel_vars$subject_tables %>%
-          mutate(reactive = map(.data$function_name,
-                                ~reactive({
-                                  rlang::exec(.x, !!!datamodel_vars$table_args)
-                                })
-                 )
-          ) %>% 
-          pull(.data$reactive)
-        
-        ## Create a DT Outputs
-        purrr::iwalk(datamodel_vars$patient_tables, ~{
-          output_name <- glue::glue('dt_{.y}')
-          output[[output_name]] <- DT::renderDataTable(rlang::exec(.x) %>% reviewr_datatable())
+        patient_table_vars$subject_id <- navigation_vars$selected_subject_id
         })
-        
-      })
       
-      ## Patient Chart UI ---- 
+      ## Create Reactive expressions for all patient tables
+       patient_tables <- reactive({
+         map(datamodel_vars$subject_tables$function_name,
+             ~reactive({
+               req(patient_table_vars$subject_id)
+               rlang::exec(.x, !!!reactiveValuesToList(patient_table_vars))
+               })
+             )
+         })
+      ## Big Thanks: https://tbradley1013.github.io/2018/08/10/create-a-dynamic-number-of-ui-elements-in-shiny-with-purrr/
+      observeEvent(patient_tables(), {
+        ## Create a DT Outputs, using patient table reactives
+        purrr::iwalk(patient_tables(), ~{
+          output_name <- glue::glue('dt_{.y}')
+          output[[output_name]] <- DT::renderDataTable({
+            # req(rlang::exec(.x))
+            rlang::exec(.x) %>% reviewr_datatable()
+            })
+        })
+
+      })
+
+      ## Patient Chart UI ----
       output$patient_chart <- renderUI({
-        req(datamodel_vars$patient_tables)
-        # browser()
-        
-        datamodel_vars$tabset_panels <- datamodel_vars$subject_tables %>% 
+        req(patient_tables())
+        datamodel_vars$tabset_panels <- datamodel_vars$subject_tables %>%
           mutate(tab_name = snakecase::to_title_case(.data$table_name),
-                 dt_list = imap(datamodel_vars$patient_tables, ~{
+                 dt_list = imap(patient_tables(), ~{
                    tagList(
                      DT::DTOutput(outputId = ns(glue::glue('dt_{.y}') )) %>% withSpinner(type = 6, proxy.height = '760px')
                    )
                  }),
                  tab_panels = purrr::map2(
-                   .data$tab_name, 
+                   .data$tab_name,
                    .data$dt_list,
                    ~tabPanel(title = .x, .y)
                  )
-          ) %>% 
+          ) %>%
           pull(.data$tab_panels)
         do.call(tabsetPanel, datamodel_vars$tabset_panels)
-      })
+        })
       
       # Return ----
       return(datamodel_vars)
