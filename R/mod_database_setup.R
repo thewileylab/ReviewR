@@ -89,7 +89,7 @@ mod_database_setup_server <- function(id){
         module_ui_args <- list(id = ns(namespace))
         ### Execute selected DB Module UI function 
         ### with ns() wrapped namespace
-        rlang::exec(database_setup_vars[[input$database_modules]]$ui,
+        rlang::exec(database_setup_vars[[input$database_modules]]$setup_ui,
                     !!!module_ui_args)
         })
       
