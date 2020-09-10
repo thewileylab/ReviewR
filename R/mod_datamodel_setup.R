@@ -230,6 +230,7 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars) {
       
       ## Create Reactive expressions for all patient tables
        patient_tables <- reactive({
+         req(datamodel_vars$subject_tables$function_name)
          map(datamodel_vars$subject_tables$function_name,
              ~reactive({
                req(patient_table_vars$subject_id)
@@ -243,7 +244,6 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars) {
         purrr::iwalk(patient_tables(), ~{
           output_name <- glue::glue('dt_{.y}')
           output[[output_name]] <- DT::renderDataTable({
-            # req(rlang::exec(.x))
             rlang::exec(.x) %>% reviewr_datatable()
             })
         })
