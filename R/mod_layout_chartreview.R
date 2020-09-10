@@ -57,7 +57,7 @@ mod_chartreview_server <- function(id, database_vars, abstract_vars) {
           ## Abstraction Module NOT configured
           } else {
             tagList(
-              box(width = '100%',
+              box(width = 12,
                   status = 'primary',
                   ## Patient Chart
                   patient_chart_ui('data-model')
