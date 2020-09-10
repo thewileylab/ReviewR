@@ -9,10 +9,10 @@
 patient_search <- function() {
   renderUI({
     tagList(
-      fluidPage(
+      fluidRow(
         #Box Setup
         box(title = h2('Select a Patient'),
-            width = '100%', 
+            width = 12, 
             status = 'primary', 
             solidHeader = F,
             #Box Contents

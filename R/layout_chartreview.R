@@ -9,34 +9,32 @@
 chart_review <- function() {
   renderUI({
     tagList(
-      fluidPage(
-        fluidRow(
-          #Column Setup
-          column(width = 9,
-                 #Box Setup
-                 box(width = '100%',
-                     # height = '130px',
-                     status = 'primary', 
-                     solidHeader = F,
-                     #Box Contents
-                     chart_review_subject_info('pt-navigation')
-                     )
-                 ),
-          #Column Setup
-          column(width = 3,
-                 #Box Setup
-                 box(width = '100%',
-                     # height = '130px',
-                     status = 'primary', 
-                     solidHeader = F,
-                     #Box Contents
-                     chart_review_navigation('pt-navigation')
-                     )
-                 )
-          ),
-        fluidRow(
-          chartreview_ui('chart-review')
-          )
+      fluidRow(
+        #Column Setup
+        column(width = 9,
+               #Box Setup
+               box(width = '100%',
+                   # height = '130px',
+                   status = 'primary',
+                   solidHeader = F,
+                   #Box Contents
+                   chart_review_subject_info('pt-navigation')
+                   )
+               ),
+        #Column Setup
+        column(width = 3,
+               #Box Setup
+               box(width = '100%',
+                   # height = '130px',
+                   status = 'primary', 
+                   solidHeader = F,
+                   #Box Contents
+                   chart_review_navigation('pt-navigation')
+                   )
+               )
+        ),
+      fluidRow(
+        chartreview_ui('chart-review')
         )
       )
     })
