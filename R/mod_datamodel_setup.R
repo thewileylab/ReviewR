@@ -214,6 +214,7 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars) {
         })
       
       # Datamodel UI ----
+      ## Create a UI output do display the detected datamodel 
       output$datamodel_ui <- renderUI({
         req(database_vars()$is_connected == 'yes')
         tagList(
@@ -228,7 +229,7 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars) {
         patient_table_vars$subject_id <- navigation_vars$selected_subject_id
         })
       
-      ## Create Reactive expressions for all patient tables
+      ## Dynamically create reactive expressions for all patient table functions for detected datamodel
        patient_tables <- reactive({
          req(datamodel_vars$subject_tables$function_name)
          map(datamodel_vars$subject_tables$function_name,
@@ -240,7 +241,7 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars) {
          })
       ## Big Thanks: https://tbradley1013.github.io/2018/08/10/create-a-dynamic-number-of-ui-elements-in-shiny-with-purrr/
       observeEvent(patient_tables(), {
-        ## Create a DT Outputs, using patient table reactives
+        ## Dynamically create DT::datatable outputs, for every patient table reactive expression
         purrr::iwalk(patient_tables(), ~{
           output_name <- glue::glue('dt_{.y}')
           output[[output_name]] <- DT::renderDataTable({
@@ -251,6 +252,7 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars) {
       })
 
       ## Patient Chart UI ----
+      ## Create a tabsetPanel, consisting of DT::datatable outputs
       output$patient_chart <- renderUI({
         req(patient_tables())
         datamodel_vars$tabset_panels <- datamodel_vars$subject_tables %>%
