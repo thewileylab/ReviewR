@@ -230,26 +230,26 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars) {
         })
       
       ## Dynamically create reactive expressions for all patient table functions for detected datamodel
-       patient_tables <- reactive({
-         req(datamodel_vars$subject_tables$function_name)
-         map(datamodel_vars$subject_tables$function_name,
-             ~reactive({
-               req(patient_table_vars$subject_id)
-               rlang::exec(.x, !!!reactiveValuesToList(patient_table_vars))
-               })
-             )
-         })
+      patient_tables <- reactive({
+        req(datamodel_vars$subject_tables$function_name)
+        map(datamodel_vars$subject_tables$function_name,
+            ~reactive({
+              req(patient_table_vars$subject_id)
+              rlang::exec(.x, !!!reactiveValuesToList(patient_table_vars))
+              })
+            )
+        })
+      
+      ## Dynamically create DT::datatable outputs, for every patient table reactive expression
       ## Big Thanks: https://tbradley1013.github.io/2018/08/10/create-a-dynamic-number-of-ui-elements-in-shiny-with-purrr/
       observeEvent(patient_tables(), {
-        ## Dynamically create DT::datatable outputs, for every patient table reactive expression
         purrr::iwalk(patient_tables(), ~{
           output_name <- glue::glue('dt_{.y}')
           output[[output_name]] <- DT::renderDataTable({
             rlang::exec(.x) %>% reviewr_datatable()
             })
+          })
         })
-
-      })
 
       # Patient Chart UI ----
       ## Create a tabsetPanel, consisting of DT::datatable outputs
@@ -266,8 +266,8 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars) {
                    .data$tab_name,
                    .data$dt_list,
                    ~tabPanel(title = .x, .y)
-                 )
-          ) %>%
+                   )
+                 ) %>%
           pull(.data$tab_panels)
         do.call(tabsetPanel, datamodel_vars$tabset_panels)
         })
