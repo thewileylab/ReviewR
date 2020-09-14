@@ -53,7 +53,7 @@ user_field <- function(table_map, desired_cdm_table, desired_cdm_field){
   table_map$model_match[[1]] %>% 
     filter(.data$table == desired_cdm_table & .data$field == desired_cdm_field) %>% 
     mutate(user_fields = tidyr::replace_na(.data$user_fields, 'missing_table')) %>% 
-    pull(user_fields)
+    pull(.data$user_fields)
 }
 
 # Datasets ----
