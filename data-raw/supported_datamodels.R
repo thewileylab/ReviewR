@@ -1,20 +1,19 @@
 ## code to prepare `DATASET` dataset goes here
 
 library(tidyverse)
-supported_datamodels <- list.files(path = file.path('data-raw/data_models'),full.names = T,recursive = T) %>% 
-  tibble(file_path = .) %>% 
-  mutate(data_model = str_extract(string = file_path, pattern = regex('(mimic3)|(omop)',ignore_case = T)),
-         datamodel = tolower(data_model),
-         model_version = basename(file_path),
-         model_version = str_replace(string = model_version, pattern = regex(pattern = '(mimic3)(_)?|(omop_cdm_)',ignore_case = T),replacement = ''),
-         model_version = str_replace(string = model_version, pattern = regex(pattern = '.csv',ignore_case = T),replacement = ''),
-         model_version = tolower(x = model_version),
+supported_datamodels <- list.files(path = file.path('data-raw/datamodels'),full.names = T,recursive = T) %>%
+  tibble::enframe(name = NULL, value = 'file_path') %>% 
+  mutate(datamodel = basename(file_path),
+         datamodel = str_remove_all(datamodel, '.csv')
+         ) %>% 
+  separate(col = datamodel, into = c('datamodel','model_version'), sep = '_', extra = 'drop', fill = 'right') %>% 
+  mutate(model_version = tidyr::replace_na(model_version, ''),
          cdm = map(.x = file_path,.f = read_csv)
-  ) %>% 
-  ## Process the supported data models slightly, turning table names and fields to lowercase. Re-group.
-  unnest(cols = c(cdm)) %>% 
-  mutate(table = tolower(table),
-         field = tolower(field)) %>% 
+         ) %>% 
+  unnest(cols = cdm) %>% 
+  mutate(joinable_table = tolower(table),
+         joinable_field = tolower(field)
+         ) %>% 
   group_by(file_path,datamodel,model_version) %>% 
   nest()
 

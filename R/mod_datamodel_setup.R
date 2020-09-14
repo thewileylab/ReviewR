@@ -150,7 +150,7 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars) {
         } else {
           ### Load user tables and nest fields. 
           user_tables <- dbListTables(database_vars()$db_con) %>% 
-            tibble(user_database_table = .data$.) %>% 
+            tibble::enframe(name = NULL, value = 'user_database_table') %>% 
             mutate(user_fields_long = map(.x = .data$user_database_table,.f = dbListFields,conn=database_vars()$db_con),
                    user_fields_long = map(.x = .data$user_fields_long,.f = as_tibble)
                    ) %>% 
@@ -165,7 +165,7 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars) {
           
           ### Join user tables with supported data models, determine which one the user is likely running
           user_joined <- ReviewR::supported_datamodels %>% 
-            mutate(model_match = map(.x = data,.f = left_join, user_tables, by = c('table'='clean_table', 'field'='clean_user_fields')))%>% 
+            mutate(model_match = map(.x = data,.f = left_join, user_tables, by = c('joinable_table'='clean_table', 'joinable_field'='clean_user_fields'))) %>% 
             mutate(filtered = map(.x = .data$model_match,.f = filter, is.na(.data$user_fields)!=T),
                    count_filtered = map(.x = .data$filtered,.f = nrow), 
                    count_filtered = unlist(.data$count_filtered)
@@ -188,7 +188,7 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars) {
         # browser()
         ## Datamodel Message
         datamodel_vars$message <-if (nrow(datamodel_vars$table_map) > 0) {
-            HTML(glue::glue('<em>Data Model: {datamodel_vars$table_map$datamodel} {str_replace_all(datamodel_vars$table_map$model_version,"_",".")}</em>'))
+            HTML(glue::glue('<em>Data Model: {datamodel_vars$table_map$datamodel} {datamodel_vars$table_map$model_version}</em>'))
             } else {HTML(paste("<font color='#e83a2f'><em>The connected database does not appear to contain a supported datamodel. Please disconnect and select another database.</em></font>"))
             }
         ## Datamodel Table Functions
