@@ -14,7 +14,7 @@
 #' @return The desired OMOP concepts based on the user data model for all subjects
 #' @keywords internal
 #' @export
-#' @importFrom dplyr select inner_join rename contains
+#' @importFrom dplyr select inner_join rename contains mutate_all mutate_at
 #' @importFrom stats setNames
 #' @importFrom rlang := 
 #'
@@ -35,13 +35,15 @@ get_all_concept <- function(table_map, db_connection, concept_table, concept_id,
   user_table(table_map, db_connection, concept_table) %>% 
     select(user_field(table_map, concept_table, concept_id), 
            user_field(table_map, concept_table, concept_name)
-    ) %>% 
+           ) %>% 
+    mutate_at(vars(user_field(table_map, concept_table, concept_id)), as.integer ) %>% 
     inner_join(user_table(table_map, db_connection, table) %>% 
                  select(user_field(table_map, table, joinable_id), 
                         user_field(table_map, table, table_concept_id)
-                 ), 
+                        ) %>% 
+                 mutate_all(as.integer), 
                by=setNames(user_field(table_map, table, table_concept_id), user_field(table_map, concept_table, concept_id))
-    ) %>% 
+               ) %>% 
     rename(!!col_name := user_field(table_map, concept_table, concept_name)) %>% 
     select(-contains(concept_id,ignore.case = T))
     }, 
@@ -67,26 +69,28 @@ get_all_concept <- function(table_map, db_connection, concept_table, concept_id,
 #' @return The desired OMOP concepts based on the user data model for a particular subject
 #' @keywords internal
 #' @export
-#' @importFrom dplyr select inner_join rename contains
+#' @importFrom dplyr select inner_join rename contains mutate_all mutate_at
 #' @importFrom stats setNames
 #' @importFrom rlang := 
 #'
 get_subject_concept <- function(table_map, db_connection, concept_table, concept_id, concept_name, table, joinable_id, table_concept_id, col_name, subject_id_field, selected_subject) {
   tryCatch({
   user_table(table_map, db_connection, concept_table) %>% 
-    select(user_field(table_map, concept_table, concept_id), 
-           user_field(table_map, concept_table, concept_name)
-    ) %>% 
-    inner_join(user_table(table_map, db_connection, table) %>% 
-                 filter(!!as.name(user_field(table_map, table,subject_id_field)) == selected_subject ) %>% 
-                 select(user_field(table_map, table, joinable_id), 
-                        user_field(table_map, table, table_concept_id)
-                 ), 
-               by=setNames(user_field(table_map, table, table_concept_id), user_field(table_map, concept_table, concept_id))
-    ) %>% 
-    rename(!!col_name := user_field(table_map, concept_table, concept_name)) %>% 
-    select(-contains(!!concept_id,ignore.case = T))
-  },
+      select(user_field(table_map, concept_table, concept_id), 
+             user_field(table_map, concept_table, concept_name)
+             ) %>%
+      mutate_at(vars(user_field(table_map, concept_table, concept_id)), as.integer ) %>% 
+      inner_join(user_table(table_map, db_connection, table) %>% 
+                   filter(!!as.name(user_field(table_map, table,subject_id_field)) == selected_subject ) %>% 
+                   select(user_field(table_map, table, joinable_id), 
+                          user_field(table_map, table, table_concept_id)
+                          ) %>% 
+                   mutate_all(as.integer), 
+                 by=setNames(user_field(table_map, table, table_concept_id), user_field(table_map, concept_table, concept_id))
+                 ) %>% 
+      rename(!!col_name := user_field(table_map, concept_table, concept_name)) %>% 
+      select(-contains(!!concept_id,ignore.case = T))
+    },
   error=function(error) {
     NULL
   })
