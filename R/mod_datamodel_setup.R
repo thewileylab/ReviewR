@@ -10,8 +10,7 @@
 #' @keywords internal
 #' @export 
 #' @importFrom magrittr %>%
-#' @importFrom dplyr distinct select filter tbl
-#' @importFrom purrr pluck
+#' @importFrom dplyr distinct select filter tbl pull
 #' @importFrom rlang .data
 #'
 #' @examples 
@@ -19,12 +18,16 @@
 #' user_table(table_map = table_map, db_con = db_connection, desired_cdm_table = 'person')
 #' }
 user_table <- function(table_map, db_con, desired_cdm_table) {
+  tryCatch({
   table_name <- table_map$model_match[[1]] %>% 
     filter(.data$table == desired_cdm_table) %>% 
     distinct(.data$table, .keep_all = T) %>% 
-    select(.data$user_database_table) %>% 
-    pluck(1)
+    pull(.data$user_database_table)
   tbl(src = db_con, table_name)
+  },
+  error=function(error) {
+    tibble::tibble(missing_table = glue::glue('The {desired_cdm_table} table is not present in the currently connected database.'))
+  })
 }
 
 #' user_field
@@ -38,9 +41,9 @@ user_table <- function(table_map, db_con, desired_cdm_table) {
 #' @keywords internal
 #' @export 
 #' @importFrom magrittr %>% 
-#' @importFrom dplyr select filter
-#' @importFrom purrr pluck
+#' @importFrom dplyr select filter pull
 #' @importFrom rlang .data
+#' @importFrom tidyr replace_na
 #' 
 #' @examples 
 #' \dontrun{
@@ -49,8 +52,8 @@ user_table <- function(table_map, db_con, desired_cdm_table) {
 user_field <- function(table_map, desired_cdm_table, desired_cdm_field){
   table_map$model_match[[1]] %>% 
     filter(.data$table == desired_cdm_table & .data$field == desired_cdm_field) %>% 
-    select(.data$user_fields) %>% 
-    pluck(1)
+    mutate(user_fields = tidyr::replace_na(.data$user_fields, 'missing_table')) %>% 
+    pull(user_fields)
 }
 
 # Datasets ----
