@@ -417,7 +417,7 @@ omop_table_note <- function(table_map, db_connection, subject_id) {
 omop_table_observation <- function(table_map, db_connection, subject_id) {
   message('Running Observation')
   subject <- as.integer(subject_id)
-
+  
   ## Build Concepts
   observation_concepts <- get_subject_concept(table_map, db_connection, 'concept','concept_id','concept_name','observation','observation_id','observation_concept_id','Observation','person_id', subject)
   observation_type_concepts <- get_subject_concept(table_map, db_connection, 'concept','concept_id','concept_name','observation','observation_id','observation_type_concept_id','Type','person_id', subject)
@@ -460,7 +460,7 @@ omop_table_observation_period <- function(table_map, db_connection, subject_id) 
   
   ## Return Observation Period Table Representation
   user_table(table_map, db_connection, 'observation_period') %>% 
-    filter(!!as.name(user_field(table_map, 'note','person_id')) == subject ) %>% 
+    filter(!!as.name(user_field(table_map, 'observation_period','person_id')) == subject ) %>% 
     select(-matches('person_id|period_type_concept_id')) %>% 
     {if (!is.null(observation_type_concepts) ) left_join(., observation_type_concepts) else .} %>% 
     select(any_of(c(ID = user_field(table_map, 'observation_period','observation_period_id'))), everything()) %>% 
