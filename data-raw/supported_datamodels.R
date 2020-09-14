@@ -8,7 +8,9 @@ supported_datamodels <- list.files(path = file.path('data-raw/datamodels'),full.
          ) %>% 
   separate(col = datamodel, into = c('datamodel','model_version'), sep = '_', extra = 'drop', fill = 'right') %>% 
   mutate(model_version = tidyr::replace_na(model_version, ''),
-         cdm = map(.x = file_path,.f = read_csv)
+         cdm = map(file_path,
+                   ~read_csv(.x)
+                   )
          ) %>% 
   unnest(cols = cdm) %>% 
   mutate(joinable_table = tolower(table),
