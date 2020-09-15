@@ -1,4 +1,13 @@
 # Helper Functions ----
+#' Global Var Helper
+#' 
+#' https://github.com/tidyverse/magrittr/issues/29
+#' 
+#' @name helpr
+#' @importFrom utils globalVariables
+#' @keywords internal
+if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
+
 #' OMOP Get Concepts
 #'
 #' @param table_map tibble containing standard CDM mapped to user tables
