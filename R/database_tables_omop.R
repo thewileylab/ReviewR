@@ -421,7 +421,7 @@ omop_table_note <- function(table_map, db_connection, subject_id) {
     select(any_of(c(ID = user_field(table_map, 'note', 'note_id'))), everything()) %>% 
     arrange(.data$ID) %>%
     collect() %>% 
-    mutate_if(is.character, str_replace_all, pattern = '\n', replacement = '<br>') %>% 
+    mutate_all(str_replace_all, pattern = '\n', replacement = '<br>') %>% 
     rename_at(vars(-1), to_title_case)
 }
 
