@@ -6,6 +6,7 @@
 #' @name helpr
 #' @importFrom utils globalVariables
 #' @keywords internal
+#' @noRd
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 
 #' OMOP Get Concepts
