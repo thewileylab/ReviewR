@@ -12,7 +12,7 @@ RUN Rscript -e 'remotes::install_version("httr",upgrade="never", version = "1.4.
 RUN Rscript -e 'remotes::install_version("purrr",upgrade="never", version = "0.3.4")'
 RUN Rscript -e 'remotes::install_version("pkgload",upgrade="never", version = "1.1.0")'
 RUN Rscript -e 'remotes::install_version("htmltools",upgrade="never", version = "0.5.0")'
-RUN Rscript -e 'remotes::install_version("knitr",upgrade="never", version = "1.29")'
+RUN Rscript -e 'remotes::install_version("knitr",upgrade="never", version = "1.30")'
 RUN Rscript -e 'remotes::install_version("dplyr",upgrade="never", version = "1.0.2")'
 RUN Rscript -e 'remotes::install_version("shiny",upgrade="never", version = "1.5.0")'
 RUN Rscript -e 'remotes::install_version("testthat",upgrade="never", version = "2.3.2")'
@@ -22,9 +22,6 @@ RUN Rscript -e 'remotes::install_version("spelling",upgrade="never", version = "
 RUN Rscript -e 'remotes::install_version("rmarkdown",upgrade="never", version = "2.3")'
 RUN Rscript -e 'remotes::install_version("tidyr",upgrade="never", version = "1.1.2")'
 RUN Rscript -e 'remotes::install_version("snakecase",upgrade="never", version = "0.11.0")'
-RUN Rscript -e 'remotes::install_version("shinyPostgreSQL",upgrade="never", version = "0.0.0.9000")'
-RUN Rscript -e 'remotes::install_version("shinyREDCap",upgrade="never", version = "0.0.0.9000")'
-RUN Rscript -e 'remotes::install_version("shinyBigQuery",upgrade="never", version = "0.0.0.9000")'
 RUN Rscript -e 'remotes::install_version("shinyWidgets",upgrade="never", version = "0.5.3")'
 RUN Rscript -e 'remotes::install_version("shinyjs",upgrade="never", version = "2.0.0")'
 RUN Rscript -e 'remotes::install_version("shinydashboard",upgrade="never", version = "0.7.1")'
@@ -33,10 +30,13 @@ RUN Rscript -e 'remotes::install_version("lubridate",upgrade="never", version = 
 RUN Rscript -e 'remotes::install_version("DT",upgrade="never", version = "0.15")'
 RUN Rscript -e 'remotes::install_version("dbplyr",upgrade="never", version = "1.4.4")'
 RUN Rscript -e 'remotes::install_version("dashboardthemes",upgrade="never", version = "1.1.3")'
+RUN Rscript -e 'remotes::install_github("thewileylab/shinyPostgreSQL@7b25a0fdd7f71f33ed2009360208796ea155a501")'
+RUN Rscript -e 'remotes::install_github("thewileylab/shinyREDCap@2c543d6b750a6ea4f14cef97c5c390e55889d873")'
+RUN Rscript -e 'remotes::install_github("thewileylab/shinyBigQuery@acbefd1146ad0696d98cbc7ffd1ab36dc1b13fdd")'
 RUN Rscript -e 'remotes::install_github("Thinkr-open/golem@851aef01cf591b50d8bb500e09b2256698e7f349")'
 RUN mkdir /build_zone
 ADD . /build_zone
 WORKDIR /build_zone
 RUN R -e 'remotes::install_local(upgrade="never")'
-EXPOSE 8100
-CMD R -e "options('shiny.port'=8100,shiny.host='0.0.0.0');ReviewR::run_app()"
+EXPOSE 1410
+CMD R -e "options('shiny.port'=1410,shiny.host='0.0.0.0');ReviewR::run_app()"
