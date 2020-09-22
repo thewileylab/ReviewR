@@ -32,7 +32,7 @@ Imports:
     shinydashboard,
     shinyjs,
     shinyWidgets,
-    shinyBigQuery (>= 0.0.1.9000),
+    shinyBigQuery (>= 0.0.2.9000),
     shinyREDCap (>= 0.0.1.9000),
     shinyPostgreSQL,
     snakecase,
