@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Articles • ReviewR</title>
+<title>ReviewR Supported Database Schemas — supported_datamodels • ReviewR</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,7 +46,9 @@
 
 
 
-<meta property="og:title" content="Articles" />
+<meta property="og:title" content="ReviewR Supported Database Schemas — supported_datamodels" />
+<meta property="og:description" content="A dataset containing data model information along with the corresponding
+version and schema." />
 <meta property="og:image" content="reviewr.thewileylab.org/logo.png" />
 
 
@@ -66,7 +68,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-article-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -187,30 +189,40 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Articles</h1>
+    <h1>ReviewR Supported Database Schemas</h1>
+    <small class="dont-index">Source: <a href='https://github.com/thewileylab/ReviewR/blob/master/R/mod_datamodel_setup.R'><code>R/mod_datamodel_setup.R</code></a></small>
+    <div class="hidden name"><code>supported_datamodels.Rd</code></div>
     </div>
 
-    <div class="section ">
-      <h3>All vignettes</h3>
-      <p class="section-desc"></p>
-
-      <dl>
-        <dt><a href="customize-add_a_custom_data_model.html">Support a New Datamodel</a></dt>
-        <dd></dt>
-        <dt><a href="customize-add_a_database_module.html">Support a New Relational Database Management System</a></dt>
-        <dd></dt>
-        <dt><a href="deploy-server.html">Server Deployment</a></dt>
-        <dd></dt>
-        <dt><a href="deploy-single_user.html">Single User Deployment</a></dt>
-        <dd></dt>
-        <dt><a href="usage-connect_to_patient_records.html">Connecting to Patient Record Database</a></dt>
-        <dd></dt>
-        <dt><a href="usage-connect_to_redcap.html">Connecting to REDCap</a></dt>
-        <dd></dt>
-        <dt><a href="usage-perform_chart_review.html">Performing Chart Review</a></dt>
-        <dd></dt>
-      </dl>
+    <div class="ref-description">
+    <p>A dataset containing data model information along with the corresponding
+version and schema.</p>
     </div>
+
+    <pre class="usage"><span class='kw'>supported_datamodels</span></pre>
+
+
+    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
+
+    <p>A data frame with 12 rows and 4 variables:</p><dl>
+<dt>file_path</dt><dd><p>Where schema was imported from</p></dd>
+<dt>datamodel</dt><dd><p>Data model name, OMOP or MIMIC</p></dd>
+<dt>model_version</dt><dd><p>Version of the data model</p></dd>
+<dt>data</dt><dd><p>Nested database schemas, including included table and field mappings</p></dd>
+...
+
+</dl>
+
+    <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
+
+    <p><a href='https://github.com/OHDSI/CommonDataModel/'>https://github.com/OHDSI/CommonDataModel/</a></p>
+<p><a href='https://github.com/MIT-LCP/mimic-code'>https://github.com/MIT-LCP/mimic-code</a></p>
+
+  </div>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 

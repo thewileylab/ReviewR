@@ -80,7 +80,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ReviewR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.2.9000</span>
       </span>
     </div>
 
@@ -94,10 +94,10 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/deploy-single_user.html">Single User - Local Deployment</a>
+      <a href="../articles/deploy-single_user.html">Local Deployment</a>
     </li>
     <li>
-      <a href="../articles/deploy-server.html">Server Deployment</a>
+      <a href="../articles/deploy-server.html">Shiny Server Deployment</a>
     </li>
   </ul>
 </li>
@@ -189,7 +189,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>OMOP Get Concepts</h1>
-    <small class="dont-index">Source: <a href='https://github.com/thewileylab/ReviewR/blob/master/R/database_omop_get_concepts.R'><code>R/database_omop_get_concepts.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/thewileylab/ReviewR/blob/master/R/database_tables_omop.R'><code>R/database_tables_omop.R</code></a></small>
     <div class="hidden name"><code>get_all_concept.Rd</code></div>
     </div>
 
@@ -198,15 +198,15 @@
     </div>
 
     <pre class="usage"><span class='fu'>get_all_concept</span>(
-  <span class='no'>table_map</span>,
-  <span class='no'>db_connection</span>,
-  <span class='no'>concept_table</span>,
-  <span class='no'>concept_id</span>,
-  <span class='no'>concept_name</span>,
-  <span class='no'>table</span>,
-  <span class='no'>joinable_id</span>,
-  <span class='no'>table_concept_id</span>,
-  <span class='no'>col_name</span>
+  <span class='kw'>table_map</span>,
+  <span class='kw'>db_connection</span>,
+  <span class='kw'>concept_table</span>,
+  <span class='kw'>concept_id</span>,
+  <span class='kw'>concept_name</span>,
+  <span class='kw'>table</span>,
+  <span class='kw'>joinable_id</span>,
+  <span class='kw'>table_concept_id</span>,
+  <span class='kw'>col_name</span>
 )</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -255,16 +255,17 @@
     <p>The desired OMOP concepts based on the user data model for all subjects</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='kw'>if</span> (<span class='fl'>FALSE</span>) {
-<span class='no'>gender_concepts</span> <span class='kw'>&lt;-</span> <span class='fu'>get_all_concept</span>(<span class='kw'>table_map</span> <span class='kw'>=</span> <span class='no'>table_map</span>,  <span class='kw'>db_connection</span> <span class='kw'>=</span> <span class='no'>db_connection</span>,
-    <span class='kw'>concept_table</span> <span class='kw'>=</span> <span class='st'>'concept'</span>, <span class='kw'>concept_id</span> <span class='kw'>=</span> <span class='st'>'concept_id'</span>,  <span class='kw'>concept_name</span> <span class='kw'>=</span> <span class='st'>'concept_name'</span>,
-    <span class='kw'>table</span> <span class='kw'>=</span> <span class='st'>'person'</span>, <span class='kw'>joinable_id</span> <span class='kw'>=</span> <span class='st'>'person_id'</span>, <span class='kw'>table_concept_id</span> <span class='kw'>=</span> <span class='st'>'gender_concept_id'</span>,
-    <span class='kw'>col_name</span> <span class='kw'>=</span> <span class='st'>'Gender'</span>)
-<span class='no'>provider_concepts</span> <span class='kw'>&lt;-</span> <span class='fu'>get_all_concept</span>(<span class='kw'>table_map</span> <span class='kw'>=</span> <span class='no'>table_map</span>,  <span class='kw'>db_connection</span> <span class='kw'>=</span> <span class='no'>db_connection</span>,
-    <span class='kw'>concept_table</span> <span class='kw'>=</span> <span class='st'>'provider'</span>, <span class='kw'>concept_id</span> <span class='kw'>=</span> <span class='st'>'provider_id'</span>,  <span class='kw'>concept_name</span> <span class='kw'>=</span> <span class='st'>'provider_name'</span>,
-    <span class='kw'>table</span> <span class='kw'>=</span> <span class='st'>'person'</span>, <span class='kw'>joinable_id</span> <span class='kw'>=</span> <span class='st'>'person_id'</span>, <span class='kw'>table_concept_id</span> <span class='kw'>=</span> <span class='st'>'provider_id'</span>,
-    <span class='kw'>col_name</span> <span class='kw'>=</span> <span class='st'>'Provider'</span>)
-}</div></pre>
+    <pre class="examples"><div class='input'><span class='co'>if</span> (<span class='fl'>FALSE</span>) {
+<span class='kw'>gender_concepts</span> <span class='op'>&lt;-</span> <span class='fu'>get_all_concept</span>(table_map = <span class='kw'>table_map</span>,  db_connection = <span class='kw'>db_connection</span>,  
+    concept_table = <span class='st'>'concept'</span>, concept_id = <span class='st'>'concept_id'</span>,  concept_name = <span class='st'>'concept_name'</span>,  
+    table = <span class='st'>'person'</span>, joinable_id = <span class='st'>'person_id'</span>, table_concept_id = <span class='st'>'gender_concept_id'</span>,  
+    col_name = <span class='st'>'Gender'</span>)
+<span class='kw'>provider_concepts</span> <span class='op'>&lt;-</span> <span class='fu'>get_all_concept</span>(table_map = <span class='kw'>table_map</span>,  db_connection = <span class='kw'>db_connection</span>,  
+    concept_table = <span class='st'>'provider'</span>, concept_id = <span class='st'>'provider_id'</span>,  concept_name = <span class='st'>'provider_name'</span>,  
+    table = <span class='st'>'person'</span>, joinable_id = <span class='st'>'person_id'</span>, table_concept_id = <span class='st'>'provider_id'</span>,  
+    col_name = <span class='st'>'Provider'</span>) 
+}
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
@@ -280,7 +281,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

@@ -16,10 +16,17 @@ knitr::opts_chunk$set(
 
 ## Installation
 
+ReviewR has adopted an R package framework, thanks to the excellent [golem package](https://thinkr-open.github.io/golem/) developed by ThinkR. As such, installing and running ReviewR should be a breeze. 
+
 To install the latest development release:
 ```{r eval=FALSE}
 # install.packages('devtools')
 devtools::install_github('thewileylab/ReviewR')
 ```
 
-ReviewR is now installed as a package!
+ReviewR is now installed as a package and can be run from your local machine. To begin, just run:
+
+```{r eval=FALSE}
+ReviewR::run_app()
+```
+
