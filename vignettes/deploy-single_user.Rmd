@@ -14,9 +14,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Installation
+## Overview
 
-ReviewR has adopted an R package framework, thanks to the excellent [golem package](https://thinkr-open.github.io/golem/) developed by ThinkR. As such, installing and running ReviewR should be a breeze. 
+If you would like to perform a chart review from your local machine, or just simply want to see what ReviewR is all about then a "Single User Deployment" is a good option to start with. ReviewR is an R Shiny application that has adopted the R package framework, thanks to the excellent [golem package](https://thinkr-open.github.io/golem/) developed by [ThinkR](https://github.com/ThinkR-open). As such, installing and running ReviewR should be a breeze! 
+
+## Installation
 
 To install the latest development release:
 ```{r eval=FALSE}
@@ -24,7 +26,10 @@ To install the latest development release:
 devtools::install_github('thewileylab/ReviewR')
 ```
 
-ReviewR is now installed as a package and can be run from your local machine. To begin, just run:
+
+## Usage
+
+Now that ReviewR is installed the application can be launched by running:
 
 ```{r eval=FALSE}
 ReviewR::run_app()
