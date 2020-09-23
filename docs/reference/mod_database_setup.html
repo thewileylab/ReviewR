@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Articles • ReviewR</title>
+<title>Module Selector — database_setup_ui • ReviewR</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,7 +46,8 @@
 
 
 
-<meta property="og:title" content="Articles" />
+<meta property="og:title" content="Module Selector — database_setup_ui" />
+<meta property="og:description" content="A Shiny module to select from available ReviewR database modules" />
 <meta property="og:image" content="reviewr.thewileylab.org/logo.png" />
 
 
@@ -66,7 +67,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-article-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -187,30 +188,34 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Articles</h1>
+    <h1>Module Selector</h1>
+    <small class="dont-index">Source: <a href='https://github.com/thewileylab/ReviewR/blob/master/R/mod_database_setup.R'><code>R/mod_database_setup.R</code></a></small>
+    <div class="hidden name"><code>mod_database_setup.Rd</code></div>
     </div>
 
-    <div class="section ">
-      <h3>All vignettes</h3>
-      <p class="section-desc"></p>
-
-      <dl>
-        <dt><a href="customize-add_a_custom_data_model.html">Support a New Datamodel</a></dt>
-        <dd></dt>
-        <dt><a href="customize-add_a_database_module.html">Support a New Relational Database Management System</a></dt>
-        <dd></dt>
-        <dt><a href="deploy-server.html">Server Deployment</a></dt>
-        <dd></dt>
-        <dt><a href="deploy-single_user.html">Single User Deployment</a></dt>
-        <dd></dt>
-        <dt><a href="usage-connect_to_patient_records.html">Connecting to Patient Record Database</a></dt>
-        <dd></dt>
-        <dt><a href="usage-connect_to_redcap.html">Connecting to REDCap</a></dt>
-        <dd></dt>
-        <dt><a href="usage-perform_chart_review.html">Performing Chart Review</a></dt>
-        <dd></dt>
-      </dl>
+    <div class="ref-description">
+    <p>A Shiny module to select from available ReviewR database modules</p>
     </div>
+
+    <pre class="usage"><span class='fu'>database_setup_ui</span>(<span class='kw'>id</span>)
+
+<span class='fu'>mod_database_setup_server</span>(<span class='kw'>id</span>)</pre>
+
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>id</th>
+      <td></td>
+    </tr>
+    </table>
+
+
+  </div>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 

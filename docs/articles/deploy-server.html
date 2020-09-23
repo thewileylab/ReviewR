@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ReviewR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.0.2.9000</span>
       </span>
     </div>
 
@@ -52,10 +52,10 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/deploy-single_user.html">Single User - Local Deployment</a>
+      <a href="../articles/deploy-single_user.html">Local Deployment</a>
     </li>
     <li>
-      <a href="../articles/deploy-server.html">Server Deployment</a>
+      <a href="../articles/deploy-server.html">Shiny Server Deployment</a>
     </li>
   </ul>
 </li>
@@ -164,8 +164,10 @@
 <li>Follow the <a href="https://support.rstudio.com/hc/en-us/articles/360011458854-Shiny-Server-Quick-Start-Installation-and-Configuration">Shiny Server Quick Start Guide</a> to get Shiny Server up and running.</li>
 <li>Next, clone the ReviewR repository to the home directory of your server. This can be done from the R console with the <code>usethis</code> package:</li>
 </ol>
-<div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="co"># install.packages('usethis')</span>
-<span class="kw pkg">usethis</span><span class="kw ns">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/create_from_github.html">create_from_github</a></span>(<span class="kw">repo_spec</span> <span class="kw">=</span> <span class="st">'thewileylab/ReviewR'</span>, <span class="kw">destdir</span> <span class="kw">=</span> <span class="st">'~/'</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb1"><pre class="downlit">
+<span class="co"># install.packages('usethis')</span>
+<span class="kw">usethis</span>::<span class="fu"><a href="https://usethis.r-lib.org/reference/create_from_github.html">create_from_github</a></span>(repo_spec = <span class="st">'thewileylab/ReviewR'</span>, destdir = <span class="st">'~/'</span>)
+</pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li>Finally, using the terminal, create a symlink from the cloned repository to the <code>/srv/shiny-server/</code> directory on your server.</li>
 </ol>
@@ -179,8 +181,10 @@
 <ol style="list-style-type: decimal">
 <li>Clone the ReviewR repository to the home directory of your server. This can be done from the R console with the <code>usethis</code> package:</li>
 </ol>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="co"># install.packages('usethis')</span>
-<span class="kw pkg">usethis</span><span class="kw ns">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/create_from_github.html">create_from_github</a></span>(<span class="kw">repo_spec</span> <span class="kw">=</span> <span class="st">'thewileylab/ReviewR'</span>, <span class="kw">destdir</span> <span class="kw">=</span> <span class="st">'~/'</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb3"><pre class="downlit">
+<span class="co"># install.packages('usethis')</span>
+<span class="kw">usethis</span>::<span class="fu"><a href="https://usethis.r-lib.org/reference/create_from_github.html">create_from_github</a></span>(repo_spec = <span class="st">'thewileylab/ReviewR'</span>, destdir = <span class="st">'~/'</span>)
+</pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Using the terminal, run:</li>
 </ol>
@@ -213,7 +217,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

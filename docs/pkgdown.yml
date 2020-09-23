@@ -1,5 +1,5 @@
 pandoc: 2.7.3
-pkgdown: 1.5.1
+pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   customize-add_a_custom_data_model: customize-add_a_custom_data_model.html
@@ -9,7 +9,7 @@ articles:
   usage-connect_to_patient_records: usage-connect_to_patient_records.html
   usage-connect_to_redcap: usage-connect_to_redcap.html
   usage-perform_chart_review: usage-perform_chart_review.html
-last_built: 2020-06-29T15:37Z
+last_built: 2020-09-23T16:37Z
 urls:
   reference: reviewr.thewileylab.org//reference
   article: reviewr.thewileylab.org//articles

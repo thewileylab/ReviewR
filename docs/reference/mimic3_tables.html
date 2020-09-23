@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Articles • ReviewR</title>
+<title>MIMIC Tables — mimic3_table_all_patients • ReviewR</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,7 +46,8 @@
 
 
 
-<meta property="og:title" content="Articles" />
+<meta property="og:title" content="MIMIC Tables — mimic3_table_all_patients" />
+<meta property="og:description" content="Collection of functions to create pre-arranged views of MIMIC patient data for ReviewR." />
 <meta property="og:image" content="reviewr.thewileylab.org/logo.png" />
 
 
@@ -66,7 +67,7 @@
   </head>
 
   <body data-spy="scroll" data-target="#toc">
-    <div class="container template-article-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -187,30 +188,70 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Articles</h1>
+    <h1>MIMIC Tables</h1>
+    <small class="dont-index">Source: <a href='https://github.com/thewileylab/ReviewR/blob/master/R/database_tables_mimic3.R'><code>R/database_tables_mimic3.R</code></a></small>
+    <div class="hidden name"><code>mimic3_tables.Rd</code></div>
     </div>
 
-    <div class="section ">
-      <h3>All vignettes</h3>
-      <p class="section-desc"></p>
-
-      <dl>
-        <dt><a href="customize-add_a_custom_data_model.html">Support a New Datamodel</a></dt>
-        <dd></dt>
-        <dt><a href="customize-add_a_database_module.html">Support a New Relational Database Management System</a></dt>
-        <dd></dt>
-        <dt><a href="deploy-server.html">Server Deployment</a></dt>
-        <dd></dt>
-        <dt><a href="deploy-single_user.html">Single User Deployment</a></dt>
-        <dd></dt>
-        <dt><a href="usage-connect_to_patient_records.html">Connecting to Patient Record Database</a></dt>
-        <dd></dt>
-        <dt><a href="usage-connect_to_redcap.html">Connecting to REDCap</a></dt>
-        <dd></dt>
-        <dt><a href="usage-perform_chart_review.html">Performing Chart Review</a></dt>
-        <dd></dt>
-      </dl>
+    <div class="ref-description">
+    <p>Collection of functions to create pre-arranged views of MIMIC patient data for ReviewR.</p>
     </div>
+
+    <pre class="usage"><span class='fu'>mimic3_table_all_patients</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>)
+
+<span class='fu'>mimic3_table_admissions</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+
+<span class='fu'>mimic3_table_callout</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+
+<span class='fu'>mimic3_table_chart_events</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+
+<span class='fu'>mimic3_table_cpt_events</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+
+<span class='fu'>mimic3_table_diagnoses_icd</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+
+<span class='fu'>mimic3_table_drg_codes</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+
+<span class='fu'>mimic3_table_icu_stays</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+
+<span class='fu'>mimic3_table_lab_events</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+
+<span class='fu'>mimic3_table_microbiology_events</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+
+<span class='fu'>mimic3_table_note_events</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+
+<span class='fu'>mimic3_table_prescriptions</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+
+<span class='fu'>mimic3_table_procedure_events</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+
+<span class='fu'>mimic3_table_procedures_icd</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+
+<span class='fu'>mimic3_table_services</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+
+<span class='fu'>mimic3_table_transfers</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)</pre>
+
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>table_map</th>
+      <td><p>tibble containing a the cdm that most closely matches the user's database and a map of standard tables to user tables</p></td>
+    </tr>
+    <tr>
+      <th>db_connection</th>
+      <td><p>Connection info received from the database setup module</p></td>
+    </tr>
+    <tr>
+      <th>subject_id</th>
+      <td><p>The selected subject</p></td>
+    </tr>
+    </table>
+
+
+  </div>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 

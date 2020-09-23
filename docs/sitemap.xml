@@ -4,7 +4,7 @@
     <loc>reviewr.thewileylab.org//index.html</loc>
   </url>
   <url>
-    <loc>reviewr.thewileylab.org//reference/chart_review_tab.html</loc>
+    <loc>reviewr.thewileylab.org//reference/chart_review.html</loc>
   </url>
   <url>
     <loc>reviewr.thewileylab.org//reference/get_all_concept.html</loc>
@@ -13,52 +13,31 @@
     <loc>reviewr.thewileylab.org//reference/get_subject_concept.html</loc>
   </url>
   <url>
-    <loc>reviewr.thewileylab.org//reference/mimic_tables.html</loc>
+    <loc>reviewr.thewileylab.org//reference/homepage.html</loc>
   </url>
   <url>
-    <loc>reviewr.thewileylab.org//reference/mod_BigQuery_module.html</loc>
+    <loc>reviewr.thewileylab.org//reference/mimic3_tables.html</loc>
   </url>
   <url>
-    <loc>reviewr.thewileylab.org//reference/mod_abstraction_setup_module.html</loc>
+    <loc>reviewr.thewileylab.org//reference/mod_abstraction_setup.html</loc>
   </url>
   <url>
-    <loc>reviewr.thewileylab.org//reference/mod_chart_abstraction_save_module.html</loc>
+    <loc>reviewr.thewileylab.org//reference/mod_chartreview.html</loc>
   </url>
   <url>
-    <loc>reviewr.thewileylab.org//reference/mod_data_model_detection_module.html</loc>
+    <loc>reviewr.thewileylab.org//reference/mod_database_setup.html</loc>
   </url>
   <url>
-    <loc>reviewr.thewileylab.org//reference/mod_database_setup_module.html</loc>
+    <loc>reviewr.thewileylab.org//reference/mod_datamodel_setup.html</loc>
   </url>
   <url>
-    <loc>reviewr.thewileylab.org//reference/mod_patient_chart_module.html</loc>
-  </url>
-  <url>
-    <loc>reviewr.thewileylab.org//reference/mod_patient_nav_module.html</loc>
-  </url>
-  <url>
-    <loc>reviewr.thewileylab.org//reference/mod_patient_search_module.html</loc>
-  </url>
-  <url>
-    <loc>reviewr.thewileylab.org//reference/mod_redcap_module.html</loc>
+    <loc>reviewr.thewileylab.org//reference/mod_navigation.html</loc>
   </url>
   <url>
     <loc>reviewr.thewileylab.org//reference/omop_tables.html</loc>
   </url>
   <url>
-    <loc>reviewr.thewileylab.org//reference/patient_search_tab.html</loc>
-  </url>
-  <url>
-    <loc>reviewr.thewileylab.org//reference/redcap_survey_complete_tbl.html</loc>
-  </url>
-  <url>
-    <loc>reviewr.thewileylab.org//reference/redcap_survey_complete_values.html</loc>
-  </url>
-  <url>
-    <loc>reviewr.thewileylab.org//reference/redcap_widget_map.html</loc>
-  </url>
-  <url>
-    <loc>reviewr.thewileylab.org//reference/render_redcap_instrument.html</loc>
+    <loc>reviewr.thewileylab.org//reference/patient_search.html</loc>
   </url>
   <url>
     <loc>reviewr.thewileylab.org//reference/reviewr_datatable.html</loc>
@@ -67,19 +46,16 @@
     <loc>reviewr.thewileylab.org//reference/run_app.html</loc>
   </url>
   <url>
-    <loc>reviewr.thewileylab.org//reference/setup_tab.html</loc>
+    <loc>reviewr.thewileylab.org//reference/setup.html</loc>
   </url>
   <url>
-    <loc>reviewr.thewileylab.org//reference/supported_models.html</loc>
+    <loc>reviewr.thewileylab.org//reference/supported_datamodels.html</loc>
   </url>
   <url>
     <loc>reviewr.thewileylab.org//reference/user_field.html</loc>
   </url>
   <url>
     <loc>reviewr.thewileylab.org//reference/user_table.html</loc>
-  </url>
-  <url>
-    <loc>reviewr.thewileylab.org//reference/welcome_tab.html</loc>
   </url>
   <url>
     <loc>reviewr.thewileylab.org//articles/customize-add_a_custom_data_model.html</loc>

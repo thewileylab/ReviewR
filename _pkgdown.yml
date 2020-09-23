@@ -8,9 +8,9 @@ navbar:
     Deploying ReviewR:
       text: Deploying ReviewR
       menu:
-      - text: Single User - Local Deployment
+      - text: Local Deployment
         href: articles/deploy-single_user.html
-      - text: Server Deployment
+      - text: Shiny Server Deployment
         href: articles/deploy-server.html
     Using ReviewR:    
       text: Using ReviewR
@@ -37,7 +37,4 @@ reference:
   - title: "ReviewR Datasets"
     desc: "Datasets that ReviewR uses to map patient data to the appropriate CDM and map REDCap fields to native R shiny widgets."
     contents:
-      - supported_models
-      - redcap_widget_map
-      - redcap_survey_complete_tbl
-      - redcap_survey_complete_values
+      - supported_datamodels
