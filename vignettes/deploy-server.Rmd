@@ -1,5 +1,5 @@
 ---
-title: "Server Deployment"
+title: "Shiny Server Deployment"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Server Deployment}
@@ -14,43 +14,82 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Shiny Server OSE
-ReviewR is designed to support multiple users through the use of Shiny Server. When deployed, Shiny Server will serve an instance of ReviewR to each user in their own separate R session.
+## Overview
 
-1. Follow the [Shiny Server Quick Start Guide](https://support.rstudio.com/hc/en-us/articles/360011458854-Shiny-Server-Quick-Start-Installation-and-Configuration) to get Shiny Server up and running. 
-2. Next, clone the ReviewR repository to the home directory of your server. This can be done from the R console with the `usethis` package: 
-```{r eval=FALSE}
-# install.packages('usethis')
-usethis::create_from_github(repo_spec = 'thewileylab/ReviewR', destdir = '~/')
-```
-3. Finally, using the terminal, create a  symlink from the cloned repository to the `/srv/shiny-server/` directory on your server.
-```{bash eval=FALSE}
-ln -s ~/ReviewR /srv/shiny-server/ReviewR
-```
+ReviewR is designed to support multiple concurrent users when deployed on Shiny Server. When deployed in this manner, an instance of ReviewR will be served to each connecting user in distinct R sessions. As such, multiple participants can connect to patient data and submit chart abstraction information simultaneously. 
 
-That's it! ReviewR can now be accessed from your browser at http://your.shiny.server.ip:3838/ReviewR
+This deployment strategy only requires that ReviewR be installed on a centralized server. Users will then access ReviewR through a web browser and need not install it locally. Additionally, if the patient database resides on the same server as ReviewR, patient database access may be more expeditious as information will not traverse networks in order to be displayed. 
 
-## Docker
+## Installation
+
+In the sections that follow, it is assumed that the user has already deployed and secured Shiny Server Open Source Edition (OSE) with a stable https URL. Shiny Server OSE deployment/configuration is outside the scope of this document, however instructions on how to set up and secure your installation can be found in the Prerequisite section below.
+
+### Prerequisites 
+* [Shiny Server: Quick Start Guide](https://support.rstudio.com/hc/en-us/articles/360011458854-Shiny-Server-Quick-Start-Installation-and-Configuration)
+* [Shiny Server: Running with a Proxy](https://support.rstudio.com/hc/en-us/articles/213733868-Running-Shiny-Server-with-a-Proxy)
+* [Let's Encrypt Getting Started](https://letsencrypt.org/getting-started/)
+* [Secure NGINX with Let's Encrypt](https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-18-04)
+
+*Note: Prerequisites assume a server running Ubuntu 18.04. Additional configuration is required if connecting to a Google BigQuery Database. See <a href="#google-bigquery-requirements">Google BigQuery Requirements</a>*
+
+### Shiny Server OSE
+
+1. Install the ReviewR package as a root user, to ensure your system has all the required dependencies
+    + From a bash terminal, run:
+        ```{bash eval=FALSE}
+        # Start R in an interactive root terminal
+        sudo -i R
+        ```
+    *This will open a root R terminal*
+    + From the R console that opens, run:
+      ```{r eval=FALSE}
+      # install.packages('devtools')
+      devtools::install_github('thewileylab/ReviewR')
+      ```
+2. Next, using the same r console from above, clone the ReviewR repository to `/srv/shiny-server` with the `usethis` package: 
+    ```{r eval=FALSE}
+    # install.packages('usethis')
+    usethis::create_from_github(repo_spec = 'thewileylab/ReviewR', destdir = '/srv/shiny-server')
+    ```
+    *This step will clone the most recent version of the ReviewR package and an additional `app.R` file which Shiny Server will need to deploy ReviewR. Shiny Server will run all applications that are placed in `/srv/shiny-server`*
+
+That's it! ReviewR can now be accessed from your browser at http://your.shiny.server.url/ReviewR
+
+### Docker
 ReviewR also ships with a Dockerfile, simplifying the deployment process. The Dockerfile will install R, Shiny, and all the necessary dependencies needed to run ReviewR. To start:
 
 1. Clone the ReviewR repository to the home directory of your server. This can be done from the R console with the `usethis` package: 
-```{r eval=FALSE}
-# install.packages('usethis')
-usethis::create_from_github(repo_spec = 'thewileylab/ReviewR', destdir = '~/')
-``` 
+    ```{r eval=FALSE}
+    # install.packages('usethis')
+    usethis::create_from_github(repo_spec = 'thewileylab/ReviewR', destdir = '~/')
+    ``` 
 2. Using the terminal, run:
-```{bash eval=FALSE}
-cd ~/ReviewR
-docker build --tag reviewr:latest .
-docker run --publish 8100:8100 --detach --name ReviewR reviewr:latest
-```
+    ```{bash eval=FALSE}
+    cd ~/ReviewR
+    docker build --tag reviewr:latest .
+    docker run --publish 1410:1410 --detach --name ReviewR reviewr:latest
+    ```
 
-That's it! ReviewR can now be accessed from your browser at http://your.shiny.server.ip:8100
+That's it! ReviewR can now be accessed from your browser at http://your.shiny.server.ip:1410
 
-***
+## Google BigQuery Requirements
 
-*Note, if using the BigQuery module to connect to a Google BigQuery database with a server deployment, additional configuration is required. Please ensure that you meet the following minimum requirements:*
+If using the BigQuery module to connect to a Google BigQuery database with a server deployment, additional configuration is required. Once ReviewR is installed and accessible on a server with a secured fully qualified domain name, you will need to obtain and provide your own Google API credentials. 
 
-* *Server hosting ReviewR has a configured fully qualified domain name*
-* *A Google Project with a configured [Auth 2.0 Client ID for a Web Application](https://developers.google.com/identity/protocols/oauth2/web-server)*
-* *Updated ReviewR/R/mod_database_bigquery.R with your OAuth Client ID and Secret*
+1. Obtain a Google Cloud Platform Project
+    + https://console.cloud.google.com/
+2. Create an OAuth clientID and secret
+    + Within the project you created in step 1, head to *APIs & Services > Credentials*
+    + At the top, click *Create credentials > OAuth client ID*
+    + Select "Web application" as the application type
+      + Optionally, provide a name for your web application client
+    + Add the https URL of your shiny server ReviewR installation to the Authorized redirect URIs section *eg: https://your.shiny.server.org/ReviewR*
+    + Click Create
+3. Locate the client ID that was created and click "Download JSON"
+    + Save the file as "client_secret.json"
+4. Upload this file to the following directory on your shiny server:
+    + `/srv/shiny-server/.shinyBigQuery`
+5. If ReviewR is already installed, simply refresh the browser window. 
+
+*Additional Reading: https://gargle.r-lib.org/articles/get-api-credentials.html#get-a-google-cloud-platform-project-1*
+

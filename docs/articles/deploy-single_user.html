@@ -109,7 +109,7 @@
       <a href="../articles/customize-add_a_database_module.html">Support a New Relational Database Management System</a>
     </li>
     <li>
-      <a href="../articles/deploy-server.html">Server Deployment</a>
+      <a href="../articles/deploy-server.html">Shiny Server Deployment</a>
     </li>
     <li>
       <a href="../articles/deploy-single_user.html">Single User Deployment</a>
@@ -156,16 +156,24 @@
 
     
     
+<div id="overview" class="section level2">
+<h2 class="hasAnchor">
+<a href="#overview" class="anchor"></a>Overview</h2>
+<p>If you would like to perform a chart review from your local machine, or just simply want to see what ReviewR is all about then a “Single User Deployment” is a good option to start with. ReviewR is an R Shiny application that has adopted the R package framework, thanks to the excellent <a href="https://thinkr-open.github.io/golem/">golem package</a> developed by <a href="https://github.com/ThinkR-open">ThinkR</a>. As such, installing and running ReviewR should be a breeze!</p>
+</div>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<p>ReviewR has adopted an R package framework, thanks to the excellent <a href="https://thinkr-open.github.io/golem/">golem package</a> developed by ThinkR. As such, installing and running ReviewR should be a breeze.</p>
 <p>To install the latest development release:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit">
 <span class="co"># install.packages('devtools')</span>
 <span class="kw">devtools</span>::<span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span>(<span class="st">'thewileylab/ReviewR'</span>)
 </pre></div>
-<p>ReviewR is now installed as a package and can be run from your local machine. To begin, just run:</p>
+</div>
+<div id="usage" class="section level2">
+<h2 class="hasAnchor">
+<a href="#usage" class="anchor"></a>Usage</h2>
+<p>Now that ReviewR is installed the application can be launched by running:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit">
 <span class="kw">ReviewR</span>::<span class="fu"><a href="../reference/run_app.html">run_app</a></span>()
 </pre></div>
