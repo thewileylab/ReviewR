@@ -9,8 +9,9 @@
 <!-- badges: end -->
 
 ReviewR is a portable Shiny tool to help you explore patient data across
-different data models. Within ReviewR, you can browse data stored in
-either the OMOP or MIMIC-III data model.
+different data models. Currently within ReviewR, you can browse patient
+data stored in either the OMOP or MIMIC-III formats, with the option to
+extend ReviewR to display information from other data models.
 
 In addition to viewing patient data, you may also connect to a REDCap
 project to perform a chart review.
@@ -49,14 +50,15 @@ connect to a REDCap project.
 Complete the database setup to connect to EHR data stored in MIMIC-III
 or OMOP format. For BigQuery connections, simply press “Sign in with
 Google” and you will be redirected to authenticate with Google. Once
-successfully connected to a patient database, the ‘Patient Search’ tab
-will appear. Select the patient you wish to view, and you will be taken
-to a pre-coordinated table containing EHR data for that patient.
-Navigate through patients using the previous and next buttons or select
-form the dropdown on the ‘Chart Review’ tab. At any time, you may return
-to the ‘Patient Search’ tab to select a different patient. Patient
-information globally within each tab or by a particular column.
-Searching via regex is also supported.
+successfully connected to a patient database, navigate to the ‘Patient
+Search’ tab, located in the left sidebar. Select the patient ID you wish
+to view, and you will be taken to a pre-coordinated table containing EHR
+data for that patient. Navigate through patients using the previous and
+next buttons or select form the dropdown on the ‘Chart Review’ tab. At
+any time, you may return to the ‘Patient Search’ tab to select a
+different patient. Search patient information globally within each Chart
+Review tab or by a particular column within the selected patient data
+tab. Searching via regex is also supported.
 
 ### Review Mode
 
