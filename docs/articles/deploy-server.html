@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Server Deployment • ReviewR</title>
+<title>Shiny Server Deployment • ReviewR</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -17,7 +17,7 @@
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Server Deployment">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Shiny Server Deployment">
 <meta property="og:description" content="ReviewR">
 <meta property="og:image" content="reviewr.thewileylab.org/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -109,7 +109,7 @@
       <a href="../articles/customize-add_a_database_module.html">Support a New Relational Database Management System</a>
     </li>
     <li>
-      <a href="../articles/deploy-server.html">Server Deployment</a>
+      <a href="../articles/deploy-server.html">Shiny Server Deployment</a>
     </li>
     <li>
       <a href="../articles/deploy-single_user.html">Single User Deployment</a>
@@ -146,7 +146,7 @@
       </header><script src="deploy-server_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Server Deployment</h1>
+      <h1 data-toc-skip>Shiny Server Deployment</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/thewileylab/ReviewR/blob/master/vignettes/deploy-server.Rmd"><code>vignettes/deploy-server.Rmd</code></a></small>
@@ -156,49 +156,121 @@
 
     
     
-<div id="shiny-server-ose" class="section level2">
+<div id="overview" class="section level2">
 <h2 class="hasAnchor">
-<a href="#shiny-server-ose" class="anchor"></a>Shiny Server OSE</h2>
-<p>ReviewR is designed to support multiple users through the use of Shiny Server. When deployed, Shiny Server will serve an instance of ReviewR to each user in their own separate R session.</p>
-<ol style="list-style-type: decimal">
-<li>Follow the <a href="https://support.rstudio.com/hc/en-us/articles/360011458854-Shiny-Server-Quick-Start-Installation-and-Configuration">Shiny Server Quick Start Guide</a> to get Shiny Server up and running.</li>
-<li>Next, clone the ReviewR repository to the home directory of your server. This can be done from the R console with the <code>usethis</code> package:</li>
-</ol>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="co"># install.packages('usethis')</span>
-<span class="kw">usethis</span>::<span class="fu"><a href="https://usethis.r-lib.org/reference/create_from_github.html">create_from_github</a></span>(repo_spec = <span class="st">'thewileylab/ReviewR'</span>, destdir = <span class="st">'~/'</span>)
-</pre></div>
-<ol start="3" style="list-style-type: decimal">
-<li>Finally, using the terminal, create a symlink from the cloned repository to the <code>/srv/shiny-server/</code> directory on your server.</li>
-</ol>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">ln</span> -s ~/ReviewR /srv/shiny-server/ReviewR</span></code></pre></div>
-<p>That’s it! ReviewR can now be accessed from your browser at <a href="http://your.shiny.server.ip:3838/ReviewR" class="uri">http://your.shiny.server.ip:3838/ReviewR</a></p>
+<a href="#overview" class="anchor"></a>Overview</h2>
+<p>ReviewR is designed to support multiple concurrent users when deployed on Shiny Server. When deployed in this manner, an instance of ReviewR will be served to each connecting user in distinct R sessions. As such, multiple participants can connect to patient data and submit chart abstraction information simultaneously.</p>
+<p>This deployment strategy only requires that ReviewR be installed on a centralized server. Users will then access ReviewR through a web browser and need not install it locally. Additionally, if the patient database resides on the same server as ReviewR, patient database access may be more expeditious as information will not traverse networks in order to be displayed.</p>
 </div>
-<div id="docker" class="section level2">
+<div id="installation" class="section level2">
 <h2 class="hasAnchor">
-<a href="#docker" class="anchor"></a>Docker</h2>
-<p>ReviewR also ships with a Dockerfile, simplifying the deployment process. The Dockerfile will install R, Shiny, and all the necessary dependencies needed to run ReviewR. To start:</p>
+<a href="#installation" class="anchor"></a>Installation</h2>
+<p>In the sections that follow, it is assumed that the user has already deployed and secured Shiny Server Open Source Edition (OSE) with a stable https URL. Shiny Server OSE deployment/configuration is outside the scope of this document, however instructions on how to set up and secure your installation can be found in the Prerequisite section below.</p>
+<div id="prerequisites" class="section level3">
+<h3 class="hasAnchor">
+<a href="#prerequisites" class="anchor"></a>Prerequisites</h3>
+<ul>
+<li><a href="https://support.rstudio.com/hc/en-us/articles/360011458854-Shiny-Server-Quick-Start-Installation-and-Configuration">Shiny Server: Quick Start Guide</a></li>
+<li><a href="https://support.rstudio.com/hc/en-us/articles/213733868-Running-Shiny-Server-with-a-Proxy">Shiny Server: Running with a Proxy</a></li>
+<li><a href="https://letsencrypt.org/getting-started/">Let’s Encrypt Getting Started</a></li>
+<li><a href="https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-18-04">Secure NGINX with Let’s Encrypt</a></li>
+</ul>
+<p><em>Note: Prerequisites assume a server running Ubuntu 18.04. Additional configuration is required if connecting to a Google BigQuery Database. See <a href="#google-bigquery-requirements">Google BigQuery Requirements</a></em></p>
+</div>
+<div id="shiny-server-ose" class="section level3">
+<h3 class="hasAnchor">
+<a href="#shiny-server-ose" class="anchor"></a>Shiny Server OSE</h3>
 <ol style="list-style-type: decimal">
-<li>Clone the ReviewR repository to the home directory of your server. This can be done from the R console with the <code>usethis</code> package:</li>
-</ol>
+<li>
+<p>Install the ReviewR package as a root user, to ensure your system has all the required dependencies</p>
+<ul>
+<li>
+<p>From a bash terminal, run:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># Start R in an interactive root terminal</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">sudo</span> -i R</span></code></pre></div>
+<p><em>This will open a root R terminal</em></p>
+</li>
+<li>
+<p>From the R console that opens, run:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit">
+<span class="co"># install.packages('devtools')</span>
+<span class="kw">devtools</span>::<span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span>(<span class="st">'thewileylab/ReviewR'</span>)
+</pre></div>
+</li>
+</ul>
+</li>
+<li>
+<p>Next, using the same r console from above, clone the ReviewR repository to <code>/srv/shiny-server</code> with the <code>usethis</code> package:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit">
 <span class="co"># install.packages('usethis')</span>
+<span class="kw">usethis</span>::<span class="fu"><a href="https://usethis.r-lib.org/reference/create_from_github.html">create_from_github</a></span>(repo_spec = <span class="st">'thewileylab/ReviewR'</span>, destdir = <span class="st">'/srv/shiny-server'</span>)
+</pre></div>
+<p><em>This step will clone the most recent version of the ReviewR package and an additional <code>app.R</code> file which Shiny Server will need to deploy ReviewR. Shiny Server will run all applications that are placed in <code>/srv/shiny-server</code></em></p>
+</li>
+</ol>
+<p>That’s it! ReviewR can now be accessed from your browser at <a href="http://your.shiny.server.url/ReviewR" class="uri">http://your.shiny.server.url/ReviewR</a></p>
+</div>
+<div id="docker" class="section level3">
+<h3 class="hasAnchor">
+<a href="#docker" class="anchor"></a>Docker</h3>
+<p>ReviewR also ships with a Dockerfile, simplifying the deployment process. The Dockerfile will install R, Shiny, and all the necessary dependencies needed to run ReviewR. To start:</p>
+<ol style="list-style-type: decimal">
+<li>
+<p>Clone the ReviewR repository to the home directory of your server. This can be done from the R console with the <code>usethis</code> package:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit">
+<span class="co"># install.packages('usethis')</span>
 <span class="kw">usethis</span>::<span class="fu"><a href="https://usethis.r-lib.org/reference/create_from_github.html">create_from_github</a></span>(repo_spec = <span class="st">'thewileylab/ReviewR'</span>, destdir = <span class="st">'~/'</span>)
 </pre></div>
-<ol start="2" style="list-style-type: decimal">
-<li>Using the terminal, run:</li>
+</li>
+<li>
+<p>Using the terminal, run:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1"></a><span class="bu">cd</span> ~/ReviewR</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="ex">docker</span> build --tag reviewr:latest .</span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="ex">docker</span> run --publish 1410:1410 --detach --name ReviewR reviewr:latest</span></code></pre></div>
+</li>
 </ol>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1"></a><span class="bu">cd</span> ~/ReviewR</span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="ex">docker</span> build --tag reviewr:latest .</span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="ex">docker</span> run --publish 8100:8100 --detach --name ReviewR reviewr:latest</span></code></pre></div>
-<p>That’s it! ReviewR can now be accessed from your browser at <a href="http://your.shiny.server.ip:8100" class="uri">http://your.shiny.server.ip:8100</a></p>
-<hr>
-<p><em>Note, if using the BigQuery module to connect to a Google BigQuery database with a server deployment, additional configuration is required. Please ensure that you meet the following minimum requirements:</em></p>
+<p>That’s it! ReviewR can now be accessed from your browser at <a href="http://your.shiny.server.ip:1410" class="uri">http://your.shiny.server.ip:1410</a></p>
+</div>
+</div>
+<div id="google-bigquery-requirements" class="section level2">
+<h2 class="hasAnchor">
+<a href="#google-bigquery-requirements" class="anchor"></a>Google BigQuery Requirements</h2>
+<p>If using the BigQuery module to connect to a Google BigQuery database with a server deployment, additional configuration is required. Once ReviewR is installed and accessible on a server with a secured fully qualified domain name, you will need to obtain and provide your own Google API credentials.</p>
+<ol style="list-style-type: decimal">
+<li>Obtain a Google Cloud Platform Project
 <ul>
-<li><em>Server hosting ReviewR has a configured fully qualified domain name</em></li>
-<li><em>A Google Project with a configured <a href="https://developers.google.com/identity/protocols/oauth2/web-server">Auth 2.0 Client ID for a Web Application</a></em></li>
-<li><em>Updated ReviewR/R/mod_database_bigquery.R with your OAuth Client ID and Secret</em></li>
+<li><a href="https://console.cloud.google.com/" class="uri">https://console.cloud.google.com/</a></li>
 </ul>
+</li>
+<li>Create an OAuth clientID and secret
+<ul>
+<li>Within the project you created in step 1, head to <em>APIs &amp; Services &gt; Credentials</em>
+</li>
+<li>At the top, click <em>Create credentials &gt; OAuth client ID</em>
+</li>
+<li>Select “Web application” as the application type
+<ul>
+<li>Optionally, provide a name for your web application client</li>
+</ul>
+</li>
+<li>Add the https URL of your shiny server ReviewR installation to the Authorized redirect URIs section <em>eg: <a href="https://your.shiny.server.org/ReviewR" class="uri">https://your.shiny.server.org/ReviewR</a></em>
+</li>
+<li>Click Create</li>
+</ul>
+</li>
+<li>Locate the client ID that was created and click “Download JSON”
+<ul>
+<li>Save the file as “client_secret.json”</li>
+</ul>
+</li>
+<li>Upload this file to the following directory on your shiny server:
+<ul>
+<li><code>/srv/shiny-server/.shinyBigQuery</code></li>
+</ul>
+</li>
+<li>If ReviewR is already installed, simply refresh the browser window.</li>
+</ol>
+<p><em>Additional Reading: <a href="https://gargle.r-lib.org/articles/get-api-credentials.html#get-a-google-cloud-platform-project-1" class="uri">https://gargle.r-lib.org/articles/get-api-credentials.html#get-a-google-cloud-platform-project-1</a></em></p>
 </div>
   </div>
 

@@ -109,7 +109,7 @@
       <a href="articles/customize-add_a_database_module.html">Support a New Relational Database Management System</a>
     </li>
     <li>
-      <a href="articles/deploy-server.html">Server Deployment</a>
+      <a href="articles/deploy-server.html">Shiny Server Deployment</a>
     </li>
     <li>
       <a href="articles/deploy-single_user.html">Single User Deployment</a>
@@ -151,7 +151,7 @@
 </h1></div>
 <!-- badges: start -->
 
-<p>ReviewR is a portable Shiny tool to help you explore patient data across different data models. Within ReviewR, you can browse data stored in either the OMOP or MIMIC-III data model.</p>
+<p>ReviewR is a portable Shiny tool to help you explore patient data across different data models. Currently within ReviewR, you can browse patient data stored in either the OMOP or MIMIC-III formats, with the option to extend ReviewR to display information from other data models.</p>
 <p>In addition to viewing patient data, you may also connect to a REDCap project to perform a chart review.</p>
 <p>Currently, ReviewR will connect to Google BigQuery as a database back-end, with support planned for:</p>
 <ul>
@@ -179,7 +179,8 @@
 <div id="view-mode" class="section level3">
 <h3 class="hasAnchor">
 <a href="#view-mode" class="anchor"></a>View Mode</h3>
-<p>Complete the database setup to connect to EHR data stored in MIMIC-III or OMOP format. For BigQuery connections, simply press “Sign in with Google” and you will be redirected to authenticate with Google. Once successfully connected to a patient database, the ‘Patient Search’ tab will appear. Select the patient you wish to view, and you will be taken to a pre-coordinated table containing EHR data for that patient. Navigate through patients using the previous and next buttons or select form the dropdown on the ‘Chart Review’ tab. At any time, you may return to the ‘Patient Search’ tab to select a different patient. Patient information globally within each tab or by a particular column. Searching via regex is also supported.</p>
+<p>Complete the database setup to connect to EHR data stored in MIMIC-III or OMOP format. For BigQuery connections, simply press “Sign in with Google” and you will be redirected to authenticate with Google. Once successfully connected to a patient database, navigate to the ‘Patient Search’ tab, located in the left sidebar. Select the patient ID you wish to view, and you will be taken to a pre-coordinated table containing EHR data for that patient. Navigate through patients using the previous and next buttons or select form the dropdown on the ‘Chart Review’ tab. At any time, you may return to the ‘Patient Search’ tab to select a different patient.</p>
+<p>Search patient information globally within each Chart Review tab or by a particular column within the selected patient data tab. Searching via regex is also supported.</p>
 </div>
 <div id="review-mode" class="section level3">
 <h3 class="hasAnchor">
