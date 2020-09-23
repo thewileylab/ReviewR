@@ -31,12 +31,13 @@ RUN Rscript -e 'remotes::install_version("DT",upgrade="never", version = "0.15")
 RUN Rscript -e 'remotes::install_version("dbplyr",upgrade="never", version = "1.4.4")'
 RUN Rscript -e 'remotes::install_version("dashboardthemes",upgrade="never", version = "1.1.3")'
 RUN Rscript -e 'remotes::install_github("thewileylab/shinyPostgreSQL@7b25a0fdd7f71f33ed2009360208796ea155a501")'
-RUN Rscript -e 'remotes::install_github("thewileylab/shinyREDCap@2c543d6b750a6ea4f14cef97c5c390e55889d873")'
-RUN Rscript -e 'remotes::install_github("thewileylab/shinyBigQuery@acbefd1146ad0696d98cbc7ffd1ab36dc1b13fdd")'
-RUN Rscript -e 'remotes::install_github("Thinkr-open/golem@851aef01cf591b50d8bb500e09b2256698e7f349")'
+RUN Rscript -e 'remotes::install_github("thewileylab/shinyREDCap@485c27c892decd027cb46e346cc2848096c2279c")'
+RUN Rscript -e 'remotes::install_github("thewileylab/shinyBigQuery@c5833e4a36b4b586a4c61cdbbe045bd15e952b9b")'
+RUN Rscript -e 'remotes::install_github("Thinkr-open/golem@a8db3184f0a0f2e87868195055d655815ebc9681")'
 RUN mkdir /build_zone
 ADD . /build_zone
 WORKDIR /build_zone
 RUN R -e 'remotes::install_local(upgrade="never")'
+RUN rm -rf /build_zone
 EXPOSE 1410
 CMD R -e "options('shiny.port'=1410,shiny.host='0.0.0.0');ReviewR::run_app()"
