@@ -22,7 +22,7 @@ This deployment strategy only requires that ReviewR be installed on a centralize
 
 ## Installation
 
-In the sections that follow, it is assumed that the user has already deployed and secured Shiny Server Open Source Edition (OSE) with a stable https URL. Shiny Server OSE deployment/configuration is outside the scope of this document, however instructions on how to set up and secure your installation can be found in the Prerequisite section below.
+In the sections that follow, it is assumed that the user has already deployed and secured Shiny Server Open Source Edition (OSE) with a stable https URL. Shiny Server OSE deployment/configuration is outside the scope of this document, however instructions on how to set up and secure your installation can be found in the <a href="#prerequisites">Prerequisites</a> section below.
 
 ### Prerequisites 
 * [Shiny Server: Quick Start Guide](https://support.rstudio.com/hc/en-us/articles/360011458854-Shiny-Server-Quick-Start-Installation-and-Configuration)
@@ -84,7 +84,7 @@ If using the BigQuery module to connect to a Google BigQuery database with a ser
     + Select "Web application" as the application type
       + Optionally, provide a name for your web application client
     + Add the https URL of your shiny server ReviewR installation to the Authorized redirect URIs section *eg: https://your.shiny.server.org/ReviewR*
-    + Click Create
+    + Click *Create*
 3. Locate the client ID that was created and click "Download JSON"
     + Save the file as "client_secret.json"
 4. Upload this file to the following directory on your shiny server:
