@@ -56,9 +56,11 @@ to view, and you will be taken to a pre-coordinated table containing EHR
 data for that patient. Navigate through patients using the previous and
 next buttons or select form the dropdown on the ‘Chart Review’ tab. At
 any time, you may return to the ‘Patient Search’ tab to select a
-different patient. Search patient information globally within each Chart
-Review tab or by a particular column within the selected patient data
-tab. Searching via regex is also supported.
+different patient.
+
+Search patient information globally within each Chart Review tab or by a
+particular column within the selected patient data tab. Searching via
+regex is also supported.
 
 ### Review Mode
 

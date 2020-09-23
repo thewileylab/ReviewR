@@ -45,7 +45,9 @@ Once the app has loaded, please complete the 'Setup' tab (found in the left navi
 
 ### View Mode
 
-Complete the database setup to connect to EHR data stored in MIMIC-III or OMOP format. For BigQuery connections, simply press "Sign in with Google" and you will be redirected to authenticate with Google. Once successfully connected to a patient database, navigate to the 'Patient Search' tab, located in the left sidebar. Select the patient ID you wish to view, and you will be taken to a pre-coordinated table containing EHR data for that patient. Navigate through patients using the previous and next buttons or select form the dropdown on the 'Chart Review' tab. At any time, you may return to the 'Patient Search' tab to select a different patient. Search patient information globally within each Chart Review tab or by a particular column within the selected patient data tab. Searching via regex is also supported.
+Complete the database setup to connect to EHR data stored in MIMIC-III or OMOP format. For BigQuery connections, simply press "Sign in with Google" and you will be redirected to authenticate with Google. Once successfully connected to a patient database, navigate to the 'Patient Search' tab, located in the left sidebar. Select the patient ID you wish to view, and you will be taken to a pre-coordinated table containing EHR data for that patient. Navigate through patients using the previous and next buttons or select form the dropdown on the 'Chart Review' tab. At any time, you may return to the 'Patient Search' tab to select a different patient. 
+
+Search patient information globally within each Chart Review tab or by a particular column within the selected patient data tab. Searching via regex is also supported.
 
 ### Review Mode
 
