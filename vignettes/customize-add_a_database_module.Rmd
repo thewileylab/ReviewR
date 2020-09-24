@@ -32,7 +32,8 @@ ReviewR has developed a way to interactively switch between database modules tha
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Add Database Setup Modules Here!!! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
       ## Add Database Setup Modules Here
       database_setup_vars <- reactiveValues(bigquery = shinyBigQuery::bigquery_setup_server(id = namespace ),
-                                            postgresql = shinyPostgreSQL::postgresql_setup_server(id = namespace )
+                                            postgresql = shinyPostgreSQL::postgresql_setup_server(id = namespace ) #,
+                                            # new_module = ReviewR::new_module_setup_server(id = namespace)
                                             )
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 ```
@@ -49,7 +50,62 @@ Read on to learn how to develop a database module for ReviewR!
 
 ## Developing a Database Module for ReviewR
 
+Creating a Shiny module is akin to developing a stand alone Shiny App. When developing for ReviewR, there are a few differences that result because of its package architecture. A [template](#reviewr-database-module-template) has been provided so that some aspects of ReviewR database module development can be highlighted. 
+
+### Getting Started
+
+The first step to developing a new ReviewR module will be to clone the latest version of ReviewR from GitHub. This will ensure you have access to the latest development tools and file structure of the ReviewR package. For simplicity, clone the repository to your home directory:
+```{r eval=FALSE}
+# install.packages('usethis')
+usethis::create_from_github(repo_spec = 'thewileylab/ReviewR', destdir = '~/')
+```
+
+Navigate to the cloned directory and open the `ReviewR.Rproj` file. This will open the project in RStudio. Finally, using the devtools package run:
+```{r eval=FALSE}
+# install.packages('devtools')
+devtools::load_all()
+```
+
+This will load the most recent version of ReviewR. At this point, you are ready to begin developing a database module.
+
+### General Module Structure
+
+Take note of the [ReviewR Database Module Template](#reviewr-database-module-template). It consists of 2 functions: 
+
+* database_setup_ui - Defines the user interface that will guide someone through the database connection process
+* database_setup_server - Defines what actions to take as a result of user inputs. 
+
+ReviewR utilizes the [`moduleServer()`](https://shiny.rstudio.com/reference/shiny/1.5.0/moduleServer.html) function introduced in Shiny 1.5. This allows the server function of a module to be called within your application just like any other function, instead of relying on the previously awkward `callModule()` syntax. 
+
+The next thing to note is that ReviewR modules will ultimately become a part of the ReviewR package namespace. This means that both the UI and Server functions require roxygen comments, with all function parameters, returns, and necessary package imports declared. 
+
+For additional information on module development, please see: https://shiny.rstudio.com/articles/modules.html
+
+### Requirements
+
+* a ui function defined as `{module_name}_setup_ui` that accepts a single parameter (id)
+* a server function defined as `{server_name}_setup_server` with a reactiveValues return
+    + reactiveValues must contain the following variables, with initial values set
+      + moduleName = 'Your Database Module Name'
+      + moduleType = 'database'
+      + setup_ui = ReviewR::database_setup_ui
+      + is_connected = 'no'
+      + db_con = NULL
+
+### Module Workflow 
+
+### Start Developing!
+
+A helper function has been provided along with ReviewR to help jumpstart the process. Run:
+
+```{r eval=FALSE}
+ReviewR:::dev_database_module(mod_name = 'your_moudle', display_name = 'Your Module Display Name')
+```
+
+This will create a module file in the R/ directory of the ReviewR package and open it for editing. 
+
 ### ReviewR Database Module Template
+
 ```{r mod_database_module, eval=FALSE}
 # UI ----
 #' Database Setup UI
