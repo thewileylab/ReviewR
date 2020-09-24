@@ -1,0 +1,51 @@
+# UI ----
+#' {display_name} Setup UI
+#'
+#' This module is designed to guide a user through the process of authenticating your database
+#' 
+#' @param id The module namespace
+#' 
+#' @return The {display_name} Setup UI
+#' @export
+#' 
+#' @importFrom any package imports required to render your Setup UI
+#'
+{mod_name}_setup_ui <- function(id) {{ ## Enter a unique UI function name, ie: mariaDB_setup_ui
+  ns <- NS(id)
+  tagList(
+    
+    )
+  }}
+
+# Server ----
+#' {display_name} Setup Server
+#'
+#' @param id The Module namespace
+#'
+#' @return {display_name} connection variables
+#' @export
+#'
+#' @importFrom any package imports required to process user entered information from the UI
+#' 
+{mod_name}_setup_server <- function(id) {{
+  moduleServer(
+    id,
+    function(input, output, session) {{
+      ns <- session$ns
+      ## {mod_name} Export Values ----
+      {mod_name}_export <- reactiveValues(
+        ### Module Info
+        moduleName = '{display_name}',
+        moduleType = 'database',
+        setup_ui = ReviewR::{mod_name}_setup_ui,
+        is_connected = 'no',       
+        db_con = NULL
+        )
+      # Server Code Here ----
+      
+      
+      # Return ----
+      return({mod_name}_export)
+    }}
+  )
+}}
