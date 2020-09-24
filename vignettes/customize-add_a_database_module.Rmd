@@ -80,7 +80,7 @@ database_setup_ui <- function(id) { ## Enter a unique UI function name, ie: mari
 #'
 #' @importFrom any package imports required to process user entered information from the UI
 #' 
-bigquery_setup_server <- function(id, secrets_json = '/srv/shiny-server/.shinyBigQuery/client_secret.json') {
+database_setup_server <- function(id) {
   moduleServer(
     id,
     function(input, output, session) {
