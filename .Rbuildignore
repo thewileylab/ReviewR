@@ -18,3 +18,4 @@ $run_dev.*
 ^Dockerfile$
 ^doc$
 ^Meta$
+^.dockerignore
