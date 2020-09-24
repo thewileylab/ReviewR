@@ -172,7 +172,8 @@
       <span class="co"># ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Add Database Setup Modules Here!!! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #</span>
       <span class="co">## Add Database Setup Modules Here</span>
       <span class="kw">database_setup_vars</span> <span class="op">&lt;-</span> <span class="fu">reactiveValues</span>(bigquery = <span class="kw">shinyBigQuery</span>::<span class="fu"><a href="https://rdrr.io/pkg/shinyBigQuery/man/bigquery_setup_server.html">bigquery_setup_server</a></span>(id = <span class="kw">namespace</span> ),
-                                            postgresql = <span class="kw">shinyPostgreSQL</span>::<span class="fu"><a href="https://rdrr.io/pkg/shinyPostgreSQL/man/postgresql_setup_server.html">postgresql_setup_server</a></span>(id = <span class="kw">namespace</span> )
+                                            postgresql = <span class="kw">shinyPostgreSQL</span>::<span class="fu"><a href="https://rdrr.io/pkg/shinyPostgreSQL/man/postgresql_setup_server.html">postgresql_setup_server</a></span>(id = <span class="kw">namespace</span> ) <span class="co">#,</span>
+                                            <span class="co"># new_module = ReviewR::new_module_setup_server(id = namespace)</span>
                                             )
       <span class="co"># ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #</span>
 </pre></div>
@@ -184,10 +185,71 @@
 <div id="developing-a-database-module-for-reviewr" class="section level2">
 <h2 class="hasAnchor">
 <a href="#developing-a-database-module-for-reviewr" class="anchor"></a>Developing a Database Module for ReviewR</h2>
+<p>Creating a Shiny module is akin to developing a stand alone Shiny App. When developing for ReviewR, there are a few differences that result because of its package architecture. A <a href="#reviewr-database-module-template">template</a> has been provided so that some aspects of ReviewR database module development can be highlighted.</p>
+<div id="getting-started" class="section level3">
+<h3 class="hasAnchor">
+<a href="#getting-started" class="anchor"></a>Getting Started</h3>
+<p>The first step to developing a new ReviewR module will be to clone the latest version of ReviewR from GitHub. This will ensure you have access to the latest development tools and file structure of the ReviewR package. For simplicity, clone the repository to your home directory:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit">
+<span class="co"># install.packages('usethis')</span>
+<span class="kw">usethis</span>::<span class="fu"><a href="https://usethis.r-lib.org/reference/create_from_github.html">create_from_github</a></span>(repo_spec = <span class="st">'thewileylab/ReviewR'</span>, destdir = <span class="st">'~/'</span>)
+</pre></div>
+<p>Navigate to the cloned directory and open the <code>ReviewR.Rproj</code> file. This will open the project in RStudio. Finally, using the devtools package run:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit">
+<span class="co"># install.packages('devtools')</span>
+<span class="kw">devtools</span>::<span class="fu"><a href="https://devtools.r-lib.org//reference/load_all.html">load_all</a></span>()
+</pre></div>
+<p>This will load the most recent version of ReviewR. At this point, you are ready to begin developing a database module.</p>
+</div>
+<div id="general-module-structure" class="section level3">
+<h3 class="hasAnchor">
+<a href="#general-module-structure" class="anchor"></a>General Module Structure</h3>
+<p>Take note of the <a href="#reviewr-database-module-template">ReviewR Database Module Template</a>. It consists of 2 functions:</p>
+<ul>
+<li>database_setup_ui - Defines the user interface that will guide someone through the database connection process</li>
+<li>database_setup_server - Defines what actions to take as a result of user inputs.</li>
+</ul>
+<p>ReviewR utilizes the <a href="https://shiny.rstudio.com/reference/shiny/1.5.0/moduleServer.html"><code>moduleServer()</code></a> function introduced in Shiny 1.5. This allows the server function of a module to be called within your application just like any other function, instead of relying on the previously awkward <code>callModule()</code> syntax.</p>
+<p>The next thing to note is that ReviewR modules will ultimately become a part of the ReviewR package namespace. This means that both the UI and Server functions require roxygen comments, with all function parameters, returns, and necessary package imports declared.</p>
+<p>For additional information on module development, please see: <a href="https://shiny.rstudio.com/articles/modules.html" class="uri">https://shiny.rstudio.com/articles/modules.html</a></p>
+</div>
+<div id="requirements" class="section level3">
+<h3 class="hasAnchor">
+<a href="#requirements" class="anchor"></a>Requirements</h3>
+<ul>
+<li>a ui function defined as <code>{module_name}_setup_ui</code> that accepts a single parameter (id)</li>
+<li>a server function defined as <code>{server_name}_setup_server</code> with a reactiveValues return
+<ul>
+<li>reactiveValues must contain the following variables, with initial values set
+<ul>
+<li>moduleName = ‘Your Database Module Name’</li>
+<li>moduleType = ‘database’</li>
+<li>setup_ui = ReviewR::database_setup_ui</li>
+<li>is_connected = ‘no’</li>
+<li>db_con = NULL</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div id="module-workflow" class="section level3">
+<h3 class="hasAnchor">
+<a href="#module-workflow" class="anchor"></a>Module Workflow</h3>
+</div>
+<div id="start-developing" class="section level3">
+<h3 class="hasAnchor">
+<a href="#start-developing" class="anchor"></a>Start Developing!</h3>
+<p>A helper function has been provided along with ReviewR to help jumpstart the process. Run:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit">
+<span class="kw">ReviewR</span>:::<span class="fu"><a href="../reference/dev_database_module.html">dev_database_module</a></span>(mod_name = <span class="st">'your_moudle'</span>,display_name = <span class="st">'Your Module Display Name'</span>)
+</pre></div>
+<p>This will create a module file in the R/ directory of the ReviewR package and open it for editing.</p>
+</div>
 <div id="reviewr-database-module-template" class="section level3">
 <h3 class="hasAnchor">
 <a href="#reviewr-database-module-template" class="anchor"></a>ReviewR Database Module Template</h3>
-<div class="sourceCode" id="cb2"><pre class="downlit">
+<div class="sourceCode" id="cb5"><pre class="downlit">
 <span class="co"># UI ----</span>
 <span class="co">#' Database Setup UI</span>
 <span class="co">#'</span>
