@@ -16,8 +16,8 @@ extend ReviewR to display information from other data models.
 In addition to viewing patient data, you may also connect to a REDCap
 project to perform a chart review.
 
-Currently, ReviewR will connect to Google BigQuery as a database
-back-end, with support planned for:
+ReviewR will connect to Google BigQuery as a database back-end, with
+support planned for:
 
   - PostgreSQL
   - SQL Server
