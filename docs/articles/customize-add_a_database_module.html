@@ -217,7 +217,7 @@
 <span class="co">#'</span>
 <span class="co">#' @importFrom any package imports required to process user entered information from the UI</span>
 <span class="co">#' </span>
-<span class="kw">bigquery_setup_server</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">id</span>, <span class="kw">secrets_json</span> = <span class="st">'/srv/shiny-server/.shinyBigQuery/client_secret.json'</span>) {
+<span class="kw">database_setup_server</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">id</span>) {
   <span class="fu">moduleServer</span>(
     <span class="kw">id</span>,
     <span class="fu">function</span>(<span class="kw">input</span>, <span class="kw">output</span>, <span class="kw">session</span>) {
