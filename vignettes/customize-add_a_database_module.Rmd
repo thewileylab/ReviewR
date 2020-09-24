@@ -45,6 +45,62 @@ knitr::include_graphics('database_module.gif')
 Read on to learn how to develop a database module for ReviewR!
 
 <a name="dplyr-support"></a>
-*\*Note: Supported Databases must also have [dplyr](https://db.rstudio.com/dplyr) support.*
+\**Note: Supported Databases must also have [dplyr](https://db.rstudio.com/dplyr) support.*
 
 ## Developing a Database Module for ReviewR
+
+### ReviewR Database Module Template
+```{r mod_database_module, eval=FALSE}
+# UI ----
+#' Database Setup UI
+#'
+#' This module is designed to guide a user through the process of authenticating your database
+#'
+#' @param id The module namespace
+#' 
+#' @return The Database Setup UI
+#' @export
+#' 
+#' @importFrom any package imports required to render your Setup UI
+#'
+database_setup_ui <- function(id) { ## Enter a unique UI function name, ie: mariaDB_setup_ui
+  ns <- NS(id)
+  tagList(
+    
+    )
+  }
+
+# Server ----
+#' Database Setup Server
+#'
+#' @param id The Module namespace
+#'
+#' @return Database connection variables
+#' @export
+#'
+#' @importFrom any package imports required to process user entered information from the UI
+#' 
+bigquery_setup_server <- function(id, secrets_json = '/srv/shiny-server/.shinyBigQuery/client_secret.json') {
+  moduleServer(
+    id,
+    function(input, output, session) {
+      ns <- session$ns
+      ## Database Export Values ----
+      database_export <- reactiveValues(
+        ### Module Info
+        moduleName = 'Your Database Module Name',
+        moduleType = 'database',
+        setup_ui = ReviewR::database_setup_ui, ## Make this function match your setup UI function
+        is_connected = 'no',       
+        db_con = NULL
+        )
+      # Server Code Here ----
+      
+      
+      # Return ----
+      return(database_export)
+    }
+  )
+}
+```
+
