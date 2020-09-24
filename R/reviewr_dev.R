@@ -1,5 +1,5 @@
 # Datasets ----
-#' ReviewR Database Module Templage
+#' ReviewR Database Module Template
 #'
 #' A character vector containing a database module template
 #' 
