@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-Database connections in ReviewR are created with the help of the [DBI Package](https://db.rstudio.com/dbi/) from RStudio. This allows ReviewR to interact with any database supported by DBI. A full list of compatable database back-ends[*](#dplyr-support) can be found [here](https://db.rstudio.com/databases/). 
+Database connections in ReviewR are created with the help of the [DBI Package](https://db.rstudio.com/dbi/) from RStudio. This allows ReviewR to interact with any database supported by DBI. A full list of compatible database back-ends[*](#dplyr-support) can be found [here](https://db.rstudio.com/databases/). 
 
 Within ReviewR, DBI connection objects are programmatically created to facilitate user connections to patient databases. This connection object defines the type of database, connection information (ip, port, etc.), and the user with any associated credentials. These connection objects can then be used to create connections to tables within the database.
 
@@ -24,7 +24,7 @@ Within ReviewR, DBI connection objects are programmatically created to facilitat
 
 ReviewR facilitates these DBI connections through the use of  [Shiny Modules](https://mastering-shiny.org/scaling-modules.html). Modules are a way to make a complex Shiny application more manageable. They help compartmentalize code and each module is developed for a specific purpose. At their core, modules take user inputs that are defined in a User Interface (UI) function, process the user inputs in a server function and return an output. Each module operates in its own namespace, meaning that shiny modules are portable and can be used in other applications and/or reusable within the same application. 
 
-ReviewR has developed a way to interactively switch between database modules that have been developed for the package. These modules consist of a UI to guide the user through establishing a database connecton and a server responsible for validating user inputs, establishing a connection, and returning a DBI connection objects. Users can extend the functionality of ReviewR by adding developed database modules to `R/mod_database_setup.R` as shown below:
+ReviewR has developed a way to interactively switch between database modules that have been developed for the package. These modules consist of a UI to guide the user through establishing a database connection and a server responsible for validating user inputs, establishing a connection, and returning a DBI connection object. Users can extend the functionality of ReviewR by adding developed database modules to `R/mod_database_setup.R` as shown below:
 
 ```{r eval=FALSE}
 # Database Module Setup ----

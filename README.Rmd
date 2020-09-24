@@ -20,7 +20,7 @@ ReviewR is a portable Shiny tool to help you explore patient data across differe
 
 In addition to viewing patient data, you may also connect to a REDCap project to perform a chart review.
 
-Currently, ReviewR will connect to Google BigQuery as a database back-end, with support planned for:
+ReviewR will connect to Google BigQuery as a database back-end, with support planned for:
 
   * PostgreSQL
   * SQL Server
