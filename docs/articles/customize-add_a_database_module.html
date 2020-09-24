@@ -178,12 +178,69 @@
 </pre></div>
 <p>Once modules are added to the package, they will appear in the Patient Database Module drop down on the setup tab. <img src="database_module.gif"><!-- --></p>
 <p>Read on to learn how to develop a database module for ReviewR!</p>
-<p><a name="dplyr-support"></a> <em>*Note: Supported Databases must also have <a href="https://db.rstudio.com/dplyr">dplyr</a> support.</em></p>
+<p><a name="dplyr-support"></a> *<em>Note: Supported Databases must also have <a href="https://db.rstudio.com/dplyr">dplyr</a> support.</em></p>
 </div>
 </div>
 <div id="developing-a-database-module-for-reviewr" class="section level2">
 <h2 class="hasAnchor">
 <a href="#developing-a-database-module-for-reviewr" class="anchor"></a>Developing a Database Module for ReviewR</h2>
+<div id="reviewr-database-module-template" class="section level3">
+<h3 class="hasAnchor">
+<a href="#reviewr-database-module-template" class="anchor"></a>ReviewR Database Module Template</h3>
+<div class="sourceCode" id="cb2"><pre class="downlit">
+<span class="co"># UI ----</span>
+<span class="co">#' Database Setup UI</span>
+<span class="co">#'</span>
+<span class="co">#' This module is designed to guide a user through the process of authenticating your database</span>
+<span class="co">#'</span>
+<span class="co">#' @param id The module namespace</span>
+<span class="co">#' </span>
+<span class="co">#' @return The Database Setup UI</span>
+<span class="co">#' @export</span>
+<span class="co">#' </span>
+<span class="co">#' @importFrom any package imports required to render your Setup UI</span>
+<span class="co">#'</span>
+<span class="kw">database_setup_ui</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">id</span>) { <span class="co">## Enter a unique UI function name, ie: mariaDB_setup_ui</span>
+  <span class="kw">ns</span> <span class="op">&lt;-</span> <span class="fu">NS</span>(<span class="kw">id</span>)
+  <span class="fu">tagList</span>(
+    
+    )
+  }
+
+<span class="co"># Server ----</span>
+<span class="co">#' Database Setup Server</span>
+<span class="co">#'</span>
+<span class="co">#' @param id The Module namespace</span>
+<span class="co">#'</span>
+<span class="co">#' @return Database connection variables</span>
+<span class="co">#' @export</span>
+<span class="co">#'</span>
+<span class="co">#' @importFrom any package imports required to process user entered information from the UI</span>
+<span class="co">#' </span>
+<span class="kw">bigquery_setup_server</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">id</span>, <span class="kw">secrets_json</span> = <span class="st">'/srv/shiny-server/.shinyBigQuery/client_secret.json'</span>) {
+  <span class="fu">moduleServer</span>(
+    <span class="kw">id</span>,
+    <span class="fu">function</span>(<span class="kw">input</span>, <span class="kw">output</span>, <span class="kw">session</span>) {
+      <span class="kw">ns</span> <span class="op">&lt;-</span> <span class="kw">session</span><span class="op">$</span><span class="kw">ns</span>
+      <span class="co">## Database Export Values ----</span>
+      <span class="kw">database_export</span> <span class="op">&lt;-</span> <span class="fu">reactiveValues</span>(
+        <span class="co">### Module Info</span>
+        moduleName = <span class="st">'Your Database Module Name'</span>,
+        moduleType = <span class="st">'database'</span>,
+        setup_ui = <span class="kw">ReviewR</span>::<span class="kw"><a href="../reference/database_setup_ui.html">database_setup_ui</a></span>, <span class="co">## Make this function match your setup UI function</span>
+        is_connected = <span class="st">'no'</span>,       
+        db_con = <span class="kw">NULL</span>
+        )
+      <span class="co"># Server Code Here ----</span>
+      
+      
+      <span class="co"># Return ----</span>
+      <span class="fu"><a href="https://rdrr.io/r/base/function.html">return</a></span>(<span class="kw">database_export</span>)
+    }
+  )
+}
+</pre></div>
+</div>
 </div>
   </div>
 
