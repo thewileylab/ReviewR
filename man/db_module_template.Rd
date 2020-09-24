@@ -3,7 +3,7 @@
 \docType{data}
 \name{db_module_template}
 \alias{db_module_template}
-\title{ReviewR Database Module Templage}
+\title{ReviewR Database Module Template}
 \format{
 A character vector with 51 elements
 }
