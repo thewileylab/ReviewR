@@ -4,12 +4,12 @@
 \alias{dev_database_module}
 \title{Develop Database Module}
 \usage{
-dev_database_module(mod_name, display_name)
+dev_database_module(mod_name = NULL, display_name = NULL)
 }
 \arguments{
-\item{mod_name}{}
+\item{mod_name}{A string, denoting the module suffix eg: 'mariadb'}
 
-\item{display_name}{}
+\item{display_name}{A string, denoting the module display name eg: 'MariaDB'}
 }
 \value{
 
