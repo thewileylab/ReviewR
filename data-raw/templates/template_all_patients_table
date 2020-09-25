@@ -1,0 +1,16 @@
+#' {new_datamodel} Tables
+#'
+#' Collection of functions to create pre-arranged views of {new_datamodel} patient data for ReviewR.
+#' 
+#' @param table_map tibble containing a the cdm that most closely matches the user's database and a map of standard tables to user tables
+#' @param db_connection Connection info received from the database setup module
+#'
+#' @rdname {new_datamodel}_tables
+#' @keywords internal
+#' @export
+
+## {new_datamodel} All Patient Table ----
+{new_datamodel}_table_all_patients <- function(table_map, db_connection) {{
+  user_table(table_map, db_connection, '{all_patients}') %>% 
+    collect()
+}}
