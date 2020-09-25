@@ -50,7 +50,7 @@ Read on to learn how to develop a database module for ReviewR!
 
 ## Developing a Database Module for ReviewR
 
-Creating a Shiny module is akin to developing a stand alone Shiny App. When developing for ReviewR, there are a few differences that result because of its package architecture. A [template](#reviewr-database-module-template) has been provided so that some aspects of ReviewR database module development can be highlighted. 
+Creating a Shiny module is very similar to developing a stand alone Shiny App. When developing for ReviewR, there are a few differences that result because of its package architecture. A [template](#reviewr-database-module-template) has been provided so that some aspects of ReviewR database module development can be highlighted in the sections that follow. 
 
 ### Getting Started
 
@@ -75,7 +75,7 @@ Take note of the [ReviewR Database Module Template](#reviewr-database-module-tem
 * database_setup_ui - Defines the user interface that will guide someone through the database connection process
 * database_setup_server - Defines what actions to take as a result of user inputs. 
 
-ReviewR utilizes the [`moduleServer()`](https://shiny.rstudio.com/reference/shiny/1.5.0/moduleServer.html) function introduced in Shiny 1.5. This allows the server function of a module to be called within your application just like any other function, instead of relying on the previously awkward `callModule()` syntax. 
+ReviewR utilizes the [`moduleServer()`](https://shiny.rstudio.com/reference/shiny/1.5.0/moduleServer.html) function introduced in Shiny 1.5. This allows the server portion of a module to be called within your application just like any other function, instead of relying on the previous `callModule()` syntax. 
 
 The next thing to note is that ReviewR modules will ultimately become a part of the ReviewR package namespace. This means that both the UI and Server functions require roxygen comments, with all function parameters, returns, and necessary package imports declared. 
 
@@ -83,16 +83,14 @@ For additional information on module development, please see: https://shiny.rstu
 
 ### Requirements
 
-* a ui function defined as `{module_name}_setup_ui` that accepts a single parameter (id)
+* a UI function defined as `{module_name}_setup_ui` that accepts a single parameter (id)
 * a server function defined as `{module_name}_setup_server` with a reactiveValues return
-    + reactiveValues must contain the following variables, with initial values set
+    + reactiveValues must contain the following variables, with these initial values set
       + moduleName = 'Your Database Module Name'
       + moduleType = 'database'
       + setup_ui = ReviewR::database_setup_ui
       + is_connected = 'no'
       + db_con = NULL
-
-### Module Workflow 
 
 ### Start Developing!
 
@@ -102,9 +100,67 @@ A helper function has been provided along with ReviewR to help jumpstart the pro
 ReviewR:::dev_database_module(mod_name = 'your_moudle', display_name = 'Your Module Display Name')
 ```
 
-This will create a module file in the R/ directory of the ReviewR package and open it for editing. Begin by adding [Shiny Widgets](https://shiny.rstudio.com/gallery/widget-gallery.html) to the `tagList()` in the UI function that users will use to enter their database credentials. Consider adding a "Connect" and "Disconnect" button to your UI which can be monitored by your server function and used to store the user entered credentials and combine them into a DBI connection object. Specifics will vary by database. 
+#### UI Function
 
-As you are developing/testing, remember to add your completed module to `/R/mod_database_setup.R` in order to have the module display within ReviewR. When incorporated into ReviewR, the `display_name` parameter will be what shows up in the Database Module Selector drop down list. When you are ready to test, be sure to run:
+This will create a module file in the `R/` directory of the ReviewR package and open it for editing. Begin by adding [Shiny Widgets](https://shiny.rstudio.com/gallery/widget-gallery.html) to the `tagList()` in the UI function that users will use to enter their database credentials. Consider adding a "Connect" and "Disconnect" button to your UI which can be monitored by your server function and used to store the user entered credentials and combine them into a DBI connection object. Specifics will vary by database. Remember to wrap all user inputID's with the `ns()` function, so that they will inherit the module namespace. 
+```{r pseudo_ui_code, eval=F}
+tagList(
+  actionButton(inputId = ns('connect'),label = 'connect'),
+  actionButton(inputId = ns('disconnect'),label = 'disconnect')
+  )
+```
+
+
+#### Example 'Connect' Server Logic
+
+As mentioned previously, the entire goal of a ReviewR database module is to construct a DBI connection object with user entered information. This DBI connection object needs to be assigned to the `db_con` reactive values object, say when a user clicks a button labeled 'connect'. However, this user entered information should be validated. Consider the following pseudo code:
+
+```{r pseudo_server_code, eval=FALSE}
+library(shiny)
+## Observe a connect button, defined in the UI function
+observeEvent(input$connect, {
+  ## When the button is pressed, store a temporary connection
+  temp_con <- DBI::dbConnect(drv = dataase_driver(),
+                             user = input$username, ## A text input, with a username
+                             pass = input$password ## A password input
+                             )
+  ## Design a test to validate the temporary connection object
+  test_result <- connection_test(temp_con)
+  
+  ## If the test passes, update the reactiveValues objects for the `is_connected` and `db_con` variables
+  if(test_result == TRUE) {
+    database_export$is_connected <- 'yes'
+    database_export$db_con <- temp_con
+    ## Else, don't create connection info
+  } else {
+    database_export$is_connected <- 'no'
+  }
+})
+## Let ReviewR handle the rest!
+```
+
+The database setup module in ReviewR is 'observing' the return of the currently selected database module. When the `is_connected` variable changes to 'yes', it knows that *valid* connection information is present, and it can begin working with the connected database. 
+
+#### Example 'Disconnect' Server Logic
+
+Database modules are also responsible for clearing connection information when a user wants to disconnect. Here is a simple example of a database disconnect where a user presses a 'disconnect' button:
+```{r pseudo_server_code2, eval=FALSE}
+## Observe a connect button, defined in the UI function
+observeEvent(input$disconnect, (
+  ## Tell the database you are disconnecting
+  DBI::dbDisconnect(database_export$db_con)
+  ## Clear the connection info
+  database_export$db_con <- NULL
+  ## Set `is_connected` variable back to 'no'
+  database_export$is_connected <- 'no'
+))
+```
+
+#### Other Considerations
+
+Think about how users will be interacting with this module. When a button is clicked, how will they notice that changes are being processed? Will an error message be displayed if incorrect credentials are entered? When connected, will a success message be presented?
+
+As you are developing/testing, remember to add your completed `setup_server` function to `R/mod_database_setup.R` in order to have the module display within ReviewR. When incorporated into ReviewR, the `moduleName` portion of the database module's reactiveValues return will be what shows up in the Database Module Selector drop down list. When you are ready to test, run:
 
 ```{r eval=F}
 golem::document_and_reload()
