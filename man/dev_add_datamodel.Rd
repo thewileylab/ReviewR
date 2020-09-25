@@ -7,11 +7,11 @@
 dev_add_datamodel(csv, all_patients_table, patient_identifier_field)
 }
 \arguments{
-\item{csv}{}
+\item{csv}{The file path of a CSV file containing a datamodel CDM}
 
-\item{all_patients_table}{}
+\item{all_patients_table}{In this CDM, which table contains a listing of all patients?}
 
-\item{patient_identifier_field}{}
+\item{patient_identifier_field}{In this CDM, which field denotes the patient identifier?}
 }
 \description{
 This function will assist in adding a new supported datamodel to

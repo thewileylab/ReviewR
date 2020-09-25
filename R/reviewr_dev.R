@@ -63,9 +63,9 @@ dev_database_module <- function(mod_name = NULL, display_name = NULL) {
 #' be created and opened in R/ with basic table skeletons created
 #' based on the CDM stored in the user supplied CSV.
 #'
-#' @param csv 
-#' @param all_patients_table 
-#' @param patient_identifier_field 
+#' @param csv The file path of a CSV file containing a datamodel CDM
+#' @param all_patients_table In this CDM, which table contains a listing of all patients?
+#' @param patient_identifier_field In this CDM, which field denotes the patient identifier?
 #' 
 #' @importFrom dplyr distinct filter mutate pull
 #' @importFrom glue glue glue_collapse
@@ -73,7 +73,7 @@ dev_database_module <- function(mod_name = NULL, display_name = NULL) {
 #' @importFrom purrr map imap
 #' @importFrom stringr str_remove_all str_split
 #' @importFrom tibble enframe
-#' @importFrom tidyr replace_na separate
+#' @importFrom tidyr replace_na nest separate
 #' @importFrom rlang .data
 dev_add_datamodel <- function(csv, all_patients_table, patient_identifier_field) {
   ## Add user supplied CSV file to package and incorporate into ReviewR::supported_datamodels.rda
