@@ -75,6 +75,7 @@ dev_database_module <- function(mod_name = NULL, display_name = NULL) {
 #' @importFrom tibble enframe
 #' @importFrom tidyr replace_na nest separate
 #' @importFrom rlang .data
+#' @importFrom rstudioapi navigateToFile
 dev_add_datamodel <- function(csv, all_patients_table, patient_identifier_field) {
   ## Add user supplied CSV file to package and incorporate into ReviewR::supported_datamodels.rda
   file.copy(from = csv, to = 'data-raw/datamodels/')
