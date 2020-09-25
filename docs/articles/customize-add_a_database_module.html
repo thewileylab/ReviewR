@@ -240,10 +240,11 @@
 <div class="sourceCode" id="cb4"><pre class="downlit">
 <span class="kw">ReviewR</span>:::<span class="fu"><a href="../reference/dev_database_module.html">dev_database_module</a></span>(mod_name = <span class="st">'your_moudle'</span>, display_name = <span class="st">'Your Module Display Name'</span>)
 </pre></div>
+<p>This will create a module file in the <code>R/</code> directory of the ReviewR package and open it for editing.</p>
 <div id="ui-function" class="section level4">
 <h4 class="hasAnchor">
 <a href="#ui-function" class="anchor"></a>UI Function</h4>
-<p>This will create a module file in the <code>R/</code> directory of the ReviewR package and open it for editing. Begin by adding <a href="https://shiny.rstudio.com/gallery/widget-gallery.html">Shiny Widgets</a> to the <code><a href="https://rdrr.io/pkg/htmltools/man/tag.html">tagList()</a></code> in the UI function that users will use to enter their database credentials. Consider adding a “Connect” and “Disconnect” button to your UI which can be monitored by your server function and used to store the user entered credentials and combine them into a DBI connection object. Specifics will vary by database. Remember to wrap all user inputID’s with the <code>ns()</code> function, so that they will inherit the module namespace.</p>
+<p>Begin by adding <a href="https://shiny.rstudio.com/gallery/widget-gallery.html">Shiny Widgets</a> to the <code><a href="https://rdrr.io/pkg/htmltools/man/tag.html">tagList()</a></code> in the UI function that users will use to enter their database credentials. Consider adding a “Connect” and “Disconnect” button to your UI which can be monitored by your server function and used to store the user entered credentials and combine them into a DBI connection object. Specifics will vary by database. Remember to wrap all user inputID’s with the <code>ns()</code> function, so that they will inherit the module namespace.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit">
 <span class="fu">tagList</span>(
   <span class="fu">actionButton</span>(inputId = <span class="fu">ns</span>(<span class="st">'connect'</span>),label = <span class="st">'connect'</span>),

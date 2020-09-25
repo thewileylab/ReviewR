@@ -100,9 +100,11 @@ A helper function has been provided along with ReviewR to help jumpstart the pro
 ReviewR:::dev_database_module(mod_name = 'your_moudle', display_name = 'Your Module Display Name')
 ```
 
+This will create a module file in the `R/` directory of the ReviewR package and open it for editing.
+
 #### UI Function
 
-This will create a module file in the `R/` directory of the ReviewR package and open it for editing. Begin by adding [Shiny Widgets](https://shiny.rstudio.com/gallery/widget-gallery.html) to the `tagList()` in the UI function that users will use to enter their database credentials. Consider adding a "Connect" and "Disconnect" button to your UI which can be monitored by your server function and used to store the user entered credentials and combine them into a DBI connection object. Specifics will vary by database. Remember to wrap all user inputID's with the `ns()` function, so that they will inherit the module namespace. 
+Begin by adding [Shiny Widgets](https://shiny.rstudio.com/gallery/widget-gallery.html) to the `tagList()` in the UI function that users will use to enter their database credentials. Consider adding a "Connect" and "Disconnect" button to your UI which can be monitored by your server function and used to store the user entered credentials and combine them into a DBI connection object. Specifics will vary by database. Remember to wrap all user inputID's with the `ns()` function, so that they will inherit the module namespace. 
 ```{r pseudo_ui_code, eval=F}
 tagList(
   actionButton(inputId = ns('connect'),label = 'connect'),
