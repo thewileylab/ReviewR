@@ -7,5 +7,7 @@
 {new_datamodel}_table_{new_table} <- function(table_map, db_connection, subject_id) {{
   subject <- as.integer(subject_id)
   user_table(table_map, db_connection, '{new_table}') %>% 
+    filter(.data${patient_identifier_field} == subject) %>% 
+    select(-matches('{patient_identifier_field}', ignore.case = T))
     collect()
 }}

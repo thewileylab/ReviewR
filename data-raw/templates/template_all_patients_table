@@ -8,9 +8,12 @@
 #' @rdname {new_datamodel}_tables
 #' @keywords internal
 #' @export
+#' @import dplyr
+#' @importFrom rlang .data
 
 ## {new_datamodel} All Patient Table ----
 {new_datamodel}_table_all_patients <- function(table_map, db_connection) {{
   user_table(table_map, db_connection, '{all_patients}') %>% 
+    rename(ID = user_field(table_map, '{all_patients}', '{patient_identifier_field}') ) %>%  
     collect()
 }}
