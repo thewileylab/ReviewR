@@ -74,6 +74,7 @@ dev_database_module <- function(mod_name = NULL, display_name = NULL) {
 #' @importFrom stringr str_remove_all str_split
 #' @importFrom tibble enframe
 #' @importFrom tidyr replace_na nest separate
+#' @importFrom readr read_csv
 #' @importFrom rlang .data
 #' @importFrom rstudioapi navigateToFile
 dev_add_datamodel <- function(csv, all_patients_table, patient_identifier_field) {
