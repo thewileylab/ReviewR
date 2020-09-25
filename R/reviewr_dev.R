@@ -15,7 +15,7 @@
 #' 
 #' @docType data
 #'
-#' @format A character vector with 19 elements
+#' @format A character vector with 21 elements
 "db_function_all_patients_table_template"
 
 #' ReviewR Database Function: Subject Table Template
@@ -25,7 +25,7 @@
 #'  
 #' @docType data
 #'
-#' @format A character vector with 13 elements
+#' @format A character vector with 15 elements
 "db_function_subject_table_template"
 
 # Dev Functions ----
@@ -104,29 +104,38 @@ dev_add_datamodel <- function(csv, all_patients_table, patient_identifier_field)
   new_datamodel <- temp_datamodel[[1]][1]
   new_datamodel_version <- temp_datamodel[[1]][2]
   
-  ## Discover Tables that should potentially be rendered
+  ## Create a filename to hold datamodel table functions
+  fn_filename <- glue::glue('R/database_tables_{new_datamodel}.R')
+  
+  ## Discover Subject Tables that should potentially be rendered
   new_tables <- supported_datamodels %>% 
-    filter(datamodel == new_datamodel & model_version == new_datamodel_version ) %>% 
-    pull(data) %>% 
+    filter(.data$datamodel == new_datamodel & .data$model_version == new_datamodel_version ) %>% 
+    pull(.data$data) %>% 
     magrittr::extract2(1) %>% 
-    distinct(table) %>% 
-    filter(table != all_patients) %>% 
-    pull(table)
+    distinct(.data$table) %>% 
+    filter(.data$table != all_patients_table) %>% 
+    pull(.data$table)
   
   ## Create All Patients Table from template
-  glue::glue_collapse(x = map(ReviewR::db_function_all_patients_table_template,
-                              ~glue::glue(.x)
-                              ),
-                      sep = '\n')
-  ## Subject Tables
-  test <- imap(new_tables,
-              ~{new_table <- new_tables[.y]
-                glue::glue_collapse(x = map(ReviewR::db_function_subject_table_template,
-                                            ~glue::glue(.x)
-                                            ),
-                                    sep = '\n'
-                                    )}
+  cat(glue::glue_collapse(x = map(ReviewR::db_function_all_patients_table_template,
+                                  ~glue::glue(.x)
+                                  ),
+                          sep = '\n'),
+      file = fn_filename
       )
-  map(test,
-      ~cat(.x, file = '~/Desktop/cat_test',append = T))
+  
+  ## Subject Tables
+  subject_tables <- imap(new_tables,
+                         ~{new_table <- new_tables[.y]
+                         glue::glue_collapse(x = map(ReviewR::db_function_subject_table_template,
+                                                     ~glue::glue(.x)
+                                                     ),
+                                             sep = '\n'
+                                             )
+                         }
+                         )
+  map(subject_tables,
+      ~cat(.x, file = fn_filename, append = T))
+  ## Open the file for editing
+  rstudioapi::navigateToFile( fn_filename )
 }
