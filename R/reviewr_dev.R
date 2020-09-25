@@ -16,8 +16,6 @@
 #' @param mod_name A string, denoting the module suffix eg: 'mariadb'
 #' @param display_name A string, denoting the module display name eg: 'MariaDB'
 #'
-#' @return
-#'
 #' @importFrom glue glue glue_collapse
 #' @importFrom purrr map
 #' @importFrom rstudioapi navigateToFile
