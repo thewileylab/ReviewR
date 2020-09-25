@@ -26,6 +26,7 @@ Imports:
     magrittr,
     pkgload,
     purrr,
+    readr,
     rlang (>= 0.4.7),
     rstudioapi,
     shiny (>= 1.5.0),
