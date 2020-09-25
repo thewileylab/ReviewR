@@ -126,9 +126,9 @@ dev_add_datamodel <- function(csv, all_patients_table, patient_identifier_field)
       file = fn_filename
       )
   
-  ## Subject Tables
+  ## Create Subject Tables from template
   subject_tables <- imap(new_tables,
-                         ~{new_table <- new_tables[.y]
+                         ~{new_table <- new_tables[[.y]]
                          glue::glue_collapse(x = map(ReviewR::db_function_subject_table_template,
                                                      ~glue::glue(.x)
                                                      ),
@@ -136,8 +136,10 @@ dev_add_datamodel <- function(csv, all_patients_table, patient_identifier_field)
                                              )
                          }
                          )
+  ### Append Subject Tables to datamodel_tables R file
   map(subject_tables,
       ~cat(.x, file = fn_filename, append = T))
+  
   ## Open the file for editing
   rstudioapi::navigateToFile( fn_filename )
 }
