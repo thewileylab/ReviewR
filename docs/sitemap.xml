@@ -10,7 +10,16 @@
     <loc>reviewr.thewileylab.org//reference/chart_review.html</loc>
   </url>
   <url>
+    <loc>reviewr.thewileylab.org//reference/db_function_all_patients_table_template.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org//reference/db_function_subject_table_template.html</loc>
+  </url>
+  <url>
     <loc>reviewr.thewileylab.org//reference/db_module_template.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org//reference/dev_add_datamodel.html</loc>
   </url>
   <url>
     <loc>reviewr.thewileylab.org//reference/dev_database_module.html</loc>
