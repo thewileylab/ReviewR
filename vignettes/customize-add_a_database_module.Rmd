@@ -84,7 +84,7 @@ For additional information on module development, please see: https://shiny.rstu
 ### Requirements
 
 * a ui function defined as `{module_name}_setup_ui` that accepts a single parameter (id)
-* a server function defined as `{server_name}_setup_server` with a reactiveValues return
+* a server function defined as `{module_name}_setup_server` with a reactiveValues return
     + reactiveValues must contain the following variables, with initial values set
       + moduleName = 'Your Database Module Name'
       + moduleType = 'database'
@@ -103,6 +103,23 @@ ReviewR:::dev_database_module(mod_name = 'your_moudle', display_name = 'Your Mod
 ```
 
 This will create a module file in the R/ directory of the ReviewR package and open it for editing. 
+
+As you are developing/testing, remember to add your completed module to `/R/mod_database_setup.R` in order to have the module display within ReviewR. When incorporated into ReviewR, the `display_name` parameter will be what shows up in the Database Module Selector drop down list. When you are ready to test, be sure to run:
+
+```{r eval=F}
+golem::document_and_reload()
+```
+
+This will incorporate your newly developed module into the ReviewR namespace, allowing you to see any changes that you have made as a result of your development process. 
+
+### Finishing up
+
+Once you are satisfied with your module and have sufficiently tested its functionality, run:
+```{r eval=FALSE}
+devtools::install()
+```
+
+To install a new version of the ReviewR package with your newly developed module incorporated.
 
 ### ReviewR Database Module Template
 
