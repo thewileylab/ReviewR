@@ -185,7 +185,7 @@
 <div id="developing-a-database-module-for-reviewr" class="section level2">
 <h2 class="hasAnchor">
 <a href="#developing-a-database-module-for-reviewr" class="anchor"></a>Developing a Database Module for ReviewR</h2>
-<p>Creating a Shiny module is akin to developing a stand alone Shiny App. When developing for ReviewR, there are a few differences that result because of its package architecture. A <a href="#reviewr-database-module-template">template</a> has been provided so that some aspects of ReviewR database module development can be highlighted.</p>
+<p>Creating a Shiny module is very similar to developing a stand alone Shiny App. When developing for ReviewR, there are a few differences that result because of its package architecture. A <a href="#reviewr-database-module-template">template</a> has been provided so that some aspects of ReviewR database module development can be highlighted in the sections that follow.</p>
 <div id="getting-started" class="section level3">
 <h3 class="hasAnchor">
 <a href="#getting-started" class="anchor"></a>Getting Started</h3>
@@ -209,7 +209,7 @@
 <li>database_setup_ui - Defines the user interface that will guide someone through the database connection process</li>
 <li>database_setup_server - Defines what actions to take as a result of user inputs.</li>
 </ul>
-<p>ReviewR utilizes the <a href="https://shiny.rstudio.com/reference/shiny/1.5.0/moduleServer.html"><code>moduleServer()</code></a> function introduced in Shiny 1.5. This allows the server function of a module to be called within your application just like any other function, instead of relying on the previously awkward <code>callModule()</code> syntax.</p>
+<p>ReviewR utilizes the <a href="https://shiny.rstudio.com/reference/shiny/1.5.0/moduleServer.html"><code>moduleServer()</code></a> function introduced in Shiny 1.5. This allows the server portion of a module to be called within your application just like any other function, instead of relying on the previous <code><a href="https://shiny.rstudio.com/reference/shiny/latest/callModule.html">callModule()</a></code> syntax.</p>
 <p>The next thing to note is that ReviewR modules will ultimately become a part of the ReviewR package namespace. This means that both the UI and Server functions require roxygen comments, with all function parameters, returns, and necessary package imports declared.</p>
 <p>For additional information on module development, please see: <a href="https://shiny.rstudio.com/articles/modules.html" class="uri">https://shiny.rstudio.com/articles/modules.html</a></p>
 </div>
@@ -217,10 +217,10 @@
 <h3 class="hasAnchor">
 <a href="#requirements" class="anchor"></a>Requirements</h3>
 <ul>
-<li>a ui function defined as <code>{module_name}_setup_ui</code> that accepts a single parameter (id)</li>
+<li>a UI function defined as <code>{module_name}_setup_ui</code> that accepts a single parameter (id)</li>
 <li>a server function defined as <code>{module_name}_setup_server</code> with a reactiveValues return
 <ul>
-<li>reactiveValues must contain the following variables, with initial values set
+<li>reactiveValues must contain the following variables, with these initial values set
 <ul>
 <li>moduleName = ‘Your Database Module Name’</li>
 <li>moduleType = ‘database’</li>
@@ -233,10 +233,6 @@
 </li>
 </ul>
 </div>
-<div id="module-workflow" class="section level3">
-<h3 class="hasAnchor">
-<a href="#module-workflow" class="anchor"></a>Module Workflow</h3>
-</div>
 <div id="start-developing" class="section level3">
 <h3 class="hasAnchor">
 <a href="#start-developing" class="anchor"></a>Start Developing!</h3>
@@ -244,18 +240,76 @@
 <div class="sourceCode" id="cb4"><pre class="downlit">
 <span class="kw">ReviewR</span>:::<span class="fu"><a href="../reference/dev_database_module.html">dev_database_module</a></span>(mod_name = <span class="st">'your_moudle'</span>, display_name = <span class="st">'Your Module Display Name'</span>)
 </pre></div>
-<p>This will create a module file in the R/ directory of the ReviewR package and open it for editing. Begin by adding <a href="https://shiny.rstudio.com/gallery/widget-gallery.html">Shiny Widgets</a> to the <code>tagList()</code> in the UI function that users will use to enter their database credentials. Consider adding a “Connect” and “Disconnect” button to your UI which can be monitored by your server function and used to store the user entered credentials and combine them into a DBI connection object. Specifics will vary by database.</p>
-<p>As you are developing/testing, remember to add your completed module to <code>/R/mod_database_setup.R</code> in order to have the module display within ReviewR. When incorporated into ReviewR, the <code>display_name</code> parameter will be what shows up in the Database Module Selector drop down list. When you are ready to test, be sure to run:</p>
+<div id="ui-function" class="section level4">
+<h4 class="hasAnchor">
+<a href="#ui-function" class="anchor"></a>UI Function</h4>
+<p>This will create a module file in the <code>R/</code> directory of the ReviewR package and open it for editing. Begin by adding <a href="https://shiny.rstudio.com/gallery/widget-gallery.html">Shiny Widgets</a> to the <code><a href="https://rdrr.io/pkg/htmltools/man/tag.html">tagList()</a></code> in the UI function that users will use to enter their database credentials. Consider adding a “Connect” and “Disconnect” button to your UI which can be monitored by your server function and used to store the user entered credentials and combine them into a DBI connection object. Specifics will vary by database. Remember to wrap all user inputID’s with the <code>ns()</code> function, so that they will inherit the module namespace.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit">
+<span class="fu">tagList</span>(
+  <span class="fu">actionButton</span>(inputId = <span class="fu">ns</span>(<span class="st">'connect'</span>),label = <span class="st">'connect'</span>),
+  <span class="fu">actionButton</span>(inputId = <span class="fu">ns</span>(<span class="st">'disconnect'</span>),label = <span class="st">'disconnect'</span>)
+  )
+</pre></div>
+</div>
+<div id="example-connect-server-logic" class="section level4">
+<h4 class="hasAnchor">
+<a href="#example-connect-server-logic" class="anchor"></a>Example ‘Connect’ Server Logic</h4>
+<p>As mentioned previously, the entire goal of a ReviewR database module is to construct a DBI connection object with user entered information. This DBI connection object needs to be assigned to the <code>db_con</code> reactive values object, say when a user clicks a button labeled ‘connect’. However, this user entered information should be validated. Consider the following pseudo code:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="http://shiny.rstudio.com">shiny</a></span>)
+<span class="co">## Observe a connect button, defined in the UI function</span>
+<span class="fu"><a href="https://shiny.rstudio.com/reference/shiny/latest/observeEvent.html">observeEvent</a></span>(<span class="kw">input</span><span class="op">$</span><span class="kw">connect</span>, {
+  <span class="co">## When the button is pressed, store a temporary connection</span>
+  <span class="kw">temp_con</span> <span class="op">&lt;-</span> <span class="kw">DBI</span>::<span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span>(drv = <span class="fu">dataase_driver</span>(),
+                             user = <span class="kw">input</span><span class="op">$</span><span class="kw">username</span>, <span class="co">## A text input, with a username</span>
+                             pass = <span class="kw">input</span><span class="op">$</span><span class="kw">password</span> <span class="co">## A password input</span>
+                             )
+  <span class="co">## Design a test to validate the temporary connection object</span>
+  <span class="kw">test_result</span> <span class="op">&lt;-</span> <span class="fu">connection_test</span>(<span class="kw">temp_con</span>)
+  
+  <span class="co">## If the test passes, update the reactiveValues objects for the `is_connected` and `db_con` variables</span>
+  <span class="co">if</span>(<span class="kw">test_result</span> <span class="op">==</span> <span class="fl">TRUE</span>) {
+    <span class="kw">database_export</span><span class="op">$</span><span class="kw">is_connected</span> <span class="op">&lt;-</span> <span class="st">'yes'</span>
+    <span class="kw">database_export</span><span class="op">$</span><span class="kw">db_con</span> <span class="op">&lt;-</span> <span class="kw">temp_con</span>
+    <span class="co">## Else, don't create connection info</span>
+  } <span class="co">else</span> {
+    <span class="kw">database_export</span><span class="op">$</span><span class="kw">is_connected</span> <span class="op">&lt;-</span> <span class="st">'no'</span>
+  }
+})
+<span class="co">## Let ReviewR handle the rest!</span>
+</pre></div>
+<p>The database setup module in ReviewR is ‘observing’ the return of the currently selected database module. When the <code>is_connected</code> variable changes to ‘yes’, it knows that <em>valid</em> connection information is present, and it can begin working with the connected database.</p>
+</div>
+<div id="example-disconnect-server-logic" class="section level4">
+<h4 class="hasAnchor">
+<a href="#example-disconnect-server-logic" class="anchor"></a>Example ‘Disconnect’ Server Logic</h4>
+<p>Database modules are also responsible for clearing connection information when a user wants to disconnect. Here is a simple example of a database disconnect where a user presses a ‘disconnect’ button:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="co">## Observe a connect button, defined in the UI function</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="kw">observeEvent</span>(input<span class="op">$</span>disconnect, (</span>
+<span id="cb7-3"><a href="#cb7-3"></a>  <span class="co">## Tell the database you are disconnecting</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a>  DBI<span class="op">::</span><span class="kw">dbDisconnect</span>(database_export<span class="op">$</span>db_con)</span>
+<span id="cb7-5"><a href="#cb7-5"></a>  <span class="co">## Clear the connection info</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a>  database_export<span class="op">$</span>db_con &lt;-<span class="st"> </span><span class="ot">NULL</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a>  <span class="co">## Set `is_connected` variable back to 'no'</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a>  database_export<span class="op">$</span>is_connected &lt;-<span class="st"> 'no'</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a>))</span></code></pre></div>
+</div>
+<div id="other-considerations" class="section level4">
+<h4 class="hasAnchor">
+<a href="#other-considerations" class="anchor"></a>Other Considerations</h4>
+<p>Think about how users will be interacting with this module. When a button is clicked, how will they notice that changes are being processed? Will an error message be displayed if incorrect credentials are entered? When connected, will a success message be presented?</p>
+<p>As you are developing/testing, remember to add your completed <code>setup_server</code> function to <code>R/mod_database_setup.R</code> in order to have the module display within ReviewR. When incorporated into ReviewR, the <code>moduleName</code> portion of the database module’s reactiveValues return will be what shows up in the Database Module Selector drop down list. When you are ready to test, run:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit">
 <span class="kw">golem</span>::<span class="fu"><a href="https://rdrr.io/pkg/golem/man/document_and_reload.html">document_and_reload</a></span>()
 </pre></div>
 <p>This will incorporate your newly developed module into the ReviewR namespace, allowing you to see any changes that you have made as a result of your development process.</p>
+</div>
 </div>
 <div id="finishing-up" class="section level3">
 <h3 class="hasAnchor">
 <a href="#finishing-up" class="anchor"></a>Finishing up</h3>
 <p>Once you are satisfied with your module and have sufficiently tested its functionality, run:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit">
+<div class="sourceCode" id="cb9"><pre class="downlit">
 <span class="kw">devtools</span>::<span class="fu"><a href="https://devtools.r-lib.org//reference/install.html">install</a></span>()
 </pre></div>
 <p>To install a new version of the ReviewR package with your newly developed module incorporated.</p>
@@ -263,7 +317,7 @@
 <div id="reviewr-database-module-template" class="section level3">
 <h3 class="hasAnchor">
 <a href="#reviewr-database-module-template" class="anchor"></a>ReviewR Database Module Template</h3>
-<div class="sourceCode" id="cb7"><pre class="downlit">
+<div class="sourceCode" id="cb10"><pre class="downlit">
 <span class="co"># UI ----</span>
 <span class="co">#' Database Setup UI</span>
 <span class="co">#'</span>
@@ -277,8 +331,8 @@
 <span class="co">#' @importFrom any package imports required to render your Setup UI</span>
 <span class="co">#'</span>
 <span class="kw">database_setup_ui</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">id</span>) { <span class="co">## Enter a unique UI function name, ie: mariaDB_setup_ui</span>
-  <span class="kw">ns</span> <span class="op">&lt;-</span> <span class="fu">NS</span>(<span class="kw">id</span>)
-  <span class="fu">tagList</span>(
+  <span class="kw">ns</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://shiny.rstudio.com/reference/shiny/latest/NS.html">NS</a></span>(<span class="kw">id</span>)
+  <span class="fu"><a href="https://rdrr.io/pkg/htmltools/man/tag.html">tagList</a></span>(
     
     )
   }
@@ -294,12 +348,12 @@
 <span class="co">#' @importFrom any package imports required to process user entered information from the UI</span>
 <span class="co">#' </span>
 <span class="kw">database_setup_server</span> <span class="op">&lt;-</span> <span class="fu">function</span>(<span class="kw">id</span>) {
-  <span class="fu">moduleServer</span>(
+  <span class="fu"><a href="https://shiny.rstudio.com/reference/shiny/latest/moduleServer.html">moduleServer</a></span>(
     <span class="kw">id</span>,
     <span class="fu">function</span>(<span class="kw">input</span>, <span class="kw">output</span>, <span class="kw">session</span>) {
       <span class="kw">ns</span> <span class="op">&lt;-</span> <span class="kw">session</span><span class="op">$</span><span class="kw">ns</span>
       <span class="co">## Database Export Values ----</span>
-      <span class="kw">database_export</span> <span class="op">&lt;-</span> <span class="fu">reactiveValues</span>(
+      <span class="kw">database_export</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://shiny.rstudio.com/reference/shiny/latest/reactiveValues.html">reactiveValues</a></span>(
         <span class="co">### Module Info</span>
         moduleName = <span class="st">'Your Database Module Name'</span>,
         moduleType = <span class="st">'database'</span>,
