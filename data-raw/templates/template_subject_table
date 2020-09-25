@@ -8,7 +8,7 @@
   subject <- as.integer(subject_id)
   user_table(table_map, db_connection, '{new_table}') %>% 
     filter(!!as.name(user_field(table_map, '{new_table}','{patient_identifier_field}')) == subject) %>% 
-    select(-matches('{patient_identifier_field}', ignore.case = T))
+    select(-matches('{patient_identifier_field}', ignore.case = T)) %>% 
     collect()
 }}
 
