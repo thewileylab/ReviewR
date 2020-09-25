@@ -11,9 +11,6 @@ dev_database_module(mod_name = NULL, display_name = NULL)
 
 \item{display_name}{A string, denoting the module display name eg: 'MariaDB'}
 }
-\value{
-
-}
 \description{
 This function will assist in providing a database module skeleton for ReviewR
 }
