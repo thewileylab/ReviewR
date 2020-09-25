@@ -50,7 +50,7 @@ Read on to learn how to develop a database module for ReviewR!
 
 ## Developing a Database Module for ReviewR
 
-Creating a Shiny module is very similar to developing a stand alone Shiny App. When developing for ReviewR, there are a few differences that result because of its package architecture. A [template](#reviewr-database-module-template) has been provided so that some aspects of ReviewR database module development can be highlighted in the sections that follow. 
+Creating a Shiny module is very similar to developing a stand alone Shiny App. When developing a database module for ReviewR, there are a few differences that result because of its package architecture. A [template](#reviewr-database-module-template) has been provided so that some aspects of ReviewR database module development can be highlighted in the sections that follow. 
 
 ### Getting Started
 
@@ -160,7 +160,7 @@ observeEvent(input$disconnect, (
 
 Think about how users will be interacting with this module. When a button is clicked, how will they notice that changes are being processed? Will an error message be displayed if incorrect credentials are entered? When connected, will a success message be presented?
 
-As you are developing/testing, remember to add your completed `setup_server` function to `R/mod_database_setup.R` in order to have the module display within ReviewR. When incorporated into ReviewR, the `moduleName` portion of the database module's reactiveValues return will be what shows up in the Database Module Selector drop down list. When you are ready to test, run:
+As you are developing/testing, remember to add your completed `setup_server` function to `R/mod_database_setup.R` in order to have the module display within ReviewR. When incorporated into ReviewR, the `moduleName` parameter of the database module's reactiveValues return will be what appears in the Database Module Selector drop down list. Once you are sure you have added your module to `mod_database_setup.R` and you are ready to test, run:
 
 ```{r eval=F}
 golem::document_and_reload()

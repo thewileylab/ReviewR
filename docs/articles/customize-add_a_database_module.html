@@ -185,7 +185,7 @@
 <div id="developing-a-database-module-for-reviewr" class="section level2">
 <h2 class="hasAnchor">
 <a href="#developing-a-database-module-for-reviewr" class="anchor"></a>Developing a Database Module for ReviewR</h2>
-<p>Creating a Shiny module is very similar to developing a stand alone Shiny App. When developing for ReviewR, there are a few differences that result because of its package architecture. A <a href="#reviewr-database-module-template">template</a> has been provided so that some aspects of ReviewR database module development can be highlighted in the sections that follow.</p>
+<p>Creating a Shiny module is very similar to developing a stand alone Shiny App. When developing a database module for ReviewR, there are a few differences that result because of its package architecture. A <a href="#reviewr-database-module-template">template</a> has been provided so that some aspects of ReviewR database module development can be highlighted in the sections that follow.</p>
 <div id="getting-started" class="section level3">
 <h3 class="hasAnchor">
 <a href="#getting-started" class="anchor"></a>Getting Started</h3>
@@ -298,7 +298,7 @@
 <h4 class="hasAnchor">
 <a href="#other-considerations" class="anchor"></a>Other Considerations</h4>
 <p>Think about how users will be interacting with this module. When a button is clicked, how will they notice that changes are being processed? Will an error message be displayed if incorrect credentials are entered? When connected, will a success message be presented?</p>
-<p>As you are developing/testing, remember to add your completed <code>setup_server</code> function to <code>R/mod_database_setup.R</code> in order to have the module display within ReviewR. When incorporated into ReviewR, the <code>moduleName</code> portion of the database module’s reactiveValues return will be what shows up in the Database Module Selector drop down list. When you are ready to test, run:</p>
+<p>As you are developing/testing, remember to add your completed <code>setup_server</code> function to <code>R/mod_database_setup.R</code> in order to have the module display within ReviewR. When incorporated into ReviewR, the <code>moduleName</code> parameter of the database module’s reactiveValues return will be what appears in the Database Module Selector drop down list. Once you are sure you have added your module to <code>mod_database_setup.R</code> and you are ready to test, run:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit">
 <span class="kw">golem</span>::<span class="fu"><a href="https://rdrr.io/pkg/golem/man/document_and_reload.html">document_and_reload</a></span>()
 </pre></div>
