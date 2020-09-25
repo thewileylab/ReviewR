@@ -218,7 +218,7 @@
 <a href="#requirements" class="anchor"></a>Requirements</h3>
 <ul>
 <li>a ui function defined as <code>{module_name}_setup_ui</code> that accepts a single parameter (id)</li>
-<li>a server function defined as <code>{server_name}_setup_server</code> with a reactiveValues return
+<li>a server function defined as <code>{module_name}_setup_server</code> with a reactiveValues return
 <ul>
 <li>reactiveValues must contain the following variables, with initial values set
 <ul>
@@ -242,14 +242,28 @@
 <a href="#start-developing" class="anchor"></a>Start Developing!</h3>
 <p>A helper function has been provided along with ReviewR to help jumpstart the process. Run:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit">
-<span class="kw">ReviewR</span>:::<span class="fu"><a href="../reference/dev_database_module.html">dev_database_module</a></span>(mod_name = <span class="st">'your_moudle'</span>,display_name = <span class="st">'Your Module Display Name'</span>)
+<span class="kw">ReviewR</span>:::<span class="fu"><a href="../reference/dev_database_module.html">dev_database_module</a></span>(mod_name = <span class="st">'your_moudle'</span>, display_name = <span class="st">'Your Module Display Name'</span>)
 </pre></div>
 <p>This will create a module file in the R/ directory of the ReviewR package and open it for editing.</p>
+<p>As you are developing/testing, remember to add your completed module to <code>/R/mod_database_setup.R</code> in order to have the module display within ReviewR. When incorporated into ReviewR, the <code>display_name</code> parameter will be what shows up in the Database Module Selector drop down list. When you are ready to test, be sure to run:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit">
+<span class="kw">golem</span>::<span class="fu"><a href="https://rdrr.io/pkg/golem/man/document_and_reload.html">document_and_reload</a></span>()
+</pre></div>
+<p>This will incorporate your newly developed module into the ReviewR namespace, allowing you to see any changes that you have made as a result of your development process.</p>
+</div>
+<div id="finishing-up" class="section level3">
+<h3 class="hasAnchor">
+<a href="#finishing-up" class="anchor"></a>Finishing up</h3>
+<p>Once you are satisfied with your module and have sufficiently tested its functionality, run:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit">
+<span class="kw">devtools</span>::<span class="fu"><a href="https://devtools.r-lib.org//reference/install.html">install</a></span>()
+</pre></div>
+<p>To install a new version of the ReviewR package with your newly developed module incorporated.</p>
 </div>
 <div id="reviewr-database-module-template" class="section level3">
 <h3 class="hasAnchor">
 <a href="#reviewr-database-module-template" class="anchor"></a>ReviewR Database Module Template</h3>
-<div class="sourceCode" id="cb5"><pre class="downlit">
+<div class="sourceCode" id="cb7"><pre class="downlit">
 <span class="co"># UI ----</span>
 <span class="co">#' Database Setup UI</span>
 <span class="co">#'</span>
