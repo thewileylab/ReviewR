@@ -5,7 +5,7 @@
 \alias{db_function_subject_table_template}
 \title{ReviewR Database Function: Subject Table Template}
 \format{
-A character vector with 13 elements
+A character vector with 15 elements
 }
 \usage{
 db_function_subject_table_template

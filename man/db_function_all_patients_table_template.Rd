@@ -5,7 +5,7 @@
 \alias{db_function_all_patients_table_template}
 \title{ReviewR Database Function: All Patients Table Template}
 \format{
-A character vector with 19 elements
+A character vector with 21 elements
 }
 \usage{
 db_function_all_patients_table_template
