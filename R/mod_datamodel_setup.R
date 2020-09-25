@@ -196,6 +196,10 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars) {
             }
         ## Datamodel Table Functions
         if (nrow(datamodel_vars$table_map) > 0) {
+          ## Attach ReviewR namespace (if not already attached) so that lsf.str can find database table functions
+          if(any(str_detect(string = search(), pattern = 'package:ReviewR') ) == FALSE) {
+            attachNamespace("ReviewR")
+            }
           datamodel_vars$table_functions <- lsf.str('package:ReviewR') %>% 
             tibble::enframe(name = NULL, value = 'function_name') %>% 
             filter(stringr::str_detect(.data$function_name, glue::glue('{datamodel_vars$table_map$datamodel}_table') )) %>% 
