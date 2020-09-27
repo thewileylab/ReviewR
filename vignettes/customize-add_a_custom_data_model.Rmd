@@ -14,6 +14,24 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+## Overview
+
+Currently, ReviewR is capable of identifying patient databases that conform to the MIMIC3 and OMOP data models. However, we recognize that there there are other patient data models that exist. Because of ReviewR's modular architecture, it can be extended to support the display additional data models. Further, customization of existing supported data model table displays is also possible. 
+
+### Data Model Detection
+
+To see which data models have built in support, run:
+```{r}
 library(ReviewR)
+ReviewR::supported_datamodels
 ```
+A dataframe with 4 columns will be returned, indicating the file path[*](#file-path) of the data source, the data model name, the data model version, and a nested dataframe containing the schema of the data model itself. 
+
+<a name="file-path"></a>
+\**Note: The data-raw file path is only available when cloning the ReviewR package, it is not available when simply installing from GitHub.*
+
+### Patient Tables
+
+## Support a New Data Model
+
+### Requirements
