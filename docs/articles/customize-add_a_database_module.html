@@ -235,7 +235,7 @@
 <a href="#start-developing" class="anchor"></a>Start Developing!</h3>
 <p>A helper function has been provided along with ReviewR to help jumpstart the process. Run:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit">
-<span class="fu">ReviewR</span><span class="fu">:::</span><span class="fu"><a href="../reference/dev_database_module.html">dev_database_module</a></span><span class="op">(</span>mod_name <span class="op">=</span> <span class="st">'your_moudle'</span>, display_name <span class="op">=</span> <span class="st">'Your Module Display Name'</span><span class="op">)</span></pre></div>
+<span class="fu">ReviewR</span><span class="fu">:::</span><span class="fu"><a href="../reference/dev_database_module.html">dev_database_module</a></span><span class="op">(</span>mod_name <span class="op">=</span> <span class="st">'your_module'</span>, display_name <span class="op">=</span> <span class="st">'Your Module Display Name'</span><span class="op">)</span></pre></div>
 <p>This will create a module file in the <code>R/</code> directory of the ReviewR package and open it for editing.</p>
 <div id="ui-function" class="section level4">
 <h4 class="hasAnchor">
@@ -256,7 +256,7 @@
 <span class="co">## Observe a connect button, defined in the UI function</span>
 <span class="fu"><a href="https://shiny.rstudio.com/reference/shiny/latest/observeEvent.html">observeEvent</a></span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">connect</span>, <span class="op">{</span>
   <span class="co">## When the button is pressed, store a temporary connection</span>
-  <span class="va">temp_con</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span><span class="op">(</span>drv <span class="op">=</span> <span class="fu">dataase_driver</span><span class="op">(</span><span class="op">)</span>,
+  <span class="va">temp_con</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span><span class="op">(</span>drv <span class="op">=</span> <span class="fu">database_driver</span><span class="op">(</span><span class="op">)</span>,
                              user <span class="op">=</span> <span class="va">input</span><span class="op">$</span><span class="va">username</span>, <span class="co">## A text input, with a username</span>
                              pass <span class="op">=</span> <span class="va">input</span><span class="op">$</span><span class="va">password</span> <span class="co">## A password input</span>
                              <span class="op">)</span>
