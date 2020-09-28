@@ -62,6 +62,31 @@ See the [New Data Model Development](#new-data-model-development) section for in
 
 ### Table Functions
 
+Once ReviewR has determined data model and version of the user database, it will search within its own namespace for functions that can be used to render the information contained within. These functions must be deveoloped ahead of time. Table functions have a standard naming convention, which allows this look up to occur. Functions used to render patient tables must begin with `{data-model-name}_table_` and will end with the `table_name`.  Two types of table functions must be developed when supporting a new data model, an "all_patients" table and "subject specific" tables. 
+
+#### All Patients Table
+
+`{data-model-name}_table_all_patients`.
+
+Using MIMIC3 as an example, demographic information is contained within the 'PATIENTS' table. An example of an 'all_patients' table would be:
+```{r eval=FALSE}
+mimic3_table_all_patients <- function(table_map, db_connection) {
+  ReviewR::user_table(table_map, db_connection, 'PATIENTS')
+}
+```
+
+#### Subject Specific Tables
+
+```{r eval=FALSE}
+mimic3_table_admissions <- function(table, db_connection, subject_id) {
+  ReviewR::user_table(table_map, db_connection, 'ADMISSIONS') %>% 
+    filter(as.name(ReviewR::user_field(table_map, 'ADMISSIONS','PATIENT_ID')) == subject_id)
+}
+```
+
+
 ## New Data Model Development
 
-### Requirements
+A convenience function has been built into ReviewR to assist in supporting additional data models, `dev_add_datamodel`. This function will add a CSV file containing schema information into the data model detection module within ReviewR. Additionally, it will create a .R file with skeleton table functions for all tables identified within the supplied CSV file. 
+
+This allows for a developer to customize the representation for each table in the data model they wish to support. 
