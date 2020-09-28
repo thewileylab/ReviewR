@@ -76,14 +76,14 @@ The "all patients' table will be used to render the patients displayed in the 'P
 
 * `{data-model-name}_table_all_patients`
 
-Additionally, the "all paients" table function must be designed to accept two arguments from ReviewR:
+Additionally, the "all patients" table function must be designed to accept two arguments from ReviewR:
 
-* `table_map`: returned by the datamodel detecion module, 
-* `db_connection`: which is supplied by the database connection module.
+* `table_map`: returned by the data model detection module
+* `db_connection`: which is supplied by the database connection module
 
 ReviewR will handle supplying this information, but the table functions must be coded to accept these two arguments.
 
-Using MIMIC3 as an example, demographic information is contained within the 'PATIENTS' table. An example of an 'all_patients' table would be:
+Using MIMIC3 as an example, demographic information is contained within the 'PATIENTS' table. A potential 'all_patients' table would be:
 ```{r eval=FALSE}
 mimic3_table_all_patients <- function(table_map, db_connection) {
   ReviewR::user_table(table_map, db_connection, 'PATIENTS')
@@ -96,12 +96,16 @@ mimic3_table_all_patients <- function(table_map, db_connection) {
 
 * `{data-model-name}_table_{table-name}`
 
-These table functions must also be designed to accept 3 arguments
+These table functions must be designed to accept 3 arguments:
+
+* `table_map`: returned by the data model detection module
+* `db_connection`: which is supplied by the database connection module
+* `subject_id`: The selected patient identifier returned by the navigation module
 
 ```{r eval=FALSE}
 mimic3_table_admissions <- function(table, db_connection, subject_id) {
   ReviewR::user_table(table_map, db_connection, 'ADMISSIONS') %>% 
-    filter(as.name(ReviewR::user_field(table_map, 'ADMISSIONS','PATIENT_ID')) == subject_id)
+    filter(!!as.name(ReviewR::user_field(table_map, 'ADMISSIONS','PATIENT_ID')) == subject_id)
 }
 ```
 
