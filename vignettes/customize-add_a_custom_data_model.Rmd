@@ -36,7 +36,7 @@ To see the available database specifications, run:
 library(ReviewR)
 ReviewR::supported_datamodels
 ```
-A dataframe with 4 columns will be returned, indicating the file path[*](#file-path) of the data source, the data model name, the data model version, and data column containing a nested dataframe with the schema of the data model itself. 
+A data frame with 4 columns will be returned, indicating the file path[*](#file-path) of the data source, the data model name, the data model version, and data column containing a nested dataframe with the schema of the data model itself. 
 
 These schema files must contain two columns, called `table` and `field`, which identify every field for every table in the data model and are used in the table/field comparison for the connected database. They are often available from the developer of the data model. If a schema file is available for your database, but contains additional descriptors it may still be used, but additional descriptors will be ignored. The schema file for the OMOP CDM v5.3.0 is provided as an example:
 
@@ -54,6 +54,8 @@ ReviewR::supported_datamodels %>%
 *Table: OMOP v5.3.0 Schema obtained from [OHDSI](https://github.com/OHDSI/CommonDataModel/releases/tag/v5.3.0)*
 
 See the [New Data Model Development](#new-data-model-development) section for information on how to add to the list of supported data models. 
+
+***
 
 <a name="file-path"></a>
 \**Note: The data-raw file path is only available when cloning the ReviewR from GitHub, it is not available when installing the package.*
