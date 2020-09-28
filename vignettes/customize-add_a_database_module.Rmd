@@ -122,7 +122,7 @@ library(shiny)
 ## Observe a connect button, defined in the UI function
 observeEvent(input$connect, {
   ## When the button is pressed, store a temporary connection
-  temp_con <- DBI::dbConnect(drv = dataase_driver(),
+  temp_con <- DBI::dbConnect(drv = database_driver(),
                              user = input$username, ## A text input, with a username
                              pass = input$password ## A password input
                              )
