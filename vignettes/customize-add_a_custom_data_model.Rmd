@@ -62,11 +62,26 @@ See the [New Data Model Development](#new-data-model-development) section for in
 
 ### Table Functions
 
-Once ReviewR has determined data model and version of the user database, it will search within its own namespace for functions that can be used to render the information contained within. These functions must be deveoloped ahead of time. Table functions have a standard naming convention, which allows this look up to occur. Functions used to render patient tables must begin with `{data-model-name}_table_` and will end with the `table_name`.  Two types of table functions must be developed when supporting a new data model, an "all_patients" table and "subject specific" tables. 
+Once ReviewR has determined data model and version of the user database, it will search within its own namespace for functions that can be used to render the information contained within the connected data model. These functions must be developed ahead of time. Table functions have a standard naming convention, which allows this look up to occur. Functions used to render patient tables must begin with `{data-model-name}_table_` and will end with the *name* of the table you would like to display. The *name* portion of the function name become the tab name on the Chart Review section of ReviewR:
+
+```{r echo=FALSE}
+knitr::include_graphics('chart_review_tabs.png')
+```
+
+Two types of table functions must be developed when supporting a new data model, an "all_patients" table and "subject specific" tables. 
 
 #### All Patients Table
 
-`{data-model-name}_table_all_patients`.
+The "all patients' table will be used to render the patients displayed in the 'Patient Search' Section of ReviewR. This function must have a very specific name:
+
+* `{data-model-name}_table_all_patients`
+
+Additionally, the "all paients" table function must be designed to accept two arguments from ReviewR:
+
+* `table_map`: returned by the datamodel detecion module, 
+* `db_connection`: which is supplied by the database connection module.
+
+ReviewR will handle supplying this information, but the table functions must be coded to accept these two arguments.
 
 Using MIMIC3 as an example, demographic information is contained within the 'PATIENTS' table. An example of an 'all_patients' table would be:
 ```{r eval=FALSE}
@@ -76,6 +91,12 @@ mimic3_table_all_patients <- function(table_map, db_connection) {
 ```
 
 #### Subject Specific Tables
+
+"Subject Specific" tables will make up the tabs that appear in the Chart Review Section of ReviewR. Each table is filtered to contain information from the subject that has been selected in the Patient Search Section. These functions follow the naming convention as specified below:
+
+* `{data-model-name}_table_{table-name}`
+
+These table functions must also be designed to accept 3 arguments
 
 ```{r eval=FALSE}
 mimic3_table_admissions <- function(table, db_connection, subject_id) {
