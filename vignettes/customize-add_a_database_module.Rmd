@@ -97,7 +97,7 @@ For additional information on module development, please see: https://shiny.rstu
 A helper function has been provided along with ReviewR to help jumpstart the process. Run:
 
 ```{r eval=FALSE}
-ReviewR:::dev_database_module(mod_name = 'your_moudle', display_name = 'Your Module Display Name')
+ReviewR:::dev_database_module(mod_name = 'your_module', display_name = 'Your Module Display Name')
 ```
 
 This will create a module file in the `R/` directory of the ReviewR package and open it for editing.
