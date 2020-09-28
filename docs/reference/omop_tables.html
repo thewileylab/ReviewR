@@ -197,37 +197,37 @@
     <p>Collection of functions to create pre-arranged views of OMOP patient data for ReviewR.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>omop_table_all_patients</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>)
+    <pre class="usage"><span class='fu'>omop_table_all_patients</span><span class='op'>(</span><span class='va'>table_map</span>, <span class='va'>db_connection</span><span class='op'>)</span>
 
-<span class='fu'>omop_table_condition_era</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+<span class='fu'>omop_table_condition_era</span><span class='op'>(</span><span class='va'>table_map</span>, <span class='va'>db_connection</span>, <span class='va'>subject_id</span><span class='op'>)</span>
 
-<span class='fu'>omop_table_condition_occurrence</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+<span class='fu'>omop_table_condition_occurrence</span><span class='op'>(</span><span class='va'>table_map</span>, <span class='va'>db_connection</span>, <span class='va'>subject_id</span><span class='op'>)</span>
 
-<span class='fu'>omop_table_death</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+<span class='fu'>omop_table_death</span><span class='op'>(</span><span class='va'>table_map</span>, <span class='va'>db_connection</span>, <span class='va'>subject_id</span><span class='op'>)</span>
 
-<span class='fu'>omop_table_device_exposure</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+<span class='fu'>omop_table_device_exposure</span><span class='op'>(</span><span class='va'>table_map</span>, <span class='va'>db_connection</span>, <span class='va'>subject_id</span><span class='op'>)</span>
 
-<span class='fu'>omop_table_dose_era</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+<span class='fu'>omop_table_dose_era</span><span class='op'>(</span><span class='va'>table_map</span>, <span class='va'>db_connection</span>, <span class='va'>subject_id</span><span class='op'>)</span>
 
-<span class='fu'>omop_table_drug_era</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+<span class='fu'>omop_table_drug_era</span><span class='op'>(</span><span class='va'>table_map</span>, <span class='va'>db_connection</span>, <span class='va'>subject_id</span><span class='op'>)</span>
 
-<span class='fu'>omop_table_drug_exposure</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+<span class='fu'>omop_table_drug_exposure</span><span class='op'>(</span><span class='va'>table_map</span>, <span class='va'>db_connection</span>, <span class='va'>subject_id</span><span class='op'>)</span>
 
-<span class='fu'>omop_table_measurement</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+<span class='fu'>omop_table_measurement</span><span class='op'>(</span><span class='va'>table_map</span>, <span class='va'>db_connection</span>, <span class='va'>subject_id</span><span class='op'>)</span>
 
-<span class='fu'>omop_table_note</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+<span class='fu'>omop_table_note</span><span class='op'>(</span><span class='va'>table_map</span>, <span class='va'>db_connection</span>, <span class='va'>subject_id</span><span class='op'>)</span>
 
-<span class='fu'>omop_table_observation</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+<span class='fu'>omop_table_observation</span><span class='op'>(</span><span class='va'>table_map</span>, <span class='va'>db_connection</span>, <span class='va'>subject_id</span><span class='op'>)</span>
 
-<span class='fu'>omop_table_observation_period</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+<span class='fu'>omop_table_observation_period</span><span class='op'>(</span><span class='va'>table_map</span>, <span class='va'>db_connection</span>, <span class='va'>subject_id</span><span class='op'>)</span>
 
-<span class='fu'>omop_table_payer_plan_period</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+<span class='fu'>omop_table_payer_plan_period</span><span class='op'>(</span><span class='va'>table_map</span>, <span class='va'>db_connection</span>, <span class='va'>subject_id</span><span class='op'>)</span>
 
-<span class='fu'>omop_table_procedure_occurrence</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+<span class='fu'>omop_table_procedure_occurrence</span><span class='op'>(</span><span class='va'>table_map</span>, <span class='va'>db_connection</span>, <span class='va'>subject_id</span><span class='op'>)</span>
 
-<span class='fu'>omop_table_specimen</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)
+<span class='fu'>omop_table_specimen</span><span class='op'>(</span><span class='va'>table_map</span>, <span class='va'>db_connection</span>, <span class='va'>subject_id</span><span class='op'>)</span>
 
-<span class='fu'>omop_table_visit_occurrence</span>(<span class='kw'>table_map</span>, <span class='kw'>db_connection</span>, <span class='kw'>subject_id</span>)</pre>
+<span class='fu'>omop_table_visit_occurrence</span><span class='op'>(</span><span class='va'>table_map</span>, <span class='va'>db_connection</span>, <span class='va'>subject_id</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
