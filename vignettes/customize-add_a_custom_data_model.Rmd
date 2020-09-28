@@ -68,6 +68,10 @@ Once ReviewR has determined data model and version of the user database, it will
 knitr::include_graphics('chart_review_tabs.png')
 ```
 
+&nbsp;
+&nbsp;
+&nbsp;
+
 Two types of table functions must be developed when supporting a new data model, an "all_patients" table and "subject specific" tables. 
 
 #### All Patients Table
