@@ -16,29 +16,33 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-Currently, ReviewR is capable of identifying patient databases that conform to the MIMIC3 and OMOP data models. However, we recognize that there are other patient data models that you may wish to connect to.  Because of ReviewR's architecture, it can be extended to support the display additional data models. Further, customization of existing supported data model table displays is also possible. 
+Currently, ReviewR is capable of displaying patient information from databases that conform to the MIMIC3 and OMOP data models. However, we recognize that there are other patient data models that you may wish to connect to.  ReviewR has been designed to be extended to support the display additional data models. Further, customization of existing supported data model displays is also possible. 
 
-Additionally, ReviewR is capable of working with patient databases that may differ slightly from the official specification. For example, in the MIMIC3 specification, demographic information can be found in the 'PATIENTS' table (upper case). Using the ReviewR's `user_table()` function, it is possible to request the 'PATIENTS' table from the connected database, even if the table is stored as 'patients' (lower case). Table fields may be requested in a similar fashion, using the `user_field()` function. 
+### Flexibility
+
+ReviewR is capable of working with patient databases that may differ *slightly* from the official specification. For example, in the MIMIC3 specification, demographic information can be found in the 'PATIENTS' table (upper case). Using the ReviewR's `user_table()` function, it is possible to request the 'PATIENTS' table from the connected database, even if the table is stored as 'patients' (lower case). Table fields may be requested in a similar fashion, using the `user_field()` function. 
+
+### Requirements
 
 In order for ReviewR to display patient data stored in other data models, ReviewR requires two things: 
 
-* The data model detection module must be able to detect the data model in use
+* The included data model detection module must be able to identify the data model of the connected database
 * A developer must create data model table functions, used to display the detected data model
 
 These requirements will be discussed in the sections that follow.
 
 ### Data Model Detection
 
-Using the connection information supplied by a database connection module, ReviewR can query a user database and attempt to determine the data model (and version, if applicable). ReviewR will then match the *connected* tables and fields with the data model specifications that have been built into the package. The data model that has the most matching tables/fields will be identified as the currently connected data model. This will enable ReviewR to locate table functions that have been built into the package that correspond to the detected data model.
+Using the connection information supplied by a database connection module, ReviewR will query a user database and attempt to determine the data model and data model version, if applicable. ReviewR will then match the connected tables and fields with the data model specifications that have been built into the package. The data model that has the most matching tables/fields will be identified as the currently connected data model. This will enable ReviewR to locate table functions that have been built into the package that correspond to the detected data model.
 
-To see the available database specifications, run:
+To see a list of available database specifications in ReviewR, run:
 ```{r}
 library(ReviewR)
 ReviewR::supported_datamodels
 ```
-A data frame with 4 columns will be returned, indicating the file path[*](#file-path) of the data source, the data model name, the data model version, and data column containing a nested dataframe with the schema of the data model itself. 
+A data frame with 4 columns will be returned, indicating the file path[*](#file-path) of the data source, the data model name, the data model version, and data column containing a nested data frame with the schema of the data model itself. This schema information comes from CSV files that can be built into the ReviewR package.
 
-These schema files must contain two columns, called `table` and `field`, which identify every field for every table in the data model and are used in the table/field comparison for the connected database. They are often available from the developer of the data model. If a schema file is available for your database, but contains additional descriptors it may still be used, but additional descriptors will be ignored. The schema file for the OMOP CDM v5.3.0 is provided as an example:
+This schema files must contain two columns, called `table` and `field`, which identify every field for every table in the data model and are used in the table/field comparison for the connected database. They are often available from the developer of the data model. If a schema file is available for your database, but contains additional descriptors it may still be used, but additional descriptors will be ignored. The schema file for the OMOP CDM v5.3.0 is provided as an example:
 
 ```{r echo=FALSE}
 suppressMessages(library(tidyverse))
