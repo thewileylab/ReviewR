@@ -28,6 +28,37 @@
 #' @format A character vector with 15 elements
 "db_function_subject_table_template"
 
+# Helper Functions ----
+#' DT to Viewer
+#'
+#' Save a DT::datatable as a self contained html file to display as a prompt mid function
+#'
+#' @param .data A tibble/data frame containing the desired data to save
+#' @param file File location with extension
+#'
+#' @keywords internal
+#' @importFrom dplyr select
+#' @importFrom DT datatable saveWidget
+#' @importFrom rlang .data
+#' @return HTML file
+#'
+dt_2_viewer <- function(.data, file = NULL) {
+  if(is.null(file) ) {
+    temp_file <- tempfile(fileext = '.html')
+    .data %>%
+      DT::datatable(rownames = F) %>%
+      DT::saveWidget(file = temp_file, selfcontained = T)
+    viewer <- getOption('viewer')
+    viewer(temp_file)
+  } else {
+    .data %>%
+      DT::datatable(rownames = F) %>%
+      DT::saveWidget(file = file, selfcontained = T)
+    viewer <- getOption('viewer')
+    viewer(file)
+  }
+}
+
 # Dev Functions ----
 #' Develop Database Module
 #'
@@ -64,8 +95,6 @@ dev_database_module <- function(mod_name = NULL, display_name = NULL) {
 #' based on the CDM stored in the user supplied CSV.
 #'
 #' @param csv The file path of a CSV file containing a datamodel CDM
-#' @param all_patients_table In this CDM, which table contains a listing of all patients?
-#' @param patient_identifier_field In this CDM, which field denotes the patient identifier?
 #' 
 #' @importFrom dplyr distinct filter mutate pull
 #' @importFrom glue glue glue_collapse
@@ -75,71 +104,111 @@ dev_database_module <- function(mod_name = NULL, display_name = NULL) {
 #' @importFrom tibble enframe
 #' @importFrom tidyr replace_na nest separate
 #' @importFrom readr read_csv
-#' @importFrom rlang .data
+#' @importFrom rlang .data names2
 #' @importFrom rstudioapi navigateToFile
-dev_add_datamodel <- function(csv, all_patients_table, patient_identifier_field) {
-  ## Add user supplied CSV file to package and incorporate into ReviewR::supported_datamodels.rda
-  file.copy(from = csv, to = 'data-raw/datamodels/')
-  supported_datamodels <- list.files(path = file.path('data-raw/datamodels'),full.names = T,recursive = T) %>%
-    tibble::enframe(name = NULL, value = 'file_path') %>% 
-    mutate(datamodel = basename(.data$file_path),
-           datamodel = str_remove_all(.data$datamodel, '.csv')
-           ) %>% 
-    separate(col = .data$datamodel, into = c('datamodel','model_version'), sep = '_', extra = 'drop', fill = 'right') %>% 
-    mutate(model_version = tidyr::replace_na(.data$model_version, ''),
-           cdm = map(.data$file_path,
-                     ~read_csv(.x)
-                     )
-           ) %>% 
-    unnest(cols = .data$cdm) %>% 
-    mutate(joinable_table = tolower(.data$table),
-           joinable_field = tolower(.data$field)
-           ) %>% 
-    group_by(.data$file_path,.data$datamodel,.data$model_version) %>% 
-    nest()
-  # usethis::use_data(supported_datamodels, overwrite = T)
+dev_add_datamodel <- function(csv) {
+  ## Validate CSV
+  ### Define Required Columns
+  required_cols <- c('table','field')
+  ### Read User CSV
+  temp <- readr::read_csv(file = csv)
+
+  ## If required columns are present, Add user supplied CSV file to package and 
+  ## incorporate into ReviewR::supported_datamodels.rda
+  if(all(required_cols %in% rlang::names2(temp)) ) {
+    file.copy(from = csv, to = 'data-raw/datamodels/')
+    supported_datamodels <- list.files(path = file.path('data-raw/datamodels'),full.names = T,recursive = T) %>%
+      tibble::enframe(name = NULL, value = 'file_path') %>% 
+      mutate(datamodel = basename(.data$file_path),
+             datamodel = str_remove_all(.data$datamodel, '\\.csv$')
+             ) %>% 
+      separate(col = .data$datamodel, into = c('datamodel','model_version'), sep = '_', extra = 'drop', fill = 'right') %>% 
+      mutate(model_version = tidyr::replace_na(.data$model_version, ''),
+             cdm = map(.data$file_path,
+                       ~read_csv(.x)
+                       )
+             ) %>% 
+      unnest(cols = .data$cdm) %>% 
+      mutate(joinable_table = tolower(.data$table),
+             joinable_field = tolower(.data$field)
+             ) %>% 
+      group_by(.data$file_path,.data$datamodel,.data$model_version) %>% 
+      nest()
+    usethis::use_data(supported_datamodels, overwrite = T)
   
-  ## Determine Datamodel moniker and version
-  temp_datamodel <-basename(csv) %>%
-    str_remove_all('.csv') %>% 
-    str_split(pattern = '_')
-  new_datamodel <- temp_datamodel[[1]][1]
-  new_datamodel_version <- temp_datamodel[[1]][2]
-  
-  ## Create a filename to hold datamodel table functions
-  fn_filename <- glue::glue('R/database_tables_{new_datamodel}.R')
-  
-  ## Discover Subject Tables that should potentially be rendered
-  new_tables <- supported_datamodels %>% 
-    filter(.data$datamodel == new_datamodel & .data$model_version == new_datamodel_version ) %>% 
-    pull(.data$data) %>% 
-    magrittr::extract2(1) %>% 
-    distinct(.data$table) %>% 
-    filter(.data$table != all_patients_table) %>% 
-    pull(.data$table)
-  
-  ## Create All Patients Table from template
-  cat(glue::glue_collapse(x = map(ReviewR::db_function_all_patients_table_template,
-                                  ~glue::glue(.x)
-                                  ),
-                          sep = '\n'),
-      file = fn_filename
-      )
-  
-  ## Create Subject Tables from template
-  subject_tables <- imap(new_tables,
-                         ~{new_table <- new_tables[[.y]]
-                         glue::glue_collapse(x = map(ReviewR::db_function_subject_table_template,
-                                                     ~glue::glue(.x)
-                                                     ),
-                                             sep = '\n'
-                                             )
-                         }
-                         )
-  ### Append Subject Tables to datamodel_tables R file
-  map(subject_tables,
-      ~cat(.x, file = fn_filename, append = T))
-  
-  ## Open the file for editing
-  rstudioapi::navigateToFile( fn_filename )
+    ## Determine Datamodel moniker and version
+    temp_datamodel <-basename(csv) %>%
+      str_remove_all('\\.csv$') %>% 
+      str_split(pattern = '_')
+    new_datamodel <- temp_datamodel[[1]][1]
+    new_datamodel_version <- if(is.na(temp_datamodel[[1]][2]) ){
+      ''
+      } else {
+        temp_datamodel[[1]][2]
+        }
+    
+    ## Create a filename to hold datamodel table functions
+    fn_filename <- glue::glue('R/database_tables_{new_datamodel}.R')
+    
+    ## Interview the User
+    ### All Patients Table
+    table_choices <- temp %>% 
+      dplyr::distinct(.data$table) %>% 
+      tibble::rownames_to_column(var = 'Selection')
+    table_choices %>% 
+      ReviewR:::dt_2_viewer()
+    all_patients_selection <- readline(prompt = glue::glue('Please identify which table contains a listing of all patients from the choices in the Viewer pane and enter your selection {min(table_choices$Selection)}-{max(table_choices$Selection)}: '))
+    
+    all_patients_table <- table_choices %>% 
+      filter(.data$Selection == all_patients_selection) %>% 
+      pull(.data$table)
+    
+    ### Patient Identifier field
+    field_choices <- temp %>% 
+      dplyr::distinct(.data$field) %>% 
+      tibble::rownames_to_column(var = 'Selection')
+    field_choices %>% 
+      ReviewR:::dt_2_viewer()
+    patient_identifier_field_selection <- readline(prompt = glue::glue('Please identify which field stores the patient identifier from the choices in the Viewer pane and enter your selection {min(field_choices$Selection)}-{max(field_choices$Selection)}: '))
+    
+    patient_identifier_field <- field_choices %>% 
+      filter(.data$Selection == patient_identifier_field_selection) %>% 
+      pull(.data$field)
+    
+    ## Discover Subject Tables that should potentially be rendered
+    new_tables <- supported_datamodels %>% 
+      filter(.data$datamodel == new_datamodel & .data$model_version == new_datamodel_version ) %>% 
+      pull(.data$data) %>% 
+      magrittr::extract2(1) %>% 
+      distinct(.data$table) %>% 
+      filter(.data$table != all_patients_table) %>% 
+      pull(.data$table)
+    
+    ## Create All Patients Table from template
+    cat(glue::glue_collapse(x = map(ReviewR::db_function_all_patients_table_template,
+                                    ~glue::glue(.x)
+                                    ),
+                            sep = '\n'),
+        file = fn_filename
+        )
+    
+    ## Create Subject Tables from template
+    subject_tables <- imap(new_tables,
+                           ~{new_table <- new_tables[[.y]]
+                           glue::glue_collapse(x = map(ReviewR::db_function_subject_table_template,
+                                                       ~glue::glue(.x)
+                                                       ),
+                                               sep = '\n'
+                                               )
+                           }
+                           )
+    ### Append Subject Tables to datamodel_tables R file
+    map(subject_tables,
+        ~cat(.x, file = fn_filename, append = T))
+    
+    ## Open the file for editing
+    rstudioapi::navigateToFile( fn_filename )
+    } else {
+      message('Warning: Did not find "table" or "field" columns in specified CSV. Please ensure these fields are present, or specify a different CSV file.')
+    }
 }
