@@ -171,7 +171,7 @@ dev_add_datamodel <- function(csv) {
       mutate(Selection = as.numeric(.data$Selection))
     field_choices %>% 
       ReviewR:::dt_2_viewer()
-    patient_identifier_field_selection <- readline(prompt = glue::glue('Please identify which field stores the patient identifier from the choices in the Viewer pane and enter your selection {min(field_choices$Selection)}-{max(field_choices$Selection)}: '))
+    patient_identifier_field_selection <- readline(prompt = glue::glue('Please identify which field contains the patient identifier from the choices in the Viewer pane and enter your selection {min(field_choices$Selection)}-{max(field_choices$Selection)}: '))
     
     patient_identifier_field <- field_choices %>% 
       filter(.data$Selection == patient_identifier_field_selection) %>% 
