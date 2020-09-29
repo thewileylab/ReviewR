@@ -158,8 +158,11 @@ dev_add_datamodel <- function(csv) {
       mutate(Selection = as.numeric(.data$Selection))
     table_choices %>% 
       ReviewR:::dt_2_viewer()
-    all_patients_selection <- readline(prompt = glue::glue('Please identify which table contains a listing of all patients from the choices in the Viewer pane and enter your selection {min(table_choices$Selection)}-{max(table_choices$Selection)}: '))
-    
+    all_patients_selection <- -1
+    while(all_patients_selection < min(table_choices$Selection) | all_patients_selection > max(table_choices$Selection) ) {
+      all_patients_selection <- readline(prompt = glue::glue('Please identify which table contains a listing of all patients from the choices in the Viewer pane and enter your selection {min(table_choices$Selection)}-{max(table_choices$Selection)}: '))
+      all_patients_selection <- round(as.numeric(all_patients_selection), digits = 0)
+      }
     all_patients_table <- table_choices %>% 
       filter(.data$Selection == all_patients_selection) %>% 
       pull(.data$table)
@@ -171,8 +174,11 @@ dev_add_datamodel <- function(csv) {
       mutate(Selection = as.numeric(.data$Selection))
     field_choices %>% 
       ReviewR:::dt_2_viewer()
-    patient_identifier_field_selection <- readline(prompt = glue::glue('Please identify which field contains the patient identifier from the choices in the Viewer pane and enter your selection {min(field_choices$Selection)}-{max(field_choices$Selection)}: '))
-    
+    patient_identifier_field_selection <- -1
+    while(patient_identifier_field_selection < min(field_choices$Selection) | patient_identifier_field_selection > max(field_choices$Selection) ) {
+      patient_identifier_field_selection <- readline(prompt = glue::glue('Please identify which field contains the patient identifier from the choices in the Viewer pane and enter your selection {min(field_choices$Selection)}-{max(field_choices$Selection)}: '))
+      patient_identifier_field_selection <- round(as.numeric(patient_identifier_field_selection), digits = 0)
+      }
     patient_identifier_field <- field_choices %>% 
       filter(.data$Selection == patient_identifier_field_selection) %>% 
       pull(.data$field)
