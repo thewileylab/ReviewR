@@ -154,7 +154,8 @@ dev_add_datamodel <- function(csv) {
     ### All Patients Table
     table_choices <- temp %>% 
       dplyr::distinct(.data$table) %>% 
-      tibble::rownames_to_column(var = 'Selection')
+      tibble::rownames_to_column(var = 'Selection') %>% 
+      mutate(Selection = as.numeric(.data$Selection))
     table_choices %>% 
       ReviewR:::dt_2_viewer()
     all_patients_selection <- readline(prompt = glue::glue('Please identify which table contains a listing of all patients from the choices in the Viewer pane and enter your selection {min(table_choices$Selection)}-{max(table_choices$Selection)}: '))
@@ -166,7 +167,8 @@ dev_add_datamodel <- function(csv) {
     ### Patient Identifier field
     field_choices <- temp %>% 
       dplyr::distinct(.data$field) %>% 
-      tibble::rownames_to_column(var = 'Selection')
+      tibble::rownames_to_column(var = 'Selection') %>% 
+      mutate(Selection = as.numeric(.data$Selection))
     field_choices %>% 
       ReviewR:::dt_2_viewer()
     patient_identifier_field_selection <- readline(prompt = glue::glue('Please identify which field stores the patient identifier from the choices in the Viewer pane and enter your selection {min(field_choices$Selection)}-{max(field_choices$Selection)}: '))
