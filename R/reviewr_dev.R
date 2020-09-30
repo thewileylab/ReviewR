@@ -107,7 +107,7 @@ dev_database_module <- function(mod_name = NULL, display_name = NULL) {
 #' @importFrom rlang .data names2
 #' @importFrom rstudioapi navigateToFile
 dev_add_datamodel <- function(csv) {
-  ## Validate CSV
+  ## Validate CSV ----
   ### Define Required Columns
   required_cols <- c('table','field')
   ### Read User CSV
@@ -150,7 +150,7 @@ dev_add_datamodel <- function(csv) {
     ## Create a filename to hold datamodel table functions
     fn_filename <- glue::glue('R/database_tables_{new_datamodel}.R')
     
-    ## Interview the User
+    ## Interview the User ----
     ### All Patients Table
     table_choices <- temp %>% 
       dplyr::distinct(.data$table) %>% 
@@ -159,13 +159,15 @@ dev_add_datamodel <- function(csv) {
     table_choices %>% 
       ReviewR:::dt_2_viewer()
     all_patients_selection <- -1
-    while(all_patients_selection < min(table_choices$Selection) | all_patients_selection > max(table_choices$Selection) ) {
-      all_patients_selection <- readline(prompt = glue::glue('Please identify which table contains a listing of all patients from the choices in the Viewer pane and enter your selection {min(table_choices$Selection)}-{max(table_choices$Selection)}: '))
+    while(all_patients_selection == -1 | {all_patients_selection > 0 & all_patients_selection < min(table_choices$Selection)} | all_patients_selection > max(table_choices$Selection) ) {
+      table_question <- if(all_patients_selection == -1) {
+        glue::glue('Please identify which table contains a listing of all patients from the choices in the Viewer pane and enter your selection {min(table_choices$Selection)}-{max(table_choices$Selection)}: ')
+        } else {
+          glue::glue('Please enter an integer {min(table_choices$Selection)}-{max(table_choices$Selection)}, or 0 to skip: ')
+          }
+      all_patients_selection <- readline(prompt = table_question)
       all_patients_selection <- round(as.numeric(all_patients_selection), digits = 0)
       }
-    all_patients_table <- table_choices %>% 
-      filter(.data$Selection == all_patients_selection) %>% 
-      pull(.data$table)
     
     ### Patient Identifier field
     field_choices <- temp %>% 
@@ -175,47 +177,60 @@ dev_add_datamodel <- function(csv) {
     field_choices %>% 
       ReviewR:::dt_2_viewer()
     patient_identifier_field_selection <- -1
-    while(patient_identifier_field_selection < min(field_choices$Selection) | patient_identifier_field_selection > max(field_choices$Selection) ) {
-      patient_identifier_field_selection <- readline(prompt = glue::glue('Please identify which field contains the patient identifier from the choices in the Viewer pane and enter your selection {min(field_choices$Selection)}-{max(field_choices$Selection)}: '))
+    while(patient_identifier_field_selection == -1 | {patient_identifier_field_selection > 0 & patient_identifier_field_selection < min(field_choices$Selection)} | patient_identifier_field_selection > max(field_choices$Selection) ) {
+      field_question <- if(patient_identifier_field_selection == -1){
+        glue::glue('Please identify which field contains the patient identifier from the choices in the Viewer pane and enter your selection {min(field_choices$Selection)}-{max(field_choices$Selection)}: ')
+        } else {
+          glue::glue('Please enter an integer {min(field_choices$Selection)}-{max(field_choices$Selection)}, or 0 to quit: ')
+          }
+      patient_identifier_field_selection <- readline(prompt = field_question)
       patient_identifier_field_selection <- round(as.numeric(patient_identifier_field_selection), digits = 0)
       }
-    patient_identifier_field <- field_choices %>% 
-      filter(.data$Selection == patient_identifier_field_selection) %>% 
-      pull(.data$field)
-    
-    ## Discover Subject Tables that should potentially be rendered
-    new_tables <- supported_datamodels %>% 
-      filter(.data$datamodel == new_datamodel & .data$model_version == new_datamodel_version ) %>% 
-      pull(.data$data) %>% 
-      magrittr::extract2(1) %>% 
-      distinct(.data$table) %>% 
-      filter(.data$table != all_patients_table) %>% 
-      pull(.data$table)
-    
-    ## Create All Patients Table from template
-    cat(glue::glue_collapse(x = map(ReviewR::db_function_all_patients_table_template,
-                                    ~glue::glue(.x)
-                                    ),
-                            sep = '\n'),
-        file = fn_filename
-        )
-    
-    ## Create Subject Tables from template
-    subject_tables <- imap(new_tables,
-                           ~{new_table <- new_tables[[.y]]
-                           glue::glue_collapse(x = map(ReviewR::db_function_subject_table_template,
-                                                       ~glue::glue(.x)
-                                                       ),
-                                               sep = '\n'
-                                               )
-                           }
-                           )
-    ### Append Subject Tables to datamodel_tables R file
-    map(subject_tables,
-        ~cat(.x, file = fn_filename, append = T))
-    
-    ## Open the file for editing
-    rstudioapi::navigateToFile( fn_filename )
+    ## Create function skeletons ---- 
+    if (all_patients_selection == 0 | patient_identifier_field_selection == 0) {
+      stop('Selection of an all patients table and a patient identifier field is required. ')
+      } else {
+        all_patients_table <- table_choices %>% 
+          filter(.data$Selection == all_patients_selection) %>% 
+          pull(.data$table)
+        patient_identifier_field <- field_choices %>% 
+          filter(.data$Selection == patient_identifier_field_selection) %>% 
+          pull(.data$field)
+        
+        ## Discover Subject Tables that should potentially be rendered
+        new_tables <- supported_datamodels %>% 
+          filter(.data$datamodel == new_datamodel & .data$model_version == new_datamodel_version ) %>% 
+          pull(.data$data) %>% 
+          magrittr::extract2(1) %>% 
+          distinct(.data$table) %>% 
+          filter(.data$table != all_patients_table) %>% 
+          pull(.data$table)
+        
+        ## Create All Patients Table from template
+        cat(glue::glue_collapse(x = map(ReviewR::db_function_all_patients_table_template,
+                                        ~glue::glue(.x)
+                                        ),
+                                sep = '\n'),
+            file = fn_filename
+            )
+        
+        ## Create Subject Tables from template
+        subject_tables <- imap(new_tables,
+                               ~{new_table <- new_tables[[.y]]
+                               glue::glue_collapse(x = map(ReviewR::db_function_subject_table_template,
+                                                           ~glue::glue(.x)
+                                                           ),
+                                                   sep = '\n'
+                                                   )
+                               }
+                               )
+        ### Append Subject Tables to datamodel_tables R file
+        map(subject_tables,
+            ~cat(.x, file = fn_filename, append = T))
+        
+        ## Open the file for editing
+        rstudioapi::navigateToFile( fn_filename )
+        }
     } else {
       message('Warning: Did not find "table" or "field" columns in specified CSV. Please ensure these fields are present, or specify a different CSV file.')
     }
