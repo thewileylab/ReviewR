@@ -203,7 +203,7 @@
 <div class="sourceCode" id="cb3"><pre class="downlit">
 <span class="co"># install.packages('usethis')</span>
 <span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/create_from_github.html">create_from_github</a></span><span class="op">(</span>repo_spec <span class="op">=</span> <span class="st">'thewileylab/ReviewR'</span>, destdir <span class="op">=</span> <span class="st">'/srv/shiny-server'</span><span class="op">)</span></pre></div>
-<p><em>This step will fork the most recent version of the ReviewR package from GitHub which includes additional files and development tools not built directly into the package. This includes an <code>app.R</code> file which Shiny Server will need to deploy ReviewR. Shiny Server will host all applications that are placed in <code>/srv/shiny-server</code> by default.</em></p>
+<p><em>This step will fork the most recent version of the ReviewR package from GitHub which includes additional files and development tools not built directly into the package. This includes an <code>app.R</code> file which Shiny Server will need to deploy ReviewR. By default, Shiny Server will host all applications that are placed in <code>/srv/shiny-server</code></em></p>
 </li>
 </ol>
 <p>That’s it! ReviewR can now be accessed from your browser at <a href="http://your.shiny.server.url/ReviewR" class="uri">http://your.shiny.server.url/ReviewR</a></p>
