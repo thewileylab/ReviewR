@@ -5,7 +5,7 @@
 #' 
 #' @docType data
 #'
-#' @format A character vector with 51 elements
+#' @format A character vector with 52 elements
 "db_module_template"
 
 #' ReviewR Database Function: All Patients Table Template

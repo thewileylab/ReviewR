@@ -8,11 +8,12 @@
 #' @return The {display_name} Setup UI
 #' @export
 #' 
-#' @importFrom any package imports required to render your Setup UI
+#' @importFrom shiny NS
 #'
-{mod_name}_setup_ui <- function(id) {{ ## Enter a unique UI function name, ie: mariaDB_setup_ui
+{mod_name}_setup_ui <- function(id) {{ 
   ns <- NS(id)
   tagList(
+  ## UI widgets here ----
     
     )
   }}
@@ -25,7 +26,7 @@
 #' @return {display_name} connection variables
 #' @export
 #'
-#' @importFrom any package imports required to process user entered information from the UI
+#' @importFrom DBI dbConnect
 #' 
 {mod_name}_setup_server <- function(id) {{
   moduleServer(
