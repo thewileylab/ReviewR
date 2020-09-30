@@ -5,7 +5,7 @@
 \alias{db_module_template}
 \title{ReviewR Database Module Template}
 \format{
-A character vector with 51 elements
+A character vector with 52 elements
 }
 \usage{
 db_module_template
