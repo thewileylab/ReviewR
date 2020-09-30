@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Develop Datamodel Functions — dev_add_datamodel • ReviewR</title>
+<title>DT to Viewer — dt_2_viewer • ReviewR</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,13 +46,8 @@
 
 
 
-<meta property="og:title" content="Develop Datamodel Functions — dev_add_datamodel" />
-<meta property="og:description" content="This function will assist in adding a new supported datamodel to
-ReviewR. A CDM file, stored as a CSV will be added to the
-namespace, such that the CDM can be identified by the datamodel
-detection module. Additionally, a database_tables.R file will
-be created and opened in R/ with basic table skeletons created
-based on the CDM stored in the user supplied CSV." />
+<meta property="og:title" content="DT to Viewer — dt_2_viewer" />
+<meta property="og:description" content="Save a DT::datatable as a self contained html file to display as a prompt mid function" />
 <meta property="og:image" content="reviewr.thewileylab.org/logo.png" />
 
 
@@ -193,31 +188,33 @@ based on the CDM stored in the user supplied CSV." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Develop Datamodel Functions</h1>
+    <h1>DT to Viewer</h1>
     <small class="dont-index">Source: <a href='https://github.com/thewileylab/ReviewR/blob/master/R/reviewr_dev.R'><code>R/reviewr_dev.R</code></a></small>
-    <div class="hidden name"><code>dev_add_datamodel.Rd</code></div>
+    <div class="hidden name"><code>dt_2_viewer.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function will assist in adding a new supported datamodel to
-ReviewR. A CDM file, stored as a CSV will be added to the
-namespace, such that the CDM can be identified by the datamodel
-detection module. Additionally, a database_tables.R file will
-be created and opened in R/ with basic table skeletons created
-based on the CDM stored in the user supplied CSV.</p>
+    <p>Save a DT::datatable as a self contained html file to display as a prompt mid function</p>
     </div>
 
-    <pre class="usage"><span class='fu'>dev_add_datamodel</span><span class='op'>(</span><span class='va'>csv</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>dt_2_viewer</span><span class='op'>(</span><span class='va'>.data</span>, file <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>csv</th>
-      <td><p>The file path of a CSV file containing a datamodel CDM</p></td>
+      <th>.data</th>
+      <td><p>A tibble/data frame containing the desired data to save</p></td>
+    </tr>
+    <tr>
+      <th>file</th>
+      <td><p>File location with extension</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>HTML file</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
