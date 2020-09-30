@@ -186,7 +186,7 @@ dev_add_datamodel <- function(csv) {
       patient_identifier_field_selection <- readline(prompt = field_question)
       patient_identifier_field_selection <- round(as.numeric(patient_identifier_field_selection), digits = 0)
       }
-    ## Create function skeletons ---- 
+    ## Create Table Function Skeletons ---- 
     if (all_patients_selection == 0 | patient_identifier_field_selection == 0) {
       stop('Selection of an all patients table and a patient identifier field is required. ')
       } else {
