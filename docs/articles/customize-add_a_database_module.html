@@ -188,11 +188,12 @@
 <div id="getting-started" class="section level3">
 <h3 class="hasAnchor">
 <a href="#getting-started" class="anchor"></a>Getting Started</h3>
-<p>The first step to developing a new ReviewR module will be to clone the latest version of ReviewR from GitHub. This will ensure you have access to the latest development tools and file structure of the ReviewR package. For simplicity, clone the repository to your home directory:</p>
+<p>The first step to developing a new ReviewR module will be to fork the latest version of ReviewR from GitHub. Forking the repository will allow you to experiment with the ReviewR package and ensures you have access to the latest development tools and file structure of the ReviewR package. For simplicity, the home directory is specified as a destination directory:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit">
 <span class="co"># install.packages('usethis')</span>
 <span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/create_from_github.html">create_from_github</a></span><span class="op">(</span>repo_spec <span class="op">=</span> <span class="st">'thewileylab/ReviewR'</span>, destdir <span class="op">=</span> <span class="st">'~/'</span><span class="op">)</span></pre></div>
-<p>Navigate to the cloned directory and open the <code>ReviewR.Rproj</code> file. This will open the project in RStudio. Finally, using the devtools package run:</p>
+<p>Please see <a href="https://happygitwithr.com/index.html">this guide</a> if you have trouble connecting RStudio with Git. It is also possible to fork this repo directly from GitHub if all else fails.</p>
+<p>Navigate to the forked repository and open the <code>ReviewR.Rproj</code> file. This will open the project in RStudio. Finally, using the devtools package run:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit">
 <span class="co"># install.packages('devtools')</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/load_all.html">load_all</a></span><span class="op">(</span><span class="op">)</span></pre></div>
