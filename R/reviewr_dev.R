@@ -163,7 +163,7 @@ dev_add_datamodel <- function(csv) {
       table_question <- if(all_patients_selection == -1.1) {
         glue::glue('Please identify which table contains a listing of all patients from the choices in the Viewer pane and enter your selection {min(table_choices$Selection)}-{max(table_choices$Selection)}: ')
         } else if (all_patients_selection == -1.2) {
-          glue::glue('Only integer values {min(table_choices$Selection)}-{max(table_choices$Selection)} are allowed, or 0 to quit: ')
+          glue::glue('Only integer values {min(table_choices$Selection)}-{max(table_choices$Selection)} are allowed, or 0 to skip: ')
           } else {
             glue::glue('Please enter an integer {min(table_choices$Selection)}-{max(table_choices$Selection)}, or 0 to skip: ')
             }
