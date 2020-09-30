@@ -159,7 +159,7 @@ dev_add_datamodel <- function(csv) {
     table_choices %>% 
       ReviewR:::dt_2_viewer()
     all_patients_selection <- -1
-    while(all_patients_selection == -1 | {all_patients_selection > 0 & all_patients_selection < min(table_choices$Selection)} | all_patients_selection > max(table_choices$Selection) ) {
+    while(all_patients_selection <= -1 | {all_patients_selection > 0 & all_patients_selection < min(table_choices$Selection)} | all_patients_selection > max(table_choices$Selection) ) {
       table_question <- if(all_patients_selection == -1) {
         glue::glue('Please identify which table contains a listing of all patients from the choices in the Viewer pane and enter your selection {min(table_choices$Selection)}-{max(table_choices$Selection)}: ')
         } else {
@@ -177,7 +177,7 @@ dev_add_datamodel <- function(csv) {
     field_choices %>% 
       ReviewR:::dt_2_viewer()
     patient_identifier_field_selection <- -1
-    while(patient_identifier_field_selection == -1 | {patient_identifier_field_selection > 0 & patient_identifier_field_selection < min(field_choices$Selection)} | patient_identifier_field_selection > max(field_choices$Selection) ) {
+    while(patient_identifier_field_selection <= -1 | {patient_identifier_field_selection > 0 & patient_identifier_field_selection < min(field_choices$Selection)} | patient_identifier_field_selection > max(field_choices$Selection) ) {
       field_question <- if(patient_identifier_field_selection == -1){
         glue::glue('Please identify which field contains the patient identifier from the choices in the Viewer pane and enter your selection {min(field_choices$Selection)}-{max(field_choices$Selection)}: ')
         } else {
