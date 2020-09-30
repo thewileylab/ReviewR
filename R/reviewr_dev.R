@@ -162,13 +162,18 @@ dev_add_datamodel <- function(csv) {
     while(all_patients_selection <= -1 | {all_patients_selection > 0 & all_patients_selection < min(table_choices$Selection)} | all_patients_selection > max(table_choices$Selection) ) {
       table_question <- if(all_patients_selection == -1.1) {
         glue::glue('Please identify which table contains a listing of all patients from the choices in the Viewer pane and enter your selection {min(table_choices$Selection)}-{max(table_choices$Selection)}: ')
-        } else {
-          glue::glue('Please enter an integer {min(table_choices$Selection)}-{max(table_choices$Selection)}, or 0 to skip: ')
-          }
+        } else if (all_patients_selection == -1.2) {
+          glue::glue('Only integer values {min(table_choices$Selection)}-{max(table_choices$Selection)} are allowed, or 0 to quit: ')
+          } else {
+            glue::glue('Please enter an integer {min(table_choices$Selection)}-{max(table_choices$Selection)}, or 0 to skip: ')
+            }
       all_patients_selection <- readline(prompt = table_question)
-      all_patients_selection <- round(as.numeric(all_patients_selection), digits = 0)
+      if(!is.na(suppressWarnings(as.numeric(all_patients_selection))) ) {
+        all_patients_selection <- round(as.numeric(all_patients_selection), digits = 0)
+        } else {
+          all_patients_selection <- -1.2
+          }
       }
-    
     ### Patient Identifier field
     field_choices <- temp %>% 
       dplyr::distinct(.data$field) %>% 
@@ -180,11 +185,17 @@ dev_add_datamodel <- function(csv) {
     while(patient_identifier_field_selection <= -1 | {patient_identifier_field_selection > 0 & patient_identifier_field_selection < min(field_choices$Selection)} | patient_identifier_field_selection > max(field_choices$Selection) ) {
       field_question <- if(patient_identifier_field_selection == -1.1){
         glue::glue('Please identify which field contains the patient identifier from the choices in the Viewer pane and enter your selection {min(field_choices$Selection)}-{max(field_choices$Selection)}: ')
-        } else {
-          glue::glue('Please enter an integer {min(field_choices$Selection)}-{max(field_choices$Selection)}, or 0 to quit: ')
-          }
+        } else if(patient_identifier_field_selection == -1.2) {
+          glue::glue('Only integer values {min(field_choices$Selection)}-{max(field_choices$Selection)} are allowed, or 0 to quit: ')
+          } else {
+            glue::glue('Please enter an integer {min(field_choices$Selection)}-{max(field_choices$Selection)}, or 0 to quit: ')
+            }
       patient_identifier_field_selection <- readline(prompt = field_question)
-      patient_identifier_field_selection <- round(as.numeric(patient_identifier_field_selection), digits = 0)
+      if(!is.na(suppressWarnings(as.numeric(patient_identifier_field_selection))) ) {
+        patient_identifier_field_selection <- round(as.numeric(patient_identifier_field_selection), digits = 0)
+        } else {
+          patient_identifier_field_selection <- -1.2
+          }
       }
     ## Create Table Function Skeletons ---- 
     if (all_patients_selection == 0 | patient_identifier_field_selection == 0) {
