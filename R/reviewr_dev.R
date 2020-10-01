@@ -15,7 +15,7 @@
 #' 
 #' @docType data
 #'
-#' @format A character vector with 21 elements
+#' @format A character vector with 22 elements
 "db_function_all_patients_table_template"
 
 #' ReviewR Database Function: Subject Table Template
