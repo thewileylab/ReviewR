@@ -9,12 +9,12 @@ dt_2_viewer(.data, file = NULL)
 \arguments{
 \item{.data}{A tibble/data frame containing the desired data to save}
 
-\item{file}{File location with extension}
+\item{file}{\emph{Optional}. Manually define file path (with .html extension) for HTML representation of DT}
 }
 \value{
-HTML file
+Temporary HTML file to be displayed in the RStudio Viewer Pane
 }
 \description{
-Save a DT::datatable as a self contained html file to display as a prompt mid function
+Save a DT::datatable as a self contained HTML file to display for display in the RStudio Viewer Pane
 }
 \keyword{internal}

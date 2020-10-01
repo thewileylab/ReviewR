@@ -31,16 +31,16 @@
 # Helper Functions ----
 #' DT to Viewer
 #'
-#' Save a DT::datatable as a self contained html file to display as a prompt mid function
+#' Save a DT::datatable as a self contained HTML file to display for display in the RStudio Viewer Pane
 #'
 #' @param .data A tibble/data frame containing the desired data to save
-#' @param file File location with extension
+#' @param file \emph{Optional}. Manually define file path (with .html extension) for HTML representation of DT
 #'
 #' @keywords internal
 #' @importFrom dplyr select
 #' @importFrom DT datatable saveWidget
 #' @importFrom rlang .data
-#' @return HTML file
+#' @return Temporary HTML file to be displayed in the RStudio Viewer Pane
 #'
 dt_2_viewer <- function(.data, file = NULL) {
   if(is.null(file) ) {
@@ -62,14 +62,20 @@ dt_2_viewer <- function(.data, file = NULL) {
 # Dev Functions ----
 #' Develop Database Module
 #'
-#' This function will assist in providing a database module skeleton for ReviewR
+#' This function will create a database module skeleton  with 
+#' required elements already populated, based on user inputs.
+#' Common database module packages are imported automatically,
+#' but developers should add imports to the roxygen skeleton as 
+#' necessary to both the UI and server functions to collect 
+#' user info and create a DBI connection object, respectively. 
 #'
-#' @param mod_name A string, denoting the module suffix eg: 'mariadb'
-#' @param display_name A string, denoting the module display name eg: 'MariaDB'
+#' @param mod_name \emph{Required}. A string, denoting the module suffix eg: 'mariadb'
+#' @param display_name \emph{Required}. A string, denoting the module display name eg: 'MariaDB Server'
 #'
 #' @importFrom glue glue glue_collapse
 #' @importFrom purrr map
 #' @importFrom rstudioapi navigateToFile
+#' @return A .R file populated with a database module skeleton
 dev_database_module <- function(mod_name = NULL, display_name = NULL) {
   if(is.null(mod_name) | is.null(display_name)) {
     message('mod_name and display_name are required arguments.')
@@ -94,7 +100,7 @@ dev_database_module <- function(mod_name = NULL, display_name = NULL) {
 #' be created and opened in R/ with basic table skeletons created
 #' based on the CDM stored in the user supplied CSV.
 #'
-#' @param csv The file path of a CSV file containing a datamodel CDM
+#' @param csv \emph{Required}. The file path of a CSV file containing a datamodel CDM
 #' 
 #' @importFrom dplyr distinct filter mutate pull
 #' @importFrom glue glue glue_collapse
@@ -107,6 +113,7 @@ dev_database_module <- function(mod_name = NULL, display_name = NULL) {
 #' @importFrom rlang .data names2
 #' @importFrom rstudioapi navigateToFile
 #' @importFrom usethis use_data
+#' @return A .R file populated with basic database table functions
 dev_add_datamodel <- function(csv) {
   ## Validate CSV ----
   ### Define Required Columns

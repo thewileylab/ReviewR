@@ -7,7 +7,10 @@
 dev_add_datamodel(csv)
 }
 \arguments{
-\item{csv}{The file path of a CSV file containing a datamodel CDM}
+\item{csv}{\emph{Required}. The file path of a CSV file containing a datamodel CDM}
+}
+\value{
+A .R file populated with basic database table functions
 }
 \description{
 This function will assist in adding a new supported datamodel to
