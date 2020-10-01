@@ -34,7 +34,12 @@ reference:
       Execute this function to start ReviewR.
     contents: 
       - run_app
-  - title: "ReviewR Datasets"
-    desc: "Datasets that ReviewR uses to map patient data to the appropriate CDM and map REDCap fields to native R shiny widgets."
+  - title: "Supported Datamodels"
+    desc: "Run this function to examine datamodels with built in support in ReviewR."
     contents:
       - supported_datamodels
+  - title: "Development Functions"
+    desc: "Use these functions to extend the functionality of ReviewR. These functions are not user facing, please run `devtools::load_all()` or preface each devlopment function with `ReviewR:::` to access their functionality."
+    contents:
+      - dev_add_datamodel
+      - dev_database_module
