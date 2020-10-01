@@ -40,7 +40,8 @@ Imports:
     snakecase,
     stringr,
     tibble,
-    tidyr (>= 1.1.0)
+    tidyr (>= 1.1.0),
+    usethis
 Remotes: 
     Thinkr-open/golem,
     thewileylab/shinyBigQuery,

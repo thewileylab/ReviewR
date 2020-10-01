@@ -106,6 +106,7 @@ dev_database_module <- function(mod_name = NULL, display_name = NULL) {
 #' @importFrom readr read_csv
 #' @importFrom rlang .data names2
 #' @importFrom rstudioapi navigateToFile
+#' @importFrom usethis use_data
 dev_add_datamodel <- function(csv) {
   ## Validate CSV ----
   ### Define Required Columns
@@ -141,7 +142,7 @@ dev_add_datamodel <- function(csv) {
       str_remove_all('\\.csv$') %>% 
       str_split(pattern = '_')
     new_datamodel <- temp_datamodel[[1]][1]
-    new_datamodel_version <- if(is.na(temp_datamodel[[1]][2]) ){
+    new_datamodel_version <- if(is.na(temp_datamodel[[1]][2]) ) {
       ''
       } else {
         temp_datamodel[[1]][2]
@@ -157,7 +158,7 @@ dev_add_datamodel <- function(csv) {
       tibble::rownames_to_column(var = 'Selection') %>% 
       mutate(Selection = as.numeric(.data$Selection))
     table_choices %>% 
-      ReviewR:::dt_2_viewer()
+      dt_2_viewer()
     all_patients_selection <- -1.1
     while(all_patients_selection <= -1 | {all_patients_selection > 0 & all_patients_selection < min(table_choices$Selection)} | all_patients_selection > max(table_choices$Selection) ) {
       table_question <- if(all_patients_selection == -1.1) {
@@ -180,7 +181,7 @@ dev_add_datamodel <- function(csv) {
       tibble::rownames_to_column(var = 'Selection') %>% 
       mutate(Selection = as.numeric(.data$Selection))
     field_choices %>% 
-      ReviewR:::dt_2_viewer()
+      dt_2_viewer()
     patient_identifier_field_selection <- -1.1
     while(patient_identifier_field_selection <= -1 | {patient_identifier_field_selection > 0 & patient_identifier_field_selection < min(field_choices$Selection)} | patient_identifier_field_selection > max(field_choices$Selection) ) {
       field_question <- if(patient_identifier_field_selection == -1.1){
