@@ -1,8 +1,8 @@
-#' ReviewR Welcome Tab
+#' ReviewR Homepage Tab
 #'
-#' This file contains all the UI elements that are needed to render the Welcome Tab, which contains basic information about using ReviewR.
+#' This file contains all the UI elements that are needed to render the Homepage Tab, which contains basic information about using ReviewR.
 #'
-#' @return Welcome Tab UI Output
+#' @return Homepage Tab UI Output
 #' @export
 #' @keywords internal
 #'

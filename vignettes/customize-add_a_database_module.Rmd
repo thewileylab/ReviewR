@@ -2,7 +2,7 @@
 title: "Support a New Relational Database Management System"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{add_a_database_module}
+  %\VignetteIndexEntry{Support a New Relational Database Management System}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

@@ -2,7 +2,7 @@
 title: "Connecting to REDCap"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{usage-connect_to_redcap}
+  %\VignetteIndexEntry{Connecting to REDCap}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

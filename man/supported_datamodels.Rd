@@ -3,12 +3,12 @@
 \docType{data}
 \name{supported_datamodels}
 \alias{supported_datamodels}
-\title{ReviewR Supported Database Schemas}
+\title{Supported Data Model Schemas}
 \format{
 A data frame with 12 rows and 4 variables:
 \describe{
 \item{file_path}{Where schema was imported from}
-\item{datamodel}{Data model name, OMOP or MIMIC}
+\item{datamodel}{Data model name}
 \item{model_version}{Version of the data model}
 \item{data}{Nested database schemas, including included table and field mappings}
 ...
@@ -24,6 +24,6 @@ supported_datamodels
 }
 \description{
 A dataset containing data model information along with the corresponding
-version and schema.
+version and nested schema information.
 }
 \keyword{datasets}

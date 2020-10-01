@@ -3,7 +3,7 @@
 \docType{data}
 \name{db_function_all_patients_table_template}
 \alias{db_function_all_patients_table_template}
-\title{ReviewR Database Function: All Patients Table Template}
+\title{Database Table Function: All Patients Table Template}
 \format{
 A character vector with 22 elements
 }

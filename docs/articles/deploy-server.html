@@ -52,7 +52,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/deploy-single_user.html">Local Deployment</a>
+      <a href="../articles/deploy-local-deployment.html">Local Deployment</a>
     </li>
     <li>
       <a href="../articles/deploy-server.html">Shiny Server Deployment</a>
@@ -103,16 +103,16 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/customize-add_a_custom_data_model.html">Support a New Datamodel</a>
+      <a href="../articles/customize-add_a_custom_data_model.html">Support a New Data Model</a>
     </li>
     <li>
       <a href="../articles/customize-add_a_database_module.html">Support a New Relational Database Management System</a>
     </li>
     <li>
-      <a href="../articles/deploy-server.html">Shiny Server Deployment</a>
+      <a href="../articles/deploy-local-deployment.html">Local Deployment</a>
     </li>
     <li>
-      <a href="../articles/deploy-single_user.html">Single User Deployment</a>
+      <a href="../articles/deploy-server.html">Shiny Server Deployment</a>
     </li>
     <li>
       <a href="../articles/usage-connect_to_patient_records.html">Connecting to Patient Record Database</a>
@@ -182,13 +182,13 @@
 <a href="#shiny-server-ose" class="anchor"></a>Shiny Server OSE</h3>
 <ol style="list-style-type: decimal">
 <li>
-<p>Install the ReviewR package as a root user, to ensure your system has all the required dependencies</p>
+<p>Install the ReviewR package as a root user, to ensure your system R package library has all of the required dependencies</p>
 <ul>
 <li>
 <p>From a bash terminal, run:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># Start R in an interactive root terminal</span></span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="fu">sudo</span> -i R</span></code></pre></div>
-<p><em>This will open a root R console</em></p>
+<p><em>This will open an interactive R console as a root user</em></p>
 </li>
 <li>
 <p>From the R console that opens, run:</p>
@@ -206,7 +206,7 @@
 <p><em>This step will fork the most recent version of the ReviewR package from GitHub which includes additional files and development tools not built directly into the package. This includes an <code>app.R</code> file which Shiny Server will need to deploy ReviewR. By default, Shiny Server will host all applications that are placed in <code>/srv/shiny-server</code></em></p>
 </li>
 </ol>
-<p>That’s it! ReviewR can now be accessed from your browser at <a href="http://your.shiny.server.url/ReviewR" class="uri">http://your.shiny.server.url/ReviewR</a></p>
+<p>That’s it! ReviewR can now be accessed from your browser at <a href="https://your.shiny.server.url/ReviewR" class="uri">https://your.shiny.server.url/ReviewR</a></p>
 </div>
 <div id="docker" class="section level3">
 <h3 class="hasAnchor">

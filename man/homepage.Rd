@@ -2,14 +2,14 @@
 % Please edit documentation in R/layout_homepage.R
 \name{homepage}
 \alias{homepage}
-\title{ReviewR Welcome Tab}
+\title{ReviewR Homepage Tab}
 \usage{
 homepage()
 }
 \value{
-Welcome Tab UI Output
+Homepage Tab UI Output
 }
 \description{
-This file contains all the UI elements that are needed to render the Welcome Tab, which contains basic information about using ReviewR.
+This file contains all the UI elements that are needed to render the Homepage Tab, which contains basic information about using ReviewR.
 }
 \keyword{internal}

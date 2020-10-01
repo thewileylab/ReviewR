@@ -14,7 +14,7 @@ user_field(table_map, desired_cdm_table, desired_cdm_field)
 \item{desired_cdm_field}{In the desired CDM, which field do you want?}
 }
 \value{
-character object containing the user database field pertaining to the omop field you want, from the omop table specified
+A string containing the user database field pertaining to the standard data model field you requested
 }
 \description{
 user_field

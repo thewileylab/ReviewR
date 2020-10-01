@@ -5,7 +5,7 @@
 #' @param db_con A reactive DBI connection object that is created through user interaction with the Setup Tab
 #' @param desired_cdm_table In the desired CDM, which table do you want?
 #'
-#' @return tbl(db_con, user_table) the user table that corresponds to the omop table you want
+#' @return tbl(db_con, user_table) the user table that corresponds to the standard data model table you want
 #' 
 #' @keywords internal
 #' @export 
@@ -36,7 +36,7 @@ user_table <- function(table_map, db_con, desired_cdm_table) {
 #' @param desired_cdm_table In the desired CDM, which table do you want?
 #' @param desired_cdm_field In the desired CDM, which field do you want?
 #'
-#' @return character object containing the user database field pertaining to the omop field you want, from the omop table specified
+#' @return A string containing the user database field pertaining to the standard data model field you requested
 #' 
 #' @keywords internal
 #' @export 
@@ -57,17 +57,17 @@ user_field <- function(table_map, desired_cdm_table, desired_cdm_field){
 }
 
 # Datasets ----
-#' ReviewR Supported Database Schemas
+#' Supported Data Model Schemas
 #'
 #' A dataset containing data model information along with the corresponding
-#' version and schema.
+#' version and nested schema information.
 #' 
 #' @docType data
 #'
 #' @format A data frame with 12 rows and 4 variables:
 #' \describe{
 #'   \item{file_path}{Where schema was imported from}
-#'   \item{datamodel}{Data model name, OMOP or MIMIC}
+#'   \item{datamodel}{Data model name}
 #'   \item{model_version}{Version of the data model}
 #'   \item{data}{Nested database schemas, including included table and field mappings}
 #'   ...
