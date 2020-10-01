@@ -9,6 +9,7 @@
 #' @keywords internal
 #' @export
 #' @import dplyr
+#' @importFrom magrittr %>% 
 #' @importFrom rlang .data
 
 ## {new_datamodel} All Patient Table ----
