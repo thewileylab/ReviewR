@@ -47,7 +47,12 @@
 
 
 <meta property="og:title" content="Develop Database Module — dev_database_module" />
-<meta property="og:description" content="This function will assist in providing a database module skeleton for ReviewR" />
+<meta property="og:description" content="This function will create a database module skeleton  with
+required elements already populated, based on user inputs.
+Common database module packages are imported automatically,
+but developers should add imports to the roxygen skeleton as
+necessary to both the UI and server functions to collect
+user info and create a DBI connection object, respectively." />
 <meta property="og:image" content="reviewr.thewileylab.org/logo.png" />
 
 
@@ -194,7 +199,12 @@
     </div>
 
     <div class="ref-description">
-    <p>This function will assist in providing a database module skeleton for ReviewR</p>
+    <p>This function will create a database module skeleton  with
+required elements already populated, based on user inputs.
+Common database module packages are imported automatically,
+but developers should add imports to the roxygen skeleton as
+necessary to both the UI and server functions to collect
+user info and create a DBI connection object, respectively.</p>
     </div>
 
     <pre class="usage"><span class='fu'>dev_database_module</span><span class='op'>(</span>mod_name <span class='op'>=</span> <span class='cn'>NULL</span>, display_name <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
@@ -204,14 +214,17 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>mod_name</th>
-      <td><p>A string, denoting the module suffix eg: 'mariadb'</p></td>
+      <td><p><em>Required</em>. A string, denoting the module suffix eg: 'mariadb'</p></td>
     </tr>
     <tr>
       <th>display_name</th>
-      <td><p>A string, denoting the module display name eg: 'MariaDB'</p></td>
+      <td><p><em>Required</em>. A string, denoting the module display name eg: 'MariaDB Server'</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A .R file populated with a database module skeleton</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

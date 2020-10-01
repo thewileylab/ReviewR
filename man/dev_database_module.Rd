@@ -7,10 +7,18 @@
 dev_database_module(mod_name = NULL, display_name = NULL)
 }
 \arguments{
-\item{mod_name}{A string, denoting the module suffix eg: 'mariadb'}
+\item{mod_name}{\emph{Required}. A string, denoting the module suffix eg: 'mariadb'}
 
-\item{display_name}{A string, denoting the module display name eg: 'MariaDB'}
+\item{display_name}{\emph{Required}. A string, denoting the module display name eg: 'MariaDB Server'}
+}
+\value{
+A .R file populated with a database module skeleton
 }
 \description{
-This function will assist in providing a database module skeleton for ReviewR
+This function will create a database module skeleton  with
+required elements already populated, based on user inputs.
+Common database module packages are imported automatically,
+but developers should add imports to the roxygen skeleton as
+necessary to both the UI and server functions to collect
+user info and create a DBI connection object, respectively.
 }

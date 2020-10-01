@@ -18,13 +18,15 @@ knitr::opts_chunk$set(
 
 Database connections in ReviewR are created with the help of the [DBI Package](https://db.rstudio.com/dbi/) from RStudio. This allows ReviewR to interact with any database supported by DBI. A full list of compatible database back-ends[*](#dplyr-support) can be found [here](https://db.rstudio.com/databases/). 
 
-Within ReviewR, DBI connection objects are programmatically created to facilitate user connections to patient databases. This connection object defines the type of database, connection information (ip, port, etc.), and the user with any associated credentials. These connection objects can then be used to create connections to tables within the database.
+Within ReviewR, DBI connection objects are programmatically created to facilitate user connections to patient databases. This connection object defines the type of database, connection information (ip, port, etc.), and the user with any associated credentials. These connection objects can then be used to create access tables within the database.
 
 ### Database Modules
 
-ReviewR facilitates these DBI connections through the use of  [Shiny Modules](https://mastering-shiny.org/scaling-modules.html). Modules are a way to make a complex Shiny application more manageable. They help compartmentalize code and each module is developed for a specific purpose. At their core, modules take user inputs that are defined in a User Interface (UI) function, process the user inputs in a server function and return an output. Each module operates in its own namespace, meaning that shiny modules are portable and can be used in other applications and/or reusable within the same application. 
+ReviewR facilitates these DBI connections through the use of  [Shiny Modules](https://mastering-shiny.org/scaling-modules.html). Modules are a way to make a complex Shiny application more manageable. They compartmentalize code and are developed for a specific purpose. At their core, modules monitor user inputs that are defined in a User Interface (UI) function, process these inputs in a server function, and return an output. Each module operates in its own namespace, meaning that shiny modules are portable and can be used in other applications or reused within the same application. 
 
-ReviewR has developed a way to interactively switch between database modules that have been developed for the package. These modules consist of a UI to guide the user through establishing a database connection and a server responsible for validating user inputs, establishing a connection, and returning a DBI connection object. Users can extend the functionality of ReviewR by adding developed database modules to `R/mod_database_setup.R` as shown below:
+In ReviewR, this concept is used to create "database modules." Each patient database back-end will have different connection requirements, meaning a new UI is needed to collect the required connection information from the user. By modularizing this connection code, ReviewR can support multiple databases so long as a correctly formatted DBI connection object is returned to the ReviewR application. Thus "database modules" are shiny modules that are responsible for collecting appropriate database credentials and returning a DBI connection object.
+
+A special database setup module has been created within ReviewR that allows it to interactively switch between database modules that have been developed for the package. These modules consist of a UI to guide the user through establishing a database connection and a server responsible for validating user inputs, establishing a connection, and returning a DBI connection object. Users can extend the functionality of ReviewR by adding developed database modules to `R/mod_database_setup.R` as shown below:
 
 ```{r eval=FALSE}
 # Database Module Setup ----
@@ -52,6 +54,8 @@ Read on to learn how to develop a database module for ReviewR!
 
 Creating a Shiny module is very similar to developing a stand alone Shiny App. When developing a database module for ReviewR, there are a few differences that result because of its package architecture. A [template](#reviewr-database-module-template) has been provided so that some aspects of ReviewR database module development can be highlighted in the sections that follow. 
 
+If you are familiar with Shiny modules and want to begin developing right away, you may skip ahead to the [Start Developing](#start-developing) Section of this guide.
+
 ### Getting Started
 
 The first step to developing a new ReviewR module will be to fork the latest version of ReviewR from GitHub. Forking the repository will allow you to experiment with the ReviewR package and ensures you have access to the latest development tools and file structure of the ReviewR package. For simplicity, the home directory is specified as a destination directory:
@@ -70,33 +74,9 @@ devtools::load_all()
 
 This will load the most recent version of ReviewR. At this point, you are ready to begin developing a database module.
 
-### General Module Structure
-
-Take note of the [ReviewR Database Module Template](#reviewr-database-module-template). It consists of 2 functions: 
-
-* database_setup_ui - Defines the user interface that will guide someone through the database connection process
-* database_setup_server - Defines what actions to take as a result of user inputs. 
-
-ReviewR utilizes the [`moduleServer()`](https://shiny.rstudio.com/reference/shiny/1.5.0/moduleServer.html) function introduced in Shiny 1.5. This allows the server portion of a module to be called within your application just like any other function, instead of relying on the previous `callModule()` syntax. 
-
-The next thing to note is that ReviewR modules will ultimately become a part of the ReviewR package namespace. This means that both the UI and Server functions require roxygen comments, with all function parameters, returns, and necessary package imports declared. 
-
-For additional information on module development, please see: https://shiny.rstudio.com/articles/modules.html
-
-### Requirements
-
-* a UI function defined as `{module_name}_setup_ui` that accepts a single parameter (id)
-* a server function defined as `{module_name}_setup_server` with a reactiveValues return
-    + reactiveValues must contain the following variables, with these initial values set
-      + moduleName = 'Your Database Module Name'
-      + moduleType = 'database'
-      + setup_ui = ReviewR::database_setup_ui
-      + is_connected = 'no'
-      + db_con = NULL
-
 ### Start Developing!
 
-A helper function has been provided along with ReviewR to help jumpstart the process. Run:
+A helper function, `dev_database_module()`, has been provided with ReviewR to help jump start the database module development process. Run:
 
 ```{r eval=FALSE}
 ReviewR:::dev_database_module(mod_name = 'your_module', display_name = 'Your Module Display Name')
@@ -104,9 +84,33 @@ ReviewR:::dev_database_module(mod_name = 'your_module', display_name = 'Your Mod
 
 This will create a module file in the `R/` directory of the ReviewR package and open it for editing.
 
+### General Module Structure
+
+Take note of the [ReviewR Database Module Template](#reviewr-database-module-template). It consists of 2 functions: 
+
+* {mod_name}_setup_ui - Defines the user interface that will guide someone through the database connection process
+* {mod_name}_setup_server - Defines what actions to take as a result of user inputs. 
+
+ReviewR utilizes the [`moduleServer()`](https://shiny.rstudio.com/reference/shiny/1.5.0/moduleServer.html) function introduced in Shiny 1.5. This allows the server portion of a module to be called within your application just like any other function, instead of relying on the previous `callModule()` syntax. 
+
+The next thing to note is that ReviewR modules will ultimately become a part of the ReviewR package namespace. This means that both the UI and Server functions *require* roxygen comments, with all function parameters, returns, and necessary package imports declared. 
+
+For additional information on module development, please see: https://shiny.rstudio.com/articles/modules.html
+
+### Requirements
+
+* a UI function defined as `{module_name}_setup_ui` that accepts a single parameter (id)
+* a server function defined as `{module_name}_setup_server` with a `reactiveValues()` return
+    + reactiveValues must contain the following variables, with these initial values set:
+      + moduleName = '{Your Database Module Name}'
+      + moduleType = 'database'
+      + setup_ui = ReviewR::{module_name}_setup_ui
+      + is_connected = 'no'
+      + db_con = NULL
+
 #### UI Function
 
-Begin by adding [Shiny Widgets](https://shiny.rstudio.com/gallery/widget-gallery.html) to the `tagList()` in the UI function that users will use to enter their database credentials. Consider adding a "Connect" and "Disconnect" button to your UI which can be monitored by your server function and used to store the user entered credentials and combine them into a DBI connection object. Specifics will vary by database. Remember to wrap all user inputID's with the `ns()` function, so that they will inherit the module namespace. 
+Begin by adding [Shiny Widgets](https://shiny.rstudio.com/gallery/widget-gallery.html) to the `tagList()` portion of the UI function in your database module. Users will interact with these widgets to enter their database credentials. Consider adding a "Connect" and "Disconnect" button to your UI which can be monitored by your server function to store the user entered credentials and combine them into a DBI connection object. Specifics will vary by database. Remember to wrap all user inputID's with the `ns()` function, so that they will inherit the module namespace. 
 ```{r pseudo_ui_code, eval=F}
 tagList(
   actionButton(inputId = ns('connect'),label = 'connect'),
@@ -162,9 +166,11 @@ observeEvent(input$disconnect, (
 
 #### Other Considerations
 
-Think about how users will be interacting with this module. When a button is clicked, how will they notice that changes are being processed? Will an error message be displayed if incorrect credentials are entered? When connected, will a success message be presented?
+Think about how users will be interacting with this module. When a button is clicked, how will they notice that changes are being processed? Will an error message be displayed if incorrect credentials are entered? When connected, will a "connection success" message be presented?
 
-As you are developing/testing, remember to add your completed `setup_server` function to `R/mod_database_setup.R` in order to have the module display within ReviewR. When incorporated into ReviewR, the `moduleName` parameter of the database module's reactiveValues return will be what appears in the Database Module Selector drop down list. Once you are sure you have added your module to `mod_database_setup.R` and you are ready to test, run:
+#### Important
+
+As you are developing/testing, remember to add your completed `setup_server` function to `R/mod_database_setup.R`. This is required to have the module display within ReviewR. When incorporated into ReviewR, the `moduleName` parameter of the database module's reactiveValues will be what appears in the Database Module Selector drop down list. Once you are sure you have added your module to `mod_database_setup.R` and you are ready to test, run:
 
 ```{r eval=F}
 golem::document_and_reload()
