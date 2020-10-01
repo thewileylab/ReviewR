@@ -1,8 +1,8 @@
 ---
-title: "Single User Deployment"
+title: "Local Deployment"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{single_user_deployment}
+  %\VignetteIndexEntry{Local Deployment}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

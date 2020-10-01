@@ -9,7 +9,7 @@ navbar:
       text: Deploying ReviewR
       menu:
       - text: Local Deployment
-        href: articles/deploy-single_user.html
+        href: articles/deploy-local-deployment.html
       - text: Shiny Server Deployment
         href: articles/deploy-server.html
     Using ReviewR:    
@@ -29,17 +29,26 @@ navbar:
       - text: Support a New Datamodel
         href: articles/customize-add_a_custom_data_model.html
 reference:
-  - title: "Running the Application"
+  - title: "Package Information"
+    contents:
+      - ReviewR
+  - title: "Start Using ReviewR"
     desc: >
-      Execute this function to start ReviewR.
+      Execute this function to launch ReviewR.
     contents: 
       - run_app
-  - title: "Supported Datamodels"
-    desc: "Run this function to examine datamodels with built in support in ReviewR."
+  - title: "Data Model Support"
+    desc: "List the data models with built in support in ReviewR."
     contents:
       - supported_datamodels
   - title: "Development Functions"
     desc: "Use these functions to extend the functionality of ReviewR. These functions are not user facing, please run `devtools::load_all()` or preface each devlopment function with `ReviewR:::` to access their functionality."
     contents:
-      - dev_add_datamodel
       - dev_database_module
+      - dev_add_datamodel
+  - title: "Development Templates"
+    desc: "Templates used to extend the functionality of ReviewR. These templates are utilized by the development functions."
+    contents:
+      - db_module_template 
+      - db_function_all_patients_table_template
+      - db_function_subject_table_template

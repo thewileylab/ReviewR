@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>ReviewR Supported Database Schemas — supported_datamodels • ReviewR</title>
+<title>Supported Data Model Schemas — supported_datamodels • ReviewR</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,9 +46,9 @@
 
 
 
-<meta property="og:title" content="ReviewR Supported Database Schemas — supported_datamodels" />
+<meta property="og:title" content="Supported Data Model Schemas — supported_datamodels" />
 <meta property="og:description" content="A dataset containing data model information along with the corresponding
-version and schema." />
+version and nested schema information." />
 <meta property="og:image" content="reviewr.thewileylab.org/logo.png" />
 
 
@@ -95,7 +95,7 @@ version and schema." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/deploy-single_user.html">Local Deployment</a>
+      <a href="../articles/deploy-local-deployment.html">Local Deployment</a>
     </li>
     <li>
       <a href="../articles/deploy-server.html">Shiny Server Deployment</a>
@@ -146,16 +146,16 @@ version and schema." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/customize-add_a_custom_data_model.html">Support a New Datamodel</a>
+      <a href="../articles/customize-add_a_custom_data_model.html">Support a New Data Model</a>
     </li>
     <li>
       <a href="../articles/customize-add_a_database_module.html">Support a New Relational Database Management System</a>
     </li>
     <li>
-      <a href="../articles/deploy-server.html">Shiny Server Deployment</a>
+      <a href="../articles/deploy-local-deployment.html">Local Deployment</a>
     </li>
     <li>
-      <a href="../articles/deploy-single_user.html">Single User Deployment</a>
+      <a href="../articles/deploy-server.html">Shiny Server Deployment</a>
     </li>
     <li>
       <a href="../articles/usage-connect_to_patient_records.html">Connecting to Patient Record Database</a>
@@ -189,14 +189,14 @@ version and schema." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>ReviewR Supported Database Schemas</h1>
+    <h1>Supported Data Model Schemas</h1>
     <small class="dont-index">Source: <a href='https://github.com/thewileylab/ReviewR/blob/master/R/mod_datamodel_setup.R'><code>R/mod_datamodel_setup.R</code></a></small>
     <div class="hidden name"><code>supported_datamodels.Rd</code></div>
     </div>
 
     <div class="ref-description">
     <p>A dataset containing data model information along with the corresponding
-version and schema.</p>
+version and nested schema information.</p>
     </div>
 
     <pre class="usage"><span class='va'>supported_datamodels</span></pre>
@@ -206,7 +206,7 @@ version and schema.</p>
 
     <p>A data frame with 12 rows and 4 variables:</p><dl>
 <dt>file_path</dt><dd><p>Where schema was imported from</p></dd>
-<dt>datamodel</dt><dd><p>Data model name, OMOP or MIMIC</p></dd>
+<dt>datamodel</dt><dd><p>Data model name</p></dd>
 <dt>model_version</dt><dd><p>Version of the data model</p></dd>
 <dt>data</dt><dd><p>Nested database schemas, including included table and field mappings</p></dd>
 ...

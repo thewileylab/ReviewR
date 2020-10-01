@@ -2,7 +2,7 @@
 title: "Shiny Server Deployment"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Server Deployment}
+  %\VignetteIndexEntry{Shiny Server Deployment}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -34,13 +34,13 @@ In the sections that follow, it is assumed that the user has already deployed an
 
 ### Shiny Server OSE
 
-1. Install the ReviewR package as a root user, to ensure your system has all the required dependencies
+1. Install the ReviewR package as a root user, to ensure your system R package library has all of the required dependencies
     + From a bash terminal, run:
         ```{bash eval=FALSE}
         # Start R in an interactive root terminal
         sudo -i R
         ```
-    *This will open a root R console*
+    *This will open an interactive R console as a root user*
     + From the R console that opens, run:
       ```{r eval=FALSE}
       # install.packages('devtools')
@@ -53,7 +53,7 @@ In the sections that follow, it is assumed that the user has already deployed an
     ```
     *This step will fork the most recent version of the ReviewR package from GitHub which includes additional files and development tools not built directly into the package. This includes an `app.R` file which Shiny Server will need to deploy ReviewR. By default, Shiny Server will host all applications that are placed in `/srv/shiny-server`*
 
-That's it! ReviewR can now be accessed from your browser at http://your.shiny.server.url/ReviewR
+That's it! ReviewR can now be accessed from your browser at https://your.shiny.server.url/ReviewR
 
 ### Docker
 

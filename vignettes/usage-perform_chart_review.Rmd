@@ -2,7 +2,7 @@
 title: "Performing Chart Review"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{usage-perform_chart_review}
+  %\VignetteIndexEntry{Performing Chart Review}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

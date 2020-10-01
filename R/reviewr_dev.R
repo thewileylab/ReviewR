@@ -1,5 +1,5 @@
 # Datasets ----
-#' ReviewR Database Module Template
+#' Database Module Template
 #'
 #' A character vector containing a database module template
 #' 
@@ -8,7 +8,7 @@
 #' @format A character vector with 52 elements
 "db_module_template"
 
-#' ReviewR Database Function: All Patients Table Template
+#' Database Table Function: All Patients Table Template
 #'
 #' A character vector containing a function template for creating the 
 #' 'All Patients' table as displayed on the "Patient Search" Tab
@@ -18,7 +18,7 @@
 #' @format A character vector with 22 elements
 "db_function_all_patients_table_template"
 
-#' ReviewR Database Function: Subject Table Template
+#' Database Table Function: Subject Table Template
 #'
 #' A character vector containing a function template for creating the 
 #' 'Subject Filtered' tables as displayed on the "Chart Review" Tab
@@ -60,7 +60,7 @@ dt_2_viewer <- function(.data, file = NULL) {
 }
 
 # Dev Functions ----
-#' Develop Database Module
+#' Develop A Database Module
 #'
 #' This function will create a database module skeleton  with 
 #' required elements already populated, based on user inputs.
@@ -91,7 +91,7 @@ dev_database_module <- function(mod_name = NULL, display_name = NULL) {
       }
 }
 
-#' Develop Datamodel Functions
+#' Develop Data Model Table Functions
 #' 
 #' This function will assist in adding a new supported datamodel to 
 #' ReviewR. A CDM file, stored as a CSV will be added to the 

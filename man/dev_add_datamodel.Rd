@@ -2,7 +2,7 @@
 % Please edit documentation in R/reviewr_dev.R
 \name{dev_add_datamodel}
 \alias{dev_add_datamodel}
-\title{Develop Datamodel Functions}
+\title{Develop Data Model Table Functions}
 \usage{
 dev_add_datamodel(csv)
 }

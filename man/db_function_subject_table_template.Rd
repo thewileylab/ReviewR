@@ -3,7 +3,7 @@
 \docType{data}
 \name{db_function_subject_table_template}
 \alias{db_function_subject_table_template}
-\title{ReviewR Database Function: Subject Table Template}
+\title{Database Table Function: Subject Table Template}
 \format{
 A character vector with 15 elements
 }

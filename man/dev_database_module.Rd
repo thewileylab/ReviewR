@@ -2,7 +2,7 @@
 % Please edit documentation in R/reviewr_dev.R
 \name{dev_database_module}
 \alias{dev_database_module}
-\title{Develop Database Module}
+\title{Develop A Database Module}
 \usage{
 dev_database_module(mod_name = NULL, display_name = NULL)
 }

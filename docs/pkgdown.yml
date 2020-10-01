@@ -4,12 +4,12 @@ pkgdown_sha: ~
 articles:
   customize-add_a_custom_data_model: customize-add_a_custom_data_model.html
   customize-add_a_database_module: customize-add_a_database_module.html
+  deploy-local-deployment: deploy-local-deployment.html
   deploy-server: deploy-server.html
-  deploy-single_user: deploy-single_user.html
   usage-connect_to_patient_records: usage-connect_to_patient_records.html
   usage-connect_to_redcap: usage-connect_to_redcap.html
   usage-perform_chart_review: usage-perform_chart_review.html
-last_built: 2020-10-01T17:47Z
+last_built: 2020-10-01T19:31Z
 urls:
   reference: reviewr.thewileylab.org//reference
   article: reviewr.thewileylab.org//articles

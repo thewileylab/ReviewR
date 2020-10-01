@@ -14,7 +14,7 @@ user_table(table_map, db_con, desired_cdm_table)
 \item{desired_cdm_table}{In the desired CDM, which table do you want?}
 }
 \value{
-tbl(db_con, user_table) the user table that corresponds to the omop table you want
+tbl(db_con, user_table) the user table that corresponds to the standard data model table you want
 }
 \description{
 user_table
