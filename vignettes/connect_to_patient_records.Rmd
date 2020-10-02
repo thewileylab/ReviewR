@@ -31,7 +31,8 @@ knitr::include_graphics('connect2db.png')
 Select the database module that corresponds to the database back end that you would like to connect to. Follow any module prompts to provide necessary connection information. For information on supporting additional databases within ReviewR, please see `vignette('support_a_new_relational_database_management_system')`.
 
 ### Data Model Detection
-When complete, the database module will create a connection to your database and attempt to identify the data model of the patient data contained within. 
+
+Once the required database credentials have been provided, the database setup module will create a connection to your database and attempt to identify the data model of the patient data contained within. 
 
 #### Data Model Not Detected
 
