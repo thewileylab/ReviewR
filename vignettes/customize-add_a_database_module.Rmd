@@ -185,7 +185,7 @@ Once you are satisfied with your module and have sufficiently tested its functio
 devtools::install()
 ```
 
-To install a new version of the ReviewR package with your newly developed module incorporated.
+This will install a new, custom version of the ReviewR package with your newly developed module incorporated.
 
 ### ReviewR Database Module Template
 
