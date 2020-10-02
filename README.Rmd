@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1488534.svg)](https://doi.org/10.5281/zenodo.1488534)
 <!-- badges: end -->
 
-ReviewR is a portable Shiny tool to help you explore patient data across different data models. Currently within ReviewR, you can browse patient data stored in either the OMOP or MIMIC-III formats, with the option to extend ReviewR to display information from other data models.
+ReviewR is a portable Shiny tool to help you explore patient data across different data models. Currently, you can browse patient data stored in either the OMOP or MIMIC-III formats, with the option to extend ReviewR to display information from other data models.
 
 In addition to viewing patient data, you may also connect to a REDCap project to perform a chart review.
 
