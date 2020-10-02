@@ -1,8 +1,8 @@
 ---
-title: "Connecting to REDCap"
+title: "Connect to REDCap"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Connecting to REDCap}
+  %\VignetteIndexEntry{Connect to REDCap}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

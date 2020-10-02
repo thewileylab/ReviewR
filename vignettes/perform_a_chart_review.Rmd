@@ -1,8 +1,8 @@
 ---
-title: "Performing Chart Review"
+title: "Perform A Chart Review"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Performing Chart Review}
+  %\VignetteIndexEntry{Perform A Chart Review}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
