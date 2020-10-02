@@ -15,11 +15,11 @@ navbar:
     Using ReviewR:    
       text: Using ReviewR
       menu:
-      - text: Connecting to Patient Record Database
+      - text: Connect to Patient Record Database
         href: articles/connect_to_patient_records.html
-      - text: Connecting to REDCap
+      - text: Connect to REDCap
         href: articles/connect_to_redcap.html
-      - text: Performing A Chart Review
+      - text: Perform A Chart Review
         href: articles/perform_a_chart_review.html
     Customizing ReviewR:    
       text: Customizing ReviewR

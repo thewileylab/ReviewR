@@ -1,8 +1,8 @@
 ---
-title: "Connecting to Patient Record Database"
+title: "Connect to Patient Record Database"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Connecting to Patient Record Database}
+  %\VignetteIndexEntry{Connect to Patient Record Database}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -52,4 +52,4 @@ knitr::include_graphics('connect2db_success.png')
 
 ## Proceed to Manual Record Review
 
-ReviewR is now ready for you to view the patient information contained within your database. Head to the Patient Search section located in the left navigation bar to choose a patient. Click the patient's subject ID to be taken to the Chart Review section of ReviewR, to view individual patient level records. 
+ReviewR is now ready for you to view the patient information contained within your database. Head to the Patient Search section located in the left navigation bar to choose a patient. Click the patient's subject ID to be taken to the Chart Review section of ReviewR to view individual patient level records. 
