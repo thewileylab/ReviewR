@@ -134,7 +134,7 @@ These table functions must be designed to accept 3 arguments:
 
 ReviewR will handle supplying this information, but the table functions must be coded to accept these three arguments.
 
-
+Again, using MIMIC-III as an example, let's draft a potential ‘ADMISSIONS’ table function:
 ```{r eval=FALSE}
 mimic3_table_admissions <- function(table_map, db_connection, subject_id) {
   ReviewR::user_table(table_map, db_connection, 'ADMISSIONS') %>% 
