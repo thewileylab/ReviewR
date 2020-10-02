@@ -94,13 +94,13 @@ dev_database_module <- function(mod_name = NULL, display_name = NULL) {
 #' Develop Data Model Table Functions
 #' 
 #' This function will assist in adding a new supported datamodel to 
-#' ReviewR. A CDM file, stored as a CSV will be added to the 
-#' namespace, such that the CDM can be identified by the datamodel
+#' ReviewR. A schema file, stored as a CSV will be added to the 
+#' namespace, such that the database can be identified by the datamodel
 #' detection module. Additionally, a database_tables.R file will 
 #' be created and opened in R/ with basic table skeletons created
-#' based on the CDM stored in the user supplied CSV.
+#' based on the schema stored in the user supplied CSV.
 #'
-#' @param csv \emph{Required}. The file path of a CSV file containing a datamodel CDM
+#' @param csv \emph{Required}. The file path of a CSV file containing a datamodel schema
 #' 
 #' @importFrom dplyr distinct filter mutate pull relocate
 #' @importFrom glue glue glue_collapse
