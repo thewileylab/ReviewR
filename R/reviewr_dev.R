@@ -102,7 +102,7 @@ dev_database_module <- function(mod_name = NULL, display_name = NULL) {
 #'
 #' @param csv \emph{Required}. The file path of a CSV file containing a datamodel CDM
 #' 
-#' @importFrom dplyr distinct filter mutate pull
+#' @importFrom dplyr distinct filter mutate pull relocate
 #' @importFrom glue glue glue_collapse
 #' @importFrom magrittr %>% extract2
 #' @importFrom purrr map imap
@@ -141,7 +141,8 @@ dev_add_datamodel <- function(csv) {
              joinable_field = tolower(.data$field)
              ) %>% 
       group_by(.data$file_path,.data$datamodel,.data$model_version) %>% 
-      nest()
+      nest() %>% 
+      relocate(datamodel, model_version, data, file_path)
     usethis::use_data(supported_datamodels, overwrite = T)
   
     ## Determine Datamodel moniker and version

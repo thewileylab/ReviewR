@@ -66,10 +66,10 @@ user_field <- function(table_map, desired_cdm_table, desired_cdm_field){
 #'
 #' @format A data frame with 12 rows and 4 variables:
 #' \describe{
-#'   \item{file_path}{Where schema was imported from}
 #'   \item{datamodel}{Data model name}
 #'   \item{model_version}{Version of the data model}
 #'   \item{data}{Nested database schemas, including included table and field mappings}
+#'   \item{file_path}{Where schema was imported from}
 #'   ...
 #' }
 #' @source \url{https://github.com/OHDSI/CommonDataModel/}

@@ -17,6 +17,7 @@ supported_datamodels <- list.files(path = file.path('data-raw/datamodels'),full.
          joinable_field = tolower(field)
          ) %>% 
   group_by(file_path,datamodel,model_version) %>% 
-  nest()
+  nest() %>% 
+  relocate(datamodel, model_version, data, file_path)
 
 usethis::use_data(supported_datamodels, overwrite = T)
