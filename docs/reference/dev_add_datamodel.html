@@ -48,11 +48,11 @@
 
 <meta property="og:title" content="Develop Data Model Table Functions — dev_add_datamodel" />
 <meta property="og:description" content="This function will assist in adding a new supported datamodel to
-ReviewR. A CDM file, stored as a CSV will be added to the
-namespace, such that the CDM can be identified by the datamodel
+ReviewR. A schema file, stored as a CSV will be added to the
+namespace, such that the database can be identified by the datamodel
 detection module. Additionally, a database_tables.R file will
 be created and opened in R/ with basic table skeletons created
-based on the CDM stored in the user supplied CSV." />
+based on the schema stored in the user supplied CSV." />
 <meta property="og:image" content="reviewr.thewileylab.org/logo.png" />
 
 
@@ -200,11 +200,11 @@ based on the CDM stored in the user supplied CSV." />
 
     <div class="ref-description">
     <p>This function will assist in adding a new supported datamodel to
-ReviewR. A CDM file, stored as a CSV will be added to the
-namespace, such that the CDM can be identified by the datamodel
+ReviewR. A schema file, stored as a CSV will be added to the
+namespace, such that the database can be identified by the datamodel
 detection module. Additionally, a database_tables.R file will
 be created and opened in R/ with basic table skeletons created
-based on the CDM stored in the user supplied CSV.</p>
+based on the schema stored in the user supplied CSV.</p>
     </div>
 
     <pre class="usage"><span class='fu'>dev_add_datamodel</span><span class='op'>(</span><span class='va'>csv</span><span class='op'>)</span></pre>
@@ -214,7 +214,7 @@ based on the CDM stored in the user supplied CSV.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>csv</th>
-      <td><p><em>Required</em>. The file path of a CSV file containing a datamodel CDM</p></td>
+      <td><p><em>Required</em>. The file path of a CSV file containing a datamodel schema</p></td>
     </tr>
     </table>
 

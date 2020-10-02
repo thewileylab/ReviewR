@@ -7,16 +7,16 @@
 dev_add_datamodel(csv)
 }
 \arguments{
-\item{csv}{\emph{Required}. The file path of a CSV file containing a datamodel CDM}
+\item{csv}{\emph{Required}. The file path of a CSV file containing a datamodel schema}
 }
 \value{
 A .R file populated with basic database table functions
 }
 \description{
 This function will assist in adding a new supported datamodel to
-ReviewR. A CDM file, stored as a CSV will be added to the
-namespace, such that the CDM can be identified by the datamodel
+ReviewR. A schema file, stored as a CSV will be added to the
+namespace, such that the database can be identified by the datamodel
 detection module. Additionally, a database_tables.R file will
 be created and opened in R/ with basic table skeletons created
-based on the CDM stored in the user supplied CSV.
+based on the schema stored in the user supplied CSV.
 }
