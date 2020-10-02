@@ -26,7 +26,7 @@ navbar:
       menu:
       - text: Support a New Relational Database Management System
         href: articles/support_a_new_relational_database_management_system.html
-      - text: Support a New Datamodel
+      - text: Support a Custom Datamodel
         href: articles/support_a_custom_data_model.html
 reference:
   - title: "Package Information"
