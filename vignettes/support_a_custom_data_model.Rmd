@@ -82,7 +82,7 @@ ReviewR::supported_datamodels %>%
   DT::datatable()
 ```
 
-See the [Adding Support for a New Data Model](#adding-support-for-a-new-data-model) section for information on how to build additional schema information into ReviewR so that the built in data model detection can identify the patient data model you are adding support for. 
+See the [Adding Support for a Custom Data Model](#adding-support-for-a-custom-data-model) section for information on how to build additional schema information into ReviewR so that the built in data model detection can identify the patient data model you are adding support for. 
 
 ***
 
@@ -90,7 +90,7 @@ See the [Adding Support for a New Data Model](#adding-support-for-a-new-data-mod
 \**Note: The data-raw file path is only available when forking the ReviewR repository from GitHub.*
 
 
-## Adding Support for a New Data Model
+## Adding Support for a Custom Data Model
 
 A convenience function has been built into ReviewR to assist in supporting additional data models, `dev_add_datamodel()`. This function will add a CSV file containing schema information into the data model detection module within ReviewR. When run, it will prompt the user to identify the "all patients" table and which field contains the patient identifier (`subject_id`) information. Additionally, it will create a .R file with skeleton table functions for all tables identified within the supplied CSV file. Separate all patients and subject filtered functions will be created, with templated code to assist in filtering the subject table information down to the selected subject. 
 
