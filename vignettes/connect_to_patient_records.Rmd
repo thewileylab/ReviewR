@@ -28,7 +28,7 @@ ReviewR supports multiple database back ends through the use of Shiny modules. A
 knitr::include_graphics('connect2db.png')
 ```
 
-Select the database module that corresponds to the database back end that you would like to connect to. Follow any module prompts to provide necessary connection information. For information on supporting additional databases within ReviewR, please see the Article on [Supporting a New Relational Database Management System](https://reviewr.thewileylab.org/articles/customize-add_a_database_module.html).
+Select the database module that corresponds to the database back end that you would like to connect to. Follow any module prompts to provide necessary connection information. For information on supporting additional databases within ReviewR, please see `vignette('support_a_new_relational_database_management_system')`.
 
 ### Data Model Detection
 When complete, the database module will create a connection to your database and attempt to identify the data model of the patient data contained within. 
@@ -40,7 +40,7 @@ In the event that the data model cannot be determined, ReviewR will notify you w
 ```{r figure_2, echo=FALSE, fig.cap="*Error when connecting to a database with an unsupported data model.*", fig.align='center'}
 knitr::include_graphics('connect2db_error.png')
 ```
-Please see the Article on [Supporting a New Data Model](https://reviewr.thewileylab.org/articles/customize-add_a_custom_data_model.html) to learn how to support your patient database. 
+Please see `vignette('support_a_custom_data_model')` to learn how to support your patient database. 
 
 #### Data Model Detected
 

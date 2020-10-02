@@ -1,10 +1,10 @@
 ---
-title: "Support a New Data Model"
+title: "Support a Custom Data Model"
 output: 
   rmarkdown::html_vignette:
     fig_caption: yes
 vignette: >
-  %\VignetteIndexEntry{Support a New Data Model}
+  %\VignetteIndexEntry{Support a Custom Data Model}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
