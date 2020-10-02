@@ -2,14 +2,14 @@ pandoc: 2.7.3
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
-  customize-add_a_custom_data_model: customize-add_a_custom_data_model.html
-  customize-add_a_database_module: customize-add_a_database_module.html
-  deploy-local-deployment: deploy-local-deployment.html
+  connect_to_patient_records: connect_to_patient_records.html
+  connect_to_redcap: connect_to_redcap.html
+  deploy-local: deploy-local.html
   deploy-server: deploy-server.html
-  usage-connect_to_patient_records: usage-connect_to_patient_records.html
-  usage-connect_to_redcap: usage-connect_to_redcap.html
-  usage-perform_chart_review: usage-perform_chart_review.html
-last_built: 2020-10-02T17:29Z
+  perform_chart_review: perform_chart_review.html
+  support_a_custom_data_model: support_a_custom_data_model.html
+  support_a_new_relational_database_management_system: support_a_new_relational_database_management_system.html
+last_built: 2020-10-02T21:13Z
 urls:
   reference: reviewr.thewileylab.org//reference
   article: reviewr.thewileylab.org//articles

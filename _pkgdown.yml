@@ -9,25 +9,25 @@ navbar:
       text: Deploying ReviewR
       menu:
       - text: Local Deployment
-        href: articles/deploy-local-deployment.html
+        href: articles/deploy-local.html
       - text: Shiny Server Deployment
         href: articles/deploy-server.html
     Using ReviewR:    
       text: Using ReviewR
       menu:
       - text: Connecting to Patient Record Database
-        href: articles/usage-connect_to_patient_records.html
+        href: articles/connect_to_patient_records.html
       - text: Connecting to REDCap
-        href: articles/usage-connect_to_redcap.html
-      - text: Performing Chart Review
-        href: articles/usage-perform_chart_review.html
+        href: articles/connect_to_redcap.html
+      - text: Performing A Chart Review
+        href: articles/perform_a_chart_review.html
     Customizing ReviewR:    
       text: Customizing ReviewR
       menu:
       - text: Support a New Relational Database Management System
-        href: articles/customize-add_a_database_module.html
+        href: articles/support_a_new_relational_database_management_system.html
       - text: Support a New Datamodel
-        href: articles/customize-add_a_custom_data_model.html
+        href: articles/support_a_custom_data_model.html
 reference:
   - title: "Package Information"
     contents:

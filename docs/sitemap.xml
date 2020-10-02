@@ -79,24 +79,24 @@
     <loc>reviewr.thewileylab.org//reference/user_table.html</loc>
   </url>
   <url>
-    <loc>reviewr.thewileylab.org//articles/customize-add_a_custom_data_model.html</loc>
+    <loc>reviewr.thewileylab.org//articles/connect_to_patient_records.html</loc>
   </url>
   <url>
-    <loc>reviewr.thewileylab.org//articles/customize-add_a_database_module.html</loc>
+    <loc>reviewr.thewileylab.org//articles/connect_to_redcap.html</loc>
   </url>
   <url>
-    <loc>reviewr.thewileylab.org//articles/deploy-local-deployment.html</loc>
+    <loc>reviewr.thewileylab.org//articles/deploy-local.html</loc>
   </url>
   <url>
     <loc>reviewr.thewileylab.org//articles/deploy-server.html</loc>
   </url>
   <url>
-    <loc>reviewr.thewileylab.org//articles/usage-connect_to_patient_records.html</loc>
+    <loc>reviewr.thewileylab.org//articles/perform_chart_review.html</loc>
   </url>
   <url>
-    <loc>reviewr.thewileylab.org//articles/usage-connect_to_redcap.html</loc>
+    <loc>reviewr.thewileylab.org//articles/support_a_custom_data_model.html</loc>
   </url>
   <url>
-    <loc>reviewr.thewileylab.org//articles/usage-perform_chart_review.html</loc>
+    <loc>reviewr.thewileylab.org//articles/support_a_new_relational_database_management_system.html</loc>
   </url>
 </urlset>
