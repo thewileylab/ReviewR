@@ -14,6 +14,42 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
-library(ReviewR)
+## Getting Started
+
+Launch the ReviewR application by running `ReviewR::run_app()` from the R console or by visiting the URL of a Shiny Server deployed instance of ReviewR in a browser. On launch, ReviewR will show you the Homepage, which will provide some basic information about the ReviewR package. 
+
+When you are ready to begin using ReviewR to view patient information stored in your database, head to the "Setup" section, located in the left most navigation menu. The Setup section is divided into 2 columns, ["Connect to Patient Database"](#connect-to-patient-database) and "Configure Patient Chart Abstraction." 
+
+### Connect to Patient Database
+
+ReviewR supports multiple database back ends through the use of Shiny modules. A listing of database modules that have been built into ReviewR will be displayed in the drop down menu, located in this section:
+
+```{r figure_1, echo=FALSE, fig.cap="*Select from available database modules.*", fig.align='center'}
+knitr::include_graphics('connect2db.png')
 ```
+
+Select the database module that corresponds to the database back end that you would like to connect to. Follow any module prompts to provide necessary connection information. For information on supporting additional databases within ReviewR, please see the Article on [Supporting a New Relational Database Management System](https://reviewr.thewileylab.org/articles/customize-add_a_database_module.html).
+
+### Data Model Detection
+When complete, the database module will create a connection to your database and attempt to identify the data model of the patient data contained within. 
+
+#### Data Model Not Detected
+
+In the event that the data model cannot be determined, ReviewR will notify you with the following error message, indicating that data model support has not been add for your particular patient dataset. 
+
+```{r figure_2, echo=FALSE, fig.cap="*Error when connecting to a database with an unsupported data model.*", fig.align='center'}
+knitr::include_graphics('connect2db_error.png')
+```
+Please see the Article on [Supporting a New Data Model](https://reviewr.thewileylab.org/articles/customize-add_a_custom_data_model.html) to learn how to support your patient database. 
+
+#### Data Model Detected
+
+Otherwise, the data model name and version will be displayed. 
+
+```{r figure_3, echo=FALSE, fig.cap="*Successful connection to database with supported data model.*", fig.align='center'}
+knitr::include_graphics('connect2db_success.png')
+```
+
+## Proceed to Manual Record Review
+
+ReviewR is now ready for you to view the patient information contained within your database. Head to the Patient Search section located in the left navigation bar to choose a patient. Click the patient's subject ID to be taken to the Chart Review section of ReviewR, to view individual patient level records. 
