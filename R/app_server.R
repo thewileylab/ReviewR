@@ -65,7 +65,7 @@ app_server <- function(input, output, session) {
   ## Database
   database_vars <- mod_database_setup_server('db-selector')
   ## Database Detection 
-  datamodel_vars <- mod_datamodel_detection_server('data-model', database_vars, navigation_vars)
+  datamodel_vars <- mod_datamodel_detection_server('data-model', database_vars, navigation_vars, session)
   ## Abstraction
   abstract_vars <- mod_abstraction_setup_server('abs-selector', selected_subject_id)
   

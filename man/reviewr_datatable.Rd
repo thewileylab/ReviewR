@@ -4,10 +4,12 @@
 \alias{reviewr_datatable}
 \title{ReviewR Datatable}
 \usage{
-reviewr_datatable(.data)
+reviewr_datatable(.data, search_term = "")
 }
 \arguments{
 \item{.data}{A local tibble or dataframe to be rendered in the ReviewR UI}
+
+\item{search_term}{A string or regular expression used as a filter for patient data}
 }
 \value{
 return a DT with custom options

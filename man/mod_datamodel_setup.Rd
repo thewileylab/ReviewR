@@ -7,12 +7,19 @@
 \usage{
 datamodel_detection_ui(id)
 
-mod_datamodel_detection_server(id, database_vars, navigation_vars)
+mod_datamodel_detection_server(
+  id,
+  database_vars,
+  navigation_vars,
+  parent_session
+)
 }
 \arguments{
 \item{id}{The namespace id for the UI output}
 
 \item{navigation_vars}{Navigation variables returned from mod_navigation}
+
+\item{parent_session}{the parent environment of this module}
 
 \item{input}{internal}
 
