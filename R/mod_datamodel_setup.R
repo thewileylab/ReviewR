@@ -104,6 +104,12 @@ datamodel_detection_ui <- function(id) {
 patient_chart_ui <- function(id) {
   ns <- NS(id)
   tagList(
+    shinyWidgets::searchInput(inputId = ns('global_search'), 
+                              label = HTML('<H4>Global Search:</H3>Click search icon to update or hit "Enter"'), 
+                              placeholder = 'Search string or regular expression',
+                              btnSearch = icon("search"), 
+                              btnReset = icon("remove"), 
+                              width = '100%'),
     uiOutput(ns('patient_chart'))
     )
   }
@@ -112,10 +118,13 @@ patient_chart_ui <- function(id) {
 #' @rdname mod_datamodel_setup
 #' @param db_connection Connection info received from the database setup module
 #' @param navigation_vars Navigation variables returned from mod_navigation
-#' @export
+#' @param parent_session the parent environment of this module
+#' 
 #' @keywords internal
+#' @export
 #' @importFrom magrittr %>% 
-#' @importFrom DBI dbListTables dbListFields
+#' @importFrom DT dataTableProxy updateSearch
+#' @importFrom DBI dbListTables dbListFields 
 #' @importFrom dplyr mutate rename select left_join filter ungroup arrange slice group_by desc
 #' @importFrom glue glue
 #' @importFrom purrr map map2 iwalk imap
@@ -126,7 +135,7 @@ patient_chart_ui <- function(id) {
 #' @importFrom snakecase to_title_case
 #' @importFrom utils data lsf.str
 
-mod_datamodel_detection_server <- function(id, database_vars, navigation_vars) {
+mod_datamodel_detection_server <- function(id, database_vars, navigation_vars, parent_session) {
   moduleServer(
     id,
     function(input, output, session) {
@@ -249,12 +258,18 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars) {
       
       ## Dynamically create DT::datatable outputs, for every patient table reactive expression
       ## Big Thanks: https://tbradley1013.github.io/2018/08/10/create-a-dynamic-number-of-ui-elements-in-shiny-with-purrr/
+      proxy_vars <- reactiveValues()
+      
       observeEvent(patient_tables(), {
         purrr::iwalk(patient_tables(), ~{
+          ## Create DT Outputs
           output_name <- glue::glue('dt_{.y}')
           output[[output_name]] <- DT::renderDataTable({
-            rlang::exec(.x) %>% reviewr_datatable()
+            rlang::exec(.x) %>% reviewr_datatable(search_term = input$global_search)
             })
+          ## Create Matching DT Proxies
+          proxy_name <- glue::glue('dt_proxy_{.y}')
+          proxy_vars[[proxy_name]] <- DT::dataTableProxy(outputId = ns(output_name), session = parent_session)
           })
         })
 
@@ -277,6 +292,16 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars) {
                  ) %>%
           pull(.data$tab_panels)
         do.call(tabsetPanel, datamodel_vars$tabset_panels)
+        })
+      
+      # Global Search ----
+      observeEvent(input$global_search, ignoreInit = T, {
+        # browser()
+        ## Update DT Proxies with Global Search Term
+        purrr::imap(patient_tables(), ~{
+                  proxy_name <- glue::glue('dt_proxy_{.y}')
+                  DT::updateSearch(proxy = proxy_vars[[proxy_name]], keywords = list(global = input$global_search, columns = NULL))
+                  })
         })
       
       # Return ----

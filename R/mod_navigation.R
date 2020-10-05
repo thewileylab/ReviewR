@@ -2,13 +2,14 @@
 #' ReviewR Datatable
 #'
 #' @param .data A local tibble or dataframe to be rendered in the ReviewR UI
+#' @param search_term A string or regular expression used as a filter for patient data
 #'
 #' @return return a DT with custom options
 #' @keywords internal
 #' @export 
 #' @importFrom DT datatable
 #'
-reviewr_datatable <- function(.data) {
+reviewr_datatable <- function(.data, search_term = '') {
   DT::datatable(data = .data,
                 extensions = list('Scroller' = NULL),
                 options = list(scrollX = TRUE,
@@ -17,7 +18,8 @@ reviewr_datatable <- function(.data) {
                                scroller = TRUE,
                                searchHighlight = TRUE, 
                                search = list(regex = TRUE, 
-                                             caseInsensitive = TRUE)
+                                             caseInsensitive = TRUE,
+                                             search = search_term)
                                ),
                 rownames = F, 
                 selection = 'single',
