@@ -70,13 +70,14 @@ dt_2_viewer <- function(.data, file = NULL) {
 #' user info and create a DBI connection object, respectively. 
 #'
 #' @param mod_name \emph{Required}. A string, denoting the module suffix eg: 'mariadb'
-#' @param display_name \emph{Required}. A string, denoting the module display name eg: 'MariaDB Server'
+#' @param display_name \emph{Required}. A string, denoting the module display name eg: 'MariaDB Server'. 
+#' This is the 'user viewable' name that will appear in the database module selector dropdown. 
 #'
 #' @importFrom glue glue glue_collapse
 #' @importFrom purrr map
 #' @importFrom rstudioapi navigateToFile
 #' @return A .R file populated with a database module skeleton
-dev_database_module <- function(mod_name = NULL, display_name = NULL) {
+dev_add_database_module <- function(mod_name = NULL, display_name = NULL) {
   if(is.null(mod_name) | is.null(display_name)) {
     message('mod_name and display_name are required arguments.')
     } else {
