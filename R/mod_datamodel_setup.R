@@ -256,10 +256,11 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars, p
             )
         })
       
-      ## Dynamically create DT::datatable outputs, for every patient table reactive expression
-      ## Big Thanks: https://tbradley1013.github.io/2018/08/10/create-a-dynamic-number-of-ui-elements-in-shiny-with-purrr/
+      ## Initialize DT Proxy reactiveValues
       proxy_vars <- reactiveValues()
       
+      ## Dynamically create DT::datatable outputs, for every patient table reactive expression
+      ## Big Thanks: https://tbradley1013.github.io/2018/08/10/create-a-dynamic-number-of-ui-elements-in-shiny-with-purrr/
       observeEvent(patient_tables(), {
         purrr::iwalk(patient_tables(), ~{
           ## Create DT Outputs
@@ -296,8 +297,8 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars, p
       
       # Global Search ----
       observeEvent(input$global_search, ignoreInit = T, {
-        # browser()
         ## Update DT Proxies with Global Search Term
+        ### A Proxy Exists for each patient table, use index map to programmatically isolate and update the all available dt proxies
         purrr::imap(patient_tables(), ~{
                   proxy_name <- glue::glue('dt_proxy_{.y}')
                   DT::updateSearch(proxy = proxy_vars[[proxy_name]], keywords = list(global = input$global_search, columns = NULL))
