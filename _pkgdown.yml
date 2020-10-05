@@ -44,7 +44,7 @@ reference:
   - title: "Development Functions"
     desc: "Use these functions to extend the functionality of ReviewR. These functions are not user facing, please run `devtools::load_all()` or preface each devlopment function with `ReviewR:::` to access their functionality."
     contents:
-      - dev_database_module
+      - dev_add_database_module
       - dev_add_datamodel
   - title: "Development Templates"
     desc: "Templates used to extend the functionality of ReviewR. These templates are utilized by the development functions."
