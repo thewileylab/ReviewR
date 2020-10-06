@@ -105,7 +105,7 @@ patient_chart_ui <- function(id) {
   ns <- NS(id)
   tagList(
     shinyWidgets::searchInput(inputId = ns('global_search'), 
-                              label = HTML('<H4>Global Search:</H3>Click search icon to update or hit "Enter"'), 
+                              label = HTML('<H4>Global Search:</H3>Click search icon or hit "Enter" to update Search field.'), 
                               placeholder = 'Search string or regular expression',
                               btnSearch = icon("search"), 
                               btnReset = icon("remove"), 
