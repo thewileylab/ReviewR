@@ -70,19 +70,48 @@ chart_review_subject_info <- function(id) {
 chart_review_navigation <- function(id) {
   ns <- NS(id)
   tagList(
-    selectizeInput(inputId = ns('subject_id'),
-                   width = '100%',
-                   label = 'Jump to Subject ID:',
-                   choices = NULL,
-                   selected = NULL,
-                   options = list(create = FALSE,
-                                  placeholder = '<empty>')
-                   ),
-    fluidRow( 
-        actionButton(inputId = ns('prev_subject'), label = '<-- Previous', width = '120px'), 
-        actionButton(inputId = ns('next_subject'), label = 'Next -->', width = '120px'),
-        style = 'display:flex;justify-content:center'
-        )
+    fluidRow(
+      shinyjs::hidden(
+        div(id = ns('overall_review_status_div'),
+            shinyWidgets::dropdown(inputId = ns('overall_review_status'),
+                                   HTML('<strong>Overall Review Status</strong>'),
+                                   style = 'unite', status = 'primary', size = 'sm', right = F, icon = icon('tasks'), width = '400px',
+                                   tooltip = shinyWidgets::tooltipOptions(title = "Click to see overall review status!"),
+                                   animate = shinyWidgets::animateOptions(enter = shinyWidgets::animations$fading_entrances$fadeInRightBig,
+                                                                          exit = shinyWidgets::animations$fading_exits$fadeOutRightBig
+                                                                          )
+                                   ),
+            style = 'margin-left:10px;width:10%;'
+            )
+        ),
+      div(
+        selectizeInput(inputId = ns('subject_id'),
+                       # width = '80%',
+                       label = 'Jump to Subject ID:',
+                       choices = NULL,
+                       selected = NULL,
+                       options = list(create = FALSE,
+                                      placeholder = '<empty>',
+                                      ## Apply HTML Styling to SubjectID Choices
+                                      ## https://stackoverflow.com/questions/51218885/different-styles-in-shiny-dropdown
+                                      render = I('{
+                                                  item: function(item, escape) {
+                                                  return "<div>" + item.label + "</div>"
+                                                  },
+                                                  option: function(item, escape) {
+                                                  return "<div>" + item.label + "</div>"
+                                                  }}')
+                                      )
+                       ),
+        style = 'margin-left:10px;width:80%;'
+        ),
+      style = 'display:flex;justify-content:flex-start;flex-wrap:wrap;align-items:stretch;'
+      ),
+    fluidRow(
+      actionButton(inputId = ns('prev_subject'), label = '<-- Previous', width = '120px'), 
+      actionButton(inputId = ns('next_subject'), label = 'Next -->', width = '120px'),
+      style = 'display:flex;justify-content:center;flex-wrap:wrap;'
+      )
     )
 }
 
@@ -241,7 +270,6 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
       # Subject Info ----
       ### Determine Abstraction Status
       observeEvent(abstract_vars()$previous_selected_instrument_complete_val, ignoreInit = T, {
-        # browser()
         if (abstract_vars()$previous_selected_instrument_complete_val %>% rlang::is_empty() == T ) {
           subject_vars$selected_subject_status <- NULL
         } else {
@@ -338,7 +366,6 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
       # Navigation Inputs ----
       ## On Previous Subject Button Press, update selected row in DT
       observeEvent(input$prev_subject, {
-        # browser()
         shinyjs::disable('prev_subject')
         shinyjs::disable('next_subject')
         shinyjs::disable('subject_id')
@@ -353,7 +380,6 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
       
       ## On Next Subject Button Press, updated selected row in DT
       observeEvent(input$next_subject, {
-        # browser()
         shinyjs::disable('prev_subject')
         shinyjs::disable('next_subject')
         shinyjs::disable('subject_id')
@@ -368,7 +394,6 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
       
       ## When a choice is made from the chart review dropdown, update the selected row in DT
         observeEvent(input$subject_id, ignoreInit = T, {
-          # browser()
           req(input$subject_id != '')
           if(as.integer(input$subject_id) != navigation_vars$selected_row) {
             shinyjs::disable('prev_subject')
