@@ -43,6 +43,7 @@ reviewr_datatable <- function(.data, search_term = '') {
 #' @export
 #' @import shiny 
 #' @importFrom shinycssloaders withSpinner
+#' @importFrom shinyWidgets animateOptions dropdown tooltipOptions
 #' 
 
 navigation_message <- function(id) {
@@ -134,7 +135,7 @@ chart_review_navigation <- function(id) {
 #' @importFrom tibble rowid_to_column tibble
 #' @importFrom tidyr replace_na
 #' @importFrom rlang .data exec is_empty
-#' @importFrom shinyjs disable enable
+#' @importFrom shinyjs disable hide enable show
 #' @importFrom utils tail
 mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, parent_session) {
   moduleServer(
@@ -402,6 +403,16 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
             shinyjs::disable('all_patient_search_dt_rows_selected')
             navigation_vars$selected_row <- as.integer(input$subject_id) }
           })
+      
+      # Review Status ----
+        observeEvent(abstract_vars()$is_configured, {
+          if(abstract_vars()$is_configured == 'yes') {
+            shinyjs::show(id = 'overall_review_status_div')
+            } else if (abstract_vars()$is_configured == 'no') {
+              shinyjs::hide(id = 'overall_review_status_div')
+              }
+          })
+        
         
       # Return ----
       return(subject_vars)
