@@ -123,9 +123,9 @@ patient_chart_ui <- function(id) {
 #' @keywords internal
 #' @export
 #' @importFrom magrittr %>% 
-#' @importFrom DT dataTableProxy updateSearch
 #' @importFrom DBI dbListTables dbListFields 
 #' @importFrom dplyr mutate rename select left_join filter ungroup arrange slice group_by desc
+#' @importFrom DT dataTableProxy updateSearch
 #' @importFrom glue glue
 #' @importFrom purrr map map2 iwalk imap
 #' @importFrom stringr str_detect str_replace str_replace_all regex str_extract
