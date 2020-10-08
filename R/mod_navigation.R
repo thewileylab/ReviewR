@@ -73,11 +73,11 @@ chart_review_navigation <- function(id) {
   tagList(
     fluidRow(
       shinyjs::hidden(
-        div(id = ns('overall_review_status_div'),
-            shinyWidgets::dropdown(inputId = ns('overall_review_status'),
-                                   HTML('<strong>Overall Review Status</strong>'),
+        div(id = ns('individual_review_status_div'),
+            shinyWidgets::dropdown(inputId = ns('individual_review_status'),
+                                   uiOutput(ns('review_status')),
                                    style = 'unite', status = 'primary', size = 'sm', right = F, icon = icon('tasks'), width = '400px',
-                                   tooltip = shinyWidgets::tooltipOptions(title = "Click to see overall review status!"),
+                                   tooltip = shinyWidgets::tooltipOptions(placement = 'right', html = TRUE, title = "Click to see individual review status!"),
                                    animate = shinyWidgets::animateOptions(enter = shinyWidgets::animations$fading_entrances$fadeInRightBig,
                                                                           exit = shinyWidgets::animations$fading_exits$fadeOutRightBig
                                                                           )
@@ -112,7 +112,8 @@ chart_review_navigation <- function(id) {
       actionButton(inputId = ns('prev_subject'), label = '<-- Previous', width = '120px'), 
       actionButton(inputId = ns('next_subject'), label = 'Next -->', width = '120px'),
       style = 'display:flex;justify-content:center;flex-wrap:wrap;'
-      )
+      ),
+    uiOutput(ns('review_progress'))
     )
 }
 
@@ -324,11 +325,6 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
             }
         })
       
-      # Abstraction ----
-      # observeEvent(abstract_vars()$all_review_status, {
-      #   req(abstract_vars()$all_review_status)
-      #   })
-      
       # Monitor DT ----
       observeEvent(input$all_patient_search_dt_rows_selected, {
         req(input$all_patient_search_dt_rows_selected != navigation_vars$selected_row)
@@ -407,12 +403,36 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
       # Review Status ----
         observeEvent(abstract_vars()$is_configured, {
           if(abstract_vars()$is_configured == 'yes') {
-            shinyjs::show(id = 'overall_review_status_div')
+            shinyjs::show(id = 'individual_review_status_div')
             } else if (abstract_vars()$is_configured == 'no') {
-              shinyjs::hide(id = 'overall_review_status_div')
+              shinyjs::hide(id = 'individual_review_status_div')
               }
           })
+        observeEvent(abstract_vars()$all_review_status, {
+          individual_review_status  <- navigation_vars$all_patients %>% 
+            left_join(abstract_vars()$all_review_status) %>% 
+            select(c('Subject ID' = 1, 'Review Status' = dplyr::last_col())) %>% 
+            dplyr::mutate_at(vars(dplyr::last_col()), tidyr::replace_na, '<em>Review Not Started</em>')
+          navigation_vars$review_progress <- individual_review_status %>% 
+            filter(.data$`Review Status` != '<em>Review Not Started</em>') %>% 
+            nrow()
+          output$individual_rview_status_dt <- DT::renderDataTable(individual_review_status  %>% reviewr_datatable())
+          })
         
+        ## Review Progress Bar
+        review_progress <- reactive({
+          req(abstract_vars()$is_configured == 'yes')
+          shinyWidgets::progressBar(id = "pb8", value = navigation_vars$review_progress, total = nrow(navigation_vars$all_patients), status = "info", display_pct = TRUE, striped = TRUE, title = "Review Progress")
+        })
+        
+        ## Review Status Outputs
+        output$review_progress <- renderUI({ review_progress() })
+        output$review_status <- renderUI({
+          tagList(
+            HTML('<strong>Current Review Status</strong>'),
+            DT::DTOutput(ns('individual_rview_status_dt'))
+          )
+        })
         
       # Return ----
       return(subject_vars)
