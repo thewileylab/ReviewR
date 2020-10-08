@@ -113,7 +113,7 @@ chart_review_navigation <- function(id) {
       actionButton(inputId = ns('next_subject'), label = 'Next -->', width = '120px'),
       style = 'display:flex;justify-content:center;flex-wrap:wrap;'
       ),
-    uiOutput(ns('review_progress'))
+    uiOutput(ns('review_progress')),
     )
 }
 
@@ -152,7 +152,8 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
         row_ids = NULL,
         subject_ids = NULL,
         selected_row = 0,
-        message = HTML('Please complete Setup to connect to a patient database.')
+        message = HTML('Please complete Setup to connect to a patient database.'),
+        review_progress = 0
         )
       
       # Navigation Message ----
@@ -297,7 +298,7 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
               div(subject_vars$selected_subject_status, 
                   style='display:inline-block;vertical-align:middle'
                   ),
-              div(style='height:100px; overflow-y: scroll',
+              div(style='height:115px; overflow-y: scroll',
                 renderTable(subject_vars$selected_subject_info %>% 
                               left_join(abstract_vars()$all_review_status) %>% 
                               ## The last two columns will contain 'review status'
@@ -422,14 +423,14 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
         ## Review Progress Bar
         review_progress <- reactive({
           req(abstract_vars()$is_configured == 'yes')
-          shinyWidgets::progressBar(id = "pb8", value = navigation_vars$review_progress, total = nrow(navigation_vars$all_patients), status = "info", display_pct = TRUE, striped = TRUE, title = "Review Progress")
+          shinyWidgets::progressBar(id = ns("review_progress"), value = navigation_vars$review_progress, total = nrow(navigation_vars$all_patients), status = "info", display_pct = TRUE, striped = TRUE, title = "Review Progress")
         })
         
         ## Review Status Outputs
         output$review_progress <- renderUI({ review_progress() })
         output$review_status <- renderUI({
           tagList(
-            HTML('<strong>Current Review Status</strong>'),
+            HTML('<strong>Current Review Progress</strong>'),
             DT::DTOutput(ns('individual_rview_status_dt'))
           )
         })
