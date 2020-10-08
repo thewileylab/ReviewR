@@ -143,7 +143,7 @@ dev_add_datamodel <- function(csv) {
              ) %>% 
       group_by(.data$file_path,.data$datamodel,.data$model_version) %>% 
       nest() %>% 
-      relocate(datamodel, model_version, data, file_path)
+      relocate(.data$datamodel, .data$model_version, .data$data, .data$file_path)
     usethis::use_data(supported_datamodels, overwrite = T)
   
     ## Determine Datamodel moniker and version
