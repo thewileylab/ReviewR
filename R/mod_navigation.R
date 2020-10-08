@@ -137,6 +137,7 @@ chart_review_navigation <- function(id) {
 #' @importFrom tidyr replace_na
 #' @importFrom rlang .data exec is_empty
 #' @importFrom shinyjs disable hide enable show
+#' @importFrom shinyWidgets progressBar
 #' @importFrom utils tail
 mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, parent_session) {
   moduleServer(
