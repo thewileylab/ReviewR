@@ -104,12 +104,14 @@ datamodel_detection_ui <- function(id) {
 patient_chart_ui <- function(id) {
   ns <- NS(id)
   tagList(
-    shinyWidgets::searchInput(inputId = ns('global_search'), 
-                              label = HTML('<H4>Global Search:</H3>Click search icon or hit "Enter" to update Search field.'), 
-                              placeholder = 'Search string or regular expression',
-                              btnSearch = icon("search"), 
-                              btnReset = icon("remove"), 
-                              width = '100%'),
+    div(
+      shinyWidgets::searchInput(inputId = ns('global_search'), 
+                                placeholder = 'Search string or regex',
+                                btnSearch = icon("search"), 
+                                btnReset = icon("remove"), 
+                                width = '400px'),
+      style = 'float: right;'
+      ),
     uiOutput(ns('patient_chart'))
     )
   }
@@ -266,7 +268,7 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars, p
           ## Create DT Outputs
           output_name <- glue::glue('dt_{.y}')
           output[[output_name]] <- DT::renderDataTable({
-            rlang::exec(.x) %>% reviewr_datatable(search_term = input$global_search)
+            rlang::exec(.x) %>% reviewr_datatable(dom = 'ti', search_term = input$global_search)
             })
           ## Create Matching DT Proxies
           proxy_name <- glue::glue('dt_proxy_{.y}')
