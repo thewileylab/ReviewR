@@ -4,10 +4,12 @@
 \alias{reviewr_datatable}
 \title{ReviewR Datatable}
 \usage{
-reviewr_datatable(.data, search_term = "")
+reviewr_datatable(.data, dom = "fti", search_term = "")
 }
 \arguments{
 \item{.data}{A local tibble or dataframe to be rendered in the ReviewR UI}
+
+\item{dom}{Define the table control elements to appear on the page and in what order}
 
 \item{search_term}{A string or regular expression used as a filter for patient data}
 }

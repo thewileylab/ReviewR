@@ -3,16 +3,18 @@
 #'
 #' @param .data A local tibble or dataframe to be rendered in the ReviewR UI
 #' @param search_term A string or regular expression used as a filter for patient data
+#' @param dom Define the table control elements to appear on the page and in what order
 #'
 #' @return return a DT with custom options
 #' @keywords internal
 #' @export 
 #' @importFrom DT datatable
 #'
-reviewr_datatable <- function(.data, search_term = '') {
+reviewr_datatable <- function(.data, dom = 'fti', search_term = '') {
   DT::datatable(data = .data,
                 extensions = list('Scroller' = NULL),
-                options = list(scrollX = TRUE,
+                options = list(dom = dom,
+                               scrollX = TRUE,
                                deferRender = TRUE,
                                scrollY = '600px',
                                scroller = TRUE,
