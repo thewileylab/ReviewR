@@ -17,7 +17,7 @@ reviewr_datatable <- function(.data, dom = 'ftip', column_filter = 'top', search
                 options = list(dom = dom,
                                scrollX = TRUE,
                                deferRender = TRUE,
-                               scrollY = '550px',
+                               scrollY = '600px',
                                scroller = TRUE,
                                searchHighlight = TRUE, 
                                search = list(regex = TRUE, 
