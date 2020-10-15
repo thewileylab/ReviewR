@@ -2,21 +2,22 @@
 #' ReviewR Datatable
 #'
 #' @param .data A local tibble or dataframe to be rendered in the ReviewR UI
-#' @param search_term A string or regular expression used as a filter for patient data
 #' @param dom Define the table control elements to appear on the page and in what order
-#'
+#' @param column_filter Where to display individual column filters. Valid entries are: 'top','bottom','none'
+#' @param search_term A string or regular expression used as a filter for patient data
+#' 
 #' @return return a DT with custom options
 #' @keywords internal
 #' @export 
 #' @importFrom DT datatable
 #'
-reviewr_datatable <- function(.data, dom = 'fti', search_term = '') {
+reviewr_datatable <- function(.data, dom = 'ftip', column_filter = 'top', search_term = '') {
   DT::datatable(data = .data,
                 extensions = list('Scroller' = NULL),
                 options = list(dom = dom,
                                scrollX = TRUE,
                                deferRender = TRUE,
-                               scrollY = '600px',
+                               scrollY = '550px',
                                scroller = TRUE,
                                searchHighlight = TRUE, 
                                search = list(regex = TRUE, 
@@ -26,7 +27,7 @@ reviewr_datatable <- function(.data, dom = 'fti', search_term = '') {
                 rownames = F, 
                 selection = 'single',
                 escape = F,
-                filter = 'top',
+                filter = column_filter,
                 class = 'cell-border strip hover'
                 )
   }
@@ -45,7 +46,7 @@ reviewr_datatable <- function(.data, dom = 'fti', search_term = '') {
 #' @export
 #' @import shiny 
 #' @importFrom shinycssloaders withSpinner
-#' @importFrom shinyWidgets animateOptions dropdown tooltipOptions
+#' @importFrom shinyWidgets pickerInput
 #' 
 
 navigation_message <- function(id) {
@@ -73,49 +74,36 @@ chart_review_subject_info <- function(id) {
 chart_review_navigation <- function(id) {
   ns <- NS(id)
   tagList(
-    fluidRow(
+      div(id = ns('jump_no_abstraction_div'),
+          selectizeInput(inputId = ns('subject_id'),
+                         width = '100%',
+                         label = 'Jump to Subject ID:',
+                         choices = NULL,
+                         selected = NULL,
+                         options = list(create = FALSE,
+                                        placeholder = '<empty>'
+                                        )
+                         )
+          ),
       shinyjs::hidden(
-        div(id = ns('individual_review_status_div'),
-            shinyWidgets::dropdown(inputId = ns('individual_review_status'),
-                                   uiOutput(ns('review_status')),
-                                   style = 'unite', status = 'primary', size = 'sm', right = F, icon = icon('tasks'), width = '400px',
-                                   tooltip = shinyWidgets::tooltipOptions(placement = 'right', html = TRUE, title = "Click to see individual review status!"),
-                                   animate = shinyWidgets::animateOptions(enter = shinyWidgets::animations$fading_entrances$fadeInRightBig,
-                                                                          exit = shinyWidgets::animations$fading_exits$fadeOutRightBig
-                                                                          )
-                                   ),
-            style = 'margin-left:10px;width:10%;'
+        div(id = ns('jump_abstraction_div'),
+            pickerInput(inputId = ns('subject_id_2'),
+                        label = 'Jump to Subject ID:',
+                        choices = NULL,
+                        selected = NULL,
+                        choicesOpt = list(content = NULL),
+                        options = list(size = 5,
+                                       title = '<empty>'
+                                       )
+                        )
             )
         ),
-      div(
-        selectizeInput(inputId = ns('subject_id'),
-                       # width = '80%',
-                       label = 'Jump to Subject ID:',
-                       choices = NULL,
-                       selected = NULL,
-                       options = list(create = FALSE,
-                                      placeholder = '<empty>',
-                                      ## Apply HTML Styling to SubjectID Choices
-                                      ## https://stackoverflow.com/questions/51218885/different-styles-in-shiny-dropdown
-                                      render = I('{
-                                                  item: function(item, escape) {
-                                                  return "<div>" + item.label + "</div>"
-                                                  },
-                                                  option: function(item, escape) {
-                                                  return "<div>" + item.label + "</div>"
-                                                  }}')
-                                      )
-                       ),
-        style = 'margin-left:10px;width:80%;'
-        ),
-      style = 'display:flex;justify-content:flex-start;flex-wrap:wrap;align-items:stretch;'
-      ),
     fluidRow(
       actionButton(inputId = ns('prev_subject'), label = '<-- Previous', width = '120px'), 
       actionButton(inputId = ns('next_subject'), label = 'Next -->', width = '120px'),
       style = 'display:flex;justify-content:center;flex-wrap:wrap;'
       ),
-    uiOutput(ns('review_progress')),
+    uiOutput(ns('review_progress'))
     )
 }
 
@@ -139,7 +127,7 @@ chart_review_navigation <- function(id) {
 #' @importFrom tidyr replace_na
 #' @importFrom rlang .data exec is_empty
 #' @importFrom shinyjs disable hide enable show
-#' @importFrom shinyWidgets progressBar
+#' @importFrom shinyWidgets progressBar updatePickerInput
 #' @importFrom utils tail
 mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, parent_session) {
   moduleServer(
@@ -186,6 +174,10 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
                                choices = navigation_vars$subject_ids,
                                server = T
                                )
+          updatePickerInput(session = session,
+                            inputId = 'subject_id_2',
+                            choices = navigation_vars$subject_ids
+                            )
           ## Clear Subject Info Vars
           subject_vars$selected_subject_info <- NULL
           subject_vars$selected_subject_id = NULL
@@ -301,17 +293,19 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
               div(subject_vars$selected_subject_status, 
                   style='display:inline-block;vertical-align:middle'
                   ),
-              div(style='height:115px; overflow-y: scroll',
-                renderTable(subject_vars$selected_subject_info %>% 
-                              left_join(abstract_vars()$all_review_status) %>% 
-                              ## The last two columns will contain 'review status'
-                              dplyr::mutate_at(vars(dplyr::last_col(1), dplyr::last_col()), tidyr::replace_na, '<em>Review Not Started</em>') %>% 
-                              mutate_all(as.character) %>% 
-                              select(-.data$ID), 
-                            width = '100%', align = 'l', digits = 0,
-                            sanitize.text.function=identity
-                            )
-                )
+              div(renderTable(subject_vars$selected_subject_info %>% 
+                                left_join(abstract_vars()$all_review_status) %>% 
+                                ## The last two columns will contain 'review status'
+                                select(-dplyr::last_col() ) %>% 
+                                # dplyr::mutate_at(vars(dplyr::last_col(1), dplyr::last_col()), tidyr::replace_na, '<em>Review Not Started</em>') %>%
+                                dplyr::mutate_at(vars(dplyr::last_col()), tidyr::replace_na, '<em>Review Not Started</em>') %>% 
+                                mutate_all(as.character) %>% 
+                                select(-.data$ID), 
+                              width = '100%', align = 'l', digits = 0,
+                              sanitize.text.function=identity
+                              ),
+                  style='height:115px; overflow-y: scroll; scrollbar-width: thin;'
+                  )
               )
             } else {
               tagList(
@@ -350,6 +344,17 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
                              choices = navigation_vars$subject_ids,
                              selected = navigation_vars$selected_row,
                              server = T)
+        if(abstract_vars()$is_configured == 'yes'){
+          updatePickerInput(session = session,
+                            inputId = 'subject_id_2',
+                            choices = navigation_vars$subject_ids,
+                            selected = navigation_vars$selected_row,
+                            choicesOpt = list(content = navigation_vars$individual_review_status %>% 
+                                                unite(col = 'picker_html', sep = '<br>') %>% 
+                                                pull(.data$picker_html)
+                                              )
+                            )
+          }
         ## Update Subject Info
         subject_vars$selected_subject_info <- navigation_vars$all_patients %>%
           slice(navigation_vars$selected_row) 
@@ -361,6 +366,7 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
         shinyjs::enable('prev_subject')
         shinyjs::enable('next_subject')
         shinyjs::enable('subject_id')
+        shinyjs::enable('subject_id_2')
         shinyjs::enable('all_patient_search_dt_rows_selected')
         })
       
@@ -403,40 +409,61 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
             shinyjs::disable('all_patient_search_dt_rows_selected')
             navigation_vars$selected_row <- as.integer(input$subject_id) }
           })
+        
+        ## When a choice is made from the abstraction chart review dropdown, update the selected row in DT
+        observeEvent(input$subject_id_2, ignoreInit = T, {
+          req(input$subject_id_2 != '')
+          if(as.integer(input$subject_id_2) != navigation_vars$selected_row) {
+            shinyjs::disable('prev_subject')
+            shinyjs::disable('next_subject')
+            shinyjs::disable('subject_id_2')
+            shinyjs::disable('all_patient_search_dt_rows_selected')
+            navigation_vars$selected_row <- as.integer(input$subject_id_2) }
+        })
       
       # Review Status ----
         observeEvent(abstract_vars()$is_configured, {
           if(abstract_vars()$is_configured == 'yes') {
-            shinyjs::show(id = 'individual_review_status_div')
+            shinyjs::hide(id = 'jump_no_abstraction_div')
+            shinyjs::show(id = 'jump_abstraction_div')
             } else if (abstract_vars()$is_configured == 'no') {
-              shinyjs::hide(id = 'individual_review_status_div')
-              }
+              shinyjs::hide(id = 'jump_abstraction_div')
+              shinyjs::show(id = 'jump_no_abstraction_div')
+            }
           })
         observeEvent(abstract_vars()$all_review_status, {
-          individual_review_status  <- navigation_vars$all_patients %>% 
+          # browser()
+          navigation_vars$individual_review_status  <- navigation_vars$all_patients %>% 
             left_join(abstract_vars()$all_review_status) %>% 
-            select(c('Subject ID' = 1, 'Review Status' = dplyr::last_col())) %>% 
+            select(c(.data$ID, 'Review Status' = dplyr::last_col())) %>% 
             dplyr::mutate_at(vars(dplyr::last_col()), tidyr::replace_na, '<em>Review Not Started</em>')
-          navigation_vars$review_progress <- individual_review_status %>% 
+          updatePickerInput(session = session,
+                            inputId = 'subject_id_2',
+                            choices = navigation_vars$subject_ids,
+                            selected = navigation_vars$selected_row,
+                            choicesOpt = list(content = navigation_vars$individual_review_status %>% 
+                                                unite(col = 'picker_html', sep = '<br>') %>% 
+                                                pull(.data$picker_html)
+                                              )
+          )
+          
+          navigation_vars$review_progress <- navigation_vars$individual_review_status %>% 
             filter(.data$`Review Status` != '<em>Review Not Started</em>') %>% 
             nrow()
-          output$individual_rview_status_dt <- DT::renderDataTable(individual_review_status  %>% reviewr_datatable())
           })
         
         ## Review Progress Bar
         review_progress <- reactive({
           req(abstract_vars()$is_configured == 'yes')
-          shinyWidgets::progressBar(id = ns("review_progress"), value = navigation_vars$review_progress, total = nrow(navigation_vars$all_patients), status = "info", display_pct = TRUE, striped = TRUE, title = "Review Progress")
-        })
-        
-        ## Review Status Outputs
+          shinyWidgets::progressBar(id = ns("review_progress"), 
+                                    title = "Review Progress:",
+                                    value = navigation_vars$review_progress, 
+                                    total = nrow(navigation_vars$all_patients), 
+                                    status = "info", 
+                                    display_pct = TRUE, 
+                                    striped = TRUE )
+          })
         output$review_progress <- renderUI({ review_progress() })
-        output$review_status <- renderUI({
-          tagList(
-            HTML('<strong>Current Review Progress</strong>'),
-            DT::DTOutput(ns('individual_rview_status_dt'))
-          )
-        })
         
       # Return ----
       return(subject_vars)
