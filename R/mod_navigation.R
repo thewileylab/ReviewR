@@ -245,8 +245,7 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
                               )
                   }
           })
-      # outputOptions(output, 'all_patient_search_dt', suspendWhenHidden = F)
-      
+
       ## When DT loads, select the first row
       observeEvent(input$all_patient_search_dt_rows_all, {
         req(input$all_patient_search_dt_rows_all)
@@ -429,8 +428,8 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
               shinyjs::show(id = 'jump_no_abstraction_div')
             }
           })
-        observeEvent(abstract_vars()$all_review_status, {
-          # browser()
+        observeEvent(c(navigation_vars$all_patients, abstract_vars()$all_review_status), {
+          req(navigation_vars$all_patients, abstract_vars()$all_review_status)
           navigation_vars$individual_review_status  <- navigation_vars$all_patients %>% 
             left_join(abstract_vars()$all_review_status) %>% 
             select(c(.data$ID, 'Review Status' = dplyr::last_col())) %>% 
