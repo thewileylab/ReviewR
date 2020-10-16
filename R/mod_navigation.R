@@ -73,31 +73,45 @@ chart_review_subject_info <- function(id) {
 
 chart_review_navigation <- function(id) {
   ns <- NS(id)
+  
+  ## Create Inputs from Keyboard Left and Right Arrows!
+  arrowed <- paste0(
+    "$(document).on('keydown', function(event){",
+    "  var key = event.which;",
+    "  if(key === 37){",
+    "    Shiny.setInputValue('",id,"-arrowLeft', true, {priority: 'event'});",
+    "  } else if(key === 39){",
+    "    Shiny.setInputValue('",id,"-arrowRight', true, {priority: 'event'});",
+    "  }",
+    "});"
+    )
+  
   tagList(
-      div(id = ns('jump_no_abstraction_div'),
-          selectizeInput(inputId = ns('subject_id'),
-                         width = '100%',
-                         label = 'Jump to Subject ID:',
-                         choices = NULL,
-                         selected = NULL,
-                         options = list(create = FALSE,
-                                        placeholder = '<empty>'
-                                        )
-                         )
-          ),
-      shinyjs::hidden(
-        div(id = ns('jump_abstraction_div'),
-            pickerInput(inputId = ns('subject_id_2'),
-                        label = 'Jump to Subject ID:',
-                        choices = NULL,
-                        selected = NULL,
-                        choicesOpt = list(content = NULL),
-                        options = pickerOptions(title = '<empty>',
-                                                virtualScroll = TRUE
-                                                )
-                        )
-            )
+    tags$head(tags$script(HTML(arrowed))),
+    div(id = ns('jump_no_abstraction_div'),
+        selectizeInput(inputId = ns('subject_id'),
+                       width = '100%',
+                       label = 'Jump to Subject ID:',
+                       choices = NULL,
+                       selected = NULL,
+                       options = list(create = FALSE,
+                                      placeholder = '<empty>'
+                                      )
+                       )
         ),
+    shinyjs::hidden(
+      div(id = ns('jump_abstraction_div'),
+          pickerInput(inputId = ns('subject_id_2'),
+                      label = 'Jump to Subject ID:',
+                      choices = NULL,
+                      selected = NULL,
+                      choicesOpt = list(content = NULL),
+                      options = pickerOptions(title = '<empty>',
+                                              virtualScroll = TRUE
+                                              )
+                      )
+          )
+      ),
     fluidRow(
       actionButton(inputId = ns('prev_subject'), label = '<-- Previous', width = '120px'), 
       actionButton(inputId = ns('next_subject'), label = 'Next -->', width = '120px'),
@@ -133,7 +147,7 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
     id,
     function(input, output, session) {
       ns <- session$ns
-      
+
       # Navigation Vars ----
       navigation_vars <- reactiveValues(
         dt_proxy = NULL,
@@ -179,6 +193,7 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
           ## Clear Subject Info Vars
           subject_vars$selected_subject_info <- NULL
           subject_vars$selected_subject_id = NULL
+          
           ## When connecting, collect necessary vars
           } else {
             message('Retrieving "all patients" table...')
@@ -204,7 +219,7 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
                                  choices = navigation_vars$subject_ids,
                                  server = T
                                  )
-            navigation_vars$message <- HTML('To select a patient, please click the desired Subject ID from the table below:') 
+            navigation_vars$message <- HTML('To select a patient, please click the desired Subject ID from the table below:')
             message('Complete')
             }
         })
@@ -368,8 +383,9 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
         })
       
       # Navigation Inputs ----
+      
       ## On Previous Subject Button Press, update selected row in DT
-      observeEvent(input$prev_subject, {
+      observeEvent(input$prev_subject,  {
         shinyjs::disable('prev_subject')
         shinyjs::disable('next_subject')
         shinyjs::disable('subject_id')
@@ -381,6 +397,21 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
             navigation_vars$selected_row <- temp
             }
         })
+      
+      ## On Keyboard Arrow Left Button Press, update selected row in DT
+      observeEvent(input$arrowLeft, {
+        req(navigation_vars$all_patients)
+        shinyjs::disable('prev_subject')
+        shinyjs::disable('next_subject')
+        shinyjs::disable('subject_id')
+        shinyjs::disable('all_patient_search_dt_rows_selected')
+        temp <- navigation_vars$selected_row - 1
+        if(temp < 1) {
+          navigation_vars$selected_row <- navigation_vars$all_patients_max_rows
+        } else {
+          navigation_vars$selected_row <- temp
+        }
+      })
       
       ## On Next Subject Button Press, updated selected row in DT
       observeEvent(input$next_subject, {
@@ -395,6 +426,21 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
             navigation_vars$selected_row <- temp
             }
         })
+      
+      ## On Keyboard Arrow Right Button Press, update selected row in DT
+      observeEvent(input$arrowRight, {
+        req(navigation_vars$all_patients)
+        shinyjs::disable('prev_subject')
+        shinyjs::disable('next_subject')
+        shinyjs::disable('subject_id')
+        shinyjs::disable('all_patient_search_dt_rows_selected')
+        temp <- navigation_vars$selected_row + 1
+        if(temp > navigation_vars$all_patients_max_rows) {
+          navigation_vars$selected_row <- 1
+        } else {
+          navigation_vars$selected_row <- temp
+        }
+      })
       
       ## When a choice is made from the chart review dropdown, update the selected row in DT
         observeEvent(input$subject_id, ignoreInit = T, {
