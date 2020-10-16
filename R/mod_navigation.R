@@ -102,8 +102,7 @@ chart_review_navigation <- function(id) {
       actionButton(inputId = ns('prev_subject'), label = '<-- Previous', width = '120px'), 
       actionButton(inputId = ns('next_subject'), label = 'Next -->', width = '120px'),
       style = 'display:flex;justify-content:center;flex-wrap:wrap;'
-      ),
-    uiOutput(ns('review_progress'))
+      )
     )
 }
 
@@ -127,7 +126,7 @@ chart_review_navigation <- function(id) {
 #' @importFrom tidyr replace_na
 #' @importFrom rlang .data exec is_empty
 #' @importFrom shinyjs disable hide enable show
-#' @importFrom shinyWidgets progressBar updatePickerInput
+#' @importFrom shinyWidgets updatePickerInput
 #' @importFrom utils tail
 mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, parent_session) {
   moduleServer(
@@ -143,8 +142,7 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
         row_ids = NULL,
         subject_ids = NULL,
         selected_row = 0,
-        message = HTML('Please complete Setup to connect to a patient database.'),
-        review_progress = 0
+        message = HTML('Please complete Setup to connect to a patient database.')
         )
       
       # Navigation Message ----
@@ -445,25 +443,8 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
                                                 unite(col = 'picker_html', sep = '<br>') %>% 
                                                 pull(.data$picker_html)
                                               )
-          )
-          
-          navigation_vars$review_progress <- navigation_vars$individual_review_status %>% 
-            filter(.data$`Review Status` != '<em>Review Not Started</em>') %>% 
-            nrow()
+                            )
           })
-        
-        ## Review Progress Bar
-        review_progress <- reactive({
-          req(abstract_vars()$is_configured == 'yes')
-          shinyWidgets::progressBar(id = ns("review_progress"), 
-                                    title = "Review Progress:",
-                                    value = navigation_vars$review_progress, 
-                                    total = nrow(navigation_vars$all_patients), 
-                                    status = "info", 
-                                    display_pct = TRUE, 
-                                    striped = TRUE )
-          })
-        output$review_progress <- renderUI({ review_progress() })
         
       # Return ----
       return(subject_vars)
