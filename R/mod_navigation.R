@@ -46,7 +46,7 @@ reviewr_datatable <- function(.data, dom = 'ftip', column_filter = 'top', search
 #' @export
 #' @import shiny 
 #' @importFrom shinycssloaders withSpinner
-#' @importFrom shinyWidgets pickerInput
+#' @importFrom shinyWidgets pickerInput pickerOptions
 #' 
 
 navigation_message <- function(id) {
@@ -92,9 +92,9 @@ chart_review_navigation <- function(id) {
                         choices = NULL,
                         selected = NULL,
                         choicesOpt = list(content = NULL),
-                        options = list(size = 5,
-                                       title = '<empty>'
-                                       )
+                        options = pickerOptions(title = '<empty>',
+                                                virtualScroll = TRUE
+                                                )
                         )
             )
         ),
