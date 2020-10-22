@@ -37,6 +37,7 @@ database_setup_ui <- function(id) {
 #' @importFrom magrittr %>% extract2
 #' @importFrom purrr map
 #' @importFrom rlang exec
+#' @importFrom shinyBigQuery bigquery_setup_server
 mod_database_setup_server <- function(id){
   moduleServer(
     id,
@@ -47,9 +48,7 @@ mod_database_setup_server <- function(id){
       namespace <- 'db-selector-ns'
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Add Database Setup Modules Here!!! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
       ## Add Database Setup Modules Here
-      database_setup_vars <- reactiveValues(bigquery = shinyBigQuery::bigquery_setup_server(id = namespace ),
-                                            postgresql = shinyPostgreSQL::postgresql_setup_server(id = namespace )
-                                            )
+      database_setup_vars <- reactiveValues(bigquery = shinyBigQuery::bigquery_setup_server(id = namespace ) )
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
       
       # observeEvent(input$debug, {

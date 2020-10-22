@@ -35,8 +35,7 @@ Imports:
     shinyjs,
     shinyWidgets,
     shinyBigQuery (>= 0.0.2.9000),
-    shinyREDCap (>= 0.0.1.9000),
-    shinyPostgreSQL,
+    shinyREDCap (>= 0.0.2.9000),
     snakecase,
     stringr,
     tibble,
@@ -45,7 +44,6 @@ Imports:
 Remotes: 
     Thinkr-open/golem,
     thewileylab/shinyBigQuery,
-    thewileylab/shinyPostgreSQL,
     thewileylab/shinyREDCap
 Suggests: 
     htmltools,

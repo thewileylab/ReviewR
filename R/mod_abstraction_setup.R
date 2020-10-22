@@ -44,6 +44,7 @@ abstraction_instrument_ui <- function(id) {
 #' @importFrom magrittr %>% extract2
 #' @importFrom purrr map
 #' @importFrom rlang exec
+#' @importFrom shinyREDCap redcap_server 
 mod_abstraction_setup_server <- function(id, subject_id){
   moduleServer(
     id,
