@@ -14,7 +14,6 @@
 database_setup_ui <- function(id) {
   ns <- NS(id)
   tagList(
-    # actionButton(inputId = ns('debug'), label = 'Debug'),
     h4('Connect to Patient Database'),
     HTML(glue::glue('To begin, please select a ReviewR database module:')),
     br(),
@@ -51,10 +50,6 @@ mod_database_setup_server <- function(id){
       database_setup_vars <- reactiveValues(bigquery = shinyBigQuery::bigquery_setup_server(id = namespace ) )
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
       
-      # observeEvent(input$debug, {
-      #   browser()
-      # })
-      
       selector_vals <- reactiveValues(
         module_names = '<empty>'
         )
@@ -62,7 +57,6 @@ mod_database_setup_server <- function(id){
       ## Parse module names from reactive values object
       observe({
         req(database_setup_vars)
-        # browser()
         values <- database_setup_vars %>% names()
         names <- map(values, ~extract2(database_setup_vars[[.x]], 'moduleName'))
         names(values) <- names

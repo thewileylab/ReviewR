@@ -14,7 +14,6 @@
 abstraction_setup_ui <- function(id) {
   ns <- NS(id)
   tagList(
-    # actionButton(inputId = ns('debug'), label = 'Debug'),
     h4('Configure Patient Chart Abstraction'),
     HTML(glue::glue('To begin, please select a ReviewR abstraction module:')),
     br(),
@@ -59,10 +58,6 @@ mod_abstraction_setup_server <- function(id, subject_id){
       
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
       
-      # observeEvent(input$debug, {
-      #   browser()
-      # })
-      
       selector_vals <- reactiveValues(
         module_names = '<empty>'
         )
@@ -70,7 +65,6 @@ mod_abstraction_setup_server <- function(id, subject_id){
       ## Parse module names from reactive values object
       observe({
         req(abstraction_setup_vars)
-        # browser()
         values <- abstraction_setup_vars %>% names()
         names <- map(values, ~extract2(abstraction_setup_vars[[.x]], 'moduleName'))
         names(values) <- names
