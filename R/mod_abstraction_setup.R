@@ -43,7 +43,10 @@ abstraction_instrument_ui <- function(id) {
 #' @importFrom magrittr %>% extract2
 #' @importFrom purrr map
 #' @importFrom rlang exec
+#' @importFrom shinyjs disable enable
+#' 
 #' @importFrom shinyREDCap redcap_server 
+
 mod_abstraction_setup_server <- function(id, subject_id){
   moduleServer(
     id,
@@ -107,6 +110,15 @@ mod_abstraction_setup_server <- function(id, subject_id){
                     !!!module_ui_args)
         })
       
+      # Disable Selector on Successful Abstraction Connection ----
+      ## Prevent multiple modules from being used simultaneously
+      observeEvent(abstraction_module_vars()$is_connected, {
+        if(abstraction_module_vars()$is_connected == 'yes') {
+          shinyjs::disable('abstraction_modules')
+        } else {
+          shinyjs::enable('abstraction_modules')
+        }
+      })
       
       # UI Outputs ----
       output$abstraction_module_setup_ui <- renderUI({ selected_module_setup_ui() })
