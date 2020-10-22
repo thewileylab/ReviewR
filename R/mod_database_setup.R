@@ -36,7 +36,10 @@ database_setup_ui <- function(id) {
 #' @importFrom magrittr %>% extract2
 #' @importFrom purrr map
 #' @importFrom rlang exec
+#' @importFrom shinyjs disable enable
+#' 
 #' @importFrom shinyBigQuery bigquery_setup_server
+
 mod_database_setup_server <- function(id){
   moduleServer(
     id,
@@ -48,6 +51,7 @@ mod_database_setup_server <- function(id){
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Add Database Setup Modules Here!!! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
       ## Add Database Setup Modules Here
       database_setup_vars <- reactiveValues(bigquery = shinyBigQuery::bigquery_setup_server(id = namespace ) )
+      
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
       
       selector_vals <- reactiveValues(
@@ -84,6 +88,16 @@ mod_database_setup_server <- function(id){
         ### with ns() wrapped namespace
         rlang::exec(database_setup_vars[[input$database_modules]]$setup_ui,
                     !!!module_ui_args)
+        })
+      
+      # Disable Selector on Successful Database Connection ----
+      ## Prevent multiple modules from being used simultaneously
+      observeEvent(database_module_vars()$is_connected, {
+        if(database_module_vars()$is_connected == 'yes') {
+          shinyjs::disable('database_modules')
+          } else {
+            shinyjs::enable('database_modules')
+            }
         })
       
       # UI Outputs ----
