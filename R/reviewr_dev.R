@@ -75,9 +75,12 @@ dt_2_viewer <- function(.data, file = NULL) {
 #'
 #' @importFrom glue glue glue_collapse
 #' @importFrom purrr map
-#' @importFrom rstudioapi navigateToFile
 #' @return A .R file populated with a database module skeleton
 dev_add_database_module <- function(mod_name = NULL, display_name = NULL) {
+  if(!requireNamespace('rstudioapi', quietly = T)) {
+    stop("'rstudioapi' package is required for this function to work. Please install it.",
+         call. = FALSE)
+    }
   if(is.null(mod_name) | is.null(display_name)) {
     message('mod_name and display_name are required arguments.')
     } else {
@@ -110,12 +113,21 @@ dev_add_database_module <- function(mod_name = NULL, display_name = NULL) {
 #' @importFrom stringr str_remove_all str_split
 #' @importFrom tibble enframe
 #' @importFrom tidyr replace_na nest separate
-#' @importFrom readr read_csv
 #' @importFrom rlang .data names2
-#' @importFrom rstudioapi navigateToFile
-#' @importFrom usethis use_data
 #' @return A .R file populated with basic database table functions
 dev_add_datamodel <- function(csv) {
+  if(!requireNamespace('readr', quietly = T)) {
+    stop("'readr' package is required for this function to work. Please install it.",
+         call. = FALSE)
+    }
+  if(!requireNamespace('rstudioapi', quietly = T)) {
+    stop("'rstudioapi' package is required for this function to work. Please install it.",
+         call. = FALSE)
+    }
+  if(!requireNamespace('usethis', quietly = T)) {
+    stop("'usethis' package is required for this function to work. Please install it.",
+         call. = FALSE)
+    }
   ## Validate CSV ----
   ### Define Required Columns
   required_cols <- c('table','field')

@@ -21,14 +21,11 @@ Imports:
     DT,
     glue,
     golem (>= 0.2.1.90),
-    httr,
     lubridate,
     magrittr,
     pkgload,
     purrr,
-    readr,
     rlang (>= 0.4.7),
-    rstudioapi,
     shiny (>= 1.5.0),
     shinycssloaders (>= 1.0.0),
     shinydashboard,
@@ -39,8 +36,7 @@ Imports:
     snakecase,
     stringr,
     tibble,
-    tidyr (>= 1.1.0),
-    usethis
+    tidyr (>= 1.1.0)
 Remotes: 
     Thinkr-open/golem,
     thewileylab/shinyBigQuery,
@@ -49,9 +45,12 @@ Suggests:
     htmltools,
     knitr,
     processx,
+    readr,
     rmarkdown,
+    rstudioapi,
     spelling,
-    testthat (>= 2.1.0)
+    testthat (>= 2.1.0),
+    usethis
 VignetteBuilder: knitr
 Encoding: UTF-8
 Language: en-US
