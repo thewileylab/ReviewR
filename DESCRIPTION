@@ -1,6 +1,6 @@
 Package: ReviewR
 Title: ReviewR: A light-weight, portable tool for reviewing individual patient records
-Version: 2.0.2.9000
+Version: 2.1.0
 Authors@R: c(
             person('Laura', 'Wiley', email = 'laura.wiley@cuanschutz.edu', role = c('aut')),
             person('Luke', 'Rasmussen', email = 'luke.rasmussen@northwestern.edu', role = c('aut')),
@@ -32,7 +32,7 @@ Imports:
     shinyjs,
     shinyWidgets,
     shinyBigQuery (>= 0.0.2.9000),
-    shinyREDCap (>= 0.0.2.9000),
+    shinyREDCap (>= 0.0.2.9001),
     snakecase,
     stringr,
     tibble,
