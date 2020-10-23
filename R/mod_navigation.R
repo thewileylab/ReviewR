@@ -78,9 +78,9 @@ chart_review_navigation <- function(id) {
   arrowed <- paste0(
     "$(document).on('keydown', function(event){",
     "  var key = event.which;",
-    "  if(key === 37){",
+    "  if(event.metaKey && event.altKey && key === 188){",
     "    Shiny.setInputValue('",id,"-arrowLeft', true, {priority: 'event'});",
-    "  } else if(key === 39){",
+    "  } else if(event.metaKey && event.altKey && key === 190){",
     "    Shiny.setInputValue('",id,"-arrowRight', true, {priority: 'event'});",
     "  }",
     "});"
