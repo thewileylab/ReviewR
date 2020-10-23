@@ -201,7 +201,12 @@ known common data models and determine the most likely version of the user's dat
 
     <pre class="usage"><span class='fu'>datamodel_detection_ui</span><span class='op'>(</span><span class='va'>id</span><span class='op'>)</span>
 
-<span class='fu'>mod_datamodel_detection_server</span><span class='op'>(</span><span class='va'>id</span>, <span class='va'>database_vars</span>, <span class='va'>navigation_vars</span><span class='op'>)</span></pre>
+<span class='fu'>mod_datamodel_detection_server</span><span class='op'>(</span>
+  <span class='va'>id</span>,
+  <span class='va'>database_vars</span>,
+  <span class='va'>navigation_vars</span>,
+  <span class='va'>parent_session</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -213,6 +218,10 @@ known common data models and determine the most likely version of the user's dat
     <tr>
       <th>navigation_vars</th>
       <td><p>Navigation variables returned from mod_navigation</p></td>
+    </tr>
+    <tr>
+      <th>parent_session</th>
+      <td><p>the parent environment of this module</p></td>
     </tr>
     <tr>
       <th>input</th>
