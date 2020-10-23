@@ -197,7 +197,7 @@
     <p>ReviewR Datatable</p>
     </div>
 
-    <pre class="usage"><span class='fu'>reviewr_datatable</span><span class='op'>(</span><span class='va'>.data</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>reviewr_datatable</span><span class='op'>(</span><span class='va'>.data</span>, dom <span class='op'>=</span> <span class='st'>"ftip"</span>, column_filter <span class='op'>=</span> <span class='st'>"top"</span>, search_term <span class='op'>=</span> <span class='st'>""</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -205,6 +205,18 @@
     <tr>
       <th>.data</th>
       <td><p>A local tibble or dataframe to be rendered in the ReviewR UI</p></td>
+    </tr>
+    <tr>
+      <th>dom</th>
+      <td><p>Define the table control elements to appear on the page and in what order</p></td>
+    </tr>
+    <tr>
+      <th>column_filter</th>
+      <td><p>Where to display individual column filters. Valid entries are: 'top','bottom','none'</p></td>
+    </tr>
+    <tr>
+      <th>search_term</th>
+      <td><p>A string or regular expression used as a filter for patient data</p></td>
     </tr>
     </table>
 

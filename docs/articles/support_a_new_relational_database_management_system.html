@@ -143,7 +143,8 @@
 
       
 
-      </header><script src="support_a_new_relational_database_management_system_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><script src="support_a_new_relational_database_management_system_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="support_a_new_relational_database_management_system_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
+<script src="support_a_new_relational_database_management_system_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Support a New Relational Database Management System</h1>
@@ -172,7 +173,7 @@
       <span class="va">namespace</span> <span class="op">&lt;-</span> <span class="st">'db-selector-ns'</span>
       <span class="co"># ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Add Database Setup Modules Here!!! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #</span>
       <span class="co">## Add Database Setup Modules Here</span>
-      <span class="va">database_setup_vars</span> <span class="op">&lt;-</span> <span class="fu">reactiveValues</span><span class="op">(</span>bigquery <span class="op">=</span> <span class="fu">shinyBigQuery</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/shinyBigQuery/man/bigquery_setup_server.html">bigquery_setup_server</a></span><span class="op">(</span>id <span class="op">=</span> <span class="va">namespace</span> <span class="op">)</span>,
+      <span class="va">database_setup_vars</span> <span class="op">&lt;-</span> <span class="fu">reactiveValues</span><span class="op">(</span>bigquery <span class="op">=</span> <span class="fu">shinyBigQuery</span><span class="fu">::</span><span class="fu"><a href="shinybigquery.thewileylab.org/reference/bigquery_setup_server.html">bigquery_setup_server</a></span><span class="op">(</span>id <span class="op">=</span> <span class="va">namespace</span> <span class="op">)</span>,
                                             postgresql <span class="op">=</span> <span class="fu">shinyPostgreSQL</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/shinyPostgreSQL/man/postgresql_setup_server.html">postgresql_setup_server</a></span><span class="op">(</span>id <span class="op">=</span> <span class="va">namespace</span> <span class="op">)</span> <span class="co">#,</span>
                                             <span class="co"># new_module = ReviewR::new_module_setup_server(id = namespace)</span>
                                             <span class="op">)</span>

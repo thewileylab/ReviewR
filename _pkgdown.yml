@@ -1,4 +1,4 @@
-url: reviewr.thewileylab.org/
+url: reviewr.thewileylab.org
 navbar:
   structure:
     left:  [home, Deploying ReviewR, Using ReviewR, Customizing ReviewR, reference, articles, tutorials, news]
