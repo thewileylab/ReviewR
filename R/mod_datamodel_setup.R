@@ -199,7 +199,6 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars, p
       # Store Additional Vars ----
       observeEvent(datamodel_vars$table_map, ignoreInit = T, {
         req(datamodel_vars$table_map)
-        # browser()
         ## Datamodel Message
         datamodel_vars$message <-if (nrow(datamodel_vars$table_map) > 0) {
             HTML(glue::glue('<em>Data Model: {datamodel_vars$table_map$datamodel} {datamodel_vars$table_map$model_version}</em>'))
