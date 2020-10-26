@@ -74,14 +74,14 @@ chart_review_subject_info <- function(id) {
 chart_review_navigation <- function(id) {
   ns <- NS(id)
   
-  ## Create Inputs from Keyboard Left and Right Arrows!
+  ## Bind keyboard to input
   arrowed <- paste0(
     "$(document).on('keydown', function(event){",
     "  var key = event.which;",
     "  if(event.metaKey && event.altKey && key === 188){",
-    "    Shiny.setInputValue('",id,"-arrowLeft', true, {priority: 'event'});",
+    "    Shiny.setInputValue('",id,"-prev_subject', true, {priority: 'event'});",
     "  } else if(event.metaKey && event.altKey && key === 190){",
-    "    Shiny.setInputValue('",id,"-arrowRight', true, {priority: 'event'});",
+    "    Shiny.setInputValue('",id,"-next_subject', true, {priority: 'event'});",
     "  }",
     "});"
     )
@@ -385,7 +385,8 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
       # Navigation Inputs ----
       
       ## On Previous Subject Button Press, update selected row in DT
-      observeEvent(input$prev_subject,  {
+      observeEvent(input$prev_subject, ignoreInit = T, {
+        req(navigation_vars$all_patients)
         shinyjs::disable('prev_subject')
         shinyjs::disable('next_subject')
         shinyjs::disable('subject_id')
@@ -397,24 +398,10 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
             navigation_vars$selected_row <- temp
             }
         })
-      
-      ## On Keyboard Arrow Left Button Press, update selected row in DT
-      observeEvent(input$arrowLeft, {
-        req(navigation_vars$all_patients)
-        shinyjs::disable('prev_subject')
-        shinyjs::disable('next_subject')
-        shinyjs::disable('subject_id')
-        shinyjs::disable('all_patient_search_dt_rows_selected')
-        temp <- navigation_vars$selected_row - 1
-        if(temp < 1) {
-          navigation_vars$selected_row <- navigation_vars$all_patients_max_rows
-        } else {
-          navigation_vars$selected_row <- temp
-        }
-      })
       
       ## On Next Subject Button Press, updated selected row in DT
-      observeEvent(input$next_subject, {
+      observeEvent(input$next_subject, ignoreInit = T, {
+        req(navigation_vars$all_patients)
         shinyjs::disable('prev_subject')
         shinyjs::disable('next_subject')
         shinyjs::disable('subject_id')
@@ -426,21 +413,6 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
             navigation_vars$selected_row <- temp
             }
         })
-      
-      ## On Keyboard Arrow Right Button Press, update selected row in DT
-      observeEvent(input$arrowRight, {
-        req(navigation_vars$all_patients)
-        shinyjs::disable('prev_subject')
-        shinyjs::disable('next_subject')
-        shinyjs::disable('subject_id')
-        shinyjs::disable('all_patient_search_dt_rows_selected')
-        temp <- navigation_vars$selected_row + 1
-        if(temp > navigation_vars$all_patients_max_rows) {
-          navigation_vars$selected_row <- 1
-        } else {
-          navigation_vars$selected_row <- temp
-        }
-      })
       
       ## When a choice is made from the chart review dropdown, update the selected row in DT
         observeEvent(input$subject_id, ignoreInit = T, {
