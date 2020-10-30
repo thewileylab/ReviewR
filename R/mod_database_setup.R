@@ -50,7 +50,9 @@ mod_database_setup_server <- function(id){
       namespace <- 'db-selector-ns'
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Add Database Setup Modules Here!!! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
       ## Add Database Setup Modules Here
-      database_setup_vars <- reactiveValues(bigquery = shinyBigQuery::bigquery_setup_server(id = namespace ) )
+      database_setup_vars <- reactiveValues(bigquery = shinyBigQuery::bigquery_setup_server(id = namespace ),
+                                            demo_sqlite = demo_sqlite_setup_server(id = namespace)
+                                            )
       
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
       
