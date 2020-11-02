@@ -6,9 +6,10 @@ home:
   links:
   - text: Additional WileyLab tools
     href: https://www.thewileylab.org/software
-  authors:
+authors:
   The Wiley Lab:
-    href: https://www.thewileylab.org/    
+    href: https://www.thewileylab.org/ 
+    html: <img src="https://raw.githubusercontent.com/thewileylab/ReviewR/master/man/figures/WileyLab.svg" height="24" />
 navbar:
   structure:
     left: [home]
