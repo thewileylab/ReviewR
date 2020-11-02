@@ -2,9 +2,10 @@ Package: ReviewR
 Title: ReviewR: A light-weight, portable tool for reviewing individual patient records
 Version: 2.1.0
 Authors@R: c(
-            person('Laura', 'Wiley', email = 'laura.wiley@cuanschutz.edu', role = c('aut')),
-            person('Luke', 'Rasmussen', email = 'luke.rasmussen@northwestern.edu', role = c('aut')),
-            person('David', 'Mayer', email = 'david.mayer@cuanschutz.edu', role = c('cre', 'aut'))
+            person('Laura', 'Wiley', email = 'laura.wiley@cuanschutz.edu', role = c('aut'), comment = c(ORCID = "0000-0001-6681-9754")),
+            person('Luke', 'Rasmussen', email = 'luke.rasmussen@northwestern.edu', role = c('aut'), comment = c(ORCID = "0000-0002-4497-8049")),
+            person('David', 'Mayer', email = 'david.mayer@cuanschutz.edu', role = c('cre', 'aut')),
+            person(given = "The Wiley Lab", role = c("cph", "fnd"))
             )
 Description: ReviewR is a portable Shiny tool to help you explore data across different data models. Within ReviewR, you can browse patient data stored in either the OMOP or MIMIC-III data model. In addition to viewing patient data, you may also connect to a REDCap project to perform a chart review.
 License: BSD_3_clause + file LICENSE
