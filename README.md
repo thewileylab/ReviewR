@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# ReviewR <img src='man/figures/logo.png' align="right" height="138.5" />
+## Overview <img src='man/figures/logo.png' align="right" height="138.5" />
 
 <!-- badges: start -->
 
