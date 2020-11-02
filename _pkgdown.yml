@@ -1,8 +1,18 @@
 url: reviewr.thewileylab.org
+template:
+  params:
+    bootswatch: flatly
+home:
+  links:
+  - text: Additional WileyLab tools
+    href: https://www.thewileylab.org/software
+  authors:
+  The Wiley Lab:
+    href: https://www.thewileylab.org/    
 navbar:
   structure:
-    left:  [home, Deploying ReviewR, Using ReviewR, Customizing ReviewR, reference, articles, tutorials, news]
-    right: [github]
+    left: [home]
+    right: [Deploying ReviewR, Using ReviewR, Customizing ReviewR, articles, reference, github]
   components:
     home: ~
     Deploying ReviewR:
