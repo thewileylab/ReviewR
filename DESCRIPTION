@@ -27,6 +27,7 @@ Imports:
     pkgload,
     purrr,
     rlang (>= 0.4.7),
+    RSQLite,
     shiny (>= 1.5.0),
     shinycssloaders (>= 1.0.0),
     shinydashboard,
@@ -36,6 +37,7 @@ Imports:
     shinyREDCap (>= 0.0.2.9001),
     snakecase,
     stringr,
+    synPUF,
     tibble,
     tidyr (>= 1.1.0)
 Remotes: 
