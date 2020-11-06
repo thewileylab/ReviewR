@@ -41,7 +41,8 @@ Imports:
 Remotes: 
     Thinkr-open/golem,
     thewileylab/shinyBigQuery,
-    thewileylab/shinyREDCap
+    thewileylab/shinyREDCap,
+    thewileylab/synPUF
 Suggests: 
     htmltools,
     knitr,
