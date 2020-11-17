@@ -108,7 +108,9 @@ patient_chart_ui <- function(id) {
       shinyWidgets::searchInput(inputId = ns('global_search'), 
                                 placeholder = 'Search string or regex',
                                 btnSearch = icon("search"), 
-                                btnReset = icon("remove"), 
+                                btnReset = icon("remove"),
+                                value = '',
+                                resetValue = '',
                                 width = '400px'),
       style = 'float: right;'
       ),
@@ -297,14 +299,14 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars, p
         })
       
       # Global Search ----
-      observeEvent(input$global_search, ignoreInit = T, {
-        ## Update DT Proxies with Global Search Term
-        ### A Proxy Exists for each patient table, use index map to programmatically isolate and update the all available dt proxies
-        purrr::imap(patient_tables(), ~{
-                  proxy_name <- glue::glue('dt_proxy_{.y}')
-                  DT::updateSearch(proxy = proxy_vars[[proxy_name]], keywords = list(global = input$global_search, columns = NULL))
-                  })
-        })
+      # observeEvent(input$global_search, {
+      #   ## Update DT Proxies with Global Search Term
+      #   ### A Proxy Exists for each patient table, use index map to programmatically isolate and update the all available dt proxies
+      #   purrr::imap(patient_tables(), ~{
+      #             proxy_name <- glue::glue('dt_proxy_{.y}')
+      #             DT::updateSearch(proxy = proxy_vars[[proxy_name]], keywords = list(global = input$global_search, columns = NULL))
+      #             })
+      #   })
       
       # Return ----
       return(datamodel_vars)
