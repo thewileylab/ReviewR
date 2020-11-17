@@ -8,7 +8,7 @@
 #' @rdname mimic3_tables
 #' @keywords internal
 #' @export
-#' @importFrom dplyr select everything arrange matches mutate_all mutate_if rename_at collect filter inner_join vars 
+#' @importFrom dplyr arrange select everything matches mutate_all mutate_if rename_at collect filter inner_join vars 
 #' @importFrom snakecase to_title_case
 #' @importFrom stringr str_replace regex str_replace_all
 #' @importFrom rlang .data
@@ -26,8 +26,8 @@ mimic3_table_all_patients <- function(table_map, db_connection) {
            everything()
            ) %>% 
     select(-matches('row_id', ignore.case = T)) %>% 
-    arrange(.data$ID) %>% 
     mutate_all(as.character) %>% 
+    arrange(as.numeric(.data$ID)) %>% 
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -44,8 +44,8 @@ mimic3_table_admissions <- function(table_map, db_connection, subject_id) {
     select(person_id = user_field(table_map, 'ADMISSIONS', 'SUBJECT_ID'), ID = user_field(table_map, 'ADMISSIONS', 'HADM_ID'), everything()) %>% 
     filter(.data$person_id == subject) %>% 
     select(-matches('person_id|row_id', ignore.case = T)) %>% 
-    arrange(!!as.name(user_field(table_map, 'ADMISSIONS','ADMITTIME'))) %>%
     mutate_all(as.character) %>%
+    arrange(as.POSIXct(!!as.name(user_field(table_map, 'ADMISSIONS','ADMITTIME')))) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -59,9 +59,9 @@ mimic3_table_callout <- function(table_map, db_connection, subject_id) {
   user_table(table_map, db_connection, 'CALLOUT') %>% 
     select(person_id = user_field(table_map, 'CALLOUT', 'SUBJECT_ID'), ID = user_field(table_map, 'CALLOUT', 'HADM_ID'), everything()) %>% 
     filter(.data$person_id == subject) %>% 
-    arrange(!!as.name(user_field(table_map, 'CALLOUT','ROW_ID'))) %>% 
     select(-matches('person_id|row_id', ignore.case = T)) %>%
     mutate_all(as.character) %>%
+    arrange(as.numeric(!!as.name(user_field(table_map, 'CALLOUT','ROW_ID')))) %>% 
     collect() %>% 
     rename_at(vars(-1), to_title_case) %>% 
     rename_at(vars(-1), ~ str_replace(string = ., pattern = regex(pattern = 'id$',ignore_case = T),replacement = ' ID'))
@@ -77,8 +77,8 @@ mimic3_table_chart_events <- function(table_map, db_connection, subject_id) {
     select(person_id = user_field(table_map, 'CHARTEVENTS', 'SUBJECT_ID'), ID = user_field(table_map, 'CHARTEVENTS', 'HADM_ID'), everything()) %>% 
     filter(.data$person_id == subject)  %>% 
     select(-matches('person_id|row_id', ignore.case = T)) %>% 
-    arrange(!!as.name(user_field(table_map, 'CHARTEVENTS','CHARTTIME'))) %>%
     mutate_all(as.character) %>%
+    arrange(as.POSIXct(!!as.name(user_field(table_map, 'CHARTEVENTS','CHARTTIME')))) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -93,8 +93,8 @@ mimic3_table_cpt_events <- function(table_map, db_connection, subject_id) {
     select(person_id = user_field(table_map, 'CPTEVENTS', 'SUBJECT_ID'), ID = user_field(table_map, 'CPTEVENTS', 'HADM_ID'), everything()) %>% 
     filter(.data$person_id == subject)  %>% 
     select(-matches('person_id|row_id', ignore.case = T)) %>% 
-    arrange(!!as.name(user_field(table_map, 'CPTEVENTS','CHARTDATE'))) %>%
     mutate_all(as.character) %>%
+    arrange(as.POSIXct(!!as.name(user_field(table_map, 'CPTEVENTS','CHARTDATE')))) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -112,8 +112,8 @@ mimic3_table_diagnoses_icd <- function(table_map, db_connection, subject_id) {
                  select(-matches('row_id', ignore.case = T))
                ) %>% 
     select(-matches('person_id|row_id', ignore.case = T)) %>% 
-    arrange(!!as.name(user_field(table_map, 'DIAGNOSES_ICD','SEQ_NUM'))) %>%
     mutate_all(as.character) %>%
+    arrange(as.numeric(!!as.name(user_field(table_map, 'DIAGNOSES_ICD','SEQ_NUM')))) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -127,9 +127,9 @@ mimic3_table_drg_codes <- function(table_map, db_connection, subject_id) {
   user_table(table_map, db_connection, 'DRGCODES') %>% 
     select(person_id = user_field(table_map, 'DRGCODES', 'SUBJECT_ID'), ID = user_field(table_map, 'DRGCODES', 'HADM_ID'), everything()) %>% 
     filter(.data$person_id == subject) %>% 
-    arrange(!!as.name(user_field(table_map, 'DRGCODES','ROW_ID'))) %>% 
     select(-matches('person_id|row_id', ignore.case = T)) %>%
     mutate_all(as.character) %>%
+    arrange(as.numeric(.data$ID)) %>% 
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -144,8 +144,8 @@ mimic3_table_icu_stays <- function(table_map, db_connection, subject_id) {
     select(person_id = user_field(table_map, 'ICUSTAYS', 'SUBJECT_ID'), ID = user_field(table_map, 'ICUSTAYS', 'HADM_ID'), everything()) %>% 
     filter(.data$person_id == subject) %>% 
     select(-matches('person_id|row_id', ignore.case = T)) %>% 
-    arrange(!!as.name(user_field(table_map, 'ICUSTAYS','INTIME'))) %>%
     mutate_all(as.character) %>%
+    arrange(as.POSIXct(!!as.name(user_field(table_map, 'ICUSTAYS','INTIME')))) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case) %>% 
     rename_at(vars(-1), ~ str_replace(string = ., pattern = regex(pattern = 'id$',ignore_case = T),replacement = ' ID'))
@@ -164,8 +164,8 @@ mimic3_table_lab_events <- function(table_map, db_connection, subject_id) {
                  select(-matches('row_id', ignore.case = T))
                ) %>% 
     select(-matches('person_id|row_id', ignore.case = T)) %>% 
-    arrange(!!as.name(user_field(table_map, 'LABEVENTS','CHARTTIME'))) %>%
     mutate_all(as.character) %>%
+    arrange(as.POSIXct(!!as.name(user_field(table_map, 'LABEVENTS','CHARTTIME')))) %>%
     collect() %>% 
     rename_at(vars(-1), ~ str_replace(string = ., pattern = regex(pattern = '^value',ignore_case = T),replacement = 'Value ')) %>% 
     rename_at(vars(-1), to_title_case) %>% 
@@ -182,8 +182,8 @@ mimic3_table_microbiology_events <- function(table_map, db_connection, subject_i
     select(person_id = user_field(table_map, 'MICROBIOLOGYEVENTS', 'SUBJECT_ID'), ID = user_field(table_map, 'MICROBIOLOGYEVENTS', 'HADM_ID'), everything()) %>% 
     filter(.data$person_id == subject) %>% 
     select(-matches('person_id|row_id', ignore.case = T)) %>% 
-    arrange(!!as.name(user_field(table_map, 'MICROBIOLOGYEVENTS','CHARTTIME'))) %>%
     mutate_all(as.character) %>%
+    arrange(as.POSIXct(!!as.name(user_field(table_map, 'MICROBIOLOGYEVENTS','CHARTTIME')))) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case) %>% 
     rename_at(vars(-1), ~ str_replace(string = ., pattern = regex(pattern = 'id$',ignore_case = T),replacement = ' ID'))
@@ -199,8 +199,8 @@ mimic3_table_note_events <- function(table_map, db_connection, subject_id) {
     select(person_id = user_field(table_map, 'NOTEEVENTS', 'SUBJECT_ID'), ID = user_field(table_map, 'NOTEEVENTS', 'HADM_ID'), iserror = user_field(table_map, 'NOTEEVENTS', 'ISERROR'),everything()) %>% 
     filter(.data$person_id == subject & is.na(.data$iserror)) %>% 
     select(-matches('person_id|row_id|iserror', ignore.case = T)) %>% 
-    arrange(!!as.name(user_field(table_map, 'NOTEEVENTS','CHARTDATE'))) %>%
     mutate_all(as.character) %>%
+    arrange(as.POSIXct(!!as.name(user_field(table_map, 'NOTEEVENTS','CHARTDATE')))) %>%
     collect() %>%
     mutate_if(is.character, str_replace_all, pattern = '\n', replacement = '<br>') %>% 
     rename_at(vars(-1), to_title_case)
@@ -216,7 +216,8 @@ mimic3_table_prescriptions <- function(table_map, db_connection, subject_id) {
     select(person_id = user_field(table_map, 'PRESCRIPTIONS', 'SUBJECT_ID'), ID = user_field(table_map, 'PRESCRIPTIONS', 'HADM_ID'), everything()) %>% 
     filter(.data$person_id == subject) %>% 
     select(-matches('person_id|row_id', ignore.case = T)) %>% 
-    arrange(!!as.name(user_field(table_map, 'PRESCRIPTIONS','STARTDATE'))) %>% 
+    mutate_all(as.character) %>% 
+    arrange(as.POSIXct(!!as.name(user_field(table_map, 'PRESCRIPTIONS','STARTDATE')))) %>% 
     collect() %>% 
     rename_at(vars(-1), to_title_case) %>% 
     rename_at(vars(-1), ~ str_replace(string = ., pattern = regex(pattern = 'id$',ignore_case = T),replacement = ' ID'))
@@ -233,10 +234,10 @@ mimic3_table_procedure_events <- function(table_map, db_connection, subject_id) 
     filter(.data$person_id == subject) %>% 
     inner_join(user_table(table_map, db_connection, 'D_ITEMS') %>% 
                  select(-matches('row_id', ignore.case = T))
-    ) %>% 
+               ) %>% 
     select(-matches('person_id|row_id', ignore.case = T)) %>% 
-    arrange(!!as.name(user_field(table_map, 'PROCEDUREEVENTS_MV','STARTTIME'))) %>%
     mutate_all(as.character) %>%
+    arrange(as.POSIXct(!!as.name(user_field(table_map, 'PROCEDUREEVENTS_MV','STARTTIME')))) %>%
     collect() %>% 
     rename_at(vars(-1), ~ str_replace(string = ., pattern = regex(pattern = '^value',ignore_case = T),replacement = 'Value ')) %>% 
     rename_at(vars(-1), to_title_case) %>% 
@@ -254,10 +255,10 @@ mimic3_table_procedures_icd <- function(table_map, db_connection, subject_id) {
     filter(.data$person_id == subject) %>% 
     inner_join(user_table(table_map, db_connection, 'D_ICD_PROCEDURES') %>% 
                  select(-matches('row_id', ignore.case = T))
-    ) %>% 
+               ) %>% 
     select(-matches('person_id|row_id', ignore.case = T)) %>% 
-    arrange(.data$ID, !!as.name(user_field(table_map, 'PROCEDURES_ICD','SEQ_NUM'))) %>%
     mutate_all(as.character) %>%
+    arrange(.data$ID, as.numeric(!!as.name(user_field(table_map, 'PROCEDURES_ICD','SEQ_NUM')))) %>%
     collect() %>% 
     rename_at(vars(-1), ~ str_replace(string = ., pattern = regex(pattern = '^value',ignore_case = T),replacement = 'Value ')) %>% 
     rename_at(vars(-1), to_title_case) %>% 
@@ -277,8 +278,8 @@ mimic3_table_services <- function(table_map, db_connection, subject_id) {
     select(person_id = user_field(table_map, 'SERVICES', 'SUBJECT_ID'), ID = user_field(table_map, 'SERVICES', 'HADM_ID'), everything()) %>% 
     filter(.data$person_id == subject) %>% 
     select(-matches('person_id|row_id', ignore.case = T)) %>% 
-    arrange(!!as.name(user_field(table_map, 'SERVICES','TRANSFERTIME'))) %>%
     mutate_all(as.character) %>%
+    arrange(as.POSIXct(!!as.name(user_field(table_map, 'SERVICES','TRANSFERTIME')))) %>%
     collect() %>%
     left_join(service_labels, 
               by = setNames('SERVICE', user_field(table_map, 'SERVICES', 'PREV_SERVICE'))) %>%
@@ -298,9 +299,9 @@ mimic3_table_transfers <- function(table_map, db_connection, subject_id) {
   user_table(table_map, db_connection, 'TRANSFERS') %>% 
     select(person_id = user_field(table_map, 'TRANSFERS', 'SUBJECT_ID'), ID = user_field(table_map, 'TRANSFERS', 'HADM_ID'), everything()) %>% 
     filter(.data$person_id == subject) %>% 
-    arrange(!!as.name(user_field(table_map, 'TRANSFERS','ROW_ID'))) %>% 
     select(-matches('person_id|row_id', ignore.case = T)) %>%
     mutate_all(as.character) %>%
+    arrange(as.POSIXct(!!as.name(user_field(table_map, 'TRANSFERS','INTIME')))) %>% 
     collect() %>% 
     rename_at(vars(-1), to_title_case) %>% 
     rename_at(vars(-1), ~ str_replace(string = ., pattern = regex(pattern = 'id$',ignore_case = T),replacement = ' ID'))
