@@ -14,6 +14,56 @@ knitr::opts_chunk$set(
 )
 ```
 
+## Overview
+
+In order to collect and store information about patients, you'll want to connect ReviewR with a REDCap Project that has been previously created and approved by your institution for use with your data. Data abstraction in ReviewR is handled by the [shinyREDCap](https://shinyredcap.thewileylab.org/) module, which is responsible for translating REDCap project fields to native R Shiny controls and storing data in your REDCap Project. 
+
 ## Getting Started
 
-## REDCap Instument Field Support
+### Create a REDCap Project
+
+To begin, create a REDCap project on your institution's REDCap instance. Add any users that you would like to be able to access this project, and ensure that their permissions include:
+
+* Data Export Tool: Full Data Set
+* API: Import
+* API: Export
+* Create Records
+
+Once users have been added and permissions set, have user's log into the project, and request API access to the project. Users will need an API key to access the abstraction functionality of ReviewR.
+
+### Design Instruments
+
+After your project has been initialized with users added and API keys have been provisioned, you'll have to design some instruments for your REDCap project with a few considerations. 
+
+#### Supported Field Types
+Importantly, you'll have to use supported field types when creating your instruments. Currently, `shinyREDCap` supports the following REDCap project field types:
+```{r echo=FALSE, message=FALSE}
+library(tidyverse)
+library(gt)
+shinyREDCap::redcap_widget_map %>% 
+  mutate(class = case_when(redcap_field_type %in% c('text', 'notes') ~ 'Text Field',
+                           redcap_field_type %in% c('dropdown', 'radio') ~ 'Single Answer',
+                           redcap_field_type %in% c('checkbox') ~ 'Multiple Answer',
+                           redcap_field_type %in% c('yesno', 'truefalse') ~ 'Logical',
+                           TRUE ~ 'Other')
+         ) %>% 
+  select('REDCap Field Type' = redcap_field_type, 'REDCap Field Validation' = redcap_field_val, class, -shinyREDCap_widget_function) %>% 
+  # group_by(class) %>%
+  gt(groupname_col = 'class') %>% 
+  tab_header(title = md('**Supported Project Fields**'),
+             subtitle = md('REDCap Question types that translate to native shiny controls.')) %>%
+  tab_source_note(md('*Source*: [REDCap Project Field Types](https://redcap.vanderbilt.edu/consortium/videoplayer.php?video=field_types02.mp4&title=REDCap%20Project%20Field%20Types&referer=redcap.ucdenver.edu)')) %>% 
+  gt::opt_row_striping(TRUE) %>% 
+  row_group_order(groups = c("Text Field", "Single Answer", "Multiple Answer", "Logical"))
+  
+```
+
+#### Fields to Include
+
+When designing your instrument, be sure to include the following fields:
+
+* Patient Identifier: This is the stable identifier associated with each subject in your dataset (ex MRN)
+* Reviewer name: Optionally, provide a field for reviewer's to enter their name. In this way, multiple reviewers can store their own abstraction information for each subject in the connected dataset.
+
+As long as these fields are present, ReviewR will automatically populate them with the correct information when configured.
+
