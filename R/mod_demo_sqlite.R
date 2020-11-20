@@ -23,7 +23,7 @@ demo_sqlite_setup_ui <- function(id) {
     hidden(
       div(id = ns('connected'),
           h3('Success!'),
-          actionButton(inputId = ns('disconnect'), label = 'Disconnect')
+          actionButton(inputId = ns('demo_disconnect'), label = 'Disconnect')
           )
       )
     )
@@ -92,7 +92,7 @@ demo_sqlite_setup_server <- function(id) {
         shinyjs::show('connected')
       })
       
-      observeEvent(input$disconnect, {
+      observeEvent(input$demo_disconnect, {
         shinyjs::hide('connected')
         RSQLite::dbDisconnect(demo_sqlite_export$db_con)
         demo_sqlite_export$db_con <- NULL
