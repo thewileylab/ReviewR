@@ -167,8 +167,8 @@
 <p>ReviewR facilitates these DBI connections through the use of <a href="https://mastering-shiny.org/scaling-modules.html">Shiny Modules</a>. Modules are a way to make a complex Shiny application more manageable. They compartmentalize code and are developed for a specific purpose. At their core, modules monitor user inputs that are defined in a User Interface (UI) function, process these inputs in a server function, and return an output. Each module operates in its own namespace, meaning that shiny modules are portable and can be used in other applications or reused within the same application.</p>
 <p>In ReviewR, this concept is used to create “database modules.” Each patient database back-end will have different connection requirements, meaning a new UI is needed to collect the required connection information from the user. By modularizing this connection code, ReviewR can support multiple databases so long as a correctly formatted DBI connection object is returned to the ReviewR application. Thus “database modules” are shiny modules that are responsible for collecting appropriate database credentials and returning a DBI connection object.</p>
 <p>A special database setup module has been created within ReviewR that allows it to interactively switch between database modules that have been developed for the package. These modules consist of a UI to guide the user through establishing a database connection and a server responsible for validating user inputs, establishing a connection, and returning a DBI connection object. Users can extend the functionality of ReviewR by adding developed database modules to <code>R/mod_database_setup.R</code> as shown below:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="co"># Database Module Setup ----</span>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Database Module Setup ----</span>
       <span class="va">namespace</span> <span class="op">&lt;-</span> <span class="st">'db-selector-ns'</span>
       <span class="co"># ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Add Database Setup Modules Here!!! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #</span>
       <span class="co">## Add Database Setup Modules Here</span>
@@ -176,7 +176,7 @@
                                             postgresql <span class="op">=</span> <span class="fu">shinyPostgreSQL</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/shinyPostgreSQL/man/postgresql_setup_server.html">postgresql_setup_server</a></span><span class="op">(</span>id <span class="op">=</span> <span class="va">namespace</span> <span class="op">)</span> <span class="co">#,</span>
                                             <span class="co"># new_module = ReviewR::new_module_setup_server(id = namespace)</span>
                                             <span class="op">)</span>
-      <span class="co"># ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #</span></pre></div>
+      <span class="co"># ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #</span></code></pre></div>
 <p>Once modules are added to the package, they will appear in the Patient Database Module drop down on the setup tab. <img src="database_module.gif"><!-- --></p>
 <p>Read on to learn how to develop a database module for ReviewR!</p>
 <p><a name="dplyr-support"></a> *<em>Note: Supported Databases must also have <a href="https://db.rstudio.com/dplyr">dplyr</a> support.</em></p>
@@ -191,22 +191,22 @@
 <h3 class="hasAnchor">
 <a href="#getting-started" class="anchor"></a>Getting Started</h3>
 <p>The first step to developing a new ReviewR module will be to fork the latest version of ReviewR from GitHub. Forking the repository will allow you to experiment with the ReviewR package and ensures you have access to the latest development tools and file structure of the ReviewR package. For simplicity, the home directory is specified as a destination directory:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="co"># install.packages('usethis')</span>
-<span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/create_from_github.html">create_from_github</a></span><span class="op">(</span>repo_spec <span class="op">=</span> <span class="st">'thewileylab/ReviewR'</span>, destdir <span class="op">=</span> <span class="st">'~/'</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># install.packages('usethis')</span>
+<span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/create_from_github.html">create_from_github</a></span><span class="op">(</span>repo_spec <span class="op">=</span> <span class="st">'thewileylab/ReviewR'</span>, destdir <span class="op">=</span> <span class="st">'~/'</span><span class="op">)</span></code></pre></div>
 <p>Please see <a href="https://happygitwithr.com/index.html">this guide</a> if you have trouble connecting RStudio with Git. It is also possible to fork this repo directly from GitHub if all else fails.</p>
 <p>Navigate to the forked repository and open the <code>ReviewR.Rproj</code> file. This will open the project in RStudio. Finally, using the devtools package run:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="co"># install.packages('devtools')</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/load_all.html">load_all</a></span><span class="op">(</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># install.packages('devtools')</span>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/load_all.html">load_all</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>This will load the most recent version of ReviewR. At this point, you are ready to begin developing a database module.</p>
 </div>
 <div id="start-developing" class="section level3">
 <h3 class="hasAnchor">
 <a href="#start-developing" class="anchor"></a>Start Developing!</h3>
 <p>A helper function, <code>dev_database_module()</code>, has been provided with ReviewR to help jump start the database module development process. Run:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit">
-<span class="fu">ReviewR</span><span class="fu">:::</span><span class="fu">dev_database_module</span><span class="op">(</span>mod_name <span class="op">=</span> <span class="st">'your_module'</span>, display_name <span class="op">=</span> <span class="st">'Your Module Display Name'</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">ReviewR</span><span class="fu">:::</span><span class="fu">dev_database_module</span><span class="op">(</span>mod_name <span class="op">=</span> <span class="st">'your_module'</span>, display_name <span class="op">=</span> <span class="st">'Your Module Display Name'</span><span class="op">)</span></code></pre></div>
 <p>This will create a module file in the <code>R/</code> directory of the ReviewR package and open it for editing.</p>
 </div>
 <div id="general-module-structure" class="section level3">
@@ -244,18 +244,18 @@
 <h4 class="hasAnchor">
 <a href="#ui-function" class="anchor"></a>UI Function</h4>
 <p>Begin by adding <a href="https://shiny.rstudio.com/gallery/widget-gallery.html">Shiny Widgets</a> to the <code><a href="https://rdrr.io/pkg/htmltools/man/tag.html">tagList()</a></code> portion of the UI function in your database module. Users will interact with these widgets to enter their database credentials. Consider adding a “Connect” and “Disconnect” button to your UI which can be monitored by your server function to store the user entered credentials and combine them into a DBI connection object. Specifics will vary by database. Remember to wrap all user inputID’s with the <code>ns()</code> function, so that they will inherit the module namespace.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit">
-<span class="fu">tagList</span><span class="op">(</span>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">tagList</span><span class="op">(</span>
   <span class="fu">actionButton</span><span class="op">(</span>inputId <span class="op">=</span> <span class="fu">ns</span><span class="op">(</span><span class="st">'connect'</span><span class="op">)</span>,label <span class="op">=</span> <span class="st">'connect'</span><span class="op">)</span>,
   <span class="fu">actionButton</span><span class="op">(</span>inputId <span class="op">=</span> <span class="fu">ns</span><span class="op">(</span><span class="st">'disconnect'</span><span class="op">)</span>,label <span class="op">=</span> <span class="st">'disconnect'</span><span class="op">)</span>
-  <span class="op">)</span></pre></div>
+  <span class="op">)</span></code></pre></div>
 </div>
 <div id="example-connect-server-logic" class="section level4">
 <h4 class="hasAnchor">
 <a href="#example-connect-server-logic" class="anchor"></a>Example ‘Connect’ Server Logic</h4>
 <p>As mentioned previously, the entire goal of a ReviewR database module is to construct a DBI connection object with user entered information. This DBI connection object needs to be assigned to the <code>db_con</code> reactive values object, say when a user clicks a button labeled ‘connect’. However, this user entered information should be validated. Consider the following pseudo code:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit">
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://shiny.rstudio.com">shiny</a></span><span class="op">)</span>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://shiny.rstudio.com">shiny</a></span><span class="op">)</span>
 <span class="co">## Observe a connect button, defined in the UI function</span>
 <span class="fu"><a href="https://shiny.rstudio.com/reference/shiny/latest/observeEvent.html">observeEvent</a></span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">connect</span>, <span class="op">{</span>
   <span class="co">## When the button is pressed, store a temporary connection</span>
@@ -275,7 +275,7 @@
     <span class="va">database_export</span><span class="op">$</span><span class="va">is_connected</span> <span class="op">&lt;-</span> <span class="st">'no'</span>
   <span class="op">}</span>
 <span class="op">}</span><span class="op">)</span>
-<span class="co">## Let ReviewR handle the rest!</span></pre></div>
+<span class="co">## Let ReviewR handle the rest!</span></code></pre></div>
 <p>The database setup module in ReviewR is ‘observing’ the return of the currently selected database module. When the <code>is_connected</code> variable changes to ‘yes’, it knows that <em>valid</em> connection information is present, and it can begin working with the connected database.</p>
 </div>
 <div id="example-disconnect-server-logic" class="section level4">
@@ -301,8 +301,8 @@
 <h4 class="hasAnchor">
 <a href="#important" class="anchor"></a>Important</h4>
 <p>As you are developing/testing, remember to add your completed <code>setup_server</code> function to <code>R/mod_database_setup.R</code>. This is required to have the module display within ReviewR. When incorporated into ReviewR, the <code>moduleName</code> parameter of the database module’s reactiveValues will be what appears in the Database Module Selector drop down list. Once you are sure you have added your module to <code>mod_database_setup.R</code> and you are ready to test, run:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit">
-<span class="fu">golem</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/golem/man/document_and_reload.html">document_and_reload</a></span><span class="op">(</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">golem</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/golem/man/document_and_reload.html">document_and_reload</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>This will incorporate your newly developed module into the ReviewR namespace, allowing you to see any changes that you have made as a result of your development process.</p>
 </div>
 </div>
@@ -310,8 +310,8 @@
 <h3 class="hasAnchor">
 <a href="#finishing-up" class="anchor"></a>Finishing up</h3>
 <p>Once you are satisfied with your module and have sufficiently tested its functionality, run:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit">
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/install.html">install</a></span><span class="op">(</span><span class="op">)</span></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/install.html">install</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>This will install a new, custom version of the ReviewR package with your newly developed module incorporated.</p>
 </div>
 <div id="reviewr-database-module-template" class="section level3">

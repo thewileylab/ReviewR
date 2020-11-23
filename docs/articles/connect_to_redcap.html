@@ -156,13 +156,501 @@
 
     
     
+<div id="overview" class="section level2">
+<h2 class="hasAnchor">
+<a href="#overview" class="anchor"></a>Overview</h2>
+<p>In order to collect and store information about patients, you’ll want to connect ReviewR with a REDCap Project that has been previously created and approved by your institution for use with your data. Data abstraction in ReviewR is handled by the <a href="https://shinyredcap.thewileylab.org/">shinyREDCap</a> module, which is responsible for translating REDCap project fields to native R Shiny controls and storing data in your REDCap Project.</p>
+</div>
 <div id="getting-started" class="section level2">
 <h2 class="hasAnchor">
 <a href="#getting-started" class="anchor"></a>Getting Started</h2>
+<div id="create-a-redcap-project" class="section level3">
+<h3 class="hasAnchor">
+<a href="#create-a-redcap-project" class="anchor"></a>Create a REDCap Project</h3>
+<p>To begin, create a REDCap project on your institution’s REDCap instance. Add any users that you would like to be able to access this project, and ensure that their permissions include:</p>
+<ul>
+<li>Data Export Tool: Full Data Set</li>
+<li>API: Import</li>
+<li>API: Export</li>
+<li>Create Records</li>
+</ul>
+<p>Once users have been added and permissions set, have user’s log into the project, and request API access to the project. Users will need an API key to access the abstraction functionality of ReviewR.</p>
 </div>
-<div id="redcap-instument-field-support" class="section level2">
+<div id="design-instruments" class="section level3">
+<h3 class="hasAnchor">
+<a href="#design-instruments" class="anchor"></a>Design Instruments</h3>
+<p>After your project has been initialized with users added and API keys have been provisioned, you’ll have to design some instruments for your REDCap project with a few considerations.</p>
+<div id="supported-field-types" class="section level4">
+<h4 class="hasAnchor">
+<a href="#supported-field-types" class="anchor"></a>Supported Field Types</h4>
+<p>Importantly, you’ll have to use supported field types when creating your instruments. Currently, <code>shinyREDCap</code> supports the following REDCap project field types: <style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#krfmsnnaak .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#krfmsnnaak .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#krfmsnnaak .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#krfmsnnaak .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 4px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#krfmsnnaak .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#krfmsnnaak .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#krfmsnnaak .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#krfmsnnaak .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#krfmsnnaak .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#krfmsnnaak .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#krfmsnnaak .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#krfmsnnaak .gt_group_heading {
+  padding: 8px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#krfmsnnaak .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#krfmsnnaak .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#krfmsnnaak .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#krfmsnnaak .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#krfmsnnaak .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 12px;
+}
+
+#krfmsnnaak .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#krfmsnnaak .gt_first_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+}
+
+#krfmsnnaak .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#krfmsnnaak .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#krfmsnnaak .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#krfmsnnaak .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#krfmsnnaak .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#krfmsnnaak .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding: 4px;
+}
+
+#krfmsnnaak .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#krfmsnnaak .gt_sourcenote {
+  font-size: 90%;
+  padding: 4px;
+}
+
+#krfmsnnaak .gt_left {
+  text-align: left;
+}
+
+#krfmsnnaak .gt_center {
+  text-align: center;
+}
+
+#krfmsnnaak .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#krfmsnnaak .gt_font_normal {
+  font-weight: normal;
+}
+
+#krfmsnnaak .gt_font_bold {
+  font-weight: bold;
+}
+
+#krfmsnnaak .gt_font_italic {
+  font-style: italic;
+}
+
+#krfmsnnaak .gt_super {
+  font-size: 65%;
+}
+
+#krfmsnnaak .gt_footnote_marks {
+  font-style: italic;
+  font-size: 65%;
+}
+</style></p>
+<div id="krfmsnnaak" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="table gt_table">
+<thead class="gt_header">
+<tr>
+<th colspan="2" class="gt_heading gt_title gt_font_normal" style><strong>Supported Project Fields</strong></th>
+    </tr>
+<tr>
+<th colspan="2" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border" style>REDCap Question types that translate to native shiny controls.</th>
+    </tr>
+</thead>
+<thead class="gt_col_headings"><tr>
+<th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">REDCap Field Type</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">REDCap Field Validation</th>
+    </tr></thead>
+<tbody class="gt_table_body">
+<tr class="gt_group_heading_row">
+<td colspan="2" class="gt_group_heading">Text Field</td>
+    </tr>
+<tr>
+<td class="gt_row gt_left">text</td>
+      <td class="gt_row gt_left">NA</td>
+    </tr>
+<tr>
+<td class="gt_row gt_left gt_striped">text</td>
+      <td class="gt_row gt_left gt_striped">date_mdy</td>
+    </tr>
+<tr>
+<td class="gt_row gt_left">text</td>
+      <td class="gt_row gt_left">integer</td>
+    </tr>
+<tr>
+<td class="gt_row gt_left gt_striped">notes</td>
+      <td class="gt_row gt_left gt_striped">NA</td>
+    </tr>
+<tr class="gt_group_heading_row">
+<td colspan="2" class="gt_group_heading">Single Answer</td>
+    </tr>
+<tr>
+<td class="gt_row gt_left">dropdown</td>
+      <td class="gt_row gt_left">NA</td>
+    </tr>
+<tr>
+<td class="gt_row gt_left gt_striped">radio</td>
+      <td class="gt_row gt_left gt_striped">NA</td>
+    </tr>
+<tr class="gt_group_heading_row">
+<td colspan="2" class="gt_group_heading">Multiple Answer</td>
+    </tr>
+<tr>
+<td class="gt_row gt_left">checkbox</td>
+      <td class="gt_row gt_left">NA</td>
+    </tr>
+<tr class="gt_group_heading_row">
+<td colspan="2" class="gt_group_heading">Logical</td>
+    </tr>
+<tr>
+<td class="gt_row gt_left gt_striped">truefalse</td>
+      <td class="gt_row gt_left gt_striped">NA</td>
+    </tr>
+<tr>
+<td class="gt_row gt_left">yesno</td>
+      <td class="gt_row gt_left">NA</td>
+    </tr>
+</tbody>
+<tfoot class="gt_sourcenotes"><tr>
+<td class="gt_sourcenote" colspan="2">
+<em>Source</em>: <a href="https://redcap.vanderbilt.edu/consortium/videoplayer.php?video=field_types02.mp4&amp;title=REDCap%20Project%20Field%20Types&amp;referer=redcap.ucdenver.edu">REDCap Project Field Types</a>
+</td>
+    </tr></tfoot>
+</table></div>
+</div>
+<div id="fields-to-include" class="section level4">
+<h4 class="hasAnchor">
+<a href="#fields-to-include" class="anchor"></a>Fields to Include</h4>
+<p>When designing your instrument(s), be sure to include the following fields:</p>
+<ul>
+<li>
+<em>Patient Identifier</em>: This is the stable identifier associated with each unique subject in your dataset (ex MRN)</li>
+<li>
+<em>Reviewer name</em>: Optionally, provide a field for reviewer’s to enter their name. In this way, multiple reviewers can store their own abstraction information for each subject in the connected dataset.</li>
+</ul>
+<p>As long as these fields are present, ReviewR will automatically populate them with the correct information when configured.</p>
+</div>
+<div id="not-supported" class="section level4">
+<h4 class="hasAnchor">
+<a href="#not-supported" class="anchor"></a>Not Supported</h4>
+<p>At this time, longitudinal studies and instruments using conditional logic are not supported.</p>
+</div>
+</div>
+</div>
+<div id="get-connected" class="section level2">
 <h2 class="hasAnchor">
-<a href="#redcap-instument-field-support" class="anchor"></a>REDCap Instument Field Support</h2>
+<a href="#get-connected" class="anchor"></a>Get Connected</h2>
+<p>Once you have set up your REDCap project as defined above, you are ready to connect to it from ReviewR. Load ReviewR either by visiting your institution’s deployed URL, or by running <code><a href="../reference/run_app.html">ReviewR::run_app()</a></code>. Head to the setup tab and connect to your patient data, using the ‘Connect to Patient Database’ pane.</p>
+<div id="connect-to-redcap-project" class="section level3">
+<h3 class="hasAnchor">
+<a href="#connect-to-redcap-project" class="anchor"></a>Connect to REDCap Project</h3>
+<p>You are now ready to connect to REDCap. From the ‘Configure Patient Chart Abstraction’ pane, select ‘REDCap’ from the Abstraction Module drop down. Next, enter your institution’s REDCap API URL, and REDCap API key that was created for your REDCap project.</p>
+<div class="figure" style="text-align: center">
+<img src="redcap_connect.png" alt="*Add REDCap Connection information.*" width="370"><p class="caption">
+<em>Add REDCap Connection information.</em>
+</p>
+</div>
+<p>After entering this information, click the ‘Connect to REDCap’ button. Note that the connect button will only appear after both a URL and API key are supplied.</p>
+</div>
+<div id="configure-redcap" class="section level3">
+<h3 class="hasAnchor">
+<a href="#configure-redcap" class="anchor"></a>Configure REDCap</h3>
+<p>Once a successful connection is made to a REDCap project a ‘Configure REDCap’ dialogue will appear. Here is where we will select the REDCap Question that will hold patient identifier. Additionally, if configured in your REDCap project, select which field should contain your reviewer information.</p>
+<p>One these fields are set, ReviewR will see if any information has been entered into the project. If previous information is found with a reviewer associated, it will populate a drop down with reviewers that may be selected.</p>
+<div class="figure" style="text-align: center">
+<img src="redcap_select_reviewer.png" alt="*Select from available reviewers.*" width="368"><p class="caption">
+<em>Select from available reviewers.</em>
+</p>
+</div>
+If no previous information has been entered, or you would like to add a new reviewer, you may type a new name, and click ‘Add’
+<div class="figure" style="text-align: center">
+<img src="redcap_add_reviewer.png" alt="*Add a new reviewer.*" width="371"><p class="caption">
+<em>Add a new reviewer.</em>
+</p>
+</div>
+Once valid configuration selections have been chosen the ‘Configure REDCap’ button will appear. Click ‘Configure REDCap’ to save configuration values. Configured options will be presented for review. Upon successful configuration, review in progress status and your REDCap instrument will appear in ReviewR and you may now begin your manual record review.
+<div class="figure" style="text-align: center">
+<img src="redcap_configure_success.png" alt="*Review selections when configured*" width="371"><p class="caption">
+<em>Review selections when configured</em>
+</p>
+</div>
+</div>
+</div>
+<div id="disconnectreconfigure" class="section level2">
+<h2 class="hasAnchor">
+<a href="#disconnectreconfigure" class="anchor"></a>Disconnect/Reconfigure</h2>
+<p>At any point during the setup process, you may click ‘Disconnect’ to connect to a different REDCap project, or ‘Reconfigure REDCap’ to set new configuration options.</p>
 </div>
   </div>
 
