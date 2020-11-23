@@ -43,6 +43,7 @@ Remotes:
     thewileylab/shinyBigQuery,
     thewileylab/shinyREDCap
 Suggests: 
+    gt,
     htmltools,
     knitr,
     processx,
