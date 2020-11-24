@@ -156,13 +156,56 @@
 
     
     
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://reviewr.thewileylab.org/">ReviewR</a></span><span class="op">)</span></code></pre></div>
+<div id="overview" class="section level2">
+<h2 class="hasAnchor">
+<a href="#overview" class="anchor"></a>Overview</h2>
+<p>Now that we have connected to patient records and established a REDCap project and connection, we can begin our chart review. To review previous setup steps, please see:</p>
+<ul>
+<li><code><a href="../articles/connect_to_patient_records.html">vignette('connect_to_patient_records')</a></code></li>
+<li><code><a href="../articles/connect_to_redcap.html">vignette('connect_to_redcap')</a></code></li>
+</ul>
+</div>
+<div id="patient-search" class="section level2">
+<h2 class="hasAnchor">
+<a href="#patient-search" class="anchor"></a>Patient Search</h2>
+<p>Begin by opening the ‘Patient Search’ section and identifying a patient to review. To locate a particular patient you may search by any of the available fields by entering a search term in the box at the top of each column, or search globally across all columns by utilizing the search box in the upper right. The right most columns indicate the review status of each individual in the connected dataset. As you review subjects and upload information to REDCap, or other project users complete reviews, these columns will update indicating the current review status of each subject. Once you have selected a patient of interest, click the subject ID to be taken to the ‘Chart Review’ section.</p>
+<div class="figure" style="text-align: center">
+<img src="reviewr_pt_search.png" alt="*Patient Tab displaying a [50 person subset](https://github.com/thewileylab/synPUF) of the CMS 2008-2010 Data Entrepreneurs’ Synthetic Public Use File (DE-SynPUF) from OHDSI.*"><p class="caption">
+<em>Patient Tab displaying a <a href="https://github.com/thewileylab/synPUF">50 person subset</a> of the CMS 2008-2010 Data Entrepreneurs’ Synthetic Public Use File (DE-SynPUF) from OHDSI.</em>
+</p>
+</div>
+</div>
+<div id="chart-review" class="section level2">
+<h2 class="hasAnchor">
+<a href="#chart-review" class="anchor"></a>Chart Review</h2>
+<p>Clicking a subject ID from the ‘Patient Search’ section will automatically redirect you to the ‘Chart Review’ portion of ReviewR. Here, you will be greeted by a screen similar to this:</p>
+<div class="figure">
+<img src="reviewr_chart_review.png" alt=""><p class="caption"><em>ReviewR Chart Review: Everything’s <a href="https://shiny.rstudio.com/">Shiny</a>, Cap’n. Not to fret.</em></p>
+</div>
+<div id="subject-header" class="section level3">
+<h3 class="hasAnchor">
+<a href="#subject-header" class="anchor"></a>Subject Header</h3>
+</div>
+<div id="jump-to-subject-id" class="section level3">
+<h3 class="hasAnchor">
+<a href="#jump-to-subject-id" class="anchor"></a>Jump to Subject ID</h3>
+</div>
+<div id="patient-chart" class="section level3">
+<h3 class="hasAnchor">
+<a href="#patient-chart" class="anchor"></a>Patient Chart</h3>
+</div>
+<div id="redcap-instrument" class="section level3">
+<h3 class="hasAnchor">
+<a href="#redcap-instrument" class="anchor"></a>REDCap Instrument</h3>
+</div>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
 
-      </div>
+        <nav id="toc" data-toggle="toc"><h2 data-toc-skip>Contents</h2>
+    </nav>
+</div>
 
 </div>
 
