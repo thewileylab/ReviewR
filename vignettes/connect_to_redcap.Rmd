@@ -14,11 +14,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Overview
+## Getting Started
 
 In order to collect and store information about patients, you'll want to connect ReviewR with a REDCap Project that has been previously created and approved by your institution for use with your data. Data abstraction in ReviewR is handled by the [shinyREDCap](https://shinyredcap.thewileylab.org/) module, which is responsible for translating REDCap project fields to native R Shiny controls and storing data in your REDCap Project. 
-
-## Getting Started
 
 ### Create a REDCap Project
 
