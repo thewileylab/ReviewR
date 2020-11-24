@@ -29,7 +29,7 @@ To begin, create a REDCap project on your institution's REDCap instance. Add any
 * API: Export
 * Create Records
 
-Once users have been added and permissions set, have user's log into the project, and request API access to the project. Users will need an API key to access the abstraction functionality of ReviewR.
+Once users have been added and permissions set, have users log into the project, and request API access to the project. Users will need an API key to access the abstraction functionality of ReviewR. API keys are assigned to individuals and it is imperative that each individual performing review activities has their own API key.
 
 ### Design Instruments
 
@@ -74,7 +74,7 @@ At this time, longitudinal studies and instruments using conditional logic are n
 
 ## Get Connected
 
-Once you have set up your REDCap project as defined above, you are ready to connect to it from ReviewR. Load ReviewR either by visiting your institution's deployed URL, or by running `ReviewR::run_app()`. Head to the setup tab and connect to your patient data, using the 'Connect to Patient Database' pane. 
+Once you have set up your REDCap project as defined above, you are ready to connect to it from ReviewR. Load ReviewR either by visiting your institution's deployed URL, or by running `ReviewR::run_app()` from your local R installation. Head to the setup tab and connect to your patient data, using the 'Connect to Patient Database' pane. 
 
 ### Connect to REDCap Project
 
@@ -83,7 +83,11 @@ You are now ready to connect to REDCap. From the 'Configure Patient Chart Abstra
 ```{r figure_1, echo=FALSE, fig.cap="*Add REDCap Connection information.*", fig.align='center'}
 knitr::include_graphics('redcap_connect.png')
 ```
-After entering this information, click the 'Connect to REDCap' button. Note that the connect button will only appear after both a URL and API key are supplied. 
+After entering this information, click the 'Connect to REDCap' button. Note that the connect button will only appear after both a URL and API key are supplied. If the connection is successful, information about the connected project will be displayed including:
+
+* REDCap Project ID
+* Project creation date
+* Production status
 
 ### Configure REDCap
 
