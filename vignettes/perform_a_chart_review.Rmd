@@ -31,16 +31,33 @@ knitr::include_graphics('reviewr_pt_search.png')
 
 ## Chart Review
 
-Clicking a subject ID from the 'Patient Search' section will automatically redirect you to the 'Chart Review' portion of ReviewR. Here, you will be greeted by a screen similar to this:
+Clicking a subject ID from the 'Patient Search' page will automatically redirect you to the 'Chart Review' portion of ReviewR. Here, you will be greeted by a screen similar to this:
 
 ```{r figure_2, echo=FALSE, fig.cap = "*ReviewR Chart Review: Everything's [Shiny](https://shiny.rstudio.com/), Cap'n. Not to fret.*"}
 knitr::include_graphics('reviewr_chart_review.png')
 ```
 
+Note that the 'Chart Review' page consists of 4 elements, which will be discussed below. 
+
 ### Subject Header
+
+The Subject header contains demographic information about your selected subject, in context and takes up the upper left portion of the 'Chart Review' page. This information is extracted directly from the 'Patient Chart' tab and will give you a quick reference to demographic information about your patient. When configured, review status will also be available in this pane.
+
+Your saved review status for the particular subject in context will appear next to the subject ID with a visual indicator:
+
+* blank: Review Not Started
+* red: 'Incomplete'
+* yellow: 'Unverified'
+* green: 'Complete'
+
+Whereas the status assigned by other reviewers will appear in the right most column of demographic information in the subject header.
 
 ### Jump to Subject ID
 
+This dropdown contains a listing of all of the subjects in your connected dataset, along with the review status you have assigned, if present. It allows you to review subjects in any order. s
+
 ### Patient Chart
+
+The patient chart occupies the lower left portion of the screen. This tabbed panel contains all of the patient tables that have been defined for a particular data model. Access each table by clicking the tab at the top of this pane. Search within table fields by entering a search term or regex string in the search box located at the top of each table column. You may also enter a 'global search' term in the box located in the upper right portion of this pane. Global search applies the search string or regular expression to every field of every connected table, and highlights any results that are found. 
 
 ### REDCap Instrument
