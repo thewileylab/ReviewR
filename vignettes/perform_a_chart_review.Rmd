@@ -54,10 +54,16 @@ Whereas the status assigned by other reviewers will appear in the right most col
 
 ### Jump to Subject ID
 
-This dropdown contains a listing of all of the subjects in your connected dataset, along with the review status you have assigned, if present. It allows you to review subjects in any order. s
+This dropdown contains a listing of all of the subjects in your connected dataset, along with the review status you have assigned, if present. It allows you to review subjects in any order. 
 
 ### Patient Chart
 
 The patient chart occupies the lower left portion of the screen. This tabbed panel contains all of the patient tables that have been defined for a particular data model. Access each table by clicking the tab at the top of this pane. Search within table fields by entering a search term or regex string in the search box located at the top of each table column. You may also enter a 'global search' term in the box located in the upper right portion of this pane. Global search applies the search string or regular expression to every field of every connected table, and highlights any results that are found. 
 
 ### REDCap Instrument
+
+The REDCap Instrument section of the 'Chart Review' page is where information about the selected subject may be captured. At the very top of this pane will be the instrument selector. This drop down allows the user to select any configured instruments from a connected REDCap project. 
+
+Take a look at the instrument where you have added the fields to hold subject ID and reviewer ID. Note that these fields have been automatically populated with the currently selected subject and currently configured reviewer, respectively. These values may not be modified manually. 
+
+
