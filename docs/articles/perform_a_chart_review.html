@@ -159,6 +159,13 @@
 <div id="overview" class="section level2">
 <h2 class="hasAnchor">
 <a href="#overview" class="anchor"></a>Overview</h2>
+<p>ReviewR is a tool designed to assist users with performing a manual record review. You may be asking, what is a manual record review and why would I need to perform one? There are several reasons to perform record review, from developing a gold standard cohort to verifying the validity of a machine learning algorithm. In short, any time you need to determine the actual truth about a patient a manual record review is needed.</p>
+<p>As with any retrospective analysis involving medical records, it is important to carefully define your research question and develop a detailed procedure for systematically capturing the information from the available patient data. While ReviewR is not a substitute for this activity, it can help avoid certain pitfalls the accompany the process. Once your research question is defined and you have determined what variables need to be captured from each patient, ReviewR can assist with the abstraction process.</p>
+<p>ReviewR aims to fast and simple to use. It places all of the patient information you need in the same interface as the abstraction instrument. This reduces desktop clutter and avoids having to stack multiple windows on top of one another when using separate applications to perform a review. Additionally, patient information is searchable globally, which will speeds up the process of locating the information you need. Finally, repetitive fields are populated automatically, reducing the potential for error. To learn how to use the full functionality of the ReviewR interface, take a look at the sections that follow.</p>
+</div>
+<div id="reviewr-interface" class="section level2">
+<h2 class="hasAnchor">
+<a href="#reviewr-interface" class="anchor"></a>ReviewR Interface</h2>
 <p>Now that we have connected to patient records and established a REDCap project and connection, we can begin our chart review. To review previous setup steps, please see:</p>
 <ul>
 <li><code><a href="../articles/connect_to_patient_records.html">vignette('connect_to_patient_records')</a></code></li>
@@ -178,28 +185,63 @@
 <div id="chart-review" class="section level2">
 <h2 class="hasAnchor">
 <a href="#chart-review" class="anchor"></a>Chart Review</h2>
-<p>Clicking a subject ID from the ‘Patient Search’ section will automatically redirect you to the ‘Chart Review’ portion of ReviewR. Here, you will be greeted by a screen similar to this:</p>
+<p>Clicking a subject ID from the ‘Patient Search’ page will automatically redirect you to the ‘Chart Review’ portion of ReviewR. Here, you will be greeted by a screen similar to this:</p>
 <div class="figure">
 <img src="reviewr_chart_review.png" alt="*ReviewR Chart Review: Everything's [Shiny](https://shiny.rstudio.com/), Cap'n. Not to fret.*" width="1072"><p class="caption">
 <em>ReviewR Chart Review: Everything’s <a href="https://shiny.rstudio.com/">Shiny</a>, Cap’n. Not to fret.</em>
 </p>
 </div>
+<p>Note that the ‘Chart Review’ page is divided into roughly 4 quadrants, which will be discussed below.</p>
 <div id="subject-header" class="section level3">
 <h3 class="hasAnchor">
 <a href="#subject-header" class="anchor"></a>Subject Header</h3>
+<p>The Subject header contains demographic information about your selected subject, in context and takes up the upper left portion of the ‘Chart Review’ page. This information is extracted directly from the ‘Patient Chart’ tab and will give you a quick reference to demographic information about your patient. When configured, review status will also be available in this pane.</p>
+<p>Your saved review status for the particular subject in context will appear next to the subject ID with a visual indicator:</p>
+<ul>
+<li>
+<em>“Review Not Started (blank)”</em> - Status has not yet been assigned.</li>
+<li>
+<em>“Incomplete (red)”</em> - Not all questions have been answered, or a required question has been left unanswered.</li>
+<li>
+<em>“Unverified (yellow)”</em> - Questions have been answered, but require additional review.</li>
+<li>
+<em>“Complete (green)”</em> - All required questions for the selected instrument have been answered.</li>
+</ul>
+<p>The status assigned by other reviewers will appear in the right most column of demographic information in the subject header.</p>
 </div>
 <div id="jump-to-subject-id" class="section level3">
 <h3 class="hasAnchor">
 <a href="#jump-to-subject-id" class="anchor"></a>Jump to Subject ID</h3>
+<p>This dropdown contains a listing of all of the subjects in your connected dataset, along with the review status you have assigned, if present. It allows you to review subjects in any order.</p>
 </div>
 <div id="patient-chart" class="section level3">
 <h3 class="hasAnchor">
 <a href="#patient-chart" class="anchor"></a>Patient Chart</h3>
+<p>The patient chart occupies the lower left portion of the screen. This tabbed panel contains all of the patient tables that have been defined for a particular data model. Access each table by clicking the tab at the top of this pane. Search within table fields by entering a search term or regex string in the search box located at the top of each table column. You may also enter a ‘global search’ term in the box located in the upper right portion of this pane. Global search applies the search string or regular expression to every field of every connected table, and highlights any results that are found.</p>
 </div>
 <div id="redcap-instrument" class="section level3">
 <h3 class="hasAnchor">
 <a href="#redcap-instrument" class="anchor"></a>REDCap Instrument</h3>
+<p>The REDCap Instrument section of the ‘Chart Review’ page is where information about the selected subject may be captured. At the very top of this pane will be the instrument selector. This drop down allows the user to select any configured instruments from a connected REDCap project.</p>
+<p>Take a look at the instrument where you have added the fields to hold subject ID and reviewer ID. Note that these fields have been automatically populated with the currently selected subject and currently configured reviewer, respectively. These values may not be modified manually.</p>
+<p>Additionally, all of the other configured fields from your REDCap project will be rendered, with native Shiny controls. Field notes will be rendered below the Shiny widget, along with an indicator for required question types. If you happen to include a field type that is not yet supported, a placeholder message will be rendered, indicating that this field type may not be used.</p>
+<p>As with REDCap on the web, a form status may be set for each subject/instrument included in the REDCap Project. See the <a href="#subject-header">Subject Header</a> section for an overview of supported statuses.</p>
+<p>To save responses, click the ‘Save to REDCap’ button. A notification will appear indicating that data was saved successfully or a modal detailing any potential conflicts if attempting to overwrite existing REDCap data.</p>
 </div>
+</div>
+<div id="keyboard-navigation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#keyboard-navigation" class="anchor"></a>Keyboard Navigation</h2>
+<p>In order to speed up the manual record review process with ReviewR, keybindings have been added for common review tasks:</p>
+<ul>
+<li>
+<em>“Meta + Ctrl + &gt;”</em> : Navigate to the next subject</li>
+<li>
+<em>“Meta + Ctrl + &lt;”</em> : Navigate to the previous subject</li>
+<li>
+<em>“Meta + Ctrl + s”</em> : Save currently entered abstraction information</li>
+</ul>
+<p><em>Note: Meta refers to the command key (⌘) on MacOS and the Alt key on windows/unix based systems</em></p>
 </div>
   </div>
 

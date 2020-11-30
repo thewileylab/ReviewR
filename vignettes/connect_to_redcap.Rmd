@@ -110,3 +110,9 @@ knitr::include_graphics('redcap_configure_success.png')
 ## Disconnect/Reconfigure
 
 At any point during the setup process, you may click 'Disconnect' to connect to a different REDCap project, or 'Reconfigure REDCap' to set new configuration options.
+
+## Proceed to Chart Review
+
+ReviewR is now ready for you to view AND abstract patient information from the connected database. For information on how to perform a chart rewview, please see the vignette on performing a chart review:
+
+* `vignette('perform:a_chart_review')`
