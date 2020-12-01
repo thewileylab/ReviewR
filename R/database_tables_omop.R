@@ -121,7 +121,6 @@ get_subject_concept <- function(table_map, db_connection, concept_table, concept
 #' @importFrom stringr str_replace regex str_replace_all
 #' @importFrom rlang .data
 #' @importFrom tidyr unite
-#' @importFrom lubridate as_date
 #' @importFrom stats setNames
 #' @importFrom magrittr %>%
 #' 
@@ -144,8 +143,7 @@ omop_table_all_patients <- function(table_map, db_connection) {
     {if (!is.null(ethnicity_concepts) ) left_join(., ethnicity_concepts) else .} %>% 
     # {if (!is.null(provider_concepts) ) left_join(., provider_concepts) else .} %>%
     collect() %>% 
-    unite(col = 'Birth_Date', c('year_of_birth','month_of_birth','day_of_birth')) %>% 
-    mutate(Birth_Date = as_date(.data$Birth_Date)) %>% 
+    unite(col = 'Birth_Date', 'year_of_birth','month_of_birth','day_of_birth', sep = '-') %>% 
     select(any_of(c(ID = user_field(table_map, 'person', 'person_id'), Gender = 'Gender', SourceVal = user_field(table_map, 'person', 'person_source_value'))), everything()) %>% 
     arrange(as.numeric(.data$ID)) %>% 
     rename_at(vars(-1), to_title_case)
