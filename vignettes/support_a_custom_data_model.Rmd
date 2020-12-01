@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-Currently, ReviewR is capable of displaying patient information from databases that conform to the MIMIC-III and OMOP data models. However, we recognize that no two EHR's are exactly the same and patient data can be stored in a variety of different formats. Armed with a little bit of knowledge about your patient information database, ReviewR can be extended to display patient data for additional data models.
+Currently, ReviewR is capable of displaying patient information from databases that conform to the MIMIC-III and OMOP data models. However, we recognize that no two Electronic Health Records (EHRs) are exactly the same and patient data can be stored in a variety of different formats. Armed with a little bit of knowledge about your patient information database, ReviewR can be extended to display patient data for additional data models.
 
 ### Requirements
 
@@ -104,7 +104,7 @@ To ensure you have access to the latest development tools and file structure of 
 usethis::create_from_github(repo_spec = 'thewileylab/ReviewR', destdir = '~/')
 ```
 
-Please see [this guide](https://happygitwithr.com/index.html) if you have trouble connecting RStudio with Git. It is also possible to fork this repo directly from GitHub if all else fails. 
+Please see [this guide](https://happygitwithr.com/index.html) if you have trouble connecting RStudio with Git. It is also possible to fork this repository directly from GitHub if all else fails. 
 
 Navigate to the forked repository and open the `ReviewR.Rproj` file. This will open the project in RStudio. Finally, using the devtools package run:
 ```{r eval=FALSE}

@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 Database connections in ReviewR are created with the help of the [DBI Package](https://db.rstudio.com/dbi/) from RStudio. This allows ReviewR to interact with any database supported by DBI. A full list of compatible database back-ends[*](#dplyr-support) can be found [here](https://db.rstudio.com/databases/). 
 
-Within ReviewR, DBI connection objects are programmatically created to facilitate user connections to patient databases. This connection object defines the type of database, connection information (ip, port, etc.), and the user with any associated credentials. These connection objects can then be used to create access tables within the database.
+Within ReviewR, DBI connection objects are programmatically created to facilitate user connections to patient databases. This connection object defines the type of database, connection information (IP address, port, etc.), and the user with any associated credentials. These connection objects can then be used to create access tables within the database.
 
 ### Database Modules
 
@@ -64,7 +64,7 @@ The first step to developing a new ReviewR module will be to fork the latest ver
 usethis::create_from_github(repo_spec = 'thewileylab/ReviewR', destdir = '~/')
 ```
 
-Please see [this guide](https://happygitwithr.com/index.html) if you have trouble connecting RStudio with Git. It is also possible to fork this repo directly from GitHub if all else fails. 
+Please see [this guide](https://happygitwithr.com/index.html) if you have trouble connecting RStudio with Git. It is also possible to fork this repository directly from GitHub if all else fails. 
 
 Navigate to the forked repository and open the `ReviewR.Rproj` file. This will open the project in RStudio. Finally, using the devtools package run:
 ```{r eval=FALSE}
