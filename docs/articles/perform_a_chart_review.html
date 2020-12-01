@@ -161,7 +161,7 @@
 <a href="#overview" class="anchor"></a>Overview</h2>
 <p>ReviewR is a tool designed to assist users with performing a manual record review. You may be asking, what is a manual record review and why would I need to perform one? There are several reasons to perform record review, from developing a gold standard cohort to verifying the validity of a machine learning algorithm. In short, any time you need to determine the actual truth about a patient a manual record review is needed.</p>
 <p>As with any retrospective analysis involving medical records, it is important to carefully define your research question and develop a detailed procedure for systematically capturing the information from the available patient data. While ReviewR is not a substitute for this activity, it can help avoid certain pitfalls the accompany the process. Once your research question is defined and you have determined what variables need to be captured from each patient, ReviewR can assist with the abstraction process.</p>
-<p>ReviewR aims to fast and simple to use. It places all of the patient information you need in the same interface as the abstraction instrument. This reduces desktop clutter and avoids having to stack multiple windows on top of one another when using separate applications to perform a review. Additionally, patient information is searchable globally, which will speeds up the process of locating the information you need. Finally, repetitive fields are populated automatically, reducing the potential for error. To learn how to use the full functionality of the ReviewR interface, take a look at the sections that follow.</p>
+<p>ReviewR aims to be fast and simple to use. It places all of the patient information you need in the same interface as the abstraction instrument. This reduces desktop clutter and avoids having to stack multiple windows on top of one another when using separate applications to perform a review. Additionally, patient information is searchable globally, which will speeds up the process of locating the information you need. Finally, repetitive fields are populated automatically, reducing the potential for error. To learn how to use the full functionality of the ReviewR interface, take a look at the sections that follow.</p>
 </div>
 <div id="reviewr-interface" class="section level2">
 <h2 class="hasAnchor">
@@ -175,7 +175,7 @@
 <div id="patient-search" class="section level2">
 <h2 class="hasAnchor">
 <a href="#patient-search" class="anchor"></a>Patient Search</h2>
-<p>Begin by opening the ‘Patient Search’ section and identifying a patient to review. To locate a particular patient you may search by any of the available fields by entering a search term in the box at the top of each column, or search globally across all columns by utilizing the search box in the upper right. The right most columns indicate the review status of each individual in the connected dataset. As you review subjects and upload information to REDCap, or other project users complete reviews, these columns will update indicating the current review status of each subject. Once you have selected a patient of interest, click the subject ID to be taken to the ‘Chart Review’ section.</p>
+<p>Begin by opening the ‘Patient Search’ section and identifying a patient to review. To locate a particular patient you may search by any of the available fields by entering a search term in the box at the top of each column, or search globally across all columns by utilizing the search box in the upper right. The right most columns indicate the review status of each individual in the connected dataset. As you review subjects and upload information to REDCap, or other project users complete reviews, these columns will update indicating the current review status of each subject. Once you have selected a patient of interest, click the subject ID, highlighted in blue in the leftmost column, to be taken to the ‘Chart Review’ page.</p>
 <div class="figure" style="text-align: center">
 <img src="reviewr_pt_search.png" alt="*Patient Tab displaying a [50 person subset](https://github.com/thewileylab/synPUF) of the CMS 2008-2010 Data Entrepreneurs’ Synthetic Public Use File (DE-SynPUF) from OHDSI.*" width="1073"><p class="caption">
 <em>Patient Tab displaying a <a href="https://github.com/thewileylab/synPUF">50 person subset</a> of the CMS 2008-2010 Data Entrepreneurs’ Synthetic Public Use File (DE-SynPUF) from OHDSI.</em>
@@ -195,7 +195,7 @@
 <div id="subject-header" class="section level3">
 <h3 class="hasAnchor">
 <a href="#subject-header" class="anchor"></a>Subject Header</h3>
-<p>The Subject header contains demographic information about your selected subject, in context and takes up the upper left portion of the ‘Chart Review’ page. This information is extracted directly from the ‘Patient Chart’ tab and will give you a quick reference to demographic information about your patient. When configured, review status will also be available in this pane.</p>
+<p>The Subject header contains demographic information about your selected subject and takes up the upper left portion of the ‘Chart Review’ page. This information is extracted directly from the ‘Patient Chart’ page and will give you a quick reference to demographic information about your patient. When configured, review status will also be available in this pane.</p>
 <p>Your saved review status for the particular subject in context will appear next to the subject ID with a visual indicator:</p>
 <ul>
 <li>
@@ -217,7 +217,7 @@
 <div id="patient-chart" class="section level3">
 <h3 class="hasAnchor">
 <a href="#patient-chart" class="anchor"></a>Patient Chart</h3>
-<p>The patient chart occupies the lower left portion of the screen. This tabbed panel contains all of the patient tables that have been defined for a particular data model. Access each table by clicking the tab at the top of this pane. Search within table fields by entering a search term or regex string in the search box located at the top of each table column. You may also enter a ‘global search’ term in the box located in the upper right portion of this pane. Global search applies the search string or regular expression to every field of every connected table, and highlights any results that are found.</p>
+<p>The patient chart occupies the lower left portion of the screen. This tabbed panel contains all of the patient tables that have been defined for a particular data model. Access each table by clicking the tab at the top of this pane. Search within table fields by entering a search term or regular expression string in the search box located at the top of each table column. You may also enter a ‘global search’ term in the box located in the upper right portion of this pane. Global search applies the search string or regex to every field of every connected table, and highlights any results that are found.</p>
 </div>
 <div id="redcap-instrument" class="section level3">
 <h3 class="hasAnchor">
@@ -241,7 +241,7 @@
 <li>
 <em>“Meta + Ctrl + s”</em> : Save currently entered abstraction information</li>
 </ul>
-<p><em>Note: Meta refers to the command key (⌘) on MacOS and the Alt key on windows/unix based systems</em></p>
+<p><em>Note: Meta refers to the command key (⌘) on macOS and the Alt key on windows/unix based systems</em></p>
 </div>
   </div>
 

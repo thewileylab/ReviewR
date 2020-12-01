@@ -160,7 +160,7 @@
 <h2 class="hasAnchor">
 <a href="#overview" class="anchor"></a>Overview</h2>
 <p>Database connections in ReviewR are created with the help of the <a href="https://db.rstudio.com/dbi/">DBI Package</a> from RStudio. This allows ReviewR to interact with any database supported by DBI. A full list of compatible database back-ends<a href="#dplyr-support">*</a> can be found <a href="https://db.rstudio.com/databases/">here</a>.</p>
-<p>Within ReviewR, DBI connection objects are programmatically created to facilitate user connections to patient databases. This connection object defines the type of database, connection information (ip, port, etc.), and the user with any associated credentials. These connection objects can then be used to create access tables within the database.</p>
+<p>Within ReviewR, DBI connection objects are programmatically created to facilitate user connections to patient databases. This connection object defines the type of database, connection information (IP address, port, etc.), and the user with any associated credentials. These connection objects can then be used to create access tables within the database.</p>
 <div id="database-modules" class="section level3">
 <h3 class="hasAnchor">
 <a href="#database-modules" class="anchor"></a>Database Modules</h3>
@@ -194,7 +194,7 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># install.packages('usethis')</span>
 <span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/create_from_github.html">create_from_github</a></span><span class="op">(</span>repo_spec <span class="op">=</span> <span class="st">'thewileylab/ReviewR'</span>, destdir <span class="op">=</span> <span class="st">'~/'</span><span class="op">)</span></code></pre></div>
-<p>Please see <a href="https://happygitwithr.com/index.html">this guide</a> if you have trouble connecting RStudio with Git. It is also possible to fork this repo directly from GitHub if all else fails.</p>
+<p>Please see <a href="https://happygitwithr.com/index.html">this guide</a> if you have trouble connecting RStudio with Git. It is also possible to fork this repository directly from GitHub if all else fails.</p>
 <p>Navigate to the forked repository and open the <code>ReviewR.Rproj</code> file. This will open the project in RStudio. Finally, using the devtools package run:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># install.packages('devtools')</span>
