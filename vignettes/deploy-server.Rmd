@@ -22,7 +22,7 @@ This deployment strategy only requires that ReviewR be installed on a centralize
 
 ## Installation
 
-In the sections that follow, it is assumed that the user has already deployed and secured Shiny Server Open Source Edition (OSE) with a stable https URL. Shiny Server OSE deployment/configuration is outside the scope of this document, however instructions on how to set up and secure your installation can be found in the <a href="#prerequisites">Prerequisites</a> section below.
+In the sections that follow, it is assumed that the user has already deployed and secured an [Open Source Shiny Server](https://rstudio.com/products/shiny/download-server/) with a stable https URL. Shiny Server deployment/configuration is outside the scope of this document, however instructions on how to set up and secure your installation can be found in the <a href="#prerequisites">Prerequisites</a> section below.
 
 ### Prerequisites 
 * [Shiny Server: Quick Start Guide](https://support.rstudio.com/hc/en-us/articles/360011458854-Shiny-Server-Quick-Start-Installation-and-Configuration)
@@ -32,7 +32,7 @@ In the sections that follow, it is assumed that the user has already deployed an
 
 *Note: Prerequisites assume a server running Ubuntu 18.04. Additional configuration is required if connecting to a Google BigQuery Database. See <a href="#google-bigquery-requirements">Google BigQuery Requirements</a>*
 
-### Shiny Server OSE
+### Shiny Server
 
 1. Install the ReviewR package as a root user, to ensure your system R package library has all of the required dependencies
     + From a bash terminal, run:

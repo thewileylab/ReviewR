@@ -52,13 +52,13 @@ mimic3_table_services(table_map, db_connection, subject_id)
 mimic3_table_transfers(table_map, db_connection, subject_id)
 }
 \arguments{
-\item{table_map}{tibble containing a the cdm that most closely matches the user's database and a map of standard tables to user tables}
+\item{table_map}{tibble containing a the CDM that most closely matches the user's database and a map of standard tables to user tables}
 
 \item{db_connection}{Connection info received from the database setup module}
 
 \item{subject_id}{The selected subject}
 }
 \description{
-Collection of functions to create pre-arranged views of MIMIC patient data for ReviewR.
+Collection of functions to create prearranged views of MIMIC patient data for ReviewR.
 }
 \keyword{internal}

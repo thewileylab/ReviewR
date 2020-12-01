@@ -113,6 +113,6 @@ At any point during the setup process, you may click 'Disconnect' to connect to 
 
 ## Proceed to Chart Review
 
-ReviewR is now ready for you to view AND abstract patient information from the connected database. For information on how to perform a chart rewview, please see the vignette on performing a chart review:
+ReviewR is now ready for you to view AND abstract patient information from the connected database. For information on how to perform a chart review, please see the vignette on performing a chart review:
 
 * `vignette('perform:a_chart_review')`

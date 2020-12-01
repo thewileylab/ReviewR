@@ -2,12 +2,12 @@
 % Please edit documentation in R/mod_navigation.R
 \name{reviewr_datatable}
 \alias{reviewr_datatable}
-\title{ReviewR Datatable}
+\title{ReviewR DataTable}
 \usage{
 reviewr_datatable(.data, dom = "ftip", column_filter = "top", search_term = "")
 }
 \arguments{
-\item{.data}{A local tibble or dataframe to be rendered in the ReviewR UI}
+\item{.data}{A local tibble or data frame to be rendered in the ReviewR UI}
 
 \item{dom}{Define the table control elements to appear on the page and in what order}
 
@@ -19,6 +19,6 @@ reviewr_datatable(.data, dom = "ftip", column_filter = "top", search_term = "")
 return a DT with custom options
 }
 \description{
-ReviewR Datatable
+ReviewR DataTable
 }
 \keyword{internal}
