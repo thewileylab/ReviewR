@@ -23,7 +23,7 @@ demo_sqlite_setup_ui <- function(id) {
     hidden(
       div(id = ns('demodb_connected'),
           h3('Success!'),
-          HTML('This demonstration database module contains a 50 person subset of the CMS 2008-2010 Data Entrepreneurs’ Synthetic Public Use File (DE-SynPUF) from OHDSI.'),
+          HTML("This demonstration database module contains a 50 person subset of the CMS 2008-2010 Data Entrepreneurs' Synthetic Public Use File (DE-SynPUF) from OHDSI."),
           h4('Details'),
           HTML('<ul>
                 <li><a href="https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF.html" target="_blank">Information on the SynPUF data source is available here</a></li>
