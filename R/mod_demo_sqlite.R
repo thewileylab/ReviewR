@@ -14,16 +14,26 @@
 demo_sqlite_setup_ui <- function(id) { 
   ns <- NS(id)
   tagList(
-    div(id = ns('setup'),
+    div(id = ns('demodb_setup'),
       HTML('Connect to a demonstration SQLite database containing synPUF data.'),
       br(),
-      actionButton(inputId = ns('connect'), label = 'Connect', icon = icon(name = 'database')),
-      
+      br(),
+      actionButton(inputId = ns('demodb_connect'), label = 'Connect', icon = icon(name = 'database')),
       ),
     hidden(
-      div(id = ns('connected'),
+      div(id = ns('demodb_connected'),
           h3('Success!'),
-          actionButton(inputId = ns('demo_disconnect'), label = 'Disconnect')
+          HTML('This demonstration database module contains a 50 person subset of the CMS 2008-2010 Data Entrepreneurs’ Synthetic Public Use File (DE-SynPUF) from OHDSI.'),
+          h4('Details'),
+          HTML('<ul>
+                <li><a href="https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF.html" target="_blank">Information on the SynPUF data source is available here</a></li>
+                <li><a href="https://github.com/OHDSI/CommonDataModel/blob/v5.2.2/PostgreSQL/OMOP%20CDM%20ddl%20-%20PostgreSQL.sql" target="_blank">CDM 5.2.2 DDL for the OHDSI supported DBMSs is available here</a></li>
+                <li><a href="https://www.mtsamples.com/" target="_blank">Notes Obtained from MTSamples.com</a></li>
+                <li><a href="https://github.com/thewileylab/synPUF" target="_blank">R Package ETL Process</a></li>
+                </ul>'
+               ),
+          br(),
+          actionButton(inputId = ns('demodb_disconnect'), label = 'Disconnect')
           )
       )
     )
@@ -57,9 +67,9 @@ demo_sqlite_setup_server <- function(id) {
         db_con = NULL
         )
       # Server Code Here ----
-      observeEvent(input$connect, {
+      observeEvent(input$demodb_connect, {
         message('creating sqlite db')
-        shinyjs::hide('setup')
+        shinyjs::hide('demodb_setup')
         ## Create a SQLite DB in memory
         demo_sqlite_export$db_con <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
         ## Populate with data from synPUF package
@@ -88,15 +98,16 @@ demo_sqlite_setup_server <- function(id) {
         dbWriteTable(conn = demo_sqlite_export$db_con, name = 'vocabulary', value = synPUF::vocabulary)
         ## Report connected
         demo_sqlite_export$is_connected = 'yes'
-        shinyjs::show('connected')
+        shinyjs::show('demodb_connected')
       })
       
-      observeEvent(input$demo_disconnect, {
-        shinyjs::hide('connected')
+      observeEvent(input$demodb_disconnect, {
+        req(class(demo_sqlite_export$db_con)[1] == 'SQLiteConnection')
+        shinyjs::hide('demodb_connected')
         RSQLite::dbDisconnect(demo_sqlite_export$db_con)
         demo_sqlite_export$db_con <- NULL
         demo_sqlite_export$is_connected = 'no'
-        shinyjs::show('setup')
+        shinyjs::show('demodb_setup')
       })
       
       # Return ----
