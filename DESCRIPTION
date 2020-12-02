@@ -43,6 +43,7 @@ Remotes:
     thewileylab/shinyREDCap,
     thewileylab/synPUF
 Suggests: 
+    gt,
     htmltools,
     knitr,
     processx,
