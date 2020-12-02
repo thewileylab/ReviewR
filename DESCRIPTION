@@ -27,7 +27,6 @@ Imports:
     rlang (>= 0.4.7),
     RSQLite,
     shiny (>= 1.5.0),
-    shinyBigQuery (>= 0.0.2.9002),
     shinycssloaders (>= 1.0.0),
     shinydashboard,
     shinyjs,
