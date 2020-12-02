@@ -36,7 +36,6 @@ Imports:
     snakecase,
     stringr,
     synPUF,
-    tibble,
     tidyr (>= 1.1.0)
 Remotes: 
     Thinkr-open/golem,

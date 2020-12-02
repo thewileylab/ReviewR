@@ -26,7 +26,7 @@ user_table <- function(table_map, db_con, desired_cdm_table) {
   tbl(src = db_con, table_name)
   },
   error=function(error) {
-    tibble::tibble(missing_table = glue::glue('The {desired_cdm_table} table is not present in the currently connected database.'))
+    dplyr::tibble(missing_table = glue::glue('The {desired_cdm_table} table is not present in the currently connected database.'))
   })
 }
 
@@ -134,7 +134,6 @@ patient_chart_ui <- function(id) {
 #' @importFrom purrr map map2 iwalk imap
 #' @importFrom stringr str_detect str_replace str_replace_all regex str_extract
 #' @importFrom tidyr unnest as_tibble separate drop_na
-#' @importFrom tibble tibble enframe
 #' @importFrom rlang .data
 #' @importFrom snakecase to_title_case
 #' @importFrom utils data lsf.str
@@ -162,11 +161,10 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars, p
       observeEvent(database_vars()$is_connected, {
         req(database_vars()$is_connected)
         if(is.null(database_vars()$db_con)) {
-          datamodel_vars$table_map <- tibble(.rows = 0)
+          datamodel_vars$table_map <- dplyr::tibble(.rows = 0)
         } else {
           ### Load user tables and nest fields. 
-          user_tables <- dbListTables(database_vars()$db_con) %>% 
-            tibble::enframe(name = NULL, value = 'user_database_table') %>% 
+          user_tables <-  dplyr::tibble(user_database_table = dbListTables(database_vars()$db_con)) %>% 
             mutate(user_fields_long = map(.x = .data$user_database_table,.f = dbListFields,conn=database_vars()$db_con),
                    user_fields_long = map(.x = .data$user_fields_long,.f = as_tibble)
                    ) %>% 
@@ -212,9 +210,10 @@ mod_datamodel_detection_server <- function(id, database_vars, navigation_vars, p
           if(any(str_detect(string = search(), pattern = 'package:ReviewR') ) == FALSE) {
             attachNamespace("ReviewR")
             }
-          datamodel_vars$table_functions <- lsf.str('package:ReviewR') %>% 
-            tibble::enframe(name = NULL, value = 'function_name') %>% 
-            filter(stringr::str_detect(.data$function_name, glue::glue('{datamodel_vars$table_map$datamodel}_table') )) %>% 
+          datamodel_vars$table_functions <- lsf.str('package:ReviewR', pattern = glue::glue('{datamodel_vars$table_map$datamodel}_table')) %>% 
+            as.character() %>% 
+            dplyr::tibble(function_name = .) %>% 
+            # filter(stringr::str_detect(.data$function_name, glue::glue('{datamodel_vars$table_map$datamodel}_table') )) %>% 
             mutate(table_name = stringr::str_remove(.data$function_name, glue::glue('{datamodel_vars$table_map$datamodel}_table_') ))
           datamodel_vars$all_patients_table <- datamodel_vars$table_functions %>% 
             filter(.data$table_name == 'all_patients')

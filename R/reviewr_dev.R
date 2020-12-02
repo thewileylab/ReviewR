@@ -106,12 +106,11 @@ dev_add_database_module <- function(mod_name = NULL, display_name = NULL) {
 #'
 #' @param csv \emph{Required}. The file path of a CSV file containing a datamodel schema
 #' 
-#' @importFrom dplyr distinct filter mutate pull relocate
+#' @importFrom dplyr distinct filter mutate pull relocate row_number tibble
 #' @importFrom glue glue glue_collapse
 #' @importFrom magrittr %>% extract2
 #' @importFrom purrr map imap
 #' @importFrom stringr str_remove_all str_split
-#' @importFrom tibble enframe
 #' @importFrom tidyr replace_na nest separate
 #' @importFrom rlang .data names2
 #' @return A .R file populated with basic database table functions
@@ -138,15 +137,14 @@ dev_add_datamodel <- function(csv) {
   ## incorporate into ReviewR::supported_datamodels.rda
   if(all(required_cols %in% rlang::names2(temp)) ) {
     file.copy(from = csv, to = 'data-raw/datamodels/')
-    supported_datamodels <- list.files(path = file.path('data-raw/datamodels'),full.names = T,recursive = T) %>%
-      tibble::enframe(name = NULL, value = 'file_path') %>% 
+    supported_datamodels <-  dplyr::tibble(file_path = list.files(path = file.path('data-raw/datamodels'),full.names = T,recursive = T)) %>% 
       mutate(datamodel = basename(.data$file_path),
              datamodel = str_remove_all(.data$datamodel, '\\.csv$')
              ) %>% 
       separate(col = .data$datamodel, into = c('datamodel','model_version'), sep = '_', extra = 'drop', fill = 'right') %>% 
       mutate(model_version = tidyr::replace_na(.data$model_version, ''),
              cdm = map(.data$file_path,
-                       ~read_csv(.x)
+                       ~readr::read_csv(.x)
                        )
              ) %>% 
       unnest(cols = .data$cdm) %>% 
@@ -176,7 +174,7 @@ dev_add_datamodel <- function(csv) {
     ### All Patients Table
     table_choices <- temp %>% 
       dplyr::distinct(.data$table) %>% 
-      tibble::rownames_to_column(var = 'Selection') %>% 
+      mutate(Selection = row_number()) %>% 
       mutate(Selection = as.numeric(.data$Selection))
     table_choices %>% 
       dt_2_viewer()
@@ -199,7 +197,7 @@ dev_add_datamodel <- function(csv) {
     ### Patient Identifier field
     field_choices <- temp %>% 
       dplyr::distinct(.data$field) %>% 
-      tibble::rownames_to_column(var = 'Selection') %>% 
+      mutate(Selection = row_number()) %>% 
       mutate(Selection = as.numeric(.data$Selection))
     field_choices %>% 
       dt_2_viewer()
