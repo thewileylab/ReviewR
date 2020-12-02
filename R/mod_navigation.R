@@ -1,7 +1,7 @@
 # Helper Functions ---- 
 #' ReviewR Datatable
 #'
-#' @param .data A local tibble or dataframe to be rendered in the ReviewR UI
+#' @param .data A local tibble or data frame to be rendered in the ReviewR UI
 #' @param dom Define the table control elements to appear on the page and in what order
 #' @param column_filter Where to display individual column filters. Valid entries are: 'top','bottom','none'
 #' @param search_term A string or regular expression used as a filter for patient data
@@ -133,10 +133,9 @@ chart_review_navigation <- function(id) {
 #' @import shiny 
 #' @importFrom DT reloadData formatStyle selectRows dataTableProxy
 #' @importFrom glue glue
-#' @importFrom dplyr last_col left_join mutate_at pull rename slice filter select 
+#' @importFrom dplyr last_col left_join mutate_at pull rename slice filter row_number select tibble
 #' @importFrom glue glue
 #' @importFrom magrittr %>% extract2
-#' @importFrom tibble rowid_to_column tibble
 #' @importFrom tidyr replace_na
 #' @importFrom rlang .data exec is_empty
 #' @importFrom shinyjs disable hide enable show
@@ -210,7 +209,7 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
             ## Determine "all patients" table stats
             navigation_vars$all_patients_max_rows <- nrow(navigation_vars$all_patients)
             navigation_vars$row_ids <- navigation_vars$all_patients %>% 
-              rowid_to_column(var = 'row_id') %>% 
+              mutate(row_id = row_number()) %>% 
               pull(.data$row_id)
             navigation_vars$subject_ids <- setNames(navigation_vars$row_ids, navigation_vars$all_patients$ID)
             ## Update Chart Review Dropdown Choices
@@ -227,7 +226,7 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
       # Create All Patients DT ----
         output$all_patient_search_dt <- DT::renderDataTable({
           if(is.null(navigation_vars$all_patients)) {
-            tibble::tibble(.rows = 0) %>% 
+            dplyr::tibble(.rows = 0) %>% 
               reviewr_datatable()
             } else if (abstract_vars()$is_configured == 'yes') {
               ## Future Developer: 
