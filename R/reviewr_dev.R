@@ -97,14 +97,14 @@ dev_add_database_module <- function(mod_name = NULL, display_name = NULL) {
 
 #' Develop Data Model Table Functions
 #' 
-#' This function will assist in adding a new supported datamodel to 
+#' This function will assist in adding a new supported data model to 
 #' ReviewR. A schema file, stored as a CSV will be added to the 
-#' namespace, such that the database can be identified by the datamodel
+#' namespace, such that the database can be identified by the data model
 #' detection module. Additionally, a database_tables.R file will 
 #' be created and opened in R/ with basic table skeletons created
 #' based on the schema stored in the user supplied CSV.
 #'
-#' @param csv \emph{Required}. The file path of a CSV file containing a datamodel schema
+#' @param csv \emph{Required}. The file path of a CSV file containing a data model schema
 #' 
 #' @importFrom dplyr distinct filter mutate pull relocate row_number tibble
 #' @importFrom glue glue glue_collapse
@@ -156,7 +156,7 @@ dev_add_datamodel <- function(csv) {
       relocate(.data$datamodel, .data$model_version, .data$data, .data$file_path)
     usethis::use_data(supported_datamodels, overwrite = T)
   
-    ## Determine Datamodel moniker and version
+    ## Determine data model moniker and version
     temp_datamodel <-basename(csv) %>%
       str_remove_all('\\.csv$') %>% 
       str_split(pattern = '_')
@@ -167,7 +167,7 @@ dev_add_datamodel <- function(csv) {
         temp_datamodel[[1]][2]
         }
     
-    ## Create a filename to hold datamodel table functions
+    ## Create a filename to hold data model table functions
     fn_filename <- glue::glue('R/database_tables_{new_datamodel}.R')
     
     ## Interview the User ----

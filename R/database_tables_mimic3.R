@@ -1,8 +1,8 @@
 #' MIMIC Tables
 #'
-#' Collection of functions to create pre-arranged views of MIMIC patient data for ReviewR.
+#' Collection of functions to create prearranged views of MIMIC patient data for ReviewR.
 #' 
-#' @param table_map tibble containing a the cdm that most closely matches the user's database and a map of standard tables to user tables
+#' @param table_map tibble containing a the CDM that most closely matches the user's database and a map of standard tables to user tables
 #' @param db_connection Connection info received from the database setup module
 #'
 #' @rdname mimic3_tables

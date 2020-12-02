@@ -20,14 +20,14 @@ mod_navigation_server(
 
 \item{database_vars}{Database variables returned from user selected database setup module}
 
-\item{datamodel_vars}{Datamodel variables returned from mod_datamodel_setup}
+\item{datamodel_vars}{Data model variables returned from mod_datamodel_setup}
 
 \item{abstract_vars}{Abstraction variables returned from user selected abstraction module}
 
 \item{parent_session}{the parent environment of this module}
 }
 \description{
-This module will render the datatable on the 'Patient Search' tab containing all patients in the cohort.
+This module will render the dataTable on the 'Patient Search' tab containing all patients in the cohort.
 The selected patient in the DT is kept in sync with the 'Chart Review' tab.
 }
 \keyword{internal}

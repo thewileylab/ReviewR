@@ -2,7 +2,7 @@
 % Please edit documentation in R/mod_navigation.R
 \name{reviewr_datatable}
 \alias{reviewr_datatable}
-\title{ReviewR Datatable}
+\title{ReviewR DataTable}
 \usage{
 reviewr_datatable(.data, dom = "ftip", column_filter = "top", search_term = "")
 }
@@ -19,6 +19,6 @@ reviewr_datatable(.data, dom = "ftip", column_filter = "top", search_term = "")
 return a DT with custom options
 }
 \description{
-ReviewR Datatable
+ReviewR DataTable
 }
 \keyword{internal}

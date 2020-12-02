@@ -1,5 +1,5 @@
 # Helper Functions ---- 
-#' ReviewR Datatable
+#' ReviewR DataTable
 #'
 #' @param .data A local tibble or data frame to be rendered in the ReviewR UI
 #' @param dom Define the table control elements to appear on the page and in what order
@@ -35,7 +35,7 @@ reviewr_datatable <- function(.data, dom = 'ftip', column_filter = 'top', search
 # UI ----
 #' Patient Navigation
 #'
-#' This module will render the datatable on the 'Patient Search' tab containing all patients in the cohort. 
+#' This module will render the dataTable on the 'Patient Search' tab containing all patients in the cohort. 
 #' The selected patient in the DT is kept in sync with the 'Chart Review' tab.
 #' 
 #' @param id The namespace id for the UI output
@@ -122,7 +122,7 @@ chart_review_navigation <- function(id) {
 
 # Server ---- 
 #' @param database_vars Database variables returned from user selected database setup module
-#' @param datamodel_vars Datamodel variables returned from mod_datamodel_setup
+#' @param datamodel_vars Data model variables returned from mod_datamodel_setup
 #' @param abstract_vars Abstraction variables returned from user selected abstraction module
 #' @param parent_session the parent environment of this module
 #'
@@ -269,7 +269,7 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
         DT::selectRows(navigation_vars$dt_proxy, navigation_vars$selected_row)
         })
       
-      # Datamodel ----
+      # Data model ----
       ## Render Datamodel Output
       output$datamodel_message <- renderText({
         req(database_vars()$is_connected == 'yes')
