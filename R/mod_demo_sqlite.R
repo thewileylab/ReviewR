@@ -39,7 +39,6 @@ demo_sqlite_setup_ui <- function(id) {
 #'
 #' @importFrom DBI dbConnect
 #' @importFrom RSQLite dbDisconnect dbWriteTable SQLite
-#' @importFrom tibble as_tibble
 #' @importFrom shinyjs hide show
 #' @import synPUF
 #' 
