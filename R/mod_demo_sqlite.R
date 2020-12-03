@@ -68,7 +68,7 @@ demo_sqlite_setup_server <- function(id) {
         )
       # Server Code Here ----
       observeEvent(input$demodb_connect, {
-        message('creating sqlite db')
+        message('creating sqlite db...')
         shinyjs::hide('demodb_setup')
         ## Create a SQLite DB in memory
         demo_sqlite_export$db_con <- DBI::dbConnect(RSQLite::SQLite(), ":memory:")
@@ -96,6 +96,7 @@ demo_sqlite_setup_server <- function(id) {
         dbWriteTable(conn = demo_sqlite_export$db_con, name = 'relationship', value = synPUF::relationship)
         dbWriteTable(conn = demo_sqlite_export$db_con, name = 'visit_occurrence', value = synPUF::visit_occurrence)
         dbWriteTable(conn = demo_sqlite_export$db_con, name = 'vocabulary', value = synPUF::vocabulary)
+        message('complete')
         ## Report connected
         demo_sqlite_export$is_connected = 'yes'
         shinyjs::show('demodb_connected')
