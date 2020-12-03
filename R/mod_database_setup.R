@@ -33,6 +33,7 @@ database_setup_ui <- function(id) {
 #' @keywords internal
 #' @export
 #' 
+#' @import dbplyr
 #' @importFrom magrittr %>% extract2
 #' @importFrom purrr map
 #' @importFrom rlang exec
