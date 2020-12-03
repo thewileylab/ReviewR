@@ -17,6 +17,7 @@ Imports:
     config,
     dashboardthemes,
     DBI,
+    dbplyr,
     dplyr (>= 1.0.0),
     DT,
     glue,
