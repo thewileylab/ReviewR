@@ -18,9 +18,12 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-Currently, ReviewR is capable of displaying patient information from databases that conform to the MIMIC-III and OMOP data models. However, we recognize that no two Electronic Health Records (EHRs) are exactly the same and patient data can be stored in a variety of different formats. Armed with a little bit of knowledge about your patient information database, ReviewR can be extended to display patient data for additional data models.
+Currently, ReviewR is capable of displaying patient information from databases that conform to the MIMIC-III and OMOP data models. However, we recognize that clinical data can be stored in a variety of different formats, accordingly ReviewR can be extended to display patient data for additional data models. This vignette is organized into two parts:
 
-### Requirements
+* [ReviewR Data Model Design](#reviewr-data-model-design) - describes the overall design of how data models are supported by ReviewR
+* [Adding Support for a New Data Model](#adding-support-for-a-new-data-model) - describes the workflow for one should follow when trying to add support for a custom data model
+
+## ReviewR Data Model Design
 
 In order for ReviewR to display patient data stored in other data models, ReviewR requires two things: 
 
@@ -32,11 +35,13 @@ These requirements will be discussed in the sections that follow.
 
 ### Table Functions
 
-Displaying patient data from other data models is made possible by developing *table functions* which are incorporated into the ReviewR package namespace. Once ReviewR has determined data model and version of the user database, it will search within its namespace for table functions that can be used to render the information contained within the connected data model. 
+Displaying patient data from other data models is made possible by developing *table functions* which are incorporated into the ReviewR package namespace. Once ReviewR has determined data model and version of the user database, it will search within its namespace for table functions that can be used to render the information contained within the connected data model. These table functions _must_ follow the [Table Function Naming Convention](#table-function-naming-convention) below.
+
+In addition to the clinical data table functions, two additional types of table functions must be developed to support the patient search ("All Patients") and patient information ("Subject Specific") tables. 
 
 #### Table Function Naming Convention
 
-Table functions have a standard naming convention, which allows for them to be associated with the currently detected data model. Functions used to render patient tables must begin with `{data-model-name}_table_` and will end with the *name* of the table you would like to display. Once table functions have been created for a data model, all functions that have been developed will displayed as tabs in the Chart Review section of ReviewR when the new data model is detected.
+Table functions have a standard naming convention, which allows for them to be associated with the currently detected data model. Functions used to render patient tables must have the following format:  `{data-model-name}_table_{table-name}`. They start with the name of the data model (no spaces, dashes, or underscores are allowed, though CamelCase is acceptable) followed by "_table" and then end with the *name* of the table you would like to display (long table names may include underscores). Once table functions have been created for a data model, all functions that have been developed will displayed as tabs in the Chart Review section of ReviewR when the new data model is detected.
 
 In the example that follows, the "Admissions" table from the "mimic3" data model is selected on the Chart Review Section of ReviewR. The function responsible for creating this tab is called: `mimic3_table_admissions`. As you can see, the *name* portion of the function ("admissions") has become the tab name for this patient table:
 
@@ -45,11 +50,7 @@ knitr::include_graphics('chart_review_tabs.png')
 ```
 
 Other patient information tables that have been developed for the "mimic3" data model appear on the inactive Chart Review tabs. Each function begins with `mimic3_table_`, per the table function naming convention.
-&nbsp;
-&nbsp;
-&nbsp;
 
-Two types of table functions must be developed when supporting a new data model, an "All Patients" table and "Subject Specific" tables. Information about developing these function types may be obtained from the [Adding Support for a New Data Model](#adding-support-for-a-new-data-model) section below.
 
 ### Data Model Detection
 
@@ -68,9 +69,12 @@ A data frame with 4 columns will be returned:
   + This schema information comes from CSV files that may be built into the ReviewR package
 * file_path: The file path[*](#file-path) of the data source
 
+<a name="file-path"></a>
+\**Note: The data-raw file path is only available when forking the ReviewR repository from GitHub.*
+
 #### Schema Files
 
-If you would like to add a data model to the database detection for ReviewR, you will need a schema file. Schema files must contain two columns, called `table` and `field`, which identify every field for every table in the data model and must be comma separated values (CSV) delimited. They are often available from the developer of the data model. If obtained from a developer, these files may include additional information beyond the required table and field designations. These files may still be used, but additional descriptors will be ignored. The schema file for the OMOP CDM v5.3.0 is provided as an example:
+Data model specifications are provided by schema files which are comma separated values (CSV) formatted files that contain at least two columns, `table` and `field`, which identify every field for every table in the data model. If you are using a common data model, they may be available from the consortium that define the data model standards. If obtained from a developer, these files may include additional information beyond the required table and field designations. These files may still be used, but additional descriptors will be ignored. The schema file for the OMOP CDM v5.3.0 is provided as an example:
 
 ```{r table_1, echo=FALSE, fig.cap = "*Table 1: OMOP v5.3.0 Schema obtained from [OHDSI](https://github.com/OHDSI/CommonDataModel/releases/tag/v5.3.0)*", fig.align='center'}
 suppressMessages(library(magrittr))
@@ -82,23 +86,13 @@ ReviewR::supported_datamodels %>%
   DT::datatable()
 ```
 
-See the [Adding Support for a Custom Data Model](#adding-support-for-a-custom-data-model) section for information on how to build additional schema information into ReviewR so that the built in data model detection can identify the patient data model you are adding support for. 
-
-***
-
-<a name="file-path"></a>
-\**Note: The data-raw file path is only available when forking the ReviewR repository from GitHub.*
-
 
 ## Adding Support for a Custom Data Model
 
-A convenience function has been built into ReviewR to assist in supporting additional data models, `dev_add_datamodel()`. This function will add a CSV file containing schema information into the data model detection module within ReviewR. When run, it will prompt the user to identify the "all patients" table and which field contains the patient identifier (`subject_id`) information. Additionally, it will create a .R file with skeleton table functions for all tables identified within the supplied CSV file. Separate all patients and subject filtered functions will be created, with templated code to assist in filtering the subject table information down to the selected subject. 
-
-This allows for a developer to customize the representation for each table in the data model they wish to support. It is important to note that the `dev_add_datamodel()` function will create a skeleton function for *every* table contained within your schema CSV file. This is often not appropriate for relational databases, as certain tables may not contain actual patient information, but rather hold information about data stored in other tables. When developing, be aware of these relationships so that joins can be made on the appropriate tables to show the display the information properly. Tables which contain relational information need not be displayed on the Chart Review Tab, and the table function skeletons created by the dev function may safely be omitted.
-
 ### Getting Started
 
-To ensure you have access to the latest development tools and file structure of the ReviewR package, fork ReviewR from GitHub. For simplicity, the home directory is specified as a destination directory:
+First ensure you have access to the latest development tools and file structure of the ReviewR package, fork ReviewR from GitHub. For simplicity, the home directory is specified as a destination directory:
+
 ```{r eval=FALSE}
 # install.packages('usethis')
 usethis::create_from_github(repo_spec = 'thewileylab/ReviewR', destdir = '~/')
@@ -107,12 +101,31 @@ usethis::create_from_github(repo_spec = 'thewileylab/ReviewR', destdir = '~/')
 Please see [this guide](https://happygitwithr.com/index.html) if you have trouble connecting RStudio with Git. It is also possible to fork this repository directly from GitHub if all else fails. 
 
 Navigate to the forked repository and open the `ReviewR.Rproj` file. This will open the project in RStudio. Finally, using the devtools package run:
+
 ```{r eval=FALSE}
 # install.packages('devtools')
 devtools::load_all()
 ```
 
+### Required Information
+
+Something about the requiring the schema file from above. 
+
+### Title for the part about add data model function
+
+**_This needs to include stuff about the parameters passed to this function and very explicitly in one place all the outputs/effects of running this function_**
+
+
+A convenience function has been built into ReviewR to assist in supporting additional data models, `dev_add_datamodel()`. This function will add a CSV file containing schema information into the data model detection module within ReviewR. When run, it will prompt the user to identify the "all patients" table and which field contains the patient identifier (`subject_id`) information. Additionally, it will create a .R file with skeleton table functions for all tables identified within the supplied CSV file. Separate all patients and subject filtered functions will be created, with templated code to assist in filtering the subject table information down to the selected subject. 
+
+This allows for a developer to customize the representation for each table in the data model they wish to support. It is important to note that the `dev_add_datamodel()` function will create a skeleton function for *every* table contained within your schema CSV file. This is often not appropriate for relational databases, as certain tables may not contain actual patient information, but rather hold information about data stored in other tables. When developing, be aware of these relationships so that joins can be made on the appropriate tables to show the display the information properly. Tables which contain relational information need not be displayed on the Chart Review Tab, and the table function skeletons created by the dev function may safely be omitted.
+
+
 ### Developing/Testing
+
+
+
+**_I'm not sure I understand this section or how it connects to the stuff above. Also should the whole document_and_reload part be part of the getting started section? In other words describe how one develops in the golem framework after loading all functions using devtools? _**
 
 Develop your table functions by providing each of the parameters that they accept and examining the result. The `table_map` parameter will be the schema information for the data model that you are developing table functions for. Additionally, a valid DBI connection object should be supplied for the `db_connection` argument. "Subject Tables" require an integer value for the selected `subject_id.` 
 
@@ -126,6 +139,9 @@ golem::document_and_reload()
 This will incorporate your newly developed functions into ReviewR so that you can further refine how they display patient information.
 
 #### Flexibility
+
+
+**_I'm not sure what is has to do with adding a new data model? May be best to shorten and add to the data model detection description above? Basically that these terms are case insensitive? I'm also not clear on what `user_table()` and `user_field()` functions do or why you are mentioning them here._** 
 
 ReviewR is capable of working with patient databases that may differ *slightly* from the official specification. For example, in the MIMIC-III specification, demographic information can be found in the 'PATIENTS' table (upper case). Using the ReviewR's `user_table()` function, it is possible to request the 'PATIENTS' table from the connected database, even if the table is stored as 'patients' (lower case). Table fields may be requested in a similar fashion, using the `user_field()` function. 
 
@@ -150,6 +166,9 @@ mimic3_table_all_patients <- function(table_map, db_connection) {
 ```
 
 #### Subject Specific Tables
+
+
+**_Isn't this what was in the whole table functions section above? This needs to be combined and/or clarified.**
 
 "Subject Specific" tables will make up the tabs that appear in the Chart Review Section of ReviewR. Each table is filtered to contain information from the subject that has been selected in the Patient Search Section. These functions follow the naming convention as specified below:
 
@@ -179,3 +198,5 @@ devtools::install()
 ```
 
 This will install a new, custom version of the ReviewR package with your newly incorporated data model and supporting table functions.
+
+**_Add stuff about issuing pull requests if implementing other common data models_**
