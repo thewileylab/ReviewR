@@ -65,7 +65,7 @@ shinyREDCap::redcap_widget_map %>%
                                       redcap_field_val == "date_mdy" ~ "Date (M-D-Y)",
                                       redcap_field_val == "integer" ~ "Integer",
                                       TRUE ~ redcap_field_val),
-         redcap_field_type = case_when(redcap_field_type == "text" ~ "Text Box (Short Test, Number, Data/Time, ...",
+         redcap_field_type = case_when(redcap_field_type == "text" ~ "Text Box (Short Text, Number, Data/Time, ...)",
                                        redcap_field_type == "notes" ~ "Notes Box (Paragraph Text)",
                                        redcap_field_type == "dropdown" ~ "Multiple Choice - Drop-down List (Single Answer)",
                                        redcap_field_type == "radio" ~ "Multiple Choice - Radio Buttons (Single Answer)",
