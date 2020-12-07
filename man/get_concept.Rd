@@ -14,8 +14,8 @@ get_concept(
   joinable_id,
   table_concept_id,
   col_name,
-  subject_id_field,
-  selected_subject
+  subject_id_field = NULL,
+  selected_subject = NULL
 )
 }
 \arguments{
