@@ -44,28 +44,28 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #'     col_name = 'Provider', subject_id_field = 'person_id', selected_subject = '1234') 
 #' }
 
-get_concept <- function(table_map, db_connection, concept_table, concept_id, concept_name, table, joinable_id, table_concept_id, col_name, subject_id_field, selected_subject) {
+get_concept <- function(table_map, db_connection, concept_table, concept_id, concept_name, table, joinable_id, table_concept_id, col_name, subject_id_field = NULL, selected_subject = NULL) {
   tryCatch({
-  user_table(table_map, db_connection, concept_table) %>% 
-    select(user_field(table_map, concept_table, concept_id), 
-           user_field(table_map, concept_table, concept_name)
-           ) %>% 
-    mutate_at(vars(user_field(table_map, concept_table, concept_id)), as.character ) %>% 
-    inner_join(user_table(table_map, db_connection, table) %>% 
-                 {if(!is.null(selected_subject) ) filter(., !!as.name(user_field(table_map, table,subject_id_field)) == selected_subject ) else . } %>% 
-                 select(user_field(table_map, table, joinable_id), 
-                        user_field(table_map, table, table_concept_id)
-                        ) %>% 
-                 mutate_all(as.character), 
-               by=setNames(user_field(table_map, table, table_concept_id), user_field(table_map, concept_table, concept_id))
-               ) %>% 
-    rename(!!col_name := user_field(table_map, concept_table, concept_name)) %>% 
-    select(-contains(concept_id,ignore.case = T))
-    }, 
-  error=function(error) {
-    return(NULL)
-  })
-}
+    user_table(table_map, db_connection, concept_table) %>% 
+      select(user_field(table_map, concept_table, concept_id), 
+             user_field(table_map, concept_table, concept_name)
+             ) %>% 
+      mutate_at(vars(user_field(table_map, concept_table, concept_id)), as.character ) %>% 
+      inner_join(user_table(table_map, db_connection, table) %>% 
+                   {if(!is.null(selected_subject) ) filter(., !!as.name(user_field(table_map, table,subject_id_field)) == selected_subject ) else . } %>% 
+                   select(user_field(table_map, table, joinable_id), 
+                          user_field(table_map, table, table_concept_id)
+                          ) %>% 
+                   mutate_all(as.character), 
+                 by=setNames(user_field(table_map, table, table_concept_id), user_field(table_map, concept_table, concept_id))
+                 ) %>% 
+      rename(!!col_name := user_field(table_map, concept_table, concept_name)) %>% 
+      select(-contains(concept_id,ignore.case = T)) 
+      }, 
+    error=function(error) {
+      return(NULL)
+    })
+  }
 
 #' OMOP Tables
 #'
@@ -89,6 +89,7 @@ get_concept <- function(table_map, db_connection, concept_table, concept_id, con
 ## OMOP All Patient Table -----
 
 omop_table_all_patients <- function(table_map, db_connection) {
+  # browser()
   ## Build Concepts
   gender_concepts <- get_concept(table_map = table_map,  db_connection = db_connection,  concept_table = 'concept', concept_id = 'concept_id',  concept_name = 'concept_name', table = 'person', joinable_id = 'person_id', table_concept_id = 'gender_concept_id',  col_name = 'Gender')
   race_concepts <- get_concept(table_map = table_map, db_connection = db_connection, concept_table = 'concept', concept_id = 'concept_id', concept_name = 'concept_name', table = 'person', joinable_id = 'person_id', table_concept_id = 'race_concept_id', col_name = 'Race')
@@ -106,7 +107,8 @@ omop_table_all_patients <- function(table_map, db_connection) {
     collect() %>% 
     unite(col = 'Birth_Date', 'year_of_birth','month_of_birth','day_of_birth', sep = '-') %>% 
     select(any_of(c(ID = user_field(table_map, 'person', 'person_id'), Gender = 'Gender', SourceVal = user_field(table_map, 'person', 'person_source_value'))), everything()) %>% 
-    arrange(as.numeric(.data$ID)) %>% 
+    mutate(ID = as.numeric(.data$ID)) %>% 
+    arrange(.data$ID) %>% 
     rename_at(vars(-1), to_title_case)
 }
 
@@ -164,7 +166,8 @@ omop_table_condition_occurrence <- function(table_map, db_connection, subject_id
     # {if (!is.null(condition_provider_concepts) ) left_join(., condition_provider_concepts) else .} %>% 
     {if (!is.null(condition_type_concepts) ) left_join(., condition_type_concepts) else .} %>% 
     select(any_of(c(ID = user_field(table_map,'condition_occurrence','condition_occurrence_id'), Condition = 'Condition', SourceVal = user_field(table_map,'condition_occurrence','condition_source_value'), Status = 'Status', Type = 'Type', Provider = 'Provider', Visit = user_field(table_map,'condition_occurrence','visit_occurrence_id'))), everything()) %>% 
-    arrange(as.numeric(.data$ID) ) %>%
+    mutate(ID = as.numeric(.data$ID)) %>% 
+    arrange(.data$ID ) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -218,7 +221,8 @@ omop_table_device_exposure <- function(table_map, db_connection, subject_id) {
     {if (!is.null(device_type_concepts) ) left_join(., device_type_concepts) else .} %>% 
     # {if (!is.null(device_provider_concepts) ) left_join(., device_provider_concepts) else .} %>% 
     select(any_of(c(ID = user_field(table_map, 'device_exposure','device_exposure_id'))), everything()) %>% 
-    arrange(as.numeric(.data$ID)) %>%
+    mutate(ID = as.numeric(.data$ID)) %>% 
+    arrange(.data$ID) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -245,6 +249,7 @@ omop_table_dose_era <- function(table_map, db_connection, subject_id) {
     {if (!is.null(dose_concepts) ) left_join(., dose_concepts) else .} %>% 
     {if (!is.null(unit_concepts) ) left_join(., unit_concepts) else .} %>% 
     select(any_of(c(ID = user_field(table_map, 'dose_era', 'dose_era_id'), Drug = 'Drug', Unit = 'Unit', DoseValue = 'dose_value')), everything()) %>% 
+    mutate(ID = as.numeric(.data$ID)) %>% 
     arrange(.data$ID) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
@@ -270,7 +275,8 @@ omop_table_drug_era <- function(table_map, db_connection, subject_id) {
     mutate_all(as.character) %>%
     {if (!is.null(drug_concepts) ) left_join(., drug_concepts) else .} %>% 
     select(any_of(c(ID = user_field(table_map, 'drug_era', 'drug_era_id'), Drug = 'Drug')), everything()) %>% 
-    arrange(as.numeric(.data$ID)) %>%
+    mutate(ID = as.numeric(.data$ID)) %>% 
+    arrange(.data$ID) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
   
@@ -304,7 +310,8 @@ omop_table_drug_exposure <- function(table_map, db_connection, subject_id) {
     select(any_of(c(ID = user_field(table_map, 'drug_exposure', 'drug_exposure_id'), Drug = 'Drug', SourceVal = user_field(table_map, 'drug_exposure', 'drug_source_value'), StartDate = user_field(table_map, 'drug_exposure', 'drug_exposure_start_date'),
            StartDateTime = user_field(table_map, 'drug_exposure','drug_exposure_start_datetime'), EndDate = user_field(table_map, 'drug_exposure', 'drug_exposure_end_date'), EndDateTime = user_field(table_map, 'drug_exposure', 'drug_exposure_end_datetime'),
            VerbatimEnd = user_field(table_map, 'drug_exposure', 'drug_exposure_verbatim_end_date'), Type = 'Type', Visit = user_field(table_map, 'drug_exposure', 'visit_occurrence_id'))), everything() ) %>% 
-    arrange(as.numeric(.data$ID)) %>%
+    mutate(ID = as.numeric(.data$ID)) %>% 
+    arrange(.data$ID) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
   
@@ -340,7 +347,8 @@ omop_table_measurement <- function(table_map, db_connection, subject_id) {
     {if (!is.null(unit_concepts) ) left_join(., unit_concepts) else .} %>% 
     # {if (!is.null(provider_concepts) ) left_join(., provider_concepts) else .} %>% 
     select(any_of(c(ID = user_field(table_map, 'measurement', 'measurement_id'))), everything() ) %>% 
-    arrange(as.numeric(.data$ID)) %>%
+    mutate(ID = as.numeric(.data$ID)) %>% 
+    arrange(.data$ID) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -373,7 +381,8 @@ omop_table_note <- function(table_map, db_connection, subject_id) {
     {if (!is.null(note_language_concepts) ) left_join(., note_language_concepts) else .} %>% 
     # {if (!is.null(provider_concepts) ) left_join(., provider_concepts) else .} %>% 
     select(any_of(c(ID = user_field(table_map, 'note', 'note_id'))), everything()) %>% 
-    arrange(as.numeric(.data$ID)) %>%
+    mutate(ID = as.numeric(.data$ID)) %>% 
+    arrange(.data$ID) %>%
     collect() %>% 
     mutate_all(str_replace_all, pattern = '\n', replacement = '<br>') %>% 
     rename_at(vars(-1), to_title_case)
@@ -411,7 +420,8 @@ omop_table_observation <- function(table_map, db_connection, subject_id) {
     select(any_of(c(ID = user_field(table_map, 'observation','observation_id'), Observation = 'Observation', Date = user_field(table_map, 'observation','observation_date'), DateTime = user_field(table_map, 'observation','observation_datetime'),
            Type = 'Type', ValueNum = user_field(table_map, 'observation','value_as_number'), ValueString = user_field(table_map, 'observation','value_as_string'), Value = 'Value', SourceVal = user_field(table_map, 'observation','observation_source_value'),
            Qualifier = 'Qualifier', Unit = 'Unit', Provider = 'Provider', Visit = user_field(table_map, 'observation','visit_occurrence_id')))) %>% 
-    arrange(as.numeric(.data$ID)) %>%
+    mutate(ID = as.numeric(.data$ID)) %>% 
+    arrange(.data$ID) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -436,6 +446,7 @@ omop_table_observation_period <- function(table_map, db_connection, subject_id) 
     mutate_all(as.character) %>%
     {if (!is.null(observation_type_concepts) ) left_join(., observation_type_concepts) else .} %>% 
     select(any_of(c(ID = user_field(table_map, 'observation_period','observation_period_id'))), everything()) %>% 
+    mutate(ID = .data$ID) %>% 
     arrange(as.numeric(.data$ID)) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
@@ -456,7 +467,8 @@ omop_table_payer_plan_period <- function(table_map, db_connection, subject_id) {
     select(-matches('person_id')) %>% 
     mutate_all(as.character) %>%
     select(any_of(c(ID = user_field(table_map, 'payer_plan_period', 'payer_plan_period_id'))), everything()) %>% 
-    arrange(as.numeric(.data$ID)) %>%
+    mutate(ID = as.numeric(.data$ID)) %>% 
+    arrange(.data$ID) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -488,7 +500,8 @@ omop_table_procedure_occurrence <- function(table_map, db_connection, subject_id
     # {if (!is.null(provider_concepts) ) left_join(., provider_concepts) else .} %>% 
     select(any_of(c(ID = user_field(table_map, 'procedure_occurrence','procedure_occurrence_id'), Procedure = 'Procedure', SourceVal = user_field(table_map, 'procedure_occurrence','procedure_source_value'),
            Date = user_field(table_map, 'procedure_occurrence','procedure_date'), Type = 'Type', Modifier = 'Modifier')), everything()) %>% 
-    arrange(as.numeric(.data$ID)) %>%
+    mutate(ID = as.numeric(.data$ID)) %>% 
+    arrange(.data$ID) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -522,7 +535,8 @@ omop_table_specimen <- function(table_map, db_connection, subject_id) {
     {if (!is.null(disease_status_concepts) ) left_join(., disease_status_concepts) else .} %>% 
     select(any_of(c(ID = user_field(table_map, 'specimen', 'specimen_id'), Specimen = 'Specimen', SourceVal = user_field(table_map, 'specimen', 'specimen_source_value'), Type = 'Type', Date = user_field(table_map, 'specimen', 'specimen_date'),
            DateTime = user_field(table_map, 'specimen', 'specimen_datetime'))), everything()) %>% 
-    arrange(as.numeric(.data$ID)) %>%
+    mutate(ID = as.numeric(.data$ID)) %>% 
+    arrange(.data$ID) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
@@ -558,7 +572,8 @@ omop_table_visit_occurrence <- function(table_map, db_connection, subject_id) {
     select(any_of(c(ID = user_field(table_map, 'visit_occurrence', 'visit_occurrence_id'), Visit = 'Visit', StartDate = user_field(table_map, 'visit_occurrence', 'visit_date'), StartDateTime = user_field(table_map, 'visit_occurrence', 'visit_start_datetime'), 
            EndDate = user_field(table_map, 'visit_occurrence', 'visit_end_date'), EndDateTime = user_field(table_map, 'visit_occurrence', 'visit_end_datetime'), Type = 'Type', Provider = 'Provider', CareSite = 'CareSite', AdmittingSource = 'AdmittingSource', DischargeTo = 'DischargeTo', 
            PrecedingVisit = user_field(table_map, 'visit_occurrence', 'preceding_visit_occurrence_id')))) %>% 
-    arrange(as.numeric(.data$ID)) %>%
+    mutate(ID = as.numeric(.data$ID)) %>% 
+    arrange(.data$ID) %>%
     collect() %>% 
     rename_at(vars(-1), to_title_case)
 }
