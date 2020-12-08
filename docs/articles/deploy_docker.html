@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Connect to Patient Record Database • ReviewR</title>
+<title>Docker Deployment • ReviewR</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -17,7 +17,7 @@
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Connect to Patient Record Database">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Docker Deployment">
 <meta property="og:description" content="ReviewR">
 <meta property="og:image" content="reviewr.thewileylab.org/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -118,79 +118,44 @@
 
       
 
-      </header><script src="usage_connect_to_record_database_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="usage_connect_to_record_database_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
-<script src="usage_connect_to_record_database_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
+      </header><script src="deploy_docker_files/accessible-code-block-0.0.1/empty-anchor.js"></script><link href="deploy_docker_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet">
+<script src="deploy_docker_files/anchor-sections-1.0/anchor-sections.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Connect to Patient Record Database</h1>
+      <h1 data-toc-skip>Docker Deployment</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/thewileylab/ReviewR/blob/master/vignettes/usage_connect_to_record_database.Rmd"><code>vignettes/usage_connect_to_record_database.Rmd</code></a></small>
-      <div class="hidden name"><code>usage_connect_to_record_database.Rmd</code></div>
+      <small class="dont-index">Source: <a href="https://github.com/thewileylab/ReviewR/blob/master/vignettes/deploy_docker.Rmd"><code>vignettes/deploy_docker.Rmd</code></a></small>
+      <div class="hidden name"><code>deploy_docker.Rmd</code></div>
 
     </div>
 
     
     
-<div id="getting-started" class="section level2">
+<div id="overview" class="section level2">
 <h2 class="hasAnchor">
-<a href="#getting-started" class="anchor"></a>Getting Started</h2>
-<p>Launch the ReviewR application by running <code><a href="../reference/run_app.html">ReviewR::run_app()</a></code> from the R console or by visiting the URL of a Shiny Server deployed instance of ReviewR in a browser. On launch, ReviewR will show you the Homepage, which will provide some basic information about the ReviewR package.</p>
-<p>When you are ready to begin using ReviewR select the “Setup” option from the naviation menu on the left side of the application. The Setup section is divided into 2 columns, <a href="#connect-to-patient-database">Connect to Patient Database</a> and <a href="https://reviewr.thewileylab.org/articles/usage_connect_to_redcap.html">Configure Patient Chart Abstraction</a>.</p>
+<a href="#overview" class="anchor"></a>Overview</h2>
+<p>ReviewR is designed to support multiple concurrent users when deployed using Shiny Server. In server deployments, users will access ReviewR directly through a web browser without requiring a local R installation. When deployed on a centralized server an instance of ReviewR will be served to each connecting user in distinct R sessions allowing multiple participants to simultaneously connect to patient data and submit chart abstraction information.</p>
+<div id="docker" class="section level3">
+<h3 class="hasAnchor">
+<a href="#docker" class="anchor"></a>Docker</h3>
+<p>ReviewR also ships with a Dockerfile, simplifying the deployment process. The Dockerfile will install R, Shiny, and all the necessary dependencies needed to run ReviewR. To start:</p>
+<ol style="list-style-type: decimal">
+<li>
+<p>Fork the ReviewR repository to the home directory of your server. This can be done from the <strong>R console</strong> with the <code>usethis</code> package:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># install.packages('usethis')</span>
+<span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/create_from_github.html">create_from_github</a></span><span class="op">(</span>repo_spec <span class="op">=</span> <span class="st">'thewileylab/ReviewR'</span>, destdir <span class="op">=</span> <span class="st">'~/'</span><span class="op">)</span></code></pre></div>
+</li>
+<li>
+<p>Using the <strong>bash terminal</strong>, run:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a><span class="bu">cd</span> ~/ReviewR</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="ex">docker</span> build --tag reviewr:latest .</span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="ex">docker</span> run --publish 1410:1410 --detach --name ReviewR reviewr:latest</span></code></pre></div>
+</li>
+</ol>
+<p>That’s it! ReviewR can now be accessed from your browser at <a href="http://your.shinyserver.ipaddress:1410" class="uri">http://your.shinyserver.ipaddress:1410</a> . In order to encrypt this connection, be sure to reverse proxy port 1410 to your server’s URL.</p>
 </div>
-<div id="connect-to-patient-database" class="section level2">
-<h2 class="hasAnchor">
-<a href="#connect-to-patient-database" class="anchor"></a>Connect to Patient Database</h2>
-<p>ReviewR supports multiple database systems. A listing of available database modules is displayed in the drop down menu, located in this section:</p>
-<div class="figure" style="text-align: center">
-<img src="connect2db.png" alt="*Select from available database modules.*" width="742"><p class="caption">
-<em>Select from available database modules.</em>
-</p>
-</div>
-<p>Select the database module that you would like to connect to.</p>
-<div id="google-bigquery" class="section level4">
-<h4 class="hasAnchor">
-<a href="#google-bigquery" class="anchor"></a>Google BigQuery</h4>
-<p>If you are connecting to Google BigQuery, you will simply click “Sign In with Google”. See <a href="https://reviewr.thewileylab.org/articles/deploy_bigquery.html">Google BigQuery Deployment</a> for more information.</p>
-<p>Once you have successfully authenticated with Google you can select from your associated Google Cloud projects and the BigQuery data sets available within the selected project. Once you have selected the data set you wish to review, click “Connect”.</p>
-</div>
-<div id="postgresql" class="section level4">
-<h4 class="hasAnchor">
-<a href="#postgresql" class="anchor"></a>PostgreSQL</h4>
-<p>If you are connecting to PostgreSQL you will be prompted for configuration information about your database (database name, hostname, and port) as well as your login information (username and password) then click “Connect”.</p>
-</div>
-<div id="demo-sqlite-database" class="section level4">
-<h4 class="hasAnchor">
-<a href="#demo-sqlite-database" class="anchor"></a>Demo SQLite Database</h4>
-<p>If you would simply like to try ReviewR without connecting to your own data you can select the “Demo SQLite” database module and click “Connect”. This demo database contains simulated patient data from the <a href="https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF">CMS Synthetic Public Use File (SynPUF)</a> and <a href="https://www.mtsamples.com">MTSamples</a> databases.</p>
-</div>
-<div id="other-relational-database-systems" class="section level4">
-<h4 class="hasAnchor">
-<a href="#other-relational-database-systems" class="anchor"></a>Other Relational Database Systems</h4>
-<p>If you would like to connect ReviewR to a dataset stored in a different relational database system, see the <a href="https://reviewr.thewileylab.org/articles/customize_support_new_rdbms.html">Support a New Relational Database Management System</a> vignette.</p>
-</div>
-</div>
-<div id="data-model-detection" class="section level2">
-<h2 class="hasAnchor">
-<a href="#data-model-detection" class="anchor"></a>Data Model Detection</h2>
-<p>Once the required database credentials have been provided, the database setup module will create a connection to your database and attempt to identify the data model of the patient data stored in your database. The connection information and detected data model will be shown in the successful connection pane:</p>
-<div class="figure" style="text-align: center">
-<img src="connect2db_success.png" alt="*Successful connection to database with supported data model.*" width="737"><p class="caption">
-<em>Successful connection to database with supported data model.</em>
-</p>
-</div>
-<p>In the event that the data model cannot be determined, ReviewR will notify you with the following error message, indicating that data model support has not been add for your particular patient dataset.</p>
-<div class="figure" style="text-align: center">
-<img src="connect2db_error.png" alt="*Error when connecting to a database with an unsupported data model.*" width="736"><p class="caption">
-<em>Error when connecting to a database with an unsupported data model.</em>
-</p>
-</div>
-<p>See the <a href="https://reviewr.thewileylab.org/articles/customize_support_new_datamodel.html">Support a Custom Data Model</a> vignette to learn how to add support for your particular dataset.</p>
-</div>
-<div id="next-steps" class="section level2">
-<h2 class="hasAnchor">
-<a href="#next-steps" class="anchor"></a>Next Steps</h2>
-<p>ReviewR is now ready for you to view the patient information contained within your database. If you would like to configure chart abstraction using REDCap, please see the <a href="https://reviewr.thewileylab.org/articles/usage_connect_to_redcap.html">Connect to REDCap</a> vignette. Otherwise you can learn how to review patient charts in the <a href="https://reviewr.thewileylab.org/articles/usage_perform_chart_review.html">Perform a Chart Review</a> vignette.</p>
 </div>
   </div>
 

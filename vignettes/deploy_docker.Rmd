@@ -1,0 +1,37 @@
+---
+title: "Docker Deployment"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Docker Deployment}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Overview
+
+ReviewR is designed to support multiple concurrent users when deployed using Shiny Server. In server deployments, users will access ReviewR directly through a web browser without requiring a local R installation. When deployed on a centralized server an instance of ReviewR will be served to each connecting user in distinct R sessions allowing multiple participants to simultaneously connect to patient data and submit chart abstraction information. 
+
+### Docker
+
+ReviewR also ships with a Dockerfile, simplifying the deployment process. The Dockerfile will install R, Shiny, and all the necessary dependencies needed to run ReviewR. To start:
+
+1. Fork the ReviewR repository to the home directory of your server. This can be done from the **R console** with the `usethis` package: 
+    ```{r eval=FALSE}
+    # install.packages('usethis')
+    usethis::create_from_github(repo_spec = 'thewileylab/ReviewR', destdir = '~/')
+    ``` 
+2. Using the **bash terminal**, run:
+    ```{bash eval=FALSE}
+    cd ~/ReviewR
+    docker build --tag reviewr:latest .
+    docker run --publish 1410:1410 --detach --name ReviewR reviewr:latest
+    ```
+
+That's it! ReviewR can now be accessed from your browser at http://your.shinyserver.ipaddress:1410 . In order to encrypt this connection, be sure to reverse proxy port 1410 to your server's URL.

@@ -23,6 +23,8 @@ navbar:
         href: articles/deploy_local.html
       - text: Shiny Server Deployment
         href: articles/deploy_server.html
+      - text: Docker Deployment
+        href: articles/deploy_docker.html  
       - text: Google BigQuery Deployment
         href: articles/deploy_bigquery.html  
     Using ReviewR:    
