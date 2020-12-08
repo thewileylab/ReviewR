@@ -18,14 +18,14 @@ including multiple versions of the OMOP common data model as well as the
 MIMIC-III data model. If you are using a different data format, ReviewR
 can be easily customized to support your use case (see [Support a Custom
 Data
-Model](https://reviewr.thewileylab.org/articles/support_a_custom_data_model.html)
+Model](https://reviewr.thewileylab.org/articles/customize_support_new_datamodel.html)
 vignette).
 
 At present ReviewR supports data stored in Google BigQuery or Postgres,
 although it can be easily customized to access any database supported by
 [dbplyr](https://dbplyr.tidyverse.org/) (see [Support a New Relational
 Database Management
-System](https://reviewr.thewileylab.org/articles/support_a_new_relational_database_management_system.html)
+System](https://reviewr.thewileylab.org/articles/customize_support_new_rdbms.html)
 vignette).
 
 To record chart review data, ReviewR supports connections to REDCap
@@ -36,10 +36,16 @@ Full documentation available at
 
 ## Installation
 
-To install the latest development release:
+First ensure you have the library `devtools` installed. If you do not,
+please install using:
 
 ``` r
-# install.packages('devtools')
+install.packages('devtools')
+```
+
+Then install the latest development release of ReviewR using:
+
+``` r
 devtools::install_github('thewileylab/ReviewR')
 ```
 
@@ -52,7 +58,10 @@ ReviewR::run_app()
 ```
 
 If you would like to deploy ReviewR on a server, see the [Shiny Server
-Deployment](https://reviewr.thewileylab.org/articles/deploy-server.html)
+Deployment](https://reviewr.thewileylab.org/articles/deploy_server.html)
+vignette. If you will be connecting to clinical data using Google
+BigQuery please see [Google BigQuery
+Deployment](https://reviewr.thewileylab.org/articles/deploy_bigquery.html)
 vignette.
 
 #### Explore Clinical Data
