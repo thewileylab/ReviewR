@@ -2,7 +2,7 @@
 title: "Google BigQuery Deployment"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Shiny Server Deployment}
+  %\VignetteIndexEntry{Google BigQuery Deployment}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
