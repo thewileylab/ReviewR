@@ -159,26 +159,28 @@
 <!-- badges: start -->
 
 <p>ReviewR is a portable Shiny tool to help you explore patient-level electronic health record data and perform chart review in a single integrated framework. It is is distributed as an R package using the <a href="https://thinkr-open.github.io/golem/">golem</a> framework.</p>
-<p>This tool supports browsing clinical data in many different formats including multiple versions of the OMOP common data model as well as the MIMIC-III data model. If you are using a different data format, ReviewR can be easily customized to support your use case (see <a href="https://reviewr.thewileylab.org/articles/support_a_custom_data_model.html">Support a Custom Data Model</a> vignette).</p>
-<p>At present ReviewR supports data stored in Google BigQuery or Postgres, although it can be easily customized to access any database supported by <a href="https://dbplyr.tidyverse.org/">dbplyr</a> (see <a href="https://reviewr.thewileylab.org/articles/support_a_new_relational_database_management_system.html">Support a New Relational Database Management System</a> vignette).</p>
+<p>This tool supports browsing clinical data in many different formats including multiple versions of the OMOP common data model as well as the MIMIC-III data model. If you are using a different data format, ReviewR can be easily customized to support your use case (see <a href="https://reviewr.thewileylab.org/articles/customize_support_new_datamodel.html">Support a Custom Data Model</a> vignette).</p>
+<p>At present ReviewR supports data stored in Google BigQuery or Postgres, although it can be easily customized to access any database supported by <a href="https://dbplyr.tidyverse.org/">dbplyr</a> (see <a href="https://reviewr.thewileylab.org/articles/customize_support_new_rdbms.html">Support a New Relational Database Management System</a> vignette).</p>
 <p>To record chart review data, ReviewR supports connections to REDCap (Research Electronic Data Capture).</p>
 <p>Full documentation available at <a href="https://reviewr.thewileylab.org">reviewr.thewileylab.org</a>.</p>
 </div>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<p>To install the latest development release:</p>
+<p>First ensure you have the library <code>devtools</code> installed. If you do not, please install using:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># install.packages('devtools')</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">'thewileylab/ReviewR'</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">'devtools'</span><span class="op">)</span></code></pre></div>
+<p>Then install the latest development release of ReviewR using:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">'thewileylab/ReviewR'</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="usage" class="section level2">
 <h2 class="hasAnchor">
 <a href="#usage" class="anchor"></a>Usage</h2>
 <p>To run the application from your local computer simply run:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">ReviewR</span><span class="fu">::</span><span class="fu"><a href="reference/run_app.html">run_app</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p>If you would like to deploy ReviewR on a server, see the <a href="https://reviewr.thewileylab.org/articles/deploy-server.html">Shiny Server Deployment</a> vignette.</p>
+<p>If you would like to deploy ReviewR on a server, see the <a href="https://reviewr.thewileylab.org/articles/deploy_server.html">Shiny Server Deployment</a> vignette. If you will be connecting to clinical data using Google BigQuery please see <a href="https://reviewr.thewileylab.org/articles/deploy_bigquery.html">Google BigQuery Deployment</a> vignette.</p>
 <div id="explore-clinical-data" class="section level4">
 <h4 class="hasAnchor">
 <a href="#explore-clinical-data" class="anchor"></a>Explore Clinical Data</h4>
