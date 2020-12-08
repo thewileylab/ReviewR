@@ -31,15 +31,15 @@ Once users have been added and permissions set, have users log into the project,
 
 ## Design REDCap Instrument/s
 
-After your project has been initialized with users added and API keys have been provisioned, you'll have to design an instrument for your REDCap project. Your institution should have resources to help teach you how to complete this step. There are a few considerations you should know for compatability with ReviewR. 
+After your project has been initialized with users added and API keys have been provisioned, you'll have to design an instrument for your REDCap project. Your institution should have resources to help teach you how to complete this step. There are a few considerations you should know for compatibility with ReviewR. 
 
 #### Required Field to Include
 
-In order to link your review to the individual chart being reviewed you need to include a field to capture the record identifier (e.g., the stable identifier associated with each unique record/patient in your dataset). This _required field_ should be created with the "Text Box (Short Test, Number, Data/Time, ..." data type in REDCap. 
+In order to link your review to the individual chart being reviewed you need to include a field to capture the record identifier (e.g., the stable identifier associated with each unique record/patient in your dataset). This _required field_ should be created with the "Text Box (Short Text, Number, Data/Time, ..." data type in REDCap. 
 
 #### Suggested Field to Include
 
-Optionally, you may also want to record who _performs_ the review. This "Reviewer" identifier is not required to use ReviewR. However if you do wish to record who performed the review, please create this field with the "Text Box (Short Test, Number, Data/Time, ..." data type in REDCap. When you configure REDCap in ReviewR you will have the ability to enter the reviewer's name or select from previous reviewers who have submitted data to the project. 
+Optionally, you may also want to record who _performs_ the review. This "Reviewer" identifier is not required to use ReviewR. However if you do wish to record who performed the review, please create this field with the "Text Box (Short Text, Number, Data/Time, ..." data type in REDCap. When you configure REDCap in ReviewR you will have the ability to enter the reviewer's name or select from previous reviewers who have submitted data to the project. 
 
 #### Supported Instrument Types
 
@@ -83,7 +83,7 @@ shinyREDCap::redcap_widget_map %>%
 
 ## Connect and Configure REDCap in ReviewR
 
-Once you have set up your REDCap project as defined above, you are ready to connect to it from ReviewR. Load ReviewR either by visiting your institution's deployed URL, or by running `ReviewR::run_app()` from your local R installation. Head to the setup tab and connect to your patient data, using the 'Connect to Patient Database' pane (see [Connect to Patient Record Database](https://reviewr.thewileylab.org/articles/usage_connect_to_record_database.html)) vingette for more). 
+Once you have set up your REDCap project as defined above, you are ready to connect to it from ReviewR. Load ReviewR either by visiting your institution's deployed URL, or by running `ReviewR::run_app()` from your local R installation. Head to the setup tab and connect to your patient data, using the 'Connect to Patient Database' pane (see [Connect to Patient Record Database](https://reviewr.thewileylab.org/articles/usage_connect_to_record_database.html)) vignette for more). 
 
 ### Connect to REDCap Project
 
@@ -125,4 +125,4 @@ At any point during the setup process, you may click 'Disconnect' to connect to 
 
 ## Next Step
 
-ReviewR is now ready for you to view and record information from the connected database. For information on how to perform a chart review, please see the (Perform A Chart Review)[https://reviewr.thewileylab.org/articles/usage_perform_chart_review.html] vignette for more. 
+ReviewR is now ready for you to view and record information from the connected database. For information on how to perform a chart review, please see the [Perform A Chart Review](https://reviewr.thewileylab.org/articles/usage_perform_chart_review.html) vignette for more. 
