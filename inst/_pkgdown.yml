@@ -12,10 +12,10 @@ authors:
     html: <img src="https://raw.githubusercontent.com/thewileylab/ReviewR/master/man/figures/WileyLab.svg" height="24" />
 navbar:
   structure:
-    left: [home]
     right: [Deploying ReviewR, Using ReviewR, Customizing ReviewR, reference, github]
   components:
     home: ~
+    articles: ~
     Deploying ReviewR:
       text: Deploying ReviewR
       menu:
