@@ -59,6 +59,9 @@
       <a href="../articles/deploy_server.html">Shiny Server Deployment</a>
     </li>
     <li>
+      <a href="../articles/deploy_docker.html">Docker Deployment</a>
+    </li>
+    <li>
       <a href="../articles/deploy_bigquery.html">Google BigQuery Deployment</a>
     </li>
   </ul>
@@ -179,26 +182,6 @@
 </li>
 </ol>
 <p>That’s it! ReviewR can now be accessed from your browser at <a href="https://your.shinyserver.url/ReviewR" class="uri">https://your.shinyserver.url/ReviewR</a></p>
-</div>
-<div id="docker" class="section level3">
-<h3 class="hasAnchor">
-<a href="#docker" class="anchor"></a>Docker</h3>
-<p>ReviewR also ships with a Dockerfile, simplifying the deployment process. The Dockerfile will install R, Shiny, and all the necessary dependencies needed to run ReviewR. To start:</p>
-<ol style="list-style-type: decimal">
-<li>
-<p>Fork the ReviewR repository to the home directory of your server. This can be done from the <strong>R console</strong> with the <code>usethis</code> package:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># install.packages('usethis')</span>
-<span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/create_from_github.html">create_from_github</a></span><span class="op">(</span>repo_spec <span class="op">=</span> <span class="st">'thewileylab/ReviewR'</span>, destdir <span class="op">=</span> <span class="st">'~/'</span><span class="op">)</span></code></pre></div>
-</li>
-<li>
-<p>Using the <strong>bash terminal</strong>, run:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1"></a><span class="bu">cd</span> ~/ReviewR</span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="ex">docker</span> build --tag reviewr:latest .</span>
-<span id="cb5-3"><a href="#cb5-3"></a><span class="ex">docker</span> run --publish 1410:1410 --detach --name ReviewR reviewr:latest</span></code></pre></div>
-</li>
-</ol>
-<p>That’s it! ReviewR can now be accessed from your browser at <a href="http://your.shinyserver.ipaddress:1410" class="uri">http://your.shinyserver.ipaddress:1410</a> . In order to encrypt this connection, be sure to reverse proxy port 1410 to your server’s URL.</p>
 </div>
 </div>
   </div>

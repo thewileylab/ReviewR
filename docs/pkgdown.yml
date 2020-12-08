@@ -5,12 +5,13 @@ articles:
   customize_support_new_datamodel: customize_support_new_datamodel.html
   customize_support_new_rdbms: customize_support_new_rdbms.html
   deploy_bigquery: deploy_bigquery.html
+  deploy_docker: deploy_docker.html
   deploy_local: deploy_local.html
   deploy_server: deploy_server.html
   usage_connect_to_record_database: usage_connect_to_record_database.html
   usage_connect_to_redcap: usage_connect_to_redcap.html
   usage_perform_chart_review: usage_perform_chart_review.html
-last_built: 2020-12-08T18:35Z
+last_built: 2020-12-08T18:45Z
 urls:
   reference: reviewr.thewileylab.org/reference
   article: reviewr.thewileylab.org/articles
