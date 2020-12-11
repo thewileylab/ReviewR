@@ -61,10 +61,10 @@ shinyREDCap::redcap_widget_map %>%
                            redcap_field_type %in% c('checkbox') ~ 'Multiple Answer',
                            redcap_field_type %in% c('yesno', 'truefalse') ~ 'Logical',
                            TRUE ~ 'Other'),
-         redcap_field_val = case_when(redcap_field_type == "text" & is.na(redcap_field_val) ~ "None",
-                                      redcap_field_val == "date_mdy" ~ "Date (M-D-Y)",
-                                      redcap_field_val == "integer" ~ "Integer",
-                                      TRUE ~ redcap_field_val),
+         redcap_field_validation = case_when(redcap_field_type == "text" & is.na(redcap_field_validation) ~ "None",
+                                             redcap_field_validation == "date_mdy" ~ "Date (M-D-Y)",
+                                             redcap_field_validation == "integer" ~ "Integer",
+                                             TRUE ~ redcap_field_validation),
          redcap_field_type = case_when(redcap_field_type == "text" ~ "Text Box (Short Text, Number, Data/Time, ...)",
                                        redcap_field_type == "notes" ~ "Notes Box (Paragraph Text)",
                                        redcap_field_type == "dropdown" ~ "Multiple Choice - Drop-down List (Single Answer)",
@@ -74,10 +74,10 @@ shinyREDCap::redcap_widget_map %>%
                                        redcap_field_type == "yesno" ~ "Yes - No",
                                        TRUE ~ redcap_field_type)) %>% 
   group_by(redcap_field_type) %>% 
-  summarise(redcap_field_val = paste(redcap_field_val, collapse = "; ")) %>% 
+  summarise(redcap_field_validation = paste(redcap_field_validation, collapse = "; ")) %>% 
   gt() %>%
   cols_label(redcap_field_type = md('**REDCap Field Type**'), 
-             redcap_field_val = md('**Supported Validation Options**'))
+             redcap_field_validation = md('**Supported Validation Options**'))
 ```
 
 
