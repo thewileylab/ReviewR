@@ -146,7 +146,7 @@ dev_add_datamodel <- function(csv) {
       separate(col = .data$datamodel, into = c('datamodel','model_version'), sep = '_', extra = 'drop', fill = 'right') %>% 
       mutate(model_version = tidyr::replace_na(.data$model_version, ''),
              cdm = map(.data$file_path,
-                       ~read_csv(.x)
+                       ~readr::read_csv(.x)
                        )
              ) %>% 
       unnest(cols = .data$cdm) %>% 
