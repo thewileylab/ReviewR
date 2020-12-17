@@ -16,23 +16,94 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-ReviewR is designed to support multiple concurrent users when deployed using Shiny Server. In server deployments, users will access ReviewR directly through a web browser without requiring a local R installation. When deployed on a centralized server an instance of ReviewR will be served to each connecting user in distinct R sessions allowing multiple participants to simultaneously connect to patient data and submit chart abstraction information. 
+ReviewR is designed to support multiple concurrent users when deployed using Shiny Server. When deployed on a centralized server an instance of ReviewR will be served to each connecting user in distinct R sessions allowing multiple participants to simultaneously connect to patient data and submit chart abstraction information. In server deployments, users will access ReviewR directly through a web browser without requiring a local R installation.
 
-## Installation
+## Getting Started
 
-First users must deploy and secure their installation of Shiny Server with a stable https URL. ReviewR should work with both [Open Source Shiny Server](https://rstudio.com/products/shiny/download-server/) as well as [Shiny Server Pro](https://rstudio.com/products/shiny-server-pro/). While deploying and configuring Shiny Server is outside the scope of this vignette, links to instructions for setting up and securing the Open Source version of Shiny Server on servers running Ubuntu 18.04 can be found in the <a href="#prerequisites">Prerequisites</a> section below.
+Before deploying ReviewR to your server, you must first configure your environment to securely host Shiny applications. The overall process consists of 5 main components:
 
-### Prerequisites 
+* [Obtain a domain](#obtain-a-domain)
+* [Shiny Server Setup](#shiny-server-setup)
+* [Configuring NGINX to Reverse Proxy Shiny Server](#configuring-nginx-to-reverse-proxy-shiny-server)
+* [Securing Shiny Server URL with Let's Encrypt](#lets-encrypt)
+* [Deploy ReviewR](#deploy-reviewr)
+
+*Note: This vignette assumes you have access to a server running Ubuntu 18.04.* 
+
+### Disclaimer
+
+This guide **is not** [universally applicable](https://xkcd.com/1654/) to all server environments. It assumes a blank slate and as such is intended for _informational purposes only_. We take no responsibility suggesting configuration changes that break your operational setup. Please make modifications where necessary to adapt to your specific environment and consult your IT department if necessary. 
+
+Information provided in this vignette has been adapted from other guides that have been listed in the <a href="#suggested-reading">Suggested Reading</a> section below.
+
+### Suggested Reading 
 * [Shiny Server: Quick Start Guide](https://support.rstudio.com/hc/en-us/articles/360011458854-Shiny-Server-Quick-Start-Installation-and-Configuration)
 * [Shiny Server: Running with a Proxy](https://support.rstudio.com/hc/en-us/articles/213733868-Running-Shiny-Server-with-a-Proxy)
 * [Let's Encrypt Getting Started](https://letsencrypt.org/getting-started/)
 * [Secure NGINX with Let's Encrypt](https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-18-04)
 
-*Note: Prerequisites assume a server running Ubuntu 18.04.* 
+## Obtain a Domain
 
-### Shiny Server
+Using a domain registrar of your choosing, obtain a domain name for your server. There are a wide variety of registrars that will either provide a domian name for free or for a small fee. Once you have obtained a domain name for your server, register your server's IP address with your domain registrar of choice. 
 
-1. Install the ReviewR package as a root user in order to ensure your system R package library has all of the required dependencies
+This will allow you to access your server securely with a plain text URL, rather than by a (possibly random) IP address. Additionally, a domain is required to encrypt connections to/from your server. Certificate authorities, like Let's Encrypt, are required to verify ownership of domains before security certificates can be issued. By registering your server's IP address with a domain registrar and associating it with a domain name, you are verifying that you own the site and take all responsibility for its functions.
+
+## Shiny Server Setup
+
+### Install Shiny Server Dependencies
+
+Before installing Shiny Server, it is necessary to install a few prerequisites to your server. To begin, SSH into your server and perform the following steps:
+
+1. Install R:
+```{bash, eval=F}
+sudo apt-get install r-base
+```
+
+2. Install R Shiny to your System R Package Library:
+```{bash, eval=F}
+sudo su - \
+-c "R -e \"install.packages('shiny', repos='https://cran.rstudio.com/')\""
+```
+
+3. Install `gdebi`, which is an operating system package that is used to install Shiny Server, and additional dependencies:
+```{bash, eval=F}
+sudo apt-get install gdebi-core
+```
+
+### Install Shiny Server
+Now that all prerequisites have been satisfied, download and install Shiny Server to your system:
+
+```{bash, eval=F}
+wget https://download3.rstudio.org/ubuntu-14.04/x86_64/shiny-server-1.5.15.953-amd64.deb
+sudo gdebi shiny-server-1.5.15.953-amd64.deb
+```
+
+At this point, you will have a bare bones basic Shiny Server Installation. If you would like to verify that Shiny has installed correctly, you may attempt a connection from a different machine on the same network by visiting: `your.server.ip_address:3838`
+
+Read on to learn how to secure this connection.
+
+## Configuring NGINX to Reverse Proxy Shiny Server
+
+At this stage, your Server is being hosted on port 3838 of your machine. In order to allow users to access this server via the domain that was aquired in the first portion of this guide, we will need to install and configure a reverse proxy which will be directing clients securely to applications hosted on your shiny server. [NGINX](https://www.nginx.com/), an open source web server and reverse proxy will be used for the purposes of this guide.
+
+### Install NGINX
+To begin, install NGINX on your server:
+```{bash}
+sudo apt update
+sudo apt install nginx
+```
+
+You can verify this installation by visiting `your.server.ip_address` from a different machine on the same network. You should see a 'Welcome to nginx!" message if all was successful.
+
+### Configure NGINX for use with Shiny Server
+
+Next, we need to configure NGINX to proxy traffic from web clients to the Shiny Server, where Shiny applications will be hosted. To do this, we'll need to add a server block to NGINX with information about our Shiny Server. NGINX
+
+## Securing Shiny Server URL with Let's Encrypt <a id="lets-encrypt"></a>
+
+## Deploy ReviewR
+
+1. Install the ReviewR package as a _root user_ in order to ensure your system R package library has all of the required dependencies
     + From a **bash terminal**, run:
         ```{bash eval=FALSE}
         # Start R in an interactive root terminal
@@ -44,7 +115,7 @@ First users must deploy and secure their installation of Shiny Server with a sta
       # install.packages('devtools')
       devtools::install_github('thewileylab/ReviewR')
       ```
-2. Next, fork the ReviewR repository into the Shiny Server directory (`/srv/shiny-server`) with the `usethis` package. Using the same **R console** from above: 
+2. Continuing as the root user, fork the ReviewR repository into the Shiny Server directory (`/srv/shiny-server`) with the `usethis` package. Using the same **R console** from above: 
     ```{r eval=FALSE}
     # install.packages('usethis')
     usethis::create_from_github(repo_spec = 'thewileylab/ReviewR', destdir = '/srv/shiny-server')
