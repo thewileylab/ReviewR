@@ -217,7 +217,7 @@ This will incorporate your newly developed functions into the active R Sessioin 
 
 ### Finishing up
 
-Once you are satisfied with your patient table functions and have sufficiently tested their functionality, run:
+Once you are satisfied with your table functions and have sufficiently tested their functionality, run:
 ```{r eval=FALSE}
 devtools::install()
 ```
