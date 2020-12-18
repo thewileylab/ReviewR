@@ -34,10 +34,9 @@ It is also possible for you to obtain and provide your own Google API credential
     + Add the https URL of your shiny server ReviewR installation to the Authorized redirect URIs section *eg: https://your.shinyserver.org/ReviewR*
     + Click *Create*
 3. Locate the client ID that was created and click "Download JSON"
-    + Save the file as "client_secret.json"
+    + Save the file as "client_secret.json" to `~/.ReviewR`
 
-************FILL IN************************
-
+On launch, ReviewR will check the path defined in step 3 above for a `client_secret.json` file. If found, it will use these credentials instead of the Wiley Lab credentials that have been built into the package.
 
 ## Server Deployment
 
