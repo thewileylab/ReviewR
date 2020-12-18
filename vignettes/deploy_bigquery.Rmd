@@ -29,9 +29,8 @@ It is also possible for you to obtain and provide your own Google API credential
 2. Create an OAuth clientID and secret
     + Within the project you created in step 1, head to *APIs & Services > Credentials*
     + At the top, click *Create credentials > OAuth client ID*
-    + Select "Web application" as the application type
-      + Optionally, provide a name for your web application client
-    + Add the https URL of your shiny server ReviewR installation to the Authorized redirect URIs section *eg: https://your.shinyserver.org/ReviewR*
+    + Select "Desktop" as the application type
+      + Optionally, provide a name for your Desktop client
     + Click *Create*
 3. Locate the client ID that was created and click "Download JSON"
     + Save the file as "client_secret.json" to `~/.ReviewR`
