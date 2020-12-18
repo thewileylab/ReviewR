@@ -140,7 +140,7 @@ In order to securely host this container at a URL, we'll need to configure NGINX
 
 ## Configuring NGINX to Reverse Proxy ReviewR Docker Container
 
-To serve your ReviewR Docker container with NGINX, we simply need to add and enable a server block, then secure it with the Certbot software which will install and configure a certificate from Let's Encrypt. For information about how to obtain a domain and how to install NGINX, and Certbot please see vignette('deploy_server'). 
+To serve your ReviewR Docker container with NGINX, we simply need to add and enable a server block, then secure it with the Certbot software which will install and configure a certificate from Let's Encrypt. For information about how to obtain a domain and how to install NGINX, and Certbot please see `vignette('deploy_server')`. 
 
 
 ### Configure nginx
@@ -183,7 +183,7 @@ Continue to the next section to secure access to your container with Let's Encry
 
 ### Securing Docker Container with Let's Encrypt <a id="lets-encrypt"></a>
 
-This portion of the guide assumes that you have already installed Certbot on your system by following the instructions in vignette('deploy_server').
+This portion of the guide assumes that you have already installed Certbot on your system by following the instructions in `vignette('deploy_server')`.
 
 As we have already configured a server block for our container in the previous section, we are ready to run the Certbot software to secure our domain. Run the following code block, substituting `reviewr.your.domain.url` with the domain that you configured in the nginx server block for the ReviewR container:
 
