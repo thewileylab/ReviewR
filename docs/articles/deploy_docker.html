@@ -236,7 +236,7 @@
 <div id="configuring-nginx-to-reverse-proxy-reviewr-docker-container" class="section level2">
 <h2 class="hasAnchor">
 <a href="#configuring-nginx-to-reverse-proxy-reviewr-docker-container" class="anchor"></a>Configuring NGINX to Reverse Proxy ReviewR Docker Container</h2>
-<p>To serve your ReviewR Docker container with NGINX, we simply need to add and enable a server block, then secure it with the Certbot software which will install and configure a certificate from Let’s Encrypt. For information about how to obtain a domain and how to install NGINX, and Certbot please see vignette(‘deploy_server’).</p>
+<p>To serve your ReviewR Docker container with NGINX, we simply need to add and enable a server block, then secure it with the Certbot software which will install and configure a certificate from Let’s Encrypt. For information about how to obtain a domain and how to install NGINX, and Certbot please see <code><a href="../articles/deploy_server.html">vignette('deploy_server')</a></code>.</p>
 <div id="configure-nginx" class="section level3">
 <h3 class="hasAnchor">
 <a href="#configure-nginx" class="anchor"></a>Configure nginx</h3>
@@ -263,7 +263,7 @@
 <h3 class="hasAnchor">
 <a href="#securing-docker-container-with-lets-encrypt" class="anchor"></a>Securing Docker Container with Let’s Encrypt <a id="lets-encrypt"></a>
 </h3>
-<p>This portion of the guide assumes that you have already installed Certbot on your system by following the instructions in vignette(‘deploy_server’).</p>
+<p>This portion of the guide assumes that you have already installed Certbot on your system by following the instructions in <code><a href="../articles/deploy_server.html">vignette('deploy_server')</a></code>.</p>
 <p>As we have already configured a server block for our container in the previous section, we are ready to run the Certbot software to secure our domain. Run the following code block, substituting <code>reviewr.your.domain.url</code> with the domain that you configured in the nginx server block for the ReviewR container:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1"></a><span class="fu">sudo</span> certbot --nginx -d reviewr.your.domain.url</span></code></pre></div>
 <p>If this is your first time running Certbot, you will be prompted to enter an email address and agree to the terms of service. After doing so, Certbot will initiate a connection with the Let’s Encrypt server and then begin testing your server to verify that you control the domain you’re requesting a certificate for. Certbot will then ask you whether or not you’d like to redirect all HTTP traffic to HTTPS traffic. It is <em>highly recommended</em> to do so. Please select the option for ‘Redirect’, which will ensure that users are <em>only</em> capable of accessing your site via secure HTTPS.</p>
