@@ -32,9 +32,9 @@ Before deploying ReviewR to your server, you must first configure your environme
 
 ### Disclaimer
 
-This guide **is not** [universally applicable](https://xkcd.com/1654/) to all server environments. It assumes a that no prior services have been installed or configured on your server. It is intended for _informational purposes only_. We take no responsibility suggesting configuration changes that break your operational setup. Please make modifications where necessary to adapt to your specific environment and consult your IT department if necessary. 
+This guide **is not** [universally applicable](https://xkcd.com/1654/) to all server environments. It assumes that no prior services have been installed or configured on your server. It is intended for _informational purposes only_. We take no responsibility for suggesting configuration changes that break your operational setup. Please make modifications where necessary to adapt this guide to your specific environment and consult your IT department if applicable or necessary. 
 
-Information provided in this vignette has been adapted from other guides that have been listed in the <a href="#suggested-reading">Suggested Reading</a> section below.
+Information provided in this vignette has been adapted from other guides that have been listed in the [Suggested Reading](#suggested-reading) section below.
 
 ### Suggested Reading 
 * [Shiny Server: Quick Start Guide](https://support.rstudio.com/hc/en-us/articles/360011458854-Shiny-Server-Quick-Start-Installation-and-Configuration)
@@ -44,9 +44,9 @@ Information provided in this vignette has been adapted from other guides that ha
 
 ## Obtain a Domain
 
-Using a domain registrar of your choosing, obtain a domain name for your server. There are a wide variety of registrars that will either provide a domian name for free or for a small fee. Once you have obtained a domain name for your server, register your server's IP address with your domain registrar of choice. 
+Using a domain registrar of your choosing, obtain a domain name for your server. There are a wide variety of registrars that will  provide am domain name either for free of charge or for a small annual fee. Once you have obtained a domain name for your server, register your server's external IP address with your domain registrar of choice. Ideally, this external IP address is static, though services exist to update DNS records for servers with ephemeral IP addresses.
 
-This will allow you to access your server securely with a plain text URL, rather than by a (possibly random) IP address. Additionally, a domain is required to encrypt connections to/from your server. Certificate authorities, like Let's Encrypt, are required to verify ownership of domains before security certificates can be issued. By registering your server's IP address with a domain registrar and associating it with a domain name, you are verifying that you own the site and take all responsibility for its functions.
+Once you have registered for a domain name and linked your domain with your server's IP you will be able to access your server with a plain text URL, rather than by a IP address. Additionally, a domain is required to encrypt connections to/from your server. This is because certificate authorities, like Let's Encrypt, are required to verify ownership of domains before security certificates can be issued. These certificates are what allows traffic to be SSL encrypted between clients and your server via the https standard. By registering your server's IP address with a domain registrar and associating it with a domain name, you are verifying that you own the site and take all responsibility for its functions.
 
 ## Shiny Server Setup
 
@@ -84,7 +84,7 @@ Read on to learn how to secure this connection.
 
 ## Configuring NGINX to Reverse Proxy Shiny Server
 
-At this stage, your Server is being hosted on port 3838 of your machine. In order to allow users to access this server via the domain that was aquired in the first portion of this guide, we will need to install and configure a reverse proxy which will be directing clients securely to applications hosted on your shiny server. [NGINX](https://www.nginx.com/), an open source web server and reverse proxy will be used for the purposes of this guide.
+At this stage, your Server is being hosted on port 3838 of your machine. In order to allow users to access this server via the domain that was acquired in the first portion of this guide, we will need to install and configure a reverse proxy which will direct clients securely to applications hosted on your shiny server. [NGINX](https://www.nginx.com/), an open source web server and reverse proxy will be used for the purposes of this guide.
 
 ### Install NGINX
 To begin, install NGINX on your server:
@@ -102,15 +102,15 @@ Depending on where your server is hosted, you may have to allow access to the se
 Next, we need to configure NGINX to proxy traffic from web clients to the Shiny Server, where Shiny applications will be hosted. To do this, we'll need to add a server block to NGINX with information about our Shiny Server. NGINX server blocks live in `/etc/nginx/sites-available/`. To initialize a server block for our shiny server, issue the following command:
 
 ```{bash, eval=F}
-## substitute nano for your text editor of choice: emacs, vi, vim, pico, etc.
+## substitute nano for your preferred text editor: emacs, jed, joe, pico, sandy, vi, vim, etc.
 sudo nano /etc/nginx/sites-available/shiny
 ```
 
-Modify the following server block replacing `your.server.url` with the domain name that you obtained in the first portion of this guide and then, copy this text into the file that you are editing. 
+Modify the following server block code by replacing `your.shiny.server.url` with the domain name that you obtained in the [Obtain a Domain](#obtain-a-domain) section of this guide. Then, copy this text into the file that you are editing. 
 ```
 server {
 
-        server_name your.server.url;
+        server_name your.shiny.server.url;
 
         location / {
                 proxy_pass http://localhost:3838;
@@ -123,7 +123,7 @@ server {
         }
 ```
 
-Save and exit the file. Verify that the has been created successfully by running:
+**Save and exit the file.** Verify that the has been created successfully by running:
 
 ```{bash, eval=F}
 ls -l /etc/nginx/sites-available
@@ -132,33 +132,37 @@ ls -l /etc/nginx/sites-available
 A file called "shiny" should be among the files that is returned. 
 
 Next, we need to enable the server block that we just created. With NGINX, this is accomplished by symlinking the server block to the `/etc/nginx/sites-enabled` folder. Run:
+
 ```{bash, eval=F}
 sudo ln -s /etc/nginx/sites-available/shiny /etc/nginx/sites-enabled/shiny
 ```
 
-At this point, your Shiny Server should be accessible at `http://your.server.url` . If the Shiny Server is not immediately available at your domain after completing all of the steps to this point, you may have to restart NGINX; `sudo systemctl reload nginx`
+At this point, your Shiny Server should be accessible at `http://your.shiny.server.url` . If the Shiny Server is not immediately available at your domain after completing all of the steps to this point, you may have to restart NGINX; `sudo systemctl reload nginx`
 
 Continue to the next section to secure your server with Let's Encrypt.
 
 ## Securing Shiny Server URL with Let's Encrypt <a id="lets-encrypt"></a>
 
-To begin, we will install the Certbot software on our server. This software makes it easy to secure our domain, by automatically verifying ownership, downloading and installing a [Let's Encrypt](https://letsencrypt.org/) certificate, configuring nginx to use the certificate and renewing the certificate before it expires. You want this software, trust me. To install Certbot, we'll need to add a software respository to our system. This will be accomplished by running:
+To begin, we will install the Certbot software on our server. This software makes it easy to secure our domain, by automatically verifying ownership, downloading and installing a [Let's Encrypt](https://letsencrypt.org/) certificate, automatically configuring nginx to use the certificate, and renewing the certificate before it expires. You want this software, trust me. To install Certbot, we'll need to add a software repository to our system. This will be accomplished by running:
+
 ```{bash, eval=F}
 sudo add-apt-repository ppa:certbot/certbot
 ```
 
-Next, we'll need to update our server's package list, and install the certbot application for our nginx configuration:
+Next, we'll need to update our server's package list, and install the Certbot application for our nginx configuration:
+
 ```{bash, eval=F}
 sudo apt update
 sudo apt install python-certbot-nginx
 ```
 
-As we have already configured a server block for NGINX, we're ready to run the Certbot software to secure our domain. Run the following code block, substituting `your.server.url` with the domain that you configured previously:
+As we have already configured a server block for NGINX in the previous section, we are ready to run the Certbot software to secure our domain. Run the following code block, substituting `your.shiny.server.url` with the domain that you configured in the nginx server block for shiny server:
+
 ```{bash, eval=F}
-sudo certbot --nginx -d your.server.url
+sudo certbot --nginx -d your.shiny.server.url
 ```
 
-If this is your first time running Certbot, you will be prompted to enter an email address and agree to the terms of service. After doing so, Certbot will initiate a connection with the Let’s Encrypt server and then run a begin testing your server to verify that you control the domain you’re requesting a certificate for. Certbot will then ask you whether or not you'd like to redirect HTTP traffic to HTTPS traffic. It is _highly recommended_ to do so. Please select the option for 'Redirect', which will ensure that users are _only_ capable of accessing your site via secure HTTPS.
+If this is your first time running Certbot, you will be prompted to enter an email address and agree to the terms of service. After doing so, Certbot will initiate a connection with the Let’s Encrypt server and then begin testing your server to verify that you control the domain you’re requesting a certificate for. Certbot will then ask you whether or not you'd like to redirect all HTTP traffic to HTTPS traffic. It is _highly recommended_ to do so. Please select the option for 'Redirect', which will ensure that users are _only_ capable of accessing your site via secure HTTPS.
 
 Congratulations, your Shiny Server is now secured and ready to begin hosting Shiny Applications. Continue to the next section to learn how to deploy ReviewR to your Shiny Server.
 
@@ -183,4 +187,4 @@ Congratulations, your Shiny Server is now secured and ready to begin hosting Shi
     ```
     *This step will fork the most recent version of the ReviewR package from GitHub which includes additional files and development tools not built directly into the package. This includes an `app.R` file which Shiny Server will need to deploy ReviewR. By default, Shiny Server will host all applications that are placed in `/srv/shiny-server`*
 
-That's it! ReviewR can now be accessed from your browser at https://your.server.url/ReviewR
+That's it! ReviewR can now be accessed from your browser at https://your.shiny.server.url/ReviewR
