@@ -32,7 +32,7 @@ Before deploying ReviewR to your server, you must first configure your environme
 
 ### Disclaimer
 
-This guide **is not** [universally applicable](https://xkcd.com/1654/) to all server environments. It assumes a blank slate and as such is intended for _informational purposes only_. We take no responsibility suggesting configuration changes that break your operational setup. Please make modifications where necessary to adapt to your specific environment and consult your IT department if necessary. 
+This guide **is not** [universally applicable](https://xkcd.com/1654/) to all server environments. It assumes a that no prior services have been installed or configured on your server. It is intended for _informational purposes only_. We take no responsibility suggesting configuration changes that break your operational setup. Please make modifications where necessary to adapt to your specific environment and consult your IT department if necessary. 
 
 Information provided in this vignette has been adapted from other guides that have been listed in the <a href="#suggested-reading">Suggested Reading</a> section below.
 
@@ -88,18 +88,79 @@ At this stage, your Server is being hosted on port 3838 of your machine. In orde
 
 ### Install NGINX
 To begin, install NGINX on your server:
-```{bash}
+```{bash, eval=F}
 sudo apt update
 sudo apt install nginx
 ```
 
 You can verify this installation by visiting `your.server.ip_address` from a different machine on the same network. You should see a 'Welcome to nginx!" message if all was successful.
 
+Depending on where your server is hosted, you may have to allow access to the server's IP address on ports 80 and 443. Firewall configuration is outside of the scope of this guide.
+
 ### Configure NGINX for use with Shiny Server
 
-Next, we need to configure NGINX to proxy traffic from web clients to the Shiny Server, where Shiny applications will be hosted. To do this, we'll need to add a server block to NGINX with information about our Shiny Server. NGINX
+Next, we need to configure NGINX to proxy traffic from web clients to the Shiny Server, where Shiny applications will be hosted. To do this, we'll need to add a server block to NGINX with information about our Shiny Server. NGINX server blocks live in `/etc/nginx/sites-available/`. To initialize a server block for our shiny server, issue the following command:
+
+```{bash, eval=F}
+## substitute nano for your text editor of choice: emacs, vi, vim, pico, etc.
+sudo nano /etc/nginx/sites-available/shiny
+```
+
+Modify the following server block replacing `your.server.url` with the domain name that you obtained in the first portion of this guide and then, copy this text into the file that you are editing. 
+```
+server {
+
+        server_name your.server.url;
+
+        location / {
+                proxy_pass http://localhost:3838;
+                proxy_redirect / $scheme://$http_host/;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection $connection_upgrade;
+                proxy_read_timeout 20d;
+                proxy_buffering off;
+        }
+```
+
+Save and exit the file. Verify that the has been created successfully by running:
+
+```{bash, eval=F}
+ls -l /etc/nginx/sites-available
+```
+
+A file called "shiny" should be among the files that is returned. 
+
+Next, we need to enable the server block that we just created. With NGINX, this is accomplished by symlinking the server block to the `/etc/nginx/sites-enabled` folder. Run:
+```{bash, eval=F}
+sudo ln -s /etc/nginx/sites-available/shiny /etc/nginx/sites-enabled/shiny
+```
+
+At this point, your Shiny Server should be accessible at `http://your.server.url` . If the Shiny Server is not immediately available at your domain after completing all of the steps to this point, you may have to restart NGINX; `sudo systemctl reload nginx`
+
+Continue to the next section to secure your server with Let's Encrypt.
 
 ## Securing Shiny Server URL with Let's Encrypt <a id="lets-encrypt"></a>
+
+To begin, we will install the Certbot software on our server. This software makes it easy to secure our domain, by automatically verifying ownership, downloading and installing a [Let's Encrypt](https://letsencrypt.org/) certificate, configuring nginx to use the certificate and renewing the certificate before it expires. You want this software, trust me. To install Certbot, we'll need to add a software respository to our system. This will be accomplished by running:
+```{bash, eval=F}
+sudo add-apt-repository ppa:certbot/certbot
+```
+
+Next, we'll need to update our server's package list, and install the certbot application for our nginx configuration:
+```{bash, eval=F}
+sudo apt update
+sudo apt install python-certbot-nginx
+```
+
+As we have already configured a server block for NGINX, we're ready to run the Certbot software to secure our domain. Run the following code block, substituting `your.server.url` with the domain that you configured previously:
+```{bash, eval=F}
+sudo certbot --nginx -d your.server.url
+```
+
+If this is your first time running Vertbot, you will be prompted to enter an email address and agree to the terms of service. After doing so, Certbot will initiate a connection with the Let’s Encrypt server and then run a begin testing your server to verify that you control the domain you’re requesting a certificate for. Certbot will then ask you whether or not you'd like to redirect HTTP traffic to HTTPS traffic. It is _highly recommended_ to do so. Please select the option for 'Redirect', which will ensure that users are _only_ capable of accessing your site via secure HTTPS.
+
+Congratulations, your Shiny Server is now secured and ready to begin hosting Shiny Applications. Continue to the next section to learn how to deploy ReviewR to your Shiny Server.
 
 ## Deploy ReviewR
 
@@ -122,4 +183,4 @@ Next, we need to configure NGINX to proxy traffic from web clients to the Shiny 
     ```
     *This step will fork the most recent version of the ReviewR package from GitHub which includes additional files and development tools not built directly into the package. This includes an `app.R` file which Shiny Server will need to deploy ReviewR. By default, Shiny Server will host all applications that are placed in `/srv/shiny-server`*
 
-That's it! ReviewR can now be accessed from your browser at https://your.shinyserver.url/ReviewR
+That's it! ReviewR can now be accessed from your browser at https://your.server.url/ReviewR

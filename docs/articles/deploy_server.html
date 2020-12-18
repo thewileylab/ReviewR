@@ -134,54 +134,160 @@
 <div id="overview" class="section level2">
 <h2 class="hasAnchor">
 <a href="#overview" class="anchor"></a>Overview</h2>
-<p>ReviewR is designed to support multiple concurrent users when deployed using Shiny Server. In server deployments, users will access ReviewR directly through a web browser without requiring a local R installation. When deployed on a centralized server an instance of ReviewR will be served to each connecting user in distinct R sessions allowing multiple participants to simultaneously connect to patient data and submit chart abstraction information.</p>
+<p>ReviewR is designed to support multiple concurrent users when deployed using Shiny Server. When deployed on a centralized server an instance of ReviewR will be served to each connecting user in distinct R sessions allowing multiple participants to simultaneously connect to patient data and submit chart abstraction information. In server deployments, users will access ReviewR directly through a web browser without requiring a local R installation.</p>
 </div>
-<div id="installation" class="section level2">
+<div id="getting-started" class="section level2">
 <h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
-<p>First users must deploy and secure their installation of Shiny Server with a stable https URL. ReviewR should work with both <a href="https://rstudio.com/products/shiny/download-server/">Open Source Shiny Server</a> as well as <a href="https://rstudio.com/products/shiny-server-pro/">Shiny Server Pro</a>. While deploying and configuring Shiny Server is outside the scope of this vignette, links to instructions for setting up and securing the Open Source version of Shiny Server on servers running Ubuntu 18.04 can be found in the <a href="#prerequisites">Prerequisites</a> section below.</p>
-<div id="prerequisites" class="section level3">
+<a href="#getting-started" class="anchor"></a>Getting Started</h2>
+<p>Before deploying ReviewR to your server, you must first configure your environment to securely host Shiny applications. The overall process consists of 5 main components:</p>
+<ul>
+<li><a href="#obtain-a-domain">Obtain a domain</a></li>
+<li><a href="#shiny-server-setup">Shiny Server Setup</a></li>
+<li><a href="#configuring-nginx-to-reverse-proxy-shiny-server">Configuring NGINX to Reverse Proxy Shiny Server</a></li>
+<li><a href="#lets-encrypt">Securing Shiny Server URL with Let’s Encrypt</a></li>
+<li><a href="#deploy-reviewr">Deploy ReviewR</a></li>
+</ul>
+<p><em>Note: This vignette assumes you have access to a server running Ubuntu 18.04.</em></p>
+<div id="disclaimer" class="section level3">
 <h3 class="hasAnchor">
-<a href="#prerequisites" class="anchor"></a>Prerequisites</h3>
+<a href="#disclaimer" class="anchor"></a>Disclaimer</h3>
+<p>This guide <strong>is not</strong> <a href="https://xkcd.com/1654/">universally applicable</a> to all server environments. It assumes a that no prior services have been installed or configured on your server. It is intended for <em>informational purposes only</em>. We take no responsibility suggesting configuration changes that break your operational setup. Please make modifications where necessary to adapt to your specific environment and consult your IT department if necessary.</p>
+<p>Information provided in this vignette has been adapted from other guides that have been listed in the <a href="#suggested-reading">Suggested Reading</a> section below.</p>
+</div>
+<div id="suggested-reading" class="section level3">
+<h3 class="hasAnchor">
+<a href="#suggested-reading" class="anchor"></a>Suggested Reading</h3>
 <ul>
 <li><a href="https://support.rstudio.com/hc/en-us/articles/360011458854-Shiny-Server-Quick-Start-Installation-and-Configuration">Shiny Server: Quick Start Guide</a></li>
 <li><a href="https://support.rstudio.com/hc/en-us/articles/213733868-Running-Shiny-Server-with-a-Proxy">Shiny Server: Running with a Proxy</a></li>
 <li><a href="https://letsencrypt.org/getting-started/">Let’s Encrypt Getting Started</a></li>
 <li><a href="https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-18-04">Secure NGINX with Let’s Encrypt</a></li>
 </ul>
-<p><em>Note: Prerequisites assume a server running Ubuntu 18.04.</em></p>
 </div>
-<div id="shiny-server" class="section level3">
+</div>
+<div id="obtain-a-domain" class="section level2">
+<h2 class="hasAnchor">
+<a href="#obtain-a-domain" class="anchor"></a>Obtain a Domain</h2>
+<p>Using a domain registrar of your choosing, obtain a domain name for your server. There are a wide variety of registrars that will either provide a domian name for free or for a small fee. Once you have obtained a domain name for your server, register your server’s IP address with your domain registrar of choice.</p>
+<p>This will allow you to access your server securely with a plain text URL, rather than by a (possibly random) IP address. Additionally, a domain is required to encrypt connections to/from your server. Certificate authorities, like Let’s Encrypt, are required to verify ownership of domains before security certificates can be issued. By registering your server’s IP address with a domain registrar and associating it with a domain name, you are verifying that you own the site and take all responsibility for its functions.</p>
+</div>
+<div id="shiny-server-setup" class="section level2">
+<h2 class="hasAnchor">
+<a href="#shiny-server-setup" class="anchor"></a>Shiny Server Setup</h2>
+<div id="install-shiny-server-dependencies" class="section level3">
 <h3 class="hasAnchor">
-<a href="#shiny-server" class="anchor"></a>Shiny Server</h3>
+<a href="#install-shiny-server-dependencies" class="anchor"></a>Install Shiny Server Dependencies</h3>
+<p>Before installing Shiny Server, it is necessary to install a few prerequisites to your server. To begin, SSH into your server and perform the following steps:</p>
+<ol style="list-style-type: decimal">
+<li>Install R:</li>
+</ol>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">sudo</span> apt-get install r-base</span></code></pre></div>
+<ol start="2" style="list-style-type: decimal">
+<li>Install R Shiny to your System R Package Library:</li>
+</ol>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">sudo</span> su - \</span>
+<span id="cb2-2"><a href="#cb2-2"></a>-c <span class="st">"R -e </span><span class="dt">\"</span><span class="st">install.packages('shiny', repos='https://cran.rstudio.com/')</span><span class="dt">\"</span><span class="st">"</span></span></code></pre></div>
+<ol start="3" style="list-style-type: decimal">
+<li>Install <code>gdebi</code>, which is an operating system package that is used to install Shiny Server, and additional dependencies:</li>
+</ol>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1"></a><span class="fu">sudo</span> apt-get install gdebi-core</span></code></pre></div>
+</div>
+<div id="install-shiny-server" class="section level3">
+<h3 class="hasAnchor">
+<a href="#install-shiny-server" class="anchor"></a>Install Shiny Server</h3>
+<p>Now that all prerequisites have been satisfied, download and install Shiny Server to your system:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">wget</span> https://download3.rstudio.org/ubuntu-14.04/x86_64/shiny-server-1.5.15.953-amd64.deb</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="fu">sudo</span> gdebi shiny-server-1.5.15.953-amd64.deb</span></code></pre></div>
+<p>At this point, you will have a bare bones basic Shiny Server Installation. If you would like to verify that Shiny has installed correctly, you may attempt a connection from a different machine on the same network by visiting: <code>your.server.ip_address:3838</code></p>
+<p>Read on to learn how to secure this connection.</p>
+</div>
+</div>
+<div id="configuring-nginx-to-reverse-proxy-shiny-server" class="section level2">
+<h2 class="hasAnchor">
+<a href="#configuring-nginx-to-reverse-proxy-shiny-server" class="anchor"></a>Configuring NGINX to Reverse Proxy Shiny Server</h2>
+<p>At this stage, your Server is being hosted on port 3838 of your machine. In order to allow users to access this server via the domain that was aquired in the first portion of this guide, we will need to install and configure a reverse proxy which will be directing clients securely to applications hosted on your shiny server. <a href="https://www.nginx.com/">NGINX</a>, an open source web server and reverse proxy will be used for the purposes of this guide.</p>
+<div id="install-nginx" class="section level3">
+<h3 class="hasAnchor">
+<a href="#install-nginx" class="anchor"></a>Install NGINX</h3>
+<p>To begin, install NGINX on your server:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">sudo</span> apt update</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="fu">sudo</span> apt install nginx</span></code></pre></div>
+<p>You can verify this installation by visiting <code>your.server.ip_address</code> from a different machine on the same network. You should see a ’Welcome to nginx!" message if all was successful.</p>
+<p>Depending on where your server is hosted, you may have to allow access to the server’s IP address on ports 80 and 443. Firewall configuration is outside of the scope of this guide.</p>
+</div>
+<div id="configure-nginx-for-use-with-shiny-server" class="section level3">
+<h3 class="hasAnchor">
+<a href="#configure-nginx-for-use-with-shiny-server" class="anchor"></a>Configure NGINX for use with Shiny Server</h3>
+<p>Next, we need to configure NGINX to proxy traffic from web clients to the Shiny Server, where Shiny applications will be hosted. To do this, we’ll need to add a server block to NGINX with information about our Shiny Server. NGINX server blocks live in <code>/etc/nginx/sites-available/</code>. To initialize a server block for our shiny server, issue the following command:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1"></a><span class="co">## substitute nano for your text editor of choice: emacs, vi, vim, pico, etc.</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="fu">sudo</span> nano /etc/nginx/sites-available/shiny</span></code></pre></div>
+<p>Modify the following server block replacing <code>your.server.url</code> with the domain name that you obtained in the first portion of this guide and then, copy this text into the file that you are editing.</p>
+<pre><code>server {
+
+        server_name your.server.url;
+
+        location / {
+                proxy_pass http://localhost:3838;
+                proxy_redirect / $scheme://$http_host/;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection $connection_upgrade;
+                proxy_read_timeout 20d;
+                proxy_buffering off;
+        }</code></pre>
+<p>Save and exit the file. Verify that the has been created successfully by running:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1"></a><span class="fu">ls</span> -l /etc/nginx/sites-available</span></code></pre></div>
+<p>A file called “shiny” should be among the files that is returned.</p>
+<p>Next, we need to enable the server block that we just created. With NGINX, this is accomplished by symlinking the server block to the <code>/etc/nginx/sites-enabled</code> folder. Run:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1"></a><span class="fu">sudo</span> ln -s /etc/nginx/sites-available/shiny /etc/nginx/sites-enabled/shiny</span></code></pre></div>
+<p>At this point, your Shiny Server should be accessible at <code>http://your.server.url</code> . If the Shiny Server is not immediately available at your domain after completing all of the steps to this point, you may have to restart NGINX; <code>sudo systemctl reload nginx</code></p>
+<p>Continue to the next section to secure your server with Let’s Encrypt.</p>
+</div>
+</div>
+<div id="securing-shiny-server-url-with-lets-encrypt" class="section level2">
+<h2 class="hasAnchor">
+<a href="#securing-shiny-server-url-with-lets-encrypt" class="anchor"></a>Securing Shiny Server URL with Let’s Encrypt <a id="lets-encrypt"></a>
+</h2>
+<p>To begin, we will install the Certbot software on our server. This software makes it easy to secure our domain, by automatically verifying ownership, downloading and installing a <a href="https://letsencrypt.org/">Let’s Encrypt</a> certificate, configuring nginx to use the certificate and renewing the certificate before it expires. You want this software, trust me. To install Certbot, we’ll need to add a software respository to our system. This will be accomplished by running:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">sudo</span> add-apt-repository ppa:certbot/certbot</span></code></pre></div>
+<p>Next, we’ll need to update our server’s package list, and install the certbot application for our nginx configuration:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1"></a><span class="fu">sudo</span> apt update</span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="fu">sudo</span> apt install python-certbot-nginx</span></code></pre></div>
+<p>As we have already configured a server block for NGINX, we’re ready to run the Certbot software to secure our domain. Run the following code block, substituting <code>your.server.url</code> with the domain that you configured previously:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1"></a><span class="fu">sudo</span> certbot --nginx -d your.server.url</span></code></pre></div>
+<p>If this is your first time running Vertbot, you will be prompted to enter an email address and agree to the terms of service. After doing so, Certbot will initiate a connection with the Let’s Encrypt server and then run a begin testing your server to verify that you control the domain you’re requesting a certificate for. Certbot will then ask you whether or not you’d like to redirect HTTP traffic to HTTPS traffic. It is <em>highly recommended</em> to do so. Please select the option for ‘Redirect’, which will ensure that users are <em>only</em> capable of accessing your site via secure HTTPS.</p>
+<p>Congratulations, your Shiny Server is now secured and ready to begin hosting Shiny Applications. Continue to the next section to learn how to deploy ReviewR to your Shiny Server.</p>
+</div>
+<div id="deploy-reviewr" class="section level2">
+<h2 class="hasAnchor">
+<a href="#deploy-reviewr" class="anchor"></a>Deploy ReviewR</h2>
 <ol style="list-style-type: decimal">
 <li>
-<p>Install the ReviewR package as a root user in order to ensure your system R package library has all of the required dependencies</p>
+<p>Install the ReviewR package as a <em>root user</em> in order to ensure your system R package library has all of the required dependencies</p>
 <ul>
 <li>
 <p>From a <strong>bash terminal</strong>, run:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># Start R in an interactive root terminal</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">sudo</span> -i R</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1"></a><span class="co"># Start R in an interactive root terminal</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="fu">sudo</span> -i R</span></code></pre></div>
 <p><em>This will open an interactive R console as a root user</em></p>
 </li>
 <li>
 <p>From the <strong>R console</strong> that opens, run:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># install.packages('devtools')</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">'thewileylab/ReviewR'</span><span class="op">)</span></code></pre></div>
 </li>
 </ul>
 </li>
 <li>
-<p>Next, fork the ReviewR repository into the Shiny Server directory (<code>/srv/shiny-server</code>) with the <code>usethis</code> package. Using the same <strong>R console</strong> from above:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<p>Continuing as the root user, fork the ReviewR repository into the Shiny Server directory (<code>/srv/shiny-server</code>) with the <code>usethis</code> package. Using the same <strong>R console</strong> from above:</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># install.packages('usethis')</span>
 <span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/create_from_github.html">create_from_github</a></span><span class="op">(</span>repo_spec <span class="op">=</span> <span class="st">'thewileylab/ReviewR'</span>, destdir <span class="op">=</span> <span class="st">'/srv/shiny-server'</span><span class="op">)</span></code></pre></div>
 <p><em>This step will fork the most recent version of the ReviewR package from GitHub which includes additional files and development tools not built directly into the package. This includes an <code>app.R</code> file which Shiny Server will need to deploy ReviewR. By default, Shiny Server will host all applications that are placed in <code>/srv/shiny-server</code></em></p>
 </li>
 </ol>
-<p>That’s it! ReviewR can now be accessed from your browser at <a href="https://your.shinyserver.url/ReviewR" class="uri">https://your.shinyserver.url/ReviewR</a></p>
-</div>
+<p>That’s it! ReviewR can now be accessed from your browser at <a href="https://your.server.url/ReviewR" class="uri">https://your.server.url/ReviewR</a></p>
 </div>
   </div>
 

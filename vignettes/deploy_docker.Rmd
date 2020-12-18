@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-ReviewR is designed to support multiple concurrent users when deployed using Shiny Server. In server deployments, users will access ReviewR directly through a web browser without requiring a local R installation. When deployed on a centralized server an instance of ReviewR will be served to each connecting user in distinct R sessions allowing multiple participants to simultaneously connect to patient data and submit chart abstraction information. 
+ReviewR is designed to support multiple concurrent users when deployed using Shiny Server. When deployed on a centralized server an instance of ReviewR will be served to each connecting user in distinct R sessions allowing multiple participants to simultaneously connect to patient data and submit chart abstraction information. In server deployments, users will access ReviewR directly through a web browser without requiring a local R installation. 
 
 ### Docker
 
