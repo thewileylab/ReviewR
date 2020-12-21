@@ -44,6 +44,7 @@ Remotes:
     thewileylab/shinyREDCap,
     thewileylab/synPUF
 Suggests: 
+    fs,
     gt,
     htmltools,
     knitr,

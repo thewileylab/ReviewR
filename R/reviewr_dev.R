@@ -266,3 +266,32 @@ dev_add_datamodel <- function(csv) {
       message('Warning: Did not find "table" or "field" columns in specified CSV. Please ensure these fields are present, or specify a different CSV file.')
     }
 }
+
+#' Add Google Client ID
+#'
+#' @param file_path Path to a "Desktop" Google Client ID JSON on your local system.
+#'
+#' @export
+#'
+dev_add_google_client_id <- function(file_path) {
+  # Gather Platform Information
+  if(!requireNamespace('fs', quietly = T)) {
+    stop("'fs' package is required for this function to work. Please install it.",
+         call. = FALSE)
+  }
+  info <- .Platform
+  
+  # Clean user input
+  file_path <- fs::as_fs_path(file_path) 
+  
+  # Get (file) movin'!
+  if(info$OS.type == 'unix') {
+    fs::dir_create('~/.ReviewR/')
+    fs::file_copy(path = file_path, new_path = '~/.ReviewR/client_secret.json')
+    } else if (info$OS.type == 'windows') {
+      fs::dir_create('$HOMEPATH$/.ReviewR/')
+      fs::file_copy(path = flie_path, new_path = '$HOMEPATH$/.ReviewR/client_secret.json')
+      } else {
+        message('How did you build R for this operating system?!')
+      }
+  }
