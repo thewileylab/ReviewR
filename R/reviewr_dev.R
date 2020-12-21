@@ -286,11 +286,11 @@ dev_add_google_client_id <- function(file_path) {
   
   # Get (file) movin'!
   if(info$OS.type == 'unix') {
-    fs::dir_create('~/.ReviewR/')
-    fs::file_copy(path = file_path, new_path = '~/.ReviewR/client_secret.json')
+    fs::dir_create('~/.bq_client_id/')
+    fs::file_copy(path = file_path, new_path = '~/.bq_client_id/client_secret.json')
     } else if (info$OS.type == 'windows') {
-      fs::dir_create('$HOMEPATH$/.ReviewR/')
-      fs::file_copy(path = flie_path, new_path = '$HOMEPATH$/.ReviewR/client_secret.json')
+      fs::dir_create('$HOMEPATH$/.bq_client_id/')
+      fs::file_copy(path = flie_path, new_path = '$HOMEPATH$/.bq_client_id/client_secret.json')
       } else {
         message('How did you build R for this operating system?!')
       }
