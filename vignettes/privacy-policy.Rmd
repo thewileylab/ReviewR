@@ -1,0 +1,44 @@
+---
+title: "Privacy Policy for ReviewR"
+output: rmarkdown::html_document
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+**ReviewR** is an R package and Shiny application for performing chart review from clinical electronic data warehouses developed by The Wiley Lab. This package uses internal resources owned by “ReviewR” project on Google Cloud Platform and are governed by the policies documented on this page. Your use of Google APIs with these packages is subject to each API’s respective terms of service. See https://developers.google.com/terms/.
+
+If you would prefer not to authorize with ReviewR you may bring your own OAuth clientID from a Google Cloud Project of your choice.
+
+# Privacy
+
+## Google account and user data
+
+### Accessing user data
+The ReviewR package allow you to access and interact with Google resources from your local computer/server by communicating directly with Google APIs to read your own data. This can only happen after you authenticate a specific Google account, authorize these actions, and provide the package a token confirming your authorization. We help you access this token by guiding you through the OAuth flow in the browser. As part of this process you must consent to allow “ReviewR” to operate on your behalf. The OAuth consent screen will tell you the exact “scope” (see below) of what is being authorized (i.e., the API/s requested and whether you are authorizing “read only” or “read and write” access.). 
+
+The Wiley Lab never receives your data or permission to access your data. However we can see anonymous, aggregated information about usage of tokens obtained through our OAuth client, including which APIs and endpoints are accessed/configured. 
+
+*As a reminder, if you would prefer not to authorize with ReviewR you may bring your own OAuth clientID from a Google Cloud Project of your choice.*
+
+### Scopes
+Overview of the scopes requested by ReviewR and their rationale:
+
+* userinfo.email (read only): Allows ReviewR to display the email address associated with the connected user. 
+* userinfo.profile (read only): Allows ReviewR to display the  name associated with the connected user.
+* bigquery.readonly: Allows ReviewR to retrieve metadata about projects, datasets and tables, and to query and download data stored in Google BigQuery as allowed by existing IAM permissions.
+* devstorage.read_only: Allows ReviewR to download Google BigQuery results as allowed by existing IAM permissions.
+
+### Sharing user data
+ReviewR only communicate with Google APIs. No user data is shared with the Wiley Lab.
+
+### Storing user data
+ReviewR does not store your credentials on your local machine as they are designed to be used in multi-user environments. Authentication must be performed at each login. 
+
+# Policies for authors of packages or other applications
+Do not use an API key or client ID from ReviewR or any other Wiley Lab project in an external package or tool. Per the Google User Data Policy https://developers.google.com/terms/api-services-user-data-policy, your application must accurately represent itself when authenticating to Google API services.
+If you deploy this package in a server  environment you must supply your own ClientID. Do not use credentials from The Wiley Lab as they will not be able to redirect users to your server’s domain; instead, use credentials associated with your project or your user.
