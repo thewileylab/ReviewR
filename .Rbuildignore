@@ -19,3 +19,4 @@ $run_dev.*
 ^doc$
 ^Meta$
 ^.dockerignore
+vignettes/privacy-policy.Rmd
