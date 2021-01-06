@@ -53,7 +53,7 @@ Due to how Google OAuth clientIDs are configured, if you are using a server depl
 3. Locate the client ID that was created and click "Download JSON"
     + Save the file as "client_secret.json"
 4. Upload this file to the following directory on your shiny server:
-    + `/srv/shiny-server/.shinyBigQuery`
+    + `/srv/shiny-server/.bq_client_id`
 5. If ReviewR is already installed, simply refresh the browser window. 
 
 *Additional Reading: (https://gargle.r-lib.org/articles/get-api-credentials.html#get-a-google-cloud-platform-project-1)*

@@ -14,33 +14,37 @@ BugReports: https://github.com/thewileylab/ReviewR/issues
 Depends: 
     R (>= 3.2.0)
 Imports: 
+    bigrquery (>= 1.2.0),
     config,
     dashboardthemes,
     DBI,
     dbplyr,
     dplyr (>= 1.0.0),
     DT,
+    gargle,
     glue,
     golem (>= 0.2.1.90),
+    httr,
+    jsonlite,
     magrittr,
     pkgload,
     purrr,
     rlang (>= 0.4.7),
     RSQLite,
     shiny (>= 1.5.0),
-    shinyBigQuery (>= 0.0.2.9002),
     shinycssloaders (>= 1.0.0),
     shinydashboard,
+    shinydashboardPlus,
     shinyjs,
     shinyREDCap (>= 0.0.2.9002),
     shinyWidgets,
     snakecase,
     stringr,
     synPUF,
+    tibble,
     tidyr (>= 1.1.0)
 Remotes: 
     Thinkr-open/golem,
-    thewileylab/shinyBigQuery,
     thewileylab/shinyREDCap,
     thewileylab/synPUF
 Suggests: 
