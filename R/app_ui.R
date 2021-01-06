@@ -27,18 +27,25 @@ app_ui <- function() {
   }
 
 #' @import shiny
+#' @importFrom golem add_resource_path activate_js favicon bundle_resources
 #' @importFrom shinyjs useShinyjs
 #' @importFrom shinyWidgets useShinydashboard useSweetAlert
 golem_add_external_resources <- function(){
-  addResourcePath('www', system.file('app/www', package = 'ReviewR') )
-  tags$head(golem::activate_js(),
-            golem::favicon('www/favicon.png'),
-            # Add here all the external resources
-            # If you have a custom.css in the inst/app/www
-            # Or for example, you can add shinyalert::useShinyalert() here
-            # tags$link(rel="stylesheet", type="text/css", href="www/custom.css"),
-            shinyWidgets::useShinydashboard(),
-            shinyWidgets::useSweetAlert(),
-            shinyjs::useShinyjs()
-            )
-  }
+  add_resource_path(
+    'www', app_sys('app/www')
+  )
+  
+  tags$head(
+    favicon(ext = 'png'),
+    bundle_resources(
+      path = app_sys('app/www'),
+      app_title = 'ReviewR'
+    ),
+    # Add here other external resources
+    # for example, you can add shinyalert::useShinyalert() 
+    shinyjs::useShinyjs(),
+    shinyWidgets::useShinydashboard(),
+    shinyWidgets::useShinydashboardPlus(),
+    shinyWidgets::useSweetAlert()
+  )
+}
