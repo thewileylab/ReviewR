@@ -1,0 +1,40 @@
+---
+title: "Local Deployment"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Local Deployment}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Overview
+
+If you would like to perform a chart review from your local computer (i.e., not using a server), or want to explore the demo database follow these instructions for local deployment. 
+
+## Installation
+
+First ensure you have the library `devtools` installed. If you do not, please install using:
+```{r eval=FALSE}
+install.packages('devtools')
+```
+
+Then install the latest development release of ReviewR using:
+```{r eval=FALSE}
+devtools::install_github('thewileylab/ReviewR')
+```
+
+## Usage
+
+After installing ReviewR, the application can be launched by running:
+
+```{r eval=FALSE}
+ReviewR::run_app()
+```
+

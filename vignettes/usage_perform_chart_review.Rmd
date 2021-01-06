@@ -14,21 +14,16 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Overview
 
-ReviewR is a tool designed to assist users with performing a manual record review. You may be asking, what is a manual record review and why would I need to perform one? There are several reasons to perform record review, from developing a gold standard cohort to verifying the validity of a machine learning algorithm. In short, any time you need to determine the actual truth about a patient a manual record review is needed.
+## Getting Started
 
-As with any retrospective analysis involving medical records, it is important to carefully define your research question and develop a detailed procedure for systematically capturing the information from the available patient data. While ReviewR is not a substitute for this activity, it can help avoid certain pitfalls the accompany the process. Once your research question is defined and you have determined what variables need to be captured from each patient, ReviewR can assist with the abstraction process. 
+First make sure that you:
 
-ReviewR aims to be fast and simple to use. It places all of the patient information you need in the same interface as the abstraction instrument. This reduces desktop clutter and avoids having to stack multiple windows on top of one another when using separate applications to perform a review. Additionally, patient information is searchable globally, which will speeds up the process of locating the information you need. Finally, repetitive fields are populated automatically, reducing the potential for error. To learn how to use the full functionality of the ReviewR interface, take a look at the sections that follow.
+1. Have ReviewR installed. (See [Local Deployment](https://reviewr.thewileylab.org/articles/deploy_local.html) or [Shiny Server Deployment](https://reviewr.thewileylab.org/articles/deploy_server.html) vignettes for more.)
+2. Have connected to your record database. (See [Connect to Patient Record Database](https://reviewr.thewileylab.org/articles/usage_connect_to_record_database.html) vignette for more.)
+3. Have connected to REDCap. (See [Connect to REDCap](https://reviewr.thewileylab.org/articles/usage_connect_to_redcap.html) vignette for more.)
 
-
-## ReviewR Interface
-
-Now that we have connected to patient records and established a REDCap project and connection, we can begin our chart review. To review previous setup steps, please see: 
-
-* `vignette('connect_to_patient_records')`
-* `vignette('connect_to_redcap')`
+Once these steps are complete, you are ready to perform chart review. 
 
 ## Patient Search
 
