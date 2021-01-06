@@ -7,6 +7,12 @@
     <loc>reviewr.thewileylab.org/reference/ReviewR.html</loc>
   </url>
   <url>
+    <loc>reviewr.thewileylab.org/reference/bigquery_setup_server.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/bigquery_setup_ui.html</loc>
+  </url>
+  <url>
     <loc>reviewr.thewileylab.org/reference/chart_review.html</loc>
   </url>
   <url>
@@ -19,22 +25,31 @@
     <loc>reviewr.thewileylab.org/reference/db_module_template.html</loc>
   </url>
   <url>
+    <loc>reviewr.thewileylab.org/reference/demo_sqlite_setup_server.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/demo_sqlite_setup_ui.html</loc>
+  </url>
+  <url>
     <loc>reviewr.thewileylab.org/reference/dev_add_database_module.html</loc>
   </url>
   <url>
     <loc>reviewr.thewileylab.org/reference/dev_add_datamodel.html</loc>
   </url>
   <url>
+    <loc>reviewr.thewileylab.org/reference/dev_add_google_client_id.html</loc>
+  </url>
+  <url>
     <loc>reviewr.thewileylab.org/reference/dt_2_viewer.html</loc>
   </url>
   <url>
-    <loc>reviewr.thewileylab.org/reference/get_all_concept.html</loc>
-  </url>
-  <url>
-    <loc>reviewr.thewileylab.org/reference/get_subject_concept.html</loc>
+    <loc>reviewr.thewileylab.org/reference/get_concept.html</loc>
   </url>
   <url>
     <loc>reviewr.thewileylab.org/reference/homepage.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/internal-assets.html</loc>
   </url>
   <url>
     <loc>reviewr.thewileylab.org/reference/mimic3_tables.html</loc>
