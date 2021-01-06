@@ -8,81 +8,159 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1488534.svg)](https://doi.org/10.5281/zenodo.1488534)
 <!-- badges: end -->
 
-ReviewR is a portable Shiny tool to help you explore patient data across
-different data models. Currently, you can browse patient data stored in
-either the OMOP or MIMIC-III formats, with the option to extend ReviewR
-to display information from other data models.
+ReviewR is a portable Shiny tool to help you explore patient-level
+electronic health record data and perform chart review in a single
+integrated framework. It is is distributed as an R package using the
+[golem](https://thinkr-open.github.io/golem/) framework.
 
-In addition to viewing patient data, you may also connect to a REDCap
-project to perform a chart review.
+This tool supports browsing clinical data in many different formats
+including multiple versions of the OMOP common data model as well as the
+MIMIC-III data model. If you are using a different data format, ReviewR
+can be easily customized to support your use case (see [Support a Custom
+Data
+Model](https://reviewr.thewileylab.org/articles/customize_support_new_datamodel.html)
+vignette).
 
-ReviewR will connect to Google BigQuery as a database back-end, with
-support planned for:
+At present ReviewR supports data stored in Google BigQuery or Postgres,
+although it can be easily customized to access any database supported by
+[dbplyr](https://dbplyr.tidyverse.org/) (see [Support a New Relational
+Database Management
+System](https://reviewr.thewileylab.org/articles/customize_support_new_rdbms.html)
+vignette).
 
-  - PostgreSQL
-  - SQL Server
-  - others supported by the dbplyr back-end
-    (<https://dbplyr.tidyverse.org/>)
+To record chart review data, ReviewR supports connections to REDCap
+(Research Electronic Data Capture).
+
+Full documentation available at
+[reviewr.thewileylab.org](https://reviewr.thewileylab.org).
 
 ## Installation
 
-To install the latest development release:
+First ensure you have the library `devtools` installed. If you do not,
+please install using:
 
 ``` r
-# install.packages('devtools')
+install.packages('devtools')
+```
+
+Then install the latest development release of ReviewR using:
+
+``` r
 devtools::install_github('thewileylab/ReviewR')
 ```
 
 ## Usage
 
-To run the application from your local machine:
+To run the application from your local computer simply run:
 
 ``` r
 ReviewR::run_app()
 ```
 
-Once the app has loaded, please complete the ‘Setup’ tab (found in the
-left navigation menu) to connect to your patient database and optionally
-connect to a REDCap project.
+If you would like to deploy ReviewR on a server, see the [Shiny Server
+Deployment](https://reviewr.thewileylab.org/articles/deploy_server.html)
+vignette. If you will be connecting to clinical data using Google
+BigQuery please see [Google BigQuery
+Deployment](https://reviewr.thewileylab.org/articles/deploy_bigquery.html)
+vignette.
 
-### View Mode
+#### Explore Clinical Data
 
-Complete the database setup to connect to EHR data stored in MIMIC-III
-or OMOP format. For BigQuery connections, simply press “Sign in with
-Google” and you will be redirected to authenticate with Google. Once
-successfully connected to a patient database, navigate to the ‘Patient
-Search’ tab, located in the left sidebar. Select the patient ID you wish
-to view, and you will be taken to a pre-coordinated table containing EHR
-data for that patient. Navigate through patients using the previous and
-next buttons or select form the dropdown on the ‘Chart Review’ tab. At
-any time, you may return to the ‘Patient Search’ tab to select a
-different patient.
+Once the app has loaded, please navigate to the ‘Setup’ tab (found in
+the left navigation menu).
 
-Search patient information globally within each Chart Review tab or by a
-particular column within the selected patient data tab. Searching via
-regex is also supported.
+First, in the left panel, select which type of database you would like
+to connect to (e.g., Google BigQuery). You may also choose to select the
+Demo SQLite project to access synthetic clinical data in order to
+explore how ReviewR works without connecting to your own database. For
+BigQuery connections, simply press “Sign in with Google” and you will be
+redirected to authenticate with Google and then return to the
+application.
 
-### Review Mode
+Once you have successfully connected to a patient database, navigate to
+the ‘Patient Search’ tab, located in the left sidebar. On this tab you
+can see basic demographic information about each patient record. Select
+a particular patient ID you would like to view and the ‘Chart Review’
+tab will open. The top left panel includes the same demographic
+information found in the ‘Patient Search’ table, while the bottom panel
+contains the clinical information available for that record with tabs
+for different data types. You can filter any individual column by typing
+in the text box beneath each column name, or you can search across all
+columns using the search bar in the upper right corner of the panel.
+Note that both regular text as well as regular expression based searches
+are supported. If you would like to move to another patient you can use
+the patient navigation panel in the upper right corner. You can navigate
+to a specific patient using the dropdown selector or simply move to the
+next or previous patient records using the buttons.
 
-Optionally, you may connect to a REDCap project to store manual review
-information. On the setup tab, enter your institution’s REDCap URL and
-an API token for a REDCap project. This project may contain multiple
-REDCap instruments for data collection which are selectable from the
-Setup interface. Once connected, please select the REDCap field that
-contains your patient information as well as the field that will contain
-reviewer information. Enter your name to keep track of who has completed
-the review.
+#### Perform Chart Review
 
-Now, after selecting a patient from the ‘Patient Search’ tab, your
-REDCap instrument will appear next to the patient identifier information
-on the ‘Chart Review’ tab. Fill in desired information and click the
-‘Upload to REDCap’ button to store your information in the REDCap
-project.
+Once the app has loaded, please navigate to the ‘Setup’ tab (found in
+the left navigation menu). On the setup tab, enter your institution’s
+REDCap URL and an API token for a REDCap project. This project may
+contain multiple REDCap instruments for data collection which are
+selectable from the Setup interface. Once connected, please select the
+REDCap field that contains your patient information as well as the field
+that will contain reviewer information. Enter your name to keep track of
+who has completed the review.
+
+First, in the left panel, select which type of database you would like
+to connect to (e.g., Google BigQuery). You may also choose to select the
+Demo SQLite project to access synthetic clinical data in order to
+explore how ReviewR works without connecting to your own database. For
+BigQuery connections, simply press “Sign in with Google” and you will be
+redirected to authenticate with Google and then return to the
+application.
+
+Next, you will want to connect to a REDCap project to store the results
+of your chart review. In the right panel of the ‘Set Up’ tab, enter your
+institution’s REDCap URL and the API token for your desired REDCap
+project and then click ‘Connect to REDCap’. Next, configure your REDCap
+instrument by selecting which variable in your collection instrument
+will store the Patient ID value, ReviewR will automatically populate
+this question with the chart you are viewing. If you also want to record
+who is performing the chart review you can configure the question that
+identifies the chart reviewer and enter the name so it can also be
+auto-entered for each review session. If you do not want to record the
+reviewer identifier just select ‘(Not Applicable)’. When you have
+completed both selects click ‘Configure REDCap Instrument’.
+Congratulations - you are ready to perform your chart review\!
+
+You can now navigate to the ‘Patient Search’ tab, located in the left
+sidebar. On this tab you can see basic demographic information about
+each patient record as well as the review status for the record (e.g.,
+“Review Not Started”, “Complete”, etc.). If you have enabled support
+for multiple reviewers, then the review status of all other reviewers is
+provided in addition to the status of the configured reviewer. Select a
+particular patient ID you would like to view and the ‘Chart Review’ tab
+will open. The top left panel includes the same demographic and review
+status information found in the ‘Patient Search’ table, while the bottom
+left panel contains the clinical information available for that record
+with tabs for different data types. You can filter any individual column
+by typing in the text box beneath each column name, or you can search
+across all columns using the search bar in the upper right corner of the
+panel. Note that both regular text as well as regular expression based
+searches are supported. Chart review data can be entered into the middle
+right panel. This panel contains each of the questions in your REDCap
+project. If your project has multiple instruments, use the drop down to
+select the instrument you would like to use. You’ll notice that the
+questions identifying the patient and reviewer identifier are pre-filled
+in and not editable. Once you have finished with your entry for a
+record, set the REDCap status in the lower right panel and click ‘Save
+to REDCap’. *You must click ‘Save to REDCap’ or the data will not be
+saved in the app or uploaded to REDCap\!* If you would like to move to
+another patient you can use the patient navigation panel in the upper
+right corner. You can navigate to a specific patient using the dropdown
+selector or simply move to the next or previous patient records using
+the buttons.
 
 ## Disclaimer
 
-This is a work in progress and thus there are no guarantees of
-functionality or accuracy. Use at your own risk.
+Please note that while our tool is designed to be as secure as your
+local computer or server environment, you should check with your
+clinical data warehouse and/or IT departments to make sure that you are
+authorized to use our tool with real patient data. We make no guarantee
+of security or privacy.
 
 ## Getting help
 

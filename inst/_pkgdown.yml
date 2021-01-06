@@ -6,39 +6,45 @@ home:
   links:
   - text: Additional WileyLab tools
     href: https://www.thewileylab.org/software
+  - text: Privacy Policy
+    href: https://reviewr.thewileylab.org/articles/privacy-policy
 authors:
   The Wiley Lab:
     href: https://www.thewileylab.org/ 
     html: <img src="https://raw.githubusercontent.com/thewileylab/ReviewR/master/man/figures/WileyLab.svg" height="24" />
 navbar:
   structure:
-    left: [home]
-    right: [Deploying ReviewR, Using ReviewR, Customizing ReviewR, articles, reference, github]
+    right: [Deploying ReviewR, Using ReviewR, Customizing ReviewR, reference, github]
   components:
     home: ~
+    articles: ~
     Deploying ReviewR:
       text: Deploying ReviewR
       menu:
       - text: Local Deployment
-        href: articles/deploy-local.html
+        href: articles/deploy_local.html
       - text: Shiny Server Deployment
-        href: articles/deploy-server.html
+        href: articles/deploy_server.html
+      - text: Docker Deployment
+        href: articles/deploy_docker.html  
+      - text: Google BigQuery Deployment
+        href: articles/deploy_bigquery.html  
     Using ReviewR:    
       text: Using ReviewR
       menu:
       - text: Connect to Patient Record Database
-        href: articles/connect_to_patient_records.html
+        href: articles/usage_connect_to_record_database.html
       - text: Connect to REDCap
-        href: articles/connect_to_redcap.html
+        href: articles/usage_connect_to_redcap.html
       - text: Perform A Chart Review
-        href: articles/perform_a_chart_review.html
+        href: articles/usage_perform_chart_review.html
     Customizing ReviewR:    
       text: Customizing ReviewR
       menu:
       - text: Support a New Relational Database Management System
-        href: articles/support_a_new_relational_database_management_system.html
+        href: articles/customize_support_new_rdbms.html
       - text: Support a Custom Datamodel
-        href: articles/support_a_custom_data_model.html
+        href: articles/customize_support_new_datamodel.html
 reference:
   - title: "Package Information"
     contents:

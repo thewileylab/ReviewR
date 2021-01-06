@@ -26,3 +26,10 @@ Rproj.user
 manifest.json
 rsconnect/
 Rproj.user
+.RData
+.Rhistory
+.git
+.gitignore
+manifest.json
+rsconnect/
+Rproj.user
