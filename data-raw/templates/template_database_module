@@ -6,6 +6,7 @@
 #' @param id The module namespace
 #' 
 #' @return The {display_name} Setup UI
+#' @keywords internal
 #' @export
 #' 
 #' @importFrom shiny NS
@@ -24,6 +25,7 @@
 #' @param id The Module namespace
 #'
 #' @return {display_name} connection variables
+#' @keywords internal
 #' @export
 #'
 #' @importFrom DBI dbConnect
