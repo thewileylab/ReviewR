@@ -15,3 +15,4 @@ The BigQuery Setup UI
 \description{
 This module is designed to guide a user through the process of authenticating with Google BigQuery. It is responsible for returning an authorization token, the user selected project,the user selected dataset, and a DBI connection to a BigQuery Dataset.
 }
+\keyword{internal}

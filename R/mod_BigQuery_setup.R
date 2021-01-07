@@ -54,6 +54,7 @@ sbq_add_external_resources <- function(){
 #' @param id The module namespace
 #' 
 #' @return The BigQuery Setup UI
+#' @keywords internal
 #' @export
 #' 
 #' @importFrom shinydashboard box
@@ -84,6 +85,7 @@ bigquery_setup_ui <- function(id) {
 #' @param secrets_json Location of Google secrets json. Defaults to '/srv/shiny-server/.bq_client_id/client_secret.json' for Shiny Server installations.
 #'
 #' @return BigQuery connection variables and user information
+#' @keywords internal
 #' @export
 #'
 #' @importFrom bigrquery bq_auth bq_projects bq_project_datasets bigquery dbDisconnect
