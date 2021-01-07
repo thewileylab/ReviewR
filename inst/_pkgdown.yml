@@ -63,6 +63,7 @@ reference:
     contents:
       - dev_add_database_module
       - dev_add_datamodel
+      - dev_add_google_client_id
   - title: "Development Templates"
     desc: "Templates used to extend the functionality of ReviewR. These templates are utilized by the development functions."
     contents:
