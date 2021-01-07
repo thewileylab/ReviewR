@@ -240,7 +240,7 @@
 <div id="configure-nginx" class="section level3">
 <h3 class="hasAnchor">
 <a href="#configure-nginx" class="anchor"></a>Configure nginx</h3>
-<p>Next, we need to configure NGINX to proxy traffic from web clients to the Docker Container. To accompliish this, we’ll need to add a server block to NGINX with information about our container. NGINX server blocks live in <code>/etc/nginx/sites-available/</code>. To initialize a server block for our container, issue the following command:</p>
+<p>Next, we need to configure NGINX to proxy traffic from web clients to the Docker Container. To accomplish this, we’ll need to add a server block to NGINX with information about our container. NGINX server blocks live in <code>/etc/nginx/sites-available/</code>. To initialize a server block for our container, issue the following command:</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1"></a><span class="co">## substitute nano for your preferred text editor: emacs, jed, joe, pico, sandy, vi, vim, etc.</span></span>
 <span id="cb12-2"><a href="#cb12-2"></a><span class="fu">sudo</span> nano /etc/nginx/sites-available/reviewr_docker</span></code></pre></div>
 <p>Modify the following server block code by replacing <code>reviewr.your.domain.url</code> with the domain name that own. Then, copy this text into the file that you are editing.</p>

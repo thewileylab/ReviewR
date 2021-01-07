@@ -120,7 +120,7 @@ Table functions have a standard naming convention, which allows for them to be a
 
 As an example, say you would like to add support for the [PCORnet data model](https://pcornet.org/data-driven-common-model/) to ReviewR. After you have added a schema file for the PCORnet version that you would like to support, you will have to create an "all patients" table function and 1 or more "subject specific" table functions. In PCORnet, patient demographic information is stored in the "DEMOGRAPHICS" table, but this is irrelevant for the _function name_ that will ultimately connect to this table. The appropriate _name_ for the "all patients" table function would be: `PCORnet_table_all_patients`. This function will contain code that connects to the "DEMOGRAPHICS" table, and will be used to display the patient list on the "Patient Search" tab of ReviewR. 
 
-Additional "subject specific" table functions will need to be created to display information on the "Chart Review" tab of ReviewR. For example, an appropriate name for the "ENCOUNTER" table function would be: `PCORnet_table_ENCOUNTER`. This would add a tabst to the "Chart Review" tab of ReviewR with the label "Encounter."
+Additional "subject specific" table functions will need to be created to display information on the "Chart Review" tab of ReviewR. For example, an appropriate name for the "ENCOUNTER" table function would be: `PCORnet_table_ENCOUNTER`. This would add a tabset to the "Chart Review" tab of ReviewR with the label "Encounter."
 
 This naming convention ensures that when ReviewR detects that a PCORnet database is connected, all functions beginning with `PCORnet_table_` will be available to display the patient information. Once table functions have been created for a data model, all functions that have been developed will displayed as tabs in the Chart Review section of ReviewR when the new data model is detected.
 
@@ -205,7 +205,7 @@ When developing, it is important to be aware of these relationships so that appr
 
 ### Developing/Testing
 
-When making modifications to the template provided by `dev_add_datamodel`, feel free to `select()`, `filter()`, `mutate()`, or otherwise modify the appearance of the patient data such that it displays how you want it to look on the Chart Review tab. The `dplyr` package has been declared as an import in the table function skeleton, so that the many `dplyr` manipulations may be included in your development. Please leave the `collect()` part of the dplyr chain that has been added, as data needs to be downloaded to ReviewR in ordre to be displayed.
+When making modifications to the template provided by `dev_add_datamodel`, feel free to `select()`, `filter()`, `mutate()`, or otherwise modify the appearance of the patient data such that it displays how you want it to look on the Chart Review tab. The `dplyr` package has been declared as an import in the table function skeleton, so that the many `dplyr` manipulations may be included in your development. Please leave the `collect()` part of the dplyr chain that has been added, as data needs to be downloaded to ReviewR in order to be displayed.
 
 When you are ready to test these table functions within ReviewR, run:
 ```{r eval=FALSE}
@@ -213,7 +213,7 @@ golem::document_and_reload()
 ReviewR::run_app()
 ```
 
-This will incorporate your newly developed functions into the active R Sessioin and launch the application so that you can connect to your database and view your new data model within ReviewR. Remember, after any change to the table functions you will have to run `golem::document_and_reload()`
+This will incorporate your newly developed functions into the active R Session and launch the application so that you can connect to your database and view your new data model within ReviewR. Remember, after any change to the table functions you will have to run `golem::document_and_reload()`
 
 ### Finishing up
 

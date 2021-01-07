@@ -144,7 +144,7 @@ To serve your ReviewR Docker container with NGINX, we simply need to add and ena
 
 
 ### Configure nginx
-Next, we need to configure NGINX to proxy traffic from web clients to the Docker Container. To accompliish this, we'll need to add a server block to NGINX with information about our container. NGINX server blocks live in `/etc/nginx/sites-available/`. To initialize a server block for our container, issue the following command:
+Next, we need to configure NGINX to proxy traffic from web clients to the Docker Container. To accomplish this, we'll need to add a server block to NGINX with information about our container. NGINX server blocks live in `/etc/nginx/sites-available/`. To initialize a server block for our container, issue the following command:
 
 ```{bash, eval=F}
 ## substitute nano for your preferred text editor: emacs, jed, joe, pico, sandy, vi, vim, etc.

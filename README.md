@@ -113,7 +113,7 @@ redirected to authenticate with Google and then return to the
 application.
 
 Next, you will want to connect to a REDCap project to store the results
-of your chart review. In the right panel of the ‘Set Up’ tab, enter your
+of your chart review. In the right panel of the ‘Setup’ tab, enter your
 institution’s REDCap URL and the API token for your desired REDCap
 project and then click ‘Connect to REDCap’. Next, configure your REDCap
 instrument by selecting which variable in your collection instrument
