@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 
 Launch the ReviewR application by running `ReviewR::run_app()` from the R console or by visiting the URL of a Shiny Server deployed instance of ReviewR in a browser. On launch, ReviewR will show you the Homepage, which will provide some basic information about the ReviewR package. 
 
-When you are ready to begin using ReviewR select the "Setup" option from the naviation menu on the left side of the application. The Setup section is divided into 2 columns, [Connect to Patient Database](#connect-to-patient-database) and [Configure Patient Chart Abstraction](https://reviewr.thewileylab.org/articles/usage_connect_to_redcap.html). 
+When you are ready to begin using ReviewR select the "Setup" option from the navigation menu on the left side of the application. The Setup section is divided into 2 columns, [Connect to Patient Database](#connect-to-patient-database) and [Configure Patient Chart Abstraction](https://reviewr.thewileylab.org/articles/usage_connect_to_redcap.html). 
 
 ## Connect to Patient Database
 
