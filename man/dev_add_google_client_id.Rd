@@ -10,5 +10,6 @@ dev_add_google_client_id(file_path)
 \item{file_path}{Path to a "Desktop" Google Client ID JSON on your local system.}
 }
 \description{
-Add Google Client ID
+This function will move a Google desktop Client ID json from Google Cloud into the appropriate
+directory on your computer to be used by ReviewR in place of the built in credentials.
 }
