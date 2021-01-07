@@ -15,3 +15,4 @@ The Demo SQLite Setup UI
 \description{
 This module is designed to guide a user through the process of authenticating your database
 }
+\keyword{internal}

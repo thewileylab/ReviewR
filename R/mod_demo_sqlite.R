@@ -6,6 +6,7 @@
 #' @param id The module namespace
 #' 
 #' @return The Demo SQLite Setup UI
+#' @keywords internal
 #' @export
 #' 
 #' @importFrom shiny NS
@@ -45,6 +46,7 @@ demo_sqlite_setup_ui <- function(id) {
 #' @param id The Module namespace
 #'
 #' @return Demo SQLite connection variables
+#' @keywords internal
 #' @export
 #'
 #' @importFrom DBI dbConnect
