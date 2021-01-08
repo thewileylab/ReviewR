@@ -37,7 +37,6 @@ Imports:
     shinydashboard,
     shinydashboardPlus,
     shinyjs,
-    shinyREDCap (>= 0.0.2.9002),
     shinyWidgets,
     snakecase,
     stringr,
@@ -45,7 +44,6 @@ Imports:
     tidyr (>= 1.1.0)
 Remotes: 
     Thinkr-open/golem,
-    thewileylab/shinyREDCap,
 Suggests: 
     fs,
     gt,
