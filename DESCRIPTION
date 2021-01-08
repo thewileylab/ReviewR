@@ -29,6 +29,8 @@ Imports:
     magrittr,
     pkgload,
     purrr,
+    redcapAPI,
+    REDCapR,
     rlang (>= 0.4.7),
     RPostgres,
     RSQLite,

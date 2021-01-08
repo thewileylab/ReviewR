@@ -55,7 +55,7 @@ When designing your instrument/s for use with ReviewR, please only include suppo
 library(dplyr)
 library(magrittr)
 library(gt)
-shinyREDCap::redcap_widget_map %>% 
+ReviewR::redcap_widget_map %>% 
   mutate(class = case_when(redcap_field_type %in% c('text', 'notes') ~ 'Text Field',
                            redcap_field_type %in% c('dropdown', 'radio') ~ 'Single Answer',
                            redcap_field_type %in% c('checkbox') ~ 'Multiple Answer',
