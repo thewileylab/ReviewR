@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Add Google Client ID — dev_add_google_client_id • ReviewR</title>
+<title>condition_occurrence — condition_occurrence • ReviewR</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,9 +46,18 @@
 
 
 
-<meta property="og:title" content="Add Google Client ID — dev_add_google_client_id" />
-<meta property="og:description" content="This function will move a Google desktop Client ID json from Google Cloud into the appropriate
-directory on your computer to be used by ReviewR in place of the built in credentials." />
+<meta property="og:title" content="condition_occurrence — condition_occurrence" />
+<meta property="og:description" content="
+Table Description
+
+
+This table contains records of Events of a Person suggesting the presence of a disease or medical condition stated as a diagnosis, a sign, or a symptom, which is either observed by a Provider or reported by the patient.
+
+User Guide
+
+
+Conditions are defined by Concepts from the Condition domain, which form a complex hierarchy. As a result, the same Person with the same disease may have multiple Condition records, which belong to the same hierarchical family. Most Condition records are mapped from diagnostic codes, but recorded signs, symptoms and summary descriptions also contribute to this table. Rule out diagnoses should not be recorded in this table, but in reality their negating nature is not always captured in the source data, and other precautions must be taken when when identifying Persons who should suffer from the recorded Condition. Record all conditions as they exist in the source data. Any decisions about diagnosis/phenotype definitions would be done through cohort specifications. These cohorts can be housed in the COHORT table. Conditions span a time interval from start to end, but are typically recorded as single snapshot records with no end date. The reason is twofold: (i) At the time of the recording the duration is not known and later not recorded, and (ii) the Persons typically cease interacting with the healthcare system when they feel better, which leads to incomplete capture of resolved Conditions. The CONDITION_ERA table addresses this issue. Family history and past diagnoses (‘history of’) are not recorded in this table. Instead, they are listed in the OBSERVATION table. Codes written in the process of establishing the diagnosis, such as ‘question of’ of and ‘rule out’, should not represented here. Instead, they should be recorded in the OBSERVATION table, if they are used for analyses. However, this information is not always available.
+" />
 <meta property="og:image" content="reviewr.thewileylab.org/logo.png" />
 
 
@@ -166,27 +175,54 @@ directory on your computer to be used by ReviewR in place of the built in creden
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Add Google Client ID</h1>
-    <small class="dont-index">Source: <a href='https://github.com/thewileylab/ReviewR/blob/master/R/reviewr_dev.R'><code>R/reviewr_dev.R</code></a></small>
-    <div class="hidden name"><code>dev_add_google_client_id.Rd</code></div>
+    <h1>condition_occurrence</h1>
+    <small class="dont-index">Source: <a href='https://github.com/thewileylab/ReviewR/blob/master/R/mod_demo_sqlite.R'><code>R/mod_demo_sqlite.R</code></a></small>
+    <div class="hidden name"><code>condition_occurrence.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function will move a Google desktop Client ID json from Google Cloud into the appropriate
-directory on your computer to be used by ReviewR in place of the built in credentials.</p>
+    
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Table Description</h3>
+
+
+<p>This table contains records of Events of a Person suggesting the presence of a disease or medical condition stated as a diagnosis, a sign, or a symptom, which is either observed by a Provider or reported by the patient.</p>
+
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>User Guide</h3>
+
+
+<p>Conditions are defined by Concepts from the Condition domain, which form a complex hierarchy. As a result, the same Person with the same disease may have multiple Condition records, which belong to the same hierarchical family. Most Condition records are mapped from diagnostic codes, but recorded signs, symptoms and summary descriptions also contribute to this table. Rule out diagnoses should not be recorded in this table, but in reality their negating nature is not always captured in the source data, and other precautions must be taken when when identifying Persons who should suffer from the recorded Condition. Record all conditions as they exist in the source data. Any decisions about diagnosis/phenotype definitions would be done through cohort specifications. These cohorts can be housed in the COHORT table. Conditions span a time interval from start to end, but are typically recorded as single snapshot records with no end date. The reason is twofold: (i) At the time of the recording the duration is not known and later not recorded, and (ii) the Persons typically cease interacting with the healthcare system when they feel better, which leads to incomplete capture of resolved Conditions. The CONDITION_ERA table addresses this issue. Family history and past diagnoses (‘history of’) are not recorded in this table. Instead, they are listed in the OBSERVATION table. Codes written in the process of establishing the diagnosis, such as ‘question of’ of and ‘rule out’, should not represented here. Instead, they should be recorded in the OBSERVATION table, if they are used for analyses. However, this information is not always available.</p>
+
     </div>
 
-    <pre class="usage"><span class='fu'>dev_add_google_client_id</span><span class='op'>(</span><span class='va'>file_path</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='va'>condition_occurrence</span></pre>
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>file_path</th>
-      <td><p>Path to a "Desktop" Google Client ID JSON on your local system.</p></td>
-    </tr>
-    </table>
 
+    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
+
+    <p>A data frame with 992 rows and 15 variables:</p><dl>
+<dt>condition_occurrence_id</dt><dd><p><em>integer</em></p></dd>
+<dt>person_id</dt><dd><p><em>integer</em></p></dd>
+<dt>condition_concept_id</dt><dd><p><em>integer</em></p></dd>
+<dt>condition_start_date</dt><dd><p><em>Date</em></p></dd>
+<dt>condition_start_datetime</dt><dd><p><em>POSIXct</em></p></dd>
+<dt>condition_end_date</dt><dd><p><em>Date</em></p></dd>
+<dt>condition_end_datetime</dt><dd><p><em>POSIXct</em></p></dd>
+<dt>condition_type_concept_id</dt><dd><p><em>integer</em></p></dd>
+<dt>stop_reason</dt><dd><p><em>character</em></p></dd>
+<dt>provider_id</dt><dd><p><em>integer</em></p></dd>
+<dt>visit_occurrence_id</dt><dd><p><em>integer</em></p></dd>
+<dt>condition_source_value</dt><dd><p><em>character</em></p></dd>
+<dt>condition_source_concept_id</dt><dd><p><em>integer</em></p></dd>
+<dt>condition_status_source_value</dt><dd><p><em>character</em></p></dd>
+<dt>condition_status_concept_id</dt><dd><p><em>integer</em></p></dd>
+...
+
+</dl>
+
+    <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
+
+    <p><a href='https://ohdsi.github.io/CommonDataModel/cdm531.html#condition_occurrence '>https://ohdsi.github.io/CommonDataModel/cdm531.html#condition_occurrence </a></p>
+<p><a href='https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF'>https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF</a></p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

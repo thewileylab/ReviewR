@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Add Google Client ID — dev_add_google_client_id • ReviewR</title>
+<title>mod_PostgreSQL_setup Server Function — postgresql_setup_server • ReviewR</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,9 +46,8 @@
 
 
 
-<meta property="og:title" content="Add Google Client ID — dev_add_google_client_id" />
-<meta property="og:description" content="This function will move a Google desktop Client ID json from Google Cloud into the appropriate
-directory on your computer to be used by ReviewR in place of the built in credentials." />
+<meta property="og:title" content="mod_PostgreSQL_setup Server Function — postgresql_setup_server" />
+<meta property="og:description" content="mod_PostgreSQL_setup Server Function" />
 <meta property="og:image" content="reviewr.thewileylab.org/logo.png" />
 
 
@@ -166,27 +165,29 @@ directory on your computer to be used by ReviewR in place of the built in creden
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Add Google Client ID</h1>
-    <small class="dont-index">Source: <a href='https://github.com/thewileylab/ReviewR/blob/master/R/reviewr_dev.R'><code>R/reviewr_dev.R</code></a></small>
-    <div class="hidden name"><code>dev_add_google_client_id.Rd</code></div>
+    <h1>mod_PostgreSQL_setup Server Function</h1>
+    <small class="dont-index">Source: <a href='https://github.com/thewileylab/ReviewR/blob/master/R/mod_PostgreSQL_setup.R'><code>R/mod_PostgreSQL_setup.R</code></a></small>
+    <div class="hidden name"><code>postgresql_setup_server.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function will move a Google desktop Client ID json from Google Cloud into the appropriate
-directory on your computer to be used by ReviewR in place of the built in credentials.</p>
+    <p>mod_PostgreSQL_setup Server Function</p>
     </div>
 
-    <pre class="usage"><span class='fu'>dev_add_google_client_id</span><span class='op'>(</span><span class='va'>file_path</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>postgresql_setup_server</span><span class='op'>(</span><span class='va'>id</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>file_path</th>
-      <td><p>Path to a "Desktop" Google Client ID JSON on your local system.</p></td>
+      <th>id</th>
+      <td><p>The PostgreSQL Setup UI</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>PostgreSQL connection variables and DBI connection object.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

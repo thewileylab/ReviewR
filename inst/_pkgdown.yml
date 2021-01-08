@@ -70,3 +70,29 @@ reference:
       - db_module_template 
       - db_function_all_patients_table_template
       - db_function_subject_table_template
+  - title: "Demonstration Data"
+    desc: "A 10 person subset of the CMS 2008-2010 Data Entrepreneurs’ Synthetic Public Use File (DE-SynPUF) from OHDSI."
+    contents:
+      - care_site
+      - concept
+      - concept_class
+      - concept_synonym
+      - condition_era
+      - condition_occurrence
+      - death
+      - device_exposure
+      - domain
+      - drug_era
+      - drug_exposure
+      - drug_strength
+      - measurement
+      - note
+      - observation
+      - observation_period
+      - payer_plan_period
+      - person
+      - procedure_occurrence
+      - provider
+      - relationship
+      - visit_occurrence
+      - vocabulary
