@@ -52,7 +52,7 @@ mod_database_setup_server <- function(id){
       ## Add Database Setup Modules Here
       database_setup_vars <- reactiveValues(bigquery = bigquery_setup_server(id = namespace ),
                                             demo_sqlite = demo_sqlite_setup_server(id = namespace),
-                                            postgres = shinyPostgreSQL::postgresql_setup_server(id = namespace)
+                                            postgres = postgresql_setup_server(id = namespace)
                                             )
       
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
