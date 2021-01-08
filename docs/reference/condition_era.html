@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Add Google Client ID — dev_add_google_client_id • ReviewR</title>
+<title>condition_era — condition_era • ReviewR</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,9 +46,22 @@
 
 
 
-<meta property="og:title" content="Add Google Client ID — dev_add_google_client_id" />
-<meta property="og:description" content="This function will move a Google desktop Client ID json from Google Cloud into the appropriate
-directory on your computer to be used by ReviewR in place of the built in credentials." />
+<meta property="og:title" content="condition_era — condition_era" />
+<meta property="og:description" content="
+Table Description
+
+
+A Condition Era is defined as a span of time when the Person is assumed to have a given condition. Similar to Drug Eras, Condition Eras are chronological periods of Condition Occurrence. Combining individual Condition Occurrences into a single Condition Era serves two purposes:
+It allows aggregation of chronic conditions that require frequent ongoing care, instead of treating each Condition Occurrence as an independent event.
+It allows aggregation of multiple, closely timed doctor visits for the same Condition to avoid double-counting the Condition Occurrences. For example, consider a Person who visits her Primary Care Physician (PCP) and who is referred to a specialist. At a later time, the Person visits the specialist, who confirms the PCP’s original diagnosis and provides the appropriate treatment to resolve the condition. These two independent doctor visits should be aggregated into one Condition Era.
+
+
+
+ETL Conventions
+
+
+Each Condition Era corresponds to one or many Condition Occurrence records that form a continuous interval. The condition_concept_id field contains Concepts that are identical to those of the CONDITION_OCCURRENCE table records that make up the Condition Era. In contrast to Drug Eras, Condition Eras are not aggregated to contain Conditions of different hierarchical layers. The SQl Script for generating CONDITION_ERA records can be found here The Condition Era Start Date is the start date of the first Condition Occurrence. The Condition Era End Date is the end date of the last Condition Occurrence. Condition Eras are built with a Persistence Window of 30 days, meaning, if no occurrence of the same condition_concept_id happens within 30 days of any one occurrence, it will be considered the condition_era_end_date.
+" />
 <meta property="og:image" content="reviewr.thewileylab.org/logo.png" />
 
 
@@ -166,27 +179,49 @@ directory on your computer to be used by ReviewR in place of the built in creden
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Add Google Client ID</h1>
-    <small class="dont-index">Source: <a href='https://github.com/thewileylab/ReviewR/blob/master/R/reviewr_dev.R'><code>R/reviewr_dev.R</code></a></small>
-    <div class="hidden name"><code>dev_add_google_client_id.Rd</code></div>
+    <h1>condition_era</h1>
+    <small class="dont-index">Source: <a href='https://github.com/thewileylab/ReviewR/blob/master/R/mod_demo_sqlite.R'><code>R/mod_demo_sqlite.R</code></a></small>
+    <div class="hidden name"><code>condition_era.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function will move a Google desktop Client ID json from Google Cloud into the appropriate
-directory on your computer to be used by ReviewR in place of the built in credentials.</p>
+    
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Table Description</h3>
+
+
+<p>A Condition Era is defined as a span of time when the Person is assumed to have a given condition. Similar to Drug Eras, Condition Eras are chronological periods of Condition Occurrence. Combining individual Condition Occurrences into a single Condition Era serves two purposes:</p><ul>
+<li><p>It allows aggregation of chronic conditions that require frequent ongoing care, instead of treating each Condition Occurrence as an independent event.</p></li>
+<li><p>It allows aggregation of multiple, closely timed doctor visits for the same Condition to avoid double-counting the Condition Occurrences. For example, consider a Person who visits her Primary Care Physician (PCP) and who is referred to a specialist. At a later time, the Person visits the specialist, who confirms the PCP’s original diagnosis and provides the appropriate treatment to resolve the condition. These two independent doctor visits should be aggregated into one Condition Era.</p></li>
+</ul>
+
+
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>ETL Conventions</h3>
+
+
+<p>Each Condition Era corresponds to one or many Condition Occurrence records that form a continuous interval. The condition_concept_id field contains Concepts that are identical to those of the CONDITION_OCCURRENCE table records that make up the Condition Era. In contrast to Drug Eras, Condition Eras are not aggregated to contain Conditions of different hierarchical layers. The SQl Script for generating CONDITION_ERA records can be found here The Condition Era Start Date is the start date of the first Condition Occurrence. The Condition Era End Date is the end date of the last Condition Occurrence. Condition Eras are built with a Persistence Window of 30 days, meaning, if no occurrence of the same condition_concept_id happens within 30 days of any one occurrence, it will be considered the condition_era_end_date.</p>
+
     </div>
 
-    <pre class="usage"><span class='fu'>dev_add_google_client_id</span><span class='op'>(</span><span class='va'>file_path</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='va'>condition_era</span></pre>
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>file_path</th>
-      <td><p>Path to a "Desktop" Google Client ID JSON on your local system.</p></td>
-    </tr>
-    </table>
 
+    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
+
+    <p>A data frame with 688 rows and 6 variables:</p><dl>
+<dt>condition_era_id</dt><dd><p><em>integer</em></p></dd>
+<dt>person_id</dt><dd><p><em>integer</em></p></dd>
+<dt>condition_concept_id</dt><dd><p><em>integer</em></p></dd>
+<dt>condition_era_start_date</dt><dd><p><em>Date</em></p></dd>
+<dt>condition_era_end_date</dt><dd><p><em>Date</em></p></dd>
+<dt>condition_occurrence_count</dt><dd><p><em>integer</em></p></dd>
+...
+
+</dl>
+
+    <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
+
+    <p><a href='https://ohdsi.github.io/CommonDataModel/cdm531.html#condition_era '>https://ohdsi.github.io/CommonDataModel/cdm531.html#condition_era </a></p>
+<p><a href='https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF'>https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF</a></p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

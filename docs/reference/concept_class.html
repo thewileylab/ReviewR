@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Add Google Client ID — dev_add_google_client_id • ReviewR</title>
+<title>concept_class — concept_class • ReviewR</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,9 +46,13 @@
 
 
 
-<meta property="og:title" content="Add Google Client ID — dev_add_google_client_id" />
-<meta property="og:description" content="This function will move a Google desktop Client ID json from Google Cloud into the appropriate
-directory on your computer to be used by ReviewR in place of the built in credentials." />
+<meta property="og:title" content="concept_class — concept_class" />
+<meta property="og:description" content="
+Table Description
+
+
+The CONCEPT_CLASS table is a reference table, which includes a list of the classifications used to differentiate Concepts within a given Vocabulary. This reference table is populated with a single record for each Concept Class.
+" />
 <meta property="og:image" content="reviewr.thewileylab.org/logo.png" />
 
 
@@ -166,27 +170,37 @@ directory on your computer to be used by ReviewR in place of the built in creden
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Add Google Client ID</h1>
-    <small class="dont-index">Source: <a href='https://github.com/thewileylab/ReviewR/blob/master/R/reviewr_dev.R'><code>R/reviewr_dev.R</code></a></small>
-    <div class="hidden name"><code>dev_add_google_client_id.Rd</code></div>
+    <h1>concept_class</h1>
+    <small class="dont-index">Source: <a href='https://github.com/thewileylab/ReviewR/blob/master/R/mod_demo_sqlite.R'><code>R/mod_demo_sqlite.R</code></a></small>
+    <div class="hidden name"><code>concept_class.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This function will move a Google desktop Client ID json from Google Cloud into the appropriate
-directory on your computer to be used by ReviewR in place of the built in credentials.</p>
+    
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Table Description</h3>
+
+
+<p>The CONCEPT_CLASS table is a reference table, which includes a list of the classifications used to differentiate Concepts within a given Vocabulary. This reference table is populated with a single record for each Concept Class.</p>
+
     </div>
 
-    <pre class="usage"><span class='fu'>dev_add_google_client_id</span><span class='op'>(</span><span class='va'>file_path</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='va'>concept_class</span></pre>
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>file_path</th>
-      <td><p>Path to a "Desktop" Google Client ID JSON on your local system.</p></td>
-    </tr>
-    </table>
 
+    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
+
+    <p>A data frame with 0 rows and 3 variables:</p><dl>
+<dt>concept_class_id</dt><dd><p><em>character</em></p></dd>
+<dt>concept_class_name</dt><dd><p><em>character</em></p></dd>
+<dt>concept_class_concept_id</dt><dd><p><em>character</em></p></dd>
+...
+
+</dl>
+
+    <h2 class="hasAnchor" id="source"><a class="anchor" href="#source"></a>Source</h2>
+
+    <p><a href='https://ohdsi.github.io/CommonDataModel/cdm531.html#concept_class '>https://ohdsi.github.io/CommonDataModel/cdm531.html#concept_class </a></p>
+<p><a href='https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF'>https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF</a></p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

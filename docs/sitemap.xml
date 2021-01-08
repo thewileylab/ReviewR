@@ -13,7 +13,25 @@
     <loc>reviewr.thewileylab.org/reference/bigquery_setup_ui.html</loc>
   </url>
   <url>
+    <loc>reviewr.thewileylab.org/reference/care_site.html</loc>
+  </url>
+  <url>
     <loc>reviewr.thewileylab.org/reference/chart_review.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/concept.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/concept_class.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/concept_synonym.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/condition_era.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/condition_occurrence.html</loc>
   </url>
   <url>
     <loc>reviewr.thewileylab.org/reference/db_function_all_patients_table_template.html</loc>
@@ -23,6 +41,9 @@
   </url>
   <url>
     <loc>reviewr.thewileylab.org/reference/db_module_template.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/death.html</loc>
   </url>
   <url>
     <loc>reviewr.thewileylab.org/reference/demo_sqlite_setup_server.html</loc>
@@ -40,6 +61,21 @@
     <loc>reviewr.thewileylab.org/reference/dev_add_google_client_id.html</loc>
   </url>
   <url>
+    <loc>reviewr.thewileylab.org/reference/device_exposure.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/domain.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/drug_era.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/drug_exposure.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/drug_strength.html</loc>
+  </url>
+  <url>
     <loc>reviewr.thewileylab.org/reference/dt_2_viewer.html</loc>
   </url>
   <url>
@@ -50,6 +86,9 @@
   </url>
   <url>
     <loc>reviewr.thewileylab.org/reference/internal-assets.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/measurement.html</loc>
   </url>
   <url>
     <loc>reviewr.thewileylab.org/reference/mimic3_tables.html</loc>
@@ -70,10 +109,40 @@
     <loc>reviewr.thewileylab.org/reference/mod_navigation.html</loc>
   </url>
   <url>
+    <loc>reviewr.thewileylab.org/reference/note.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/observation.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/observation_period.html</loc>
+  </url>
+  <url>
     <loc>reviewr.thewileylab.org/reference/omop_tables.html</loc>
   </url>
   <url>
     <loc>reviewr.thewileylab.org/reference/patient_search.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/payer_plan_period.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/person.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/postgresql_setup_server.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/postgresql_setup_ui.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/procedure_occurrence.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/provider.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/relationship.html</loc>
   </url>
   <url>
     <loc>reviewr.thewileylab.org/reference/reviewr_datatable.html</loc>
@@ -92,6 +161,12 @@
   </url>
   <url>
     <loc>reviewr.thewileylab.org/reference/user_table.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/visit_occurrence.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/vocabulary.html</loc>
   </url>
   <url>
     <loc>reviewr.thewileylab.org/articles/customize_support_new_datamodel.html</loc>
