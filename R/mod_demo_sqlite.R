@@ -482,7 +482,7 @@
 #' @description
 #' ## Table Description
 #'
-#' This table contains records which define spans of time during which two conditions are expected to hold: (i) Clinical Events that happened to the Person are recorded in the Event tables, and (ii) absense of records indicate such Events did not occur during this span of time.
+#' This table contains records which define spans of time during which two conditions are expected to hold: (i) Clinical Events that happened to the Person are recorded in the Event tables, and (ii) absence of records indicate such Events did not occur during this span of time.
 #'
 #' ## User Guide
 #'
@@ -655,7 +655,7 @@
 #' @description
 #' ## Table Description
 #'
-#' The RELATIONSHIP table provides a reference list of all types of relationships that can be used to associate any two concepts in the CONCEPT_RELATIONSHP table.
+#' The RELATIONSHIP table provides a reference list of all types of relationships that can be used to associate any two concepts in the CONCEPT_RELATIONSHIP table.
 #'
 #' @docType data
 #' 
