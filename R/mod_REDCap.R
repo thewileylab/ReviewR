@@ -79,7 +79,7 @@ redcap_connection <- function(url, token) {
 
 #' Safe Export Records
 #'
-#' ### Export REDCap Records in a REDCap Project. Sometimes, records don't exist (empty instrument). Use field names to create empty data structure.
+#' Export REDCap Records in a REDCap Project. Sometimes, records don't exist (empty instrument). Use field names to create empty data structure.
 #'
 #' @param rc_con A REDCap API Connection Object
 #' @param rc_field_names The field names for a REDCap instrument
@@ -390,7 +390,11 @@ redcap_instrument_ui <- function(id) {
                         status = 'danger',
                         solidHeader = F,
                         uiOutput(ns('instrument_selection')),
-                        uiOutput(ns('instrument_select_warning')),
+                        shinyjs::hidden(
+                          div(id = ns('instrument_select_warning_div'),
+                            uiOutput(ns('instrument_select_warning'))
+                          )
+                        ),
                         div(style='max-height:550px; overflow-y:scroll',
                             uiOutput(ns('instrument_ui')) %>% withSpinner(type = 5, color = '#e83a2f') 
                             )
@@ -893,10 +897,7 @@ redcap_server <- function(id, subject_id) {
                        choices = redcap_setup$rc_instruments_list
                        )
         })
-      instrument_select_warning <- reactive({
-        req(redcap_instrument$data_is_different == TRUE)
-        HTML("<font color='#e83a2f'>Warning: Please 'Save to REDCap' before changing instruments to prevent data loss.</font>")
-        })
+      instrument_select_warning <- reactive({ HTML("<font color='#e83a2f'>Please click 'Save to REDCap' to capture currently entered values before to selecting a new instrument.</font>") })
       output$instrument_selection <- renderUI({ instrument_select() })
       output$instrument_select_warning <- renderUI({ instrument_select_warning() })
       
@@ -1225,7 +1226,8 @@ redcap_server <- function(id, subject_id) {
                                   TRUE ~ F
                                   )
                  ) %>% 
-          filter(.data$field_name != redcap_setup$rc_record_id_field & diff == TRUE) ## This will be different when entering new data
+          filter(.data$field_name != redcap_setup$rc_record_id_field & diff == TRUE) %>% ## This will be different when entering new data
+          filter(!.data$field_name %in% c(redcap_setup$reviewer_field, redcap_setup$identifier_field))
         redcap_instrument$data_is_different <- nrow(redcap_instrument$data_comparison) > 0
         
         ### Create modal for displaying changes
@@ -1263,13 +1265,28 @@ redcap_server <- function(id, subject_id) {
       
       ## Upload Button ----
       ### Show/Hide the REDCap Upload button based on whether new data has been entered
-      observeEvent(redcap_instrument$data_is_different, {
-        if(redcap_instrument$data_is_different == TRUE) {
-          shinyjs::show('redcap_upload_btn_div')
-          shinyjs::disable('rc_instrument_selection')
-          } else {
+      observeEvent(redcap_instrument$data_comparison, {
+        # browser()
+        if(redcap_instrument$data_is_different == TRUE) { # Instrument Data differs from existing data 
+          if(nrow(redcap_instrument$data_comparison %>% filter(!str_detect(.data$field_name, '_instrument_complete')) ) == 0) { # No previous data, no new data entered (enable)
+            # Enable Instrument Switching
+            shinyjs::enable('rc_instrument_selection')  
+            shinyjs::hide('instrument_select_warning_div')
+            # Disable Upload Button
             shinyjs::hide('redcap_upload_btn_div')
-            shinyjs::enable('rc_instrument_selection')
+            } else {  # Data differs from previous
+              # Disable Instrument Switching
+              shinyjs::disable('rc_instrument_selection')  
+              shinyjs::show('instrument_select_warning_div')
+              # Enable Upload Button
+              shinyjs::show('redcap_upload_btn_div')
+              }
+          } else { # Instrument Data identical to existing data
+            # Enable Instrument Switching
+            shinyjs::enable('rc_instrument_selection')  
+            shinyjs::hide('instrument_select_warning_div')
+            # Disable Upload Button
+            shinyjs::hide('redcap_upload_btn_div')
             }
         })
       
