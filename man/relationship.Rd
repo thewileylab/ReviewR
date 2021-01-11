@@ -27,7 +27,7 @@ relationship
 \description{
 \subsection{Table Description}{
 
-The RELATIONSHIP table provides a reference list of all types of relationships that can be used to associate any two concepts in the CONCEPT_RELATIONSHP table.
+The RELATIONSHIP table provides a reference list of all types of relationships that can be used to associate any two concepts in the CONCEPT_RELATIONSHIP table.
 }
 }
 \keyword{datasets}
