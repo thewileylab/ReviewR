@@ -15,7 +15,6 @@ safe_exportRecords(rc_con, rc_field_names)
 A data frame containing existing REDCap records, or an empty data frame with the structure of what the records would look like
 }
 \description{
-\subsection{Export REDCap Records in a REDCap Project. Sometimes, records don't exist (empty instrument). Use field names to create empty data structure.}{
-}
+Export REDCap Records in a REDCap Project. Sometimes, records don't exist (empty instrument). Use field names to create empty data structure.
 }
 \keyword{internal}
