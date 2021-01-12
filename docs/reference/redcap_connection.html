@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>ReviewR Setup Tab — setup • ReviewR</title>
+<title>REDCap Connection — redcap_connection • ReviewR</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="ReviewR Setup Tab — setup" />
-<meta property="og:description" content="This file contains the UI elements that are needed to render the Setup Tab and configure ReviewR. Each element consists of a module, which is rendered within it's own box element on the setup tab." />
+<meta property="og:title" content="REDCap Connection — redcap_connection" />
+<meta property="og:description" content="A 'safe' wrapper for redcapAPI::redcapConnection(). Will return diagnostic error codes in case incorrect URL or token are provided." />
 <meta property="og:image" content="reviewr.thewileylab.org/logo.png" />
 
 
@@ -165,21 +165,33 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>ReviewR Setup Tab</h1>
-    <small class="dont-index">Source: <a href='https://github.com/thewileylab/ReviewR/blob/master/R/layout_setup.R'><code>R/layout_setup.R</code></a></small>
-    <div class="hidden name"><code>setup.Rd</code></div>
+    <h1>REDCap Connection</h1>
+    <small class="dont-index">Source: <a href='https://github.com/thewileylab/ReviewR/blob/master/R/mod_REDCap.R'><code>R/mod_REDCap.R</code></a></small>
+    <div class="hidden name"><code>redcap_connection.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This file contains the UI elements that are needed to render the Setup Tab and configure ReviewR. Each element consists of a module, which is rendered within it's own box element on the setup tab.</p>
+    <p>A 'safe' wrapper for redcapAPI::redcapConnection(). Will return diagnostic error codes in case incorrect URL or token are provided.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>setup</span><span class='op'>(</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>redcap_connection</span><span class='op'>(</span><span class='va'>url</span>, <span class='va'>token</span><span class='op'>)</span></pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>url</th>
+      <td><p>The API URL for your institution's REDCap instance</p></td>
+    </tr>
+    <tr>
+      <th>token</th>
+      <td><p>The API token for your REDCap project</p></td>
+    </tr>
+    </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Setup Tab UI Output</p>
+    <p>If the URL and token are correct, return a redcapAPI connection object. Else, return diagnostic error.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

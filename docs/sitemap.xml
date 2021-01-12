@@ -142,13 +142,37 @@
     <loc>reviewr.thewileylab.org/reference/provider.html</loc>
   </url>
   <url>
+    <loc>reviewr.thewileylab.org/reference/redcap_connection.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/redcap_instrument_ui.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/redcap_server.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/redcap_setup_ui.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/redcap_survey_complete.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/redcap_widget_map.html</loc>
+  </url>
+  <url>
     <loc>reviewr.thewileylab.org/reference/relationship.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/render_redcap_instrument.html</loc>
   </url>
   <url>
     <loc>reviewr.thewileylab.org/reference/reviewr_datatable.html</loc>
   </url>
   <url>
     <loc>reviewr.thewileylab.org/reference/run_app.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/safe_exportRecords.html</loc>
   </url>
   <url>
     <loc>reviewr.thewileylab.org/reference/setup.html</loc>
