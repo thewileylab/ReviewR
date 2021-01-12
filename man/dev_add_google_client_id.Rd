@@ -13,3 +13,9 @@ dev_add_google_client_id(file_path)
 This function will move a Google desktop Client ID json from Google Cloud into the appropriate
 directory on your computer to be used by ReviewR in place of the built in credentials.
 }
+\seealso{
+Other Development Functions: 
+\code{\link{dev_add_database_module}()},
+\code{\link{dev_add_datamodel}()}
+}
+\concept{Development Functions}
