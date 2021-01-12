@@ -13,10 +13,6 @@ db_module_template
 \description{
 A character vector containing a database module template
 }
-\section{Development}{
-NA
-}
-
 \seealso{
 Other Development Templates: 
 \code{\link{db_function_all_patients_table_template}},
