@@ -58,6 +58,11 @@ reference:
     desc: "List the data models with built in support in ReviewR."
     contents:
       - supported_datamodels
+  - title: "REDCap Support"
+    desc: "Supported REDCap field types and survey complete responses."
+    contents:
+      - redcap_widget_map
+      - redcap_survey_complete
   - title: "Development Functions"
     desc: "Use these functions to extend the functionality of ReviewR. These functions are not user facing, please run `devtools::load_all()` or preface each devlopment function with `ReviewR:::` to access their functionality."
     contents:
