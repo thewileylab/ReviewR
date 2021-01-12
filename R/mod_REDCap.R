@@ -314,6 +314,7 @@ render_redcap_instrument <- function(shinyREDCap_type, field_name, field_label, 
 #' @param id The module namespace
 #'
 #' @return The REDCap Setup UI
+#' @keywords internal
 #' @export
 #' 
 #' @importFrom shinydashboard box
@@ -364,6 +365,7 @@ redcap_setup_ui <- function(id) {
 #' @param id The module namespace
 #'
 #' @return A Shiny Representation of REDCap Instrument
+#' @keywords internal
 #' @export
 #' 
 #' @importFrom shinyjs hidden
@@ -426,6 +428,7 @@ redcap_instrument_ui <- function(id) {
 #' @param subject_id A reactive expression containing a subject identifier
 #'
 #' @return REDCap connection variables and project information
+#' @keywords internal
 #' @export
 #' 
 #' @importFrom dplyr arrange as_tibble case_when coalesce contains count desc distinct everything filter full_join group_by inner_join left_join mutate mutate_all mutate_at mutate_if pull rename relocate select slice summarise ungroup vars
