@@ -12,6 +12,7 @@
 #' Care site is a unique combination of location_id and place_of_service_source_value. Care site does not take into account the provider (human) information such a specialty. Many source data do not make a distinction between individual and institutional providers. The CARE_SITE table contains the institutional providers. If the source, instead of uniquely identifying individual Care Sites, only provides limited information such as Place of Service, generic or “pooled” Care Site records are listed in the CARE_SITE table. There can be hierarchical and business relationships between Care Sites. For example, wards can belong to clinics or departments, which can in turn belong to hospitals, which in turn can belong to hospital systems, which in turn can belong to HMOs.The relationships between Care Sites are defined in the FACT_RELATIONSHIP table.
 #'
 #' @docType data
+#' @keywords internal
 #' 
 #'
 #' @format A data frame with 0 rows and 6 variables:
@@ -40,6 +41,7 @@
 #' Records in the Standardized Vocabularies tables are derived from national or international vocabularies such as SNOMED-CT, RxNorm, and LOINC, or custom Concepts defined to cover various aspects of observational data analysis.
 #'
 #' @docType data
+#' @keywords internal
 #' 
 #'
 #' @format A data frame with 2355 rows and 10 variables:
@@ -67,6 +69,7 @@
 #' The CONCEPT_CLASS table is a reference table, which includes a list of the classifications used to differentiate Concepts within a given Vocabulary. This reference table is populated with a single record for each Concept Class.
 #'
 #' @docType data
+#' @keywords internal
 #' 
 #'
 #' @format A data frame with 0 rows and 3 variables:
@@ -87,6 +90,7 @@
 #' The CONCEPT_SYNONYM table is used to store alternate names and descriptions for Concepts.
 #'
 #' @docType data
+#' @keywords internal
 #' 
 #'
 #' @format A data frame with 5835 rows and 2 variables:
@@ -114,6 +118,7 @@
 #' Each Condition Era corresponds to one or many Condition Occurrence records that form a continuous interval. The condition_concept_id field contains Concepts that are identical to those of the CONDITION_OCCURRENCE table records that make up the Condition Era. In contrast to Drug Eras, Condition Eras are not aggregated to contain Conditions of different hierarchical layers. The SQl Script for generating CONDITION_ERA records can be found here The Condition Era Start Date is the start date of the first Condition Occurrence. The Condition Era End Date is the end date of the last Condition Occurrence. Condition Eras are built with a Persistence Window of 30 days, meaning, if no occurrence of the same condition_concept_id happens within 30 days of any one occurrence, it will be considered the condition_era_end_date.
 #'
 #' @docType data
+#' @keywords internal
 #' 
 #'
 #' @format A data frame with 688 rows and 6 variables:
@@ -141,6 +146,7 @@
 #' Conditions are defined by Concepts from the Condition domain, which form a complex hierarchy. As a result, the same Person with the same disease may have multiple Condition records, which belong to the same hierarchical family. Most Condition records are mapped from diagnostic codes, but recorded signs, symptoms and summary descriptions also contribute to this table. Rule out diagnoses should not be recorded in this table, but in reality their negating nature is not always captured in the source data, and other precautions must be taken when when identifying Persons who should suffer from the recorded Condition. Record all conditions as they exist in the source data. Any decisions about diagnosis/phenotype definitions would be done through cohort specifications. These cohorts can be housed in the COHORT table. Conditions span a time interval from start to end, but are typically recorded as single snapshot records with no end date. The reason is twofold: (i) At the time of the recording the duration is not known and later not recorded, and (ii) the Persons typically cease interacting with the healthcare system when they feel better, which leads to incomplete capture of resolved Conditions. The CONDITION_ERA table addresses this issue. Family history and past diagnoses (‘history of’) are not recorded in this table. Instead, they are listed in the OBSERVATION table. Codes written in the process of establishing the diagnosis, such as ‘question of’ of and ‘rule out’, should not represented here. Instead, they should be recorded in the OBSERVATION table, if they are used for analyses. However, this information is not always available.
 #'
 #' @docType data
+#' @keywords internal
 #' 
 #'
 #' @format A data frame with 992 rows and 15 variables:
@@ -173,6 +179,7 @@
 #' The death domain contains the clinical event for how and when a Person dies. A person can have up to one record if the source system contains evidence about the Death, such as: Condition in an administrative claim, status of enrollment into a health plan, or explicit record in EHR data.
 #'
 #' @docType data
+#' @keywords internal
 #' 
 #'
 #' @format A data frame with 2 rows and 7 variables:
@@ -205,6 +212,7 @@
 #' Source codes and source text fields mapped to Standard Concepts of the Device Domain have to be recorded here.
 #'
 #' @docType data
+#' @keywords internal
 #' 
 #'
 #' @format A data frame with 4 rows and 14 variables:
@@ -236,6 +244,7 @@
 #' The DOMAIN table includes a list of OMOP-defined Domains the Concepts of the Standardized Vocabularies can belong to. A Domain defines the set of allowable Concepts for the standardized fields in the CDM tables. For example, the “Condition” Domain contains Concepts that describe a condition of a patient, and these Concepts can only be stored in the condition_concept_id field of the CONDITION_OCCURRENCE and CONDITION_ERA tables. This reference table is populated with a single record for each Domain and includes a descriptive name for the Domain.
 #'
 #' @docType data
+#' @keywords internal
 #' 
 #'
 #' @format A data frame with 0 rows and 3 variables:
@@ -260,6 +269,7 @@
 #'The SQL script for generating DRUG_ERA records can be found here.
 #'
 #' @docType data
+#' @keywords internal
 #' 
 #'
 #' @format A data frame with 344 rows and 7 variables:
@@ -292,6 +302,7 @@
 #' Source codes and source text fields mapped to Standard Concepts of the Device Domain have to be recorded here.
 #'
 #' @docType data
+#' @keywords internal
 #' 
 #'
 #' @format A data frame with 363 rows and 22 variables:
@@ -331,6 +342,7 @@
 #' The DRUG_STRENGTH table contains structured content about the amount or concentration and associated units of a specific ingredient contained within a particular drug product. This table is supplemental information to support standardized analysis of drug utilization.
 #'
 #' @docType data
+#' @keywords internal
 #' 
 #'
 #' @format A data frame with 475035 rows and 9 variables:
@@ -365,6 +377,7 @@
 #' Only records where the source value maps to a Concept in the measurement domain should be included in this table. Even though each Measurement always has a result, the fields VALUE_AS_NUMBER and VALUE_AS_CONCEPT_ID are not mandatory as often the result is not given in the source data. When the result is not known, the Measurement record represents just the fact that the corresponding Measurement was carried out, which in itself is already useful information for some use cases. For some Measurement Concepts, the result is included in the test. For example, ICD10 CONCEPT_ID 45548980 ‘Abnormal level of unspecified serum enzyme’ indicates a Measurement and the result (abnormal). In those situations, the CONCEPT_RELATIONSHIP table in addition to the ‘Maps to’ record contains a second record with the relationship_id set to ‘Maps to value’. In this example, the ‘Maps to’ relationship directs to 4046263 ‘Enzyme measurement’ as well as a ‘Maps to value’ record to 4135493 ‘Abnormal’.
 #'
 #' @docType data
+#' @keywords internal
 #' 
 #'
 #' @format A data frame with 194 rows and 18 variables:
@@ -413,6 +426,7 @@
 #' According to CDO requirements, only 2 of the 5 dimensions are required to properly annotate a document; Kind of Document and any one of the other 4 dimensions. However, not all the permutations of the CDO dimensions will necessarily yield an existing LOINC code. Each of these dimensions are contained in the OMOP Vocabulary under the domain of ‘Meas Value’ with each dimension represented as a Concept Class.
 #'
 #' @docType data
+#' @keywords internal
 #' 
 #'
 #' @format A data frame with 851 rows and 13 variables:
@@ -451,6 +465,7 @@
 #' Records whose Source Values map to any domain besides Condition, Procedure, Drug, Measurement or Device should be stored in the Observation table. Observations can be stored as attribute value pairs, with the attribute as the Observation Concept and the value representing the clinical fact. This fact can be a Concept (stored in VALUE_AS_CONCEPT), a numerical value (VALUE_AS_NUMBER), a verbatim string (VALUE_AS_STRING), or a datetime (VALUE_AS_DATETIME). Even though Observations do not have an explicit result, the clinical fact can be stated separately from the type of Observation in the VALUE_AS_* fields. It is recommended for Observations that are suggestive statements of positive assertion should have a value of ‘Yes’ (concept_id=4188539), recorded, even though the null value is the equivalent.
 #'
 #' @docType data
+#' @keywords internal
 #' 
 #'
 #' @format A data frame with 184 rows and 17 variables:
@@ -493,6 +508,7 @@
 #' Each Person needs to have at least one OBSERVATION_PERIOD record, which should represent time intervals with a high capture rate of Clinical Events. Some source data have very similar concepts, such as enrollment periods in insurance claims data. In other source data such as most EHR systems these time spans need to be inferred under a set of assumptions. It is the discretion of the ETL developer to define these assumptions. In many ETL solutions the start date of the first occurrence or the first high quality occurrence of a Clinical Event (Condition, Drug, Procedure, Device, Measurement, Visit) is defined as the start of the OBSERVATION_PERIOD record, and the end date of the last occurrence of last high quality occurrence of a Clinical Event, or the end of the database period becomes the end of the OBSERVATION_PERIOD for each Person. If a Person only has a single Clinical Event the OBSERVATION_PERIOD record can be as short as one day. Depending on these definitions it is possible that Clinical Events fall outside the time spans defined by OBSERVATION_PERIOD records. Family history or history of Clinical Events generally are not used to generate OBSERVATION_PERIOD records around the time they are referring to. Any two overlapping or adjacent OBSERVATION_PERIOD records have to be merged into one.
 #'
 #' @docType data
+#' @keywords internal
 #' 
 #'
 #' @format A data frame with 8 rows and 5 variables:
@@ -519,6 +535,7 @@
 #' A Person can have multiple, overlapping, Payer_Plan_Periods in this table. For example, medical and drug coverage in the US can be represented by two Payer_Plan_Periods. The details of the benefit structure of the Plan is rarely known, the idea is just to identify that the Plans are different.
 #'
 #' @docType data
+#' @keywords internal
 #' 
 #'
 #' @format A data frame with 33 rows and 7 variables:
@@ -551,6 +568,7 @@
 #' All Persons in a database needs one record in this table, unless they fail data quality requirements specified in the ETL. Persons with no Events should have a record nonetheless. If more than one data source contributes Events to the database, Persons must be reconciled, if possible, across the sources to create one single record per Person. The content of the BIRTH_DATETIME must be equivalent to the content of BIRTH_DAY, BIRTH_MONTH and BIRTH_YEAR.
 #'
 #' @docType data
+#' @keywords internal
 #' 
 #'
 #' @format A data frame with 10 rows and 18 variables:
@@ -594,6 +612,7 @@
 #' If a procedure lasts more than a day, then it should be recorded as a separate record for each day the procedure occurred, this logic is in lieu of the PROCEDURE_END_DATE, which will be added in a future version of the CDM. When dealing with duplicate records, the ETL must determine whether to sum them up into one record or keep them separate. Things to consider are: - Same Procedure - Same PROCEDURE_DATETIME - Same Visit Occurrence or Visit Detail - Same Provider - Same Modifier for Procedures. Source codes and source text fields mapped to Standard Concepts of the Procedure Domain have to be recorded here.
 #'
 #' @docType data
+#' @keywords internal
 #' 
 #'
 #' @format A data frame with 987 rows and 13 variables:
@@ -628,6 +647,7 @@
 #' Many sources do not make a distinction between individual and institutional providers. The PROVIDER table contains the individual providers. If the source, instead of uniquely identifying individual providers, only provides limited information such as specialty, generic or ‘pooled’ Provider records are listed in the PROVIDER table.
 #'
 #' @docType data
+#' @keywords internal
 #' 
 #'
 #' @format A data frame with 0 rows and 13 variables:
@@ -658,6 +678,7 @@
 #' The RELATIONSHIP table provides a reference list of all types of relationships that can be used to associate any two concepts in the CONCEPT_RELATIONSHIP table.
 #'
 #' @docType data
+#' @keywords internal
 #' 
 #'
 #' @format A data frame with 0 rows and 6 variables:
@@ -705,6 +726,7 @@
 #' Visits can be derived easily if the source data contain coding systems for Place of Service or Procedures, like CPT codes for well visits. In those cases, the codes can be looked up and mapped to a Standard Visit Concept. Otherwise, Visit Concepts have to be identified in the ETL process. This table will contain concepts in the Visit domain. These concepts are arranged in a hierarchical structure to facilitate cohort definitions by rolling up to generally familiar Visits adopted in most healthcare systems worldwide. Visits can be adjacent to each other, i.e. the end date of one can be identical with the start date of the other. As a consequence, more than one-day Visits or their descendants can be recorded for the same day. Multi-day visits must not overlap, i.e. share days other than start and end days. It is often the case that some logic should be written for how to define visits and how to assign Visit_Concept_Id. For example, in US claims outpatient visits that appear to occur within the time period of an inpatient visit can be rolled into one with the same Visit_Occurrence_Id. In EHR data inpatient visits that are within one day of each other may be strung together to create one visit. It will all depend on the source data and how encounter records should be translated to visit occurrences. Providers can be associated with a Visit through the PROVIDER_ID field, or indirectly through PROCEDURE_OCCURRENCE records linked both to the VISIT and PROVIDER tables.
 #'
 #' @docType data
+#' @keywords internal
 #' 
 #'
 #' @format A data frame with 409 rows and 17 variables:
@@ -739,6 +761,7 @@
 #' The VOCABULARY table includes a list of the Vocabularies collected from various sources or created de novo by the OMOP community. This reference table is populated with a single record for each Vocabulary source and includes a descriptive name and other associated attributes for the Vocabulary.
 #'
 #' @docType data
+#' @keywords internal
 #' 
 #'
 #' @format A data frame with 0 rows and 5 variables:

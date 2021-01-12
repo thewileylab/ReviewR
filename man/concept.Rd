@@ -38,4 +38,4 @@ Concepts can represent broad categories (like ‘Cardiovascular disease’), det
 Records in the Standardized Vocabularies tables are derived from national or international vocabularies such as SNOMED-CT, RxNorm, and LOINC, or custom Concepts defined to cover various aspects of observational data analysis.
 }
 }
-\keyword{datasets}
+\keyword{internal}

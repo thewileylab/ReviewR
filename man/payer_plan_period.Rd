@@ -36,4 +36,4 @@ The PAYER_PLAN_PERIOD table captures details of the period of time that a Person
 A Person can have multiple, overlapping, Payer_Plan_Periods in this table. For example, medical and drug coverage in the US can be represented by two Payer_Plan_Periods. The details of the benefit structure of the Plan is rarely known, the idea is just to identify that the Plans are different.
 }
 }
-\keyword{datasets}
+\keyword{internal}

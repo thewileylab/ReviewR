@@ -51,4 +51,4 @@ Observations differ from Measurements in that they do not require a standardized
 Records whose Source Values map to any domain besides Condition, Procedure, Drug, Measurement or Device should be stored in the Observation table. Observations can be stored as attribute value pairs, with the attribute as the Observation Concept and the value representing the clinical fact. This fact can be a Concept (stored in VALUE_AS_CONCEPT), a numerical value (VALUE_AS_NUMBER), a verbatim string (VALUE_AS_STRING), or a datetime (VALUE_AS_DATETIME). Even though Observations do not have an explicit result, the clinical fact can be stated separately from the type of Observation in the VALUE_AS_* fields. It is recommended for Observations that are suggestive statements of positive assertion should have a value of ‘Yes’ (concept_id=4188539), recorded, even though the null value is the equivalent.
 }
 }
-\keyword{datasets}
+\keyword{internal}

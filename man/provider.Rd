@@ -42,4 +42,4 @@ The PROVIDER table contains a list of uniquely identified healthcare providers. 
 Many sources do not make a distinction between individual and institutional providers. The PROVIDER table contains the individual providers. If the source, instead of uniquely identifying individual providers, only provides limited information such as specialty, generic or ‘pooled’ Provider records are listed in the PROVIDER table.
 }
 }
-\keyword{datasets}
+\keyword{internal}
