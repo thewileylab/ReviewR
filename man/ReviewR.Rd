@@ -10,3 +10,7 @@ data models. Within ReviewR, you can browse patient data stored in either
 the OMOP or MIMIC-III data model. In addition to viewing patient data, you
 may also connect to a REDCap project to perform a chart review.
 }
+\section{Development}{
+NA
+}
+

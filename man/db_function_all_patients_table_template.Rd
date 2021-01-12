@@ -14,4 +14,10 @@ db_function_all_patients_table_template
 A character vector containing a function template for creating the
 'All Patients' table as displayed on the "Patient Search" Tab
 }
+\seealso{
+Other Development Templates: 
+\code{\link{db_function_subject_table_template}},
+\code{\link{db_module_template}}
+}
+\concept{Development Templates}
 \keyword{datasets}

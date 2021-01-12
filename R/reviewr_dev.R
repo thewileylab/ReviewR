@@ -4,6 +4,7 @@
 #' A character vector containing a database module template
 #' 
 #' @docType data
+#' @family Development Templates
 #'
 #' @format A character vector with 52 elements
 "db_module_template"
@@ -14,6 +15,7 @@
 #' 'All Patients' table as displayed on the "Patient Search" Tab
 #' 
 #' @docType data
+#' @family Development Templates
 #'
 #' @format A character vector with 22 elements
 "db_function_all_patients_table_template"
@@ -24,6 +26,7 @@
 #' 'Subject Filtered' tables as displayed on the "Chart Review" Tab
 #'  
 #' @docType data
+#' @family Development Templates
 #'
 #' @format A character vector with 15 elements
 "db_function_subject_table_template"
@@ -72,6 +75,8 @@ dt_2_viewer <- function(.data, file = NULL) {
 #' @param mod_name \emph{Required}. A string, denoting the module suffix eg: 'mariadb'
 #' @param display_name \emph{Required}. A string, denoting the module display name eg: 'MariaDB Server'. 
 #' This is the 'user viewable' name that will appear in the database module selector dropdown. 
+#' 
+#' @family Development Functions
 #'
 #' @importFrom glue glue glue_collapse
 #' @importFrom purrr map
@@ -105,6 +110,8 @@ dev_add_database_module <- function(mod_name = NULL, display_name = NULL) {
 #' based on the schema stored in the user supplied CSV.
 #'
 #' @param csv \emph{Required}. The file path of a CSV file containing a data model schema
+#' 
+#' @family Development Functions
 #' 
 #' @importFrom dplyr distinct filter mutate pull relocate row_number tibble
 #' @importFrom glue glue glue_collapse
@@ -273,6 +280,8 @@ dev_add_datamodel <- function(csv) {
 #' directory on your computer to be used by ReviewR in place of the built in credentials.
 #'
 #' @param file_path Path to a "Desktop" Google Client ID JSON on your local system.
+#' 
+#' @family Development Functions
 #'
 #' @export
 #'
