@@ -36,4 +36,4 @@ A Drug Era is defined as a span of time when the Person is assumed to be exposed
 The SQL script for generating DRUG_ERA records can be found here.
 }
 }
-\keyword{datasets}
+\keyword{internal}

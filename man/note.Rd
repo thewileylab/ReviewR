@@ -51,4 +51,4 @@ HL7/LOINC CDO is a standard for consistent naming of documents to support a rang
 According to CDO requirements, only 2 of the 5 dimensions are required to properly annotate a document; Kind of Document and any one of the other 4 dimensions. However, not all the permutations of the CDO dimensions will necessarily yield an existing LOINC code. Each of these dimensions are contained in the OMOP Vocabulary under the domain of ‘Meas Value’ with each dimension represented as a Concept Class.
 }
 }
-\keyword{datasets}
+\keyword{internal}

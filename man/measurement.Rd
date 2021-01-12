@@ -52,4 +52,4 @@ Measurements are predominately lab tests with a few exceptions, like blood press
 Only records where the source value maps to a Concept in the measurement domain should be included in this table. Even though each Measurement always has a result, the fields VALUE_AS_NUMBER and VALUE_AS_CONCEPT_ID are not mandatory as often the result is not given in the source data. When the result is not known, the Measurement record represents just the fact that the corresponding Measurement was carried out, which in itself is already useful information for some use cases. For some Measurement Concepts, the result is included in the test. For example, ICD10 CONCEPT_ID 45548980 ‘Abnormal level of unspecified serum enzyme’ indicates a Measurement and the result (abnormal). In those situations, the CONCEPT_RELATIONSHIP table in addition to the ‘Maps to’ record contains a second record with the relationship_id set to ‘Maps to value’. In this example, the ‘Maps to’ relationship directs to 4046263 ‘Enzyme measurement’ as well as a ‘Maps to value’ record to 4135493 ‘Abnormal’.
 }
 }
-\keyword{datasets}
+\keyword{internal}

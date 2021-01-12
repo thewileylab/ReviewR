@@ -47,4 +47,4 @@ Lab tests are not a procedure, if something is observed with an expected resulti
 If a procedure lasts more than a day, then it should be recorded as a separate record for each day the procedure occurred, this logic is in lieu of the PROCEDURE_END_DATE, which will be added in a future version of the CDM. When dealing with duplicate records, the ETL must determine whether to sum them up into one record or keep them separate. Things to consider are: - Same Procedure - Same PROCEDURE_DATETIME - Same Visit Occurrence or Visit Detail - Same Provider - Same Modifier for Procedures. Source codes and source text fields mapped to Standard Concepts of the Procedure Domain have to be recorded here.
 }
 }
-\keyword{datasets}
+\keyword{internal}

@@ -26,4 +26,4 @@ concept_synonym
 The CONCEPT_SYNONYM table is used to store alternate names and descriptions for Concepts.
 }
 }
-\keyword{datasets}
+\keyword{internal}
