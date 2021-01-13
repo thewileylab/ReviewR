@@ -1,5 +1,5 @@
 Package: ReviewR
-Title: ReviewR: A light-weight, portable tool for reviewing individual patient records
+Title: A Light-Weight, Portable Tool for Reviewing Individual Patient Records
 Version: 2.3.0
 Authors@R: c(
             person('Laura', 'Wiley', email = 'laura.wiley@cuanschutz.edu', role = c('aut'), comment = c(ORCID = "0000-0001-6681-9754")),
@@ -23,7 +23,7 @@ Imports:
     DT,
     gargle,
     glue,
-    golem (>= 0.2.1.90),
+    golem,
     httr,
     jsonlite,
     magrittr,
@@ -44,11 +44,10 @@ Imports:
     stringr,
     tibble,
     tidyr (>= 1.1.0)
-Remotes: 
-    Thinkr-open/golem,
 Suggests: 
     fs,
     gt,
+    here,
     htmltools,
     knitr,
     processx,
