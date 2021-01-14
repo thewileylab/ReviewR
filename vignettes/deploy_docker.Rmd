@@ -29,17 +29,21 @@ Install the version of Docker Desktop that is appropriate for you operating syst
 ### Run ReviewR from Docker
 
 #### Download
-After Docker Desktop has been installed for your operating system, download the ReviewR Dockerfile to your machine from the following link:
+After Docker Desktop has been installed for your operating system, open an R console and fork the ReviewR repository with the `usethis` package: 
 
-* https://raw.githubusercontent.com/thewileylab/ReviewR/master/Dockerfile
-    + Note: This link may open the Dockerfile in your web browser. Right click anywhere in the browser window and select "Save Page As" in order to download the file to your computer. Remember where you save the file!!!
+```{r eval=FALSE}
+# install.packages('usethis')
+usethis::create_from_github(repo_spec = 'thewileylab/ReviewR')
+```
+
+*This step will fork the most recent version of the ReviewR package from GitHub into your working directory which includes additional files and development tools not built directly into the package. This includes an `Dockerfile` which will be used to create a ReviewR container.*
 
 #### Build ReviewR
-Using the command line for your operating system, navigate to the location that you downloaded the Dockerfile. For this example, the Dockerfile was downloaded to the home directory, and is the only Dockerfile in that location. 
+Using the command line for your operating system, navigate to the location containing the forked the repository. For this example, the Dockerfile should reside in a ReviewR folder within your working directory from the previous section. 
 
 ```{bash eval=FALSE}
-cd ~/
-docker build --tag reviewr:latest .
+cd ReviewR
+docker build -t reviewr .
 ```
 
 This will grab all of the dependencies ReviewR requires from the internet and build a Docker image for your system. It may take a while, so grab a cup of coffee... possibly a meal.  
@@ -112,18 +116,19 @@ Docker is now configured!
 
 ### Build ReviewR
 
-First, we'll need to download the Dockerfile to our server from GitHub:
+First, we'll need to fork the ReviewR repository with the `usethis` package. From an R console, run: 
 
-```{bash, eval=F}
-cd ~/
-curl -LJO https://raw.githubusercontent.com/thewileylab/ReviewR/master/Dockerfile
+```{r eval=FALSE}
+# install.packages('usethis')
+usethis::create_from_github(repo_spec = 'thewileylab/ReviewR')
 ```
 
-Next, navigate to the location that you downloaded the Dockerfile. For this example, the Dockerfile was downloaded to the home directory, and is the only Dockerfile in that location. 
+
+Next, navigate to the location that you forked the repository. For this example, the Dockerfile was downloaded to a `ReviewR` directory, in the path that the previous bash commands were run from. 
 
 ```{bash eval=FALSE}
-cd ~/
-docker build --tag reviewr:latest .
+cd ReviewR
+docker build -t reviewr .
 ```
 
 #### Run ReviewR
