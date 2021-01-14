@@ -16,17 +16,23 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-Database connections in ReviewR are created with the help of the [DBI Package](https://db.rstudio.com/dbi/) from RStudio. This allows ReviewR to interact with any database supported by DBI. A full list of compatible database back-ends[*](#dplyr-support) can be found [here](https://db.rstudio.com/databases/). 
-
-Within ReviewR, DBI connection objects are programmatically created to facilitate user connections to patient databases. This connection object defines the type of database, connection information (IP address, port, etc.), and the user with any associated credentials. These connection objects can then be used to create access tables within the database.
+ReviewR manages database connections with the help of the [DBI](https://db.rstudio.com/dbi/) and [dbplyr](https://dbplyr.tidyverse.org/) packages from RStudio. Leveraging these packages, ReviewR is able to operate on remote databases as if they are local, in-memory data frames. R code written with [dplyr](https://dplyr.tidyverse.org/) verbs are automatically translated to SQL by the dbplyr package and sent to the connected database. The translation to the connected database is handled by a DBI connection object, which references a database driver. A full list of dplyr compatible database back-ends can be found [here](https://db.rstudio.com/databases/). 
 
 ### Database Modules
 
-ReviewR facilitates these DBI connections through the use of  [Shiny Modules](https://mastering-shiny.org/scaling-modules.html). Modules are a way to make a complex Shiny application more manageable. They compartmentalize code and are developed for a specific purpose. At their core, modules monitor user inputs that are defined in a User Interface (UI) function, process these inputs in a server function, and return an output. Each module operates in its own namespace, meaning that shiny modules are portable and can be used in other applications or reused within the same application. 
+ReviewR facilitates these DBI connections through the use of  [Shiny Modules](https://mastering-shiny.org/scaling-modules.html). Modules can make complex Shiny applications more manageable. They compartmentalize code and are developed for a specific purpose. 
 
-In ReviewR, this concept is used to create "database modules." Each patient database back-end will have different connection requirements, meaning a new UI is needed to collect the required connection information from the user. By modularizing this connection code, ReviewR can support multiple databases so long as a correctly formatted DBI connection object is returned to the ReviewR application. Thus "database modules" are shiny modules that are responsible for collecting appropriate database credentials and returning a DBI connection object.
+At their core, modules monitor user inputs that are defined in a User Interface (UI) function, process these inputs in a server function, and return an output. Each module operates in its own namespace, meaning that Shiny modules are portable and can be used in other applications or reused within the same application. 
 
-A special database setup module has been created within ReviewR that allows it to interactively switch between database modules that have been developed for the package. These modules consist of a UI to guide the user through establishing a database connection and a server responsible for validating user inputs, establishing a connection, and returning a DBI connection object. Users can extend the functionality of ReviewR by adding developed database modules to `R/mod_database_setup.R` as shown below:
+In ReviewR, this concept is used to create "database modules." Each patient database back-end will have different connection requirements, meaning a new UI is needed to collect the required connection information from the user. By modularizing this connection code, ReviewR can support multiple databases so long as a correctly formatted DBI connection object is returned to the ReviewR application. Thus "database modules" are Shiny modules that are responsible for collecting appropriate database credentials (IP address, port, etc.) and returning a DBI connection object.
+
+ReviewR dynamically switches between developed database modules with its own database *setup* module. This setup module allows users to interactively switch between database modules that have been developed. When selected, each individual module's UI will be presented to guide the user through establishing a database connection.
+
+```{r echo=FALSE}
+knitr::include_graphics('database_module.gif')
+```
+
+Users can extend the functionality of ReviewR by adding developed database modules to the "Database Module Setup" code chunk within `R/mod_database_setup.R` as shown below:
 
 ```{r eval=FALSE}
 # Database Module Setup ----
@@ -40,19 +46,13 @@ A special database setup module has been created within ReviewR that allows it t
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 ```
 
-Once modules are added to the package, they will appear in the Patient Database Module drop down on the setup tab. 
-```{r echo=FALSE}
-knitr::include_graphics('database_module.gif')
-```
+Once modules are added to the database setup, they will appear in the Patient Database Module drop down on the setup tab. 
 
 Read on to learn how to develop a database module for ReviewR!
 
-<a name="dplyr-support"></a>
-\**Note: Supported Databases must also have [dplyr](https://db.rstudio.com/dplyr) support.*
-
 ## Developing a Database Module for ReviewR
 
-Creating a Shiny module is very similar to developing a stand alone Shiny App. When developing a database module for ReviewR, there are a few differences that result because of its package architecture. A [template](#reviewr-database-module-template) has been provided so that some aspects of ReviewR database module development can be highlighted in the sections that follow. 
+Creating a Shiny module is very similar to developing a stand alone Shiny Application. When developing a database module for ReviewR, there are a few differences that result because of its package architecture. A [template](#reviewr-database-module-template) has been provided so that some aspects of ReviewR database module development can be highlighted in the sections that follow. 
 
 If you are familiar with Shiny modules and want to begin developing right away, you may skip ahead to the [Start Developing](#start-developing) Section of this guide.
 
@@ -76,7 +76,12 @@ This will load the most recent version of ReviewR. At this point, you are ready 
 
 ### Start Developing!
 
-A helper function, `dev_database_module()`, has been provided with ReviewR to help jump start the database module development process. Run:
+A helper function, `dev_database_module()`, has been provided with ReviewR to help jump start the database module development process. This function accepts 2 arguments:
+
+* `mod_name` - This is an internal variable that ReviewR uses to keep track of the return values from the module, including the DBI connection object. 
+* `display_name` - This variable will be the "choice" that is presented to users on the Setup tab, so be sure it is descriptive and recognizable!
+
+When ready, rsun:
 
 ```{r eval=FALSE}
 ReviewR:::dev_database_module(mod_name = 'your_module', display_name = 'Your Module Display Name')
