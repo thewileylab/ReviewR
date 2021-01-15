@@ -13,4 +13,10 @@ db_module_template
 \description{
 A character vector containing a database module template
 }
+\seealso{
+Other Development Templates: 
+\code{\link{db_function_all_patients_table_template}},
+\code{\link{db_function_subject_table_template}}
+}
+\concept{Development Templates}
 \keyword{datasets}

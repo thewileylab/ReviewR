@@ -20,3 +20,9 @@ detection module. Additionally, a database_tables.R file will
 be created and opened in R/ with basic table skeletons created
 based on the schema stored in the user supplied CSV.
 }
+\seealso{
+Other Development Functions: 
+\code{\link{dev_add_database_module}()},
+\code{\link{dev_add_google_client_id}()}
+}
+\concept{Development Functions}

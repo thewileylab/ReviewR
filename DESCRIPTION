@@ -1,49 +1,53 @@
 Package: ReviewR
-Title: ReviewR: A light-weight, portable tool for reviewing individual patient records
-Version: 2.1.0
+Title: A Light-Weight, Portable Tool for Reviewing Individual Patient Records
+Version: 2.3.0
 Authors@R: c(
             person('Laura', 'Wiley', email = 'laura.wiley@cuanschutz.edu', role = c('aut'), comment = c(ORCID = "0000-0001-6681-9754")),
             person('Luke', 'Rasmussen', email = 'luke.rasmussen@northwestern.edu', role = c('aut'), comment = c(ORCID = "0000-0002-4497-8049")),
             person('David', 'Mayer', email = 'david.mayer@cuanschutz.edu', role = c('cre', 'aut')),
             person(given = "The Wiley Lab", role = c("cph", "fnd"))
             )
-Description: ReviewR is a portable Shiny tool to help you explore data across different data models. Within ReviewR, you can browse patient data stored in either the OMOP or MIMIC-III data model. In addition to viewing patient data, you may also connect to a REDCap project to perform a chart review.
+Description: A portable Shiny tool to help you explore data across different data models. Within ReviewR, you can browse patient data stored in either the OMOP or MIMIC-III data model. In addition to viewing patient data, you may also connect to a REDCap project to perform a chart review.
 License: BSD_3_clause + file LICENSE
 URL: https://reviewr.thewileylab.org/, https://github.com/thewileylab/ReviewR/
 BugReports: https://github.com/thewileylab/ReviewR/issues
 Depends: 
-    R (>= 3.2.0)
+    R (>= 3.5.0)
 Imports: 
+    bigrquery (>= 1.2.0),
     config,
     dashboardthemes,
     DBI,
     dbplyr,
     dplyr (>= 1.0.0),
     DT,
+    gargle,
     glue,
-    golem (>= 0.2.1.90),
+    golem,
+    httr,
+    jsonlite,
     magrittr,
     pkgload,
     purrr,
+    redcapAPI,
+    REDCapR,
     rlang (>= 0.4.7),
+    RPostgres,
     RSQLite,
     shiny (>= 1.5.0),
     shinycssloaders (>= 1.0.0),
     shinydashboard,
+    shinydashboardPlus,
     shinyjs,
-    shinyREDCap (>= 0.0.2.9002),
     shinyWidgets,
     snakecase,
     stringr,
-    synPUF,
+    tibble,
     tidyr (>= 1.1.0)
-Remotes: 
-    Thinkr-open/golem,
-    thewileylab/shinyBigQuery,
-    thewileylab/shinyREDCap,
-    thewileylab/synPUF
 Suggests: 
+    fs,
     gt,
+    here,
     htmltools,
     knitr,
     processx,

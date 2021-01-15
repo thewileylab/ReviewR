@@ -45,7 +45,6 @@ abstraction_instrument_ui <- function(id) {
 #' @importFrom rlang exec
 #' @importFrom shinyjs disable enable
 #' 
-#' @importFrom shinyREDCap redcap_server 
 
 mod_abstraction_setup_server <- function(id, subject_id){
   moduleServer(
@@ -57,7 +56,7 @@ mod_abstraction_setup_server <- function(id, subject_id){
       namespace <- 'abs-selector-ns'
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Add Abstraction Setup Modules Here!!! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
       ## Add Abstraction Setup Modules Here
-      abstraction_setup_vars <- reactiveValues(redcap = shinyREDCap::redcap_server(id = namespace, subject_id = subject_id) )
+      abstraction_setup_vars <- reactiveValues(redcap = redcap_server(id = namespace, subject_id = subject_id) )
       
       # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
       

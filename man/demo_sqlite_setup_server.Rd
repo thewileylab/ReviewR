@@ -15,3 +15,4 @@ Demo SQLite connection variables
 \description{
 Demo SQLite Setup Server
 }
+\keyword{internal}

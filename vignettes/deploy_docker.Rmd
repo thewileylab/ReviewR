@@ -1,0 +1,201 @@
+---
+title: "Docker Deployment"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Docker Deployment}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Overview
+
+ReviewR is containerized! Users who are less familiar with R, would like to avoid any potential conflicts with existing packages or services, or simply do not want to manage their own R Environment may wish to utilize the containerized version of ReviewR. A Dockerfile may be obtained from GitHub to build, run, and deploy ReviewR in your local or server environment. 
+
+## Docker Desktop
+
+### Install Docker Desktop
+
+Install the version of Docker Desktop that is appropriate for you operating system. Downloads and configuration instructions may be obtained at the following link:
+
+* https://docs.docker.com/desktop/
+
+### Run ReviewR from Docker
+
+#### Download
+After Docker Desktop has been installed for your operating system, open an R console and fork the ReviewR repository with the `usethis` package: 
+
+```{r eval=FALSE}
+# install.packages('usethis')
+usethis::create_from_github(repo_spec = 'thewileylab/ReviewR')
+```
+
+*This step will fork the most recent version of the ReviewR package from GitHub into your working directory which includes additional files and development tools not built directly into the package. This includes an `Dockerfile` which will be used to create a ReviewR container.*
+
+#### Build ReviewR
+Using the command line for your operating system, navigate to the location containing the forked the repository. For this example, the Dockerfile should reside in a ReviewR folder within your working directory from the previous section. 
+
+```{bash eval=FALSE}
+cd ReviewR
+docker build -t reviewr .
+```
+
+This will grab all of the dependencies ReviewR requires from the internet and build a Docker image for your system. It may take a while, so grab a cup of coffee... possibly a meal.  
+
+#### Run ReviewR
+
+After the Docker image has been created, you are ready to run ReviewR on your local system:
+
+```{bash eval=FALSE}
+docker run --publish 1410:1410 --detach --name ReviewR reviewr:latest
+```
+
+That's it! ReviewR can now be accessed from your browser at http://localhost:1410. 
+
+## Server
+
+ReviewR may also be hosted on your server running Docker. This guide will help you to install Docker, build a ReviewR container, and secure and serve the container with NGINX. This guide is for server systems running Ubuntu 18.04. Docker installation instructions have been adapted from: https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04
+
+### Docker Installation
+
+#### Prerequisites
+
+In order to make sure that the latest version of Docker is installed, we will add Docker's official repository to the software manger for you server. To begin, SSH into your system and run:
+
+```{bash, eval=F}
+sudo apt update
+sudo apt install apt-transport-https ca-certificates curl software-properties-common
+```
+
+This will install software packages that are required to add the Docker repository to your system. 
+
+Next, we'll add a GPG key for the official Docker repository to your system. A GPG key helps ensure that this repository is serving legitimate software over an https connection. To add the key, run:
+
+```{bash, eval=F}
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+```
+
+Finally, we can add the Docker repository to our system:
+
+```{bash, eval=F}
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+
+```
+
+With the Docker repository added, we can now install Docker Community Edition to our server:
+```{bash, eval=F}
+sudo apt update
+sudo apt install docker-ce
+```
+
+#### Docker Configuration (Optional)
+
+When first installed, docker commands can only be run by a root user. Depending on your configuration, this may not be desirable behavior. If you would like to be able to run Docker commands as a normal user, some additional configuration is required. 
+
+First, we'll need to add the active user to the "docker" group on the system. This can be accomplished by running: 
+
+```{bash, eval=F}
+sudo usermod -aG docker ${USER}
+```
+
+In order for this group membership to take effect, you'll have to log out of the system and then log back in. 
+
+If instead, you'd like to run docker commands as a different user on the system (not the active user), simply specify the user rather than using the `${USER}` variable in the previous command:
+
+```{bash, eval=F}
+sudo usermod -aG docker adeline
+```
+
+Docker is now configured!
+
+### Build ReviewR
+
+First, we'll need to fork the ReviewR repository with the `usethis` package. From an R console, run: 
+
+```{r eval=FALSE}
+# install.packages('usethis')
+usethis::create_from_github(repo_spec = 'thewileylab/ReviewR')
+```
+
+
+Next, navigate to the location that you forked the repository. For this example, the Dockerfile was downloaded to a `ReviewR` directory, in the path that the previous bash commands were run from. 
+
+```{bash eval=FALSE}
+cd ReviewR
+docker build -t reviewr .
+```
+
+#### Run ReviewR
+
+After the Docker image has been created, you are ready to start the ReviewR container on your system:
+
+```{bash eval=FALSE}
+docker run --publish 1410:1410 --detach --name ReviewR reviewr:latest
+```
+
+At this stage, ReviewR is running on your server on port 1410. You may verify this installation by visiting http://localhost:1410. 
+
+In order to securely host this container at a URL, we'll need to configure NGINX to reverse proxy this container with a Let's Encrypt Certificate. Read on to see how.
+
+## Configuring NGINX to Reverse Proxy ReviewR Docker Container
+
+To serve your ReviewR Docker container with NGINX, we simply need to add and enable a server block, then secure it with the Certbot software which will install and configure a certificate from Let's Encrypt. For information about how to obtain a domain and how to install NGINX, and Certbot please see `vignette('deploy_server')`. 
+
+
+### Configure nginx
+Next, we need to configure NGINX to proxy traffic from web clients to the Docker Container. To accomplish this, we'll need to add a server block to NGINX with information about our container. NGINX server blocks live in `/etc/nginx/sites-available/`. To initialize a server block for our container, issue the following command:
+
+```{bash, eval=F}
+## substitute nano for your preferred text editor: emacs, jed, joe, pico, sandy, vi, vim, etc.
+sudo nano /etc/nginx/sites-available/reviewr_docker
+```
+
+Modify the following server block code by replacing `reviewr.your.domain.url` with the domain name that own. Then, copy this text into the file that you are editing. 
+
+```
+server {
+  server_name   reviewr.your.domain.url;
+
+  location / {
+    proxy_pass  http://localhost:1410;
+  }
+}
+```
+
+**Save and exit the file.** Verify that the has been created successfully by running:
+
+```{bash, eval=F}
+ls -l /etc/nginx/sites-available
+```
+
+A file called "reviewr_docker" should be among the files that is returned. 
+
+Next, we need to enable the server block that we just created. With NGINX, this is accomplished by symlinking the server block to the `/etc/nginx/sites-enabled` folder. Run:
+
+```{bash, eval=F}
+sudo ln -s /etc/nginx/sites-available/reviewr_docker /etc/nginx/sites-enabled/reviewr_docker
+```
+
+At this point, your Shiny Server should be accessible at `http://reviewr.your.domain.url` . If the ReviewR Docker Container is not immediately available at your domain after completing all of the steps to this point, you may have to restart NGINX; `sudo systemctl reload nginx`
+
+Continue to the next section to secure access to your container with Let's Encrypt.
+
+### Securing Docker Container with Let's Encrypt <a id="lets-encrypt"></a>
+
+This portion of the guide assumes that you have already installed Certbot on your system by following the instructions in `vignette('deploy_server')`.
+
+As we have already configured a server block for our container in the previous section, we are ready to run the Certbot software to secure our domain. Run the following code block, substituting `reviewr.your.domain.url` with the domain that you configured in the nginx server block for the ReviewR container:
+
+```{bash, eval=F}
+sudo certbot --nginx -d reviewr.your.domain.url
+```
+
+If this is your first time running Certbot, you will be prompted to enter an email address and agree to the terms of service. After doing so, Certbot will initiate a connection with the Let’s Encrypt server and then begin testing your server to verify that you control the domain you’re requesting a certificate for. Certbot will then ask you whether or not you'd like to redirect all HTTP traffic to HTTPS traffic. It is _highly recommended_ to do so. Please select the option for 'Redirect', which will ensure that users are _only_ capable of accessing your site via secure HTTPS.
+
+Congratulations, your ReviewR container is now secured and ready to accessed securely via https://reviewr.your.domain.url !

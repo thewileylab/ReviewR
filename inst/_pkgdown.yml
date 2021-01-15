@@ -1,0 +1,103 @@
+url: reviewr.thewileylab.org
+template:
+  params:
+    bootswatch: flatly
+home:
+  links:
+  - text: Additional WileyLab tools
+    href: https://www.thewileylab.org/software
+  - text: Privacy Policy
+    href: https://reviewr.thewileylab.org/articles/privacy-policy
+authors:
+  The Wiley Lab:
+    href: https://www.thewileylab.org/ 
+    html: <img src="https://raw.githubusercontent.com/thewileylab/ReviewR/master/man/figures/WileyLab.svg" height="24" />
+navbar:
+  structure:
+    right: [Deploying ReviewR, Using ReviewR, Customizing ReviewR, reference, github]
+  components:
+    home: ~
+    articles: ~
+    Deploying ReviewR:
+      text: Deploying ReviewR
+      menu:
+      - text: Local Deployment
+        href: articles/deploy_local.html
+      - text: Shiny Server Deployment
+        href: articles/deploy_server.html
+      - text: Docker Deployment
+        href: articles/deploy_docker.html  
+      - text: Google BigQuery Deployment
+        href: articles/deploy_bigquery.html  
+    Using ReviewR:    
+      text: Using ReviewR
+      menu:
+      - text: Connect to Patient Record Database
+        href: articles/usage_connect_to_record_database.html
+      - text: Connect to REDCap
+        href: articles/usage_connect_to_redcap.html
+      - text: Perform A Chart Review
+        href: articles/usage_perform_chart_review.html
+    Customizing ReviewR:    
+      text: Customizing ReviewR
+      menu:
+      - text: Support a New Relational Database Management System
+        href: articles/customize_support_new_rdbms.html
+      - text: Support a Custom Datamodel
+        href: articles/customize_support_new_datamodel.html
+reference:
+  - title: "Package Information"
+    contents:
+      - ReviewR
+  - title: "Start Using ReviewR"
+    desc: >
+      Execute this function to launch ReviewR.
+    contents: 
+      - run_app
+  - title: "Data Model Support"
+    desc: "List the data models with built in support in ReviewR."
+    contents:
+      - supported_datamodels
+  - title: "REDCap Support"
+    desc: "Supported REDCap field types and survey complete responses."
+    contents:
+      - redcap_widget_map
+      - redcap_survey_complete
+  - title: "Development Functions"
+    desc: "Use these functions to extend the functionality of ReviewR. These functions are not user facing, please run `devtools::load_all()` or preface each devlopment function with `ReviewR:::` to access their functionality."
+    contents:
+      - dev_add_database_module
+      - dev_add_datamodel
+      - dev_add_google_client_id
+  - title: "Development Templates"
+    desc: "Templates used to extend the functionality of ReviewR. These templates are utilized by the development functions."
+    contents:
+      - db_module_template 
+      - db_function_all_patients_table_template
+      - db_function_subject_table_template
+  - title: "Demonstration Data"
+    desc: "A 10 person subset of the CMS 2008-2010 Data Entrepreneurs’ Synthetic Public Use File (DE-SynPUF) from OHDSI."
+    contents:
+      - care_site
+      - concept
+      - concept_class
+      - concept_synonym
+      - condition_era
+      - condition_occurrence
+      - death
+      - device_exposure
+      - domain
+      - drug_era
+      - drug_exposure
+      - drug_strength
+      - measurement
+      - note
+      - observation
+      - observation_period
+      - payer_plan_period
+      - person
+      - procedure_occurrence
+      - provider
+      - relationship
+      - visit_occurrence
+      - vocabulary

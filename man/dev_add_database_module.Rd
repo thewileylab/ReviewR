@@ -23,3 +23,9 @@ but developers should add imports to the roxygen skeleton as
 necessary to both the UI and server functions to collect
 user info and create a DBI connection object, respectively.
 }
+\seealso{
+Other Development Functions: 
+\code{\link{dev_add_datamodel}()},
+\code{\link{dev_add_google_client_id}()}
+}
+\concept{Development Functions}

@@ -4,6 +4,7 @@
 #' A character vector containing a database module template
 #' 
 #' @docType data
+#' @family Development Templates
 #'
 #' @format A character vector with 52 elements
 "db_module_template"
@@ -14,6 +15,7 @@
 #' 'All Patients' table as displayed on the "Patient Search" Tab
 #' 
 #' @docType data
+#' @family Development Templates
 #'
 #' @format A character vector with 22 elements
 "db_function_all_patients_table_template"
@@ -24,6 +26,7 @@
 #' 'Subject Filtered' tables as displayed on the "Chart Review" Tab
 #'  
 #' @docType data
+#' @family Development Templates
 #'
 #' @format A character vector with 15 elements
 "db_function_subject_table_template"
@@ -72,6 +75,8 @@ dt_2_viewer <- function(.data, file = NULL) {
 #' @param mod_name \emph{Required}. A string, denoting the module suffix eg: 'mariadb'
 #' @param display_name \emph{Required}. A string, denoting the module display name eg: 'MariaDB Server'. 
 #' This is the 'user viewable' name that will appear in the database module selector dropdown. 
+#' 
+#' @family Development Functions
 #'
 #' @importFrom glue glue glue_collapse
 #' @importFrom purrr map
@@ -105,6 +110,8 @@ dev_add_database_module <- function(mod_name = NULL, display_name = NULL) {
 #' based on the schema stored in the user supplied CSV.
 #'
 #' @param csv \emph{Required}. The file path of a CSV file containing a data model schema
+#' 
+#' @family Development Functions
 #' 
 #' @importFrom dplyr distinct filter mutate pull relocate row_number tibble
 #' @importFrom glue glue glue_collapse
@@ -266,3 +273,37 @@ dev_add_datamodel <- function(csv) {
       message('Warning: Did not find "table" or "field" columns in specified CSV. Please ensure these fields are present, or specify a different CSV file.')
     }
 }
+
+#' Add Google Client ID
+#' 
+#' This function will move a Google desktop Client ID json from Google Cloud into the appropriate
+#' directory on your computer to be used by ReviewR in place of the built in credentials.
+#'
+#' @param file_path Path to a "Desktop" Google Client ID JSON on your local system.
+#' 
+#' @family Development Functions
+#'
+#' @export
+#'
+dev_add_google_client_id <- function(file_path) {
+  # Gather Platform Information
+  if(!requireNamespace('fs', quietly = T)) {
+    stop("'fs' package is required for this function to work. Please install it.",
+         call. = FALSE)
+  }
+  info <- .Platform
+  
+  # Clean user input
+  secrets_json <- fs::as_fs_path(file_path) 
+  
+  # Get (file) movin'!
+  if(info$OS.type == 'unix') {
+    fs::dir_create('~/.bq_client_id/')
+    fs::file_copy(path = secrets_json, new_path = '~/.bq_client_id/client_secret.json')
+    } else if (info$OS.type == 'windows') {
+      fs::dir_create('$HOMEPATH$/.bq_client_id/')
+      fs::file_copy(path = secrets_json, new_path = '$HOMEPATH$/.bq_client_id/client_secret.json')
+      } else {
+        message('How did you build R for this operating system?!')
+      }
+  }
