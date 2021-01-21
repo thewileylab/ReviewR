@@ -18,14 +18,14 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-Currently, ReviewR is capable of displaying patient information from databases that conform to the MIMIC-III and OMOP data models. However, we recognize that clinical data can be stored in a variety of different formats. Accordingly, ReviewR can be extended to display patient data for additional data models. This vignette is organized into two parts:
+Currently, ReviewR is capable of displaying patient information from databases that conform to the MIMIC-III and OMOP data models. However, we recognize that clinical data can be stored in a variety of different formats. Accordingly, ReviewR can be extended to display patient data for additional data models. This vignette is organized into two main sections focused on the mechanics of data model support in ReviewR and how to add support for new data models:
 
 * [ReviewR Data Model Support](#reviewr-data-model-support) - Describes how different data models are supported by ReviewR
 * [Adding Support for a New Data Model](#adding-support-for-a-new-data-model) - How to add support for a new data model to ReviewR
 
 ## ReviewR Data Model Support
 
-A data model defines the tables and fields that are contained within a database and is typically described in a schema file. ReviewR uses these definitions to select an appropriate set of functions to display the patient information that ReviewR presents on the "Chart Review" tab. In ReviewR, these functions are referred to as "*table functions*," as they are responsible for querying, formatting, downloading and ultimately displaying patient information from the tables in your connected clinical database. These special functions are dynamically selected based on the data model that is detected when connecting.
+A data model defines the tables and fields that are contained within a database. These definitions are typically described in a schema file, which provides a full listing of the tables and fields contained within a database. ReviewR uses the definitions stored in a data model schema file to select an appropriate set of internal ReviewR functions to display the patient information that is presented on the "Chart Review" tab. In ReviewR, these functions are referred to as "*table functions*," as they are responsible for querying, formatting, downloading and ultimately displaying patient information from the tables in your connected clinical database. These special functions are dynamically selected based on the data model that is detected when connecting.
 
 In order for ReviewR to display patient data stored in _other_ data models, support must be added. Developing support for additional data models requires some understanding of two ReviewR's mechanics: 
 
@@ -102,7 +102,7 @@ omop_table_all_patients <- function(table_map, db_connection) {
 
 The above will retrieve the "person" table in the user connected database, using the _table_map_ and _db_connection_ variables to locate the correct table and securely access the database, respectively. These variables are supplied by ReviewR and should be used as arguments to this function. Additionally, the column containing your data model's subject id (record id, patient id, person id, Medical Record Number, etc.) must be renamed to 'ID'. In the OMOP data model, this field is coded as 'person_id'. Using the `user_field` function, we can locate the field of interest in our connected data by supplying the function with: the _table_map_ variable, the table we know the field to exist in, and the field we'd like to retrieve. We can then transform this column name to ID using the `mutate` function. This informs ReviewR that when a user selects this ID column, all information on the "Chart Review" Tab will need to be filtered to the identifier selected from this column. 
 
-The second type of table function will be responsible for displaying the clinical data as depicted on the "Chart Review" tab. Information in these tables must be filtered down to a singular subject. In addition to the _table_map_ and _db_connection_ variables, these "Subject Specific" ^["Subject Specific" tables will make up the tabsets that appear in the "Chart Review" tab of ReviewR. Each table is filtered to contain information from the subject that has been selected in the Patient Search Section. These functions follow following naming convention:`{data-model-name}_table_{table-name}`] table functions must accept an additional _subject_id_ argument:
+The second type of table function will be responsible for displaying the clinical data as depicted on the "Chart Review" tab. In most clinical data models, any given table will contain a particular type of patient information for *every* patient in the data set. Thus, information in these tables must be filtered down to a singular subject, usually by a numeric identifier. In addition to the _table_map_ and _db_connection_ variables, these "Subject Specific" ^["Subject Specific" tables will make up the tabsets that appear in the "Chart Review" tab of ReviewR. The function will then extract the information for the selected patient and each tabset displayed in ReviewR will only contain information from the subject that has been selected in the Patient Search Section. These functions follow following naming convention:`{data-model-name}_table_{table-name}`] table functions must accept an additional _subject_id_ argument:
 
 ```{r, eval=F}
 omop_table_condition_occurrence <- function(table_map, db_connection, subject_id) {
@@ -174,7 +174,7 @@ When run, this function will process the information stored in the specified sch
 
 Next, you will be asked which field contains the patient identifier in the schema file. A listing of distinct fields will be presented in the viewer pane. Locate the desired field and enter its numeric representation into the console, followed by return.
 
-At this point, the function has all of the information that it needs to add very basic support for your data model to ReviewR. The schema file will automatically be added to the list of supported data models and a R file containing pre populated table functions will open with some very basic table representations coded. At this point, you may with to customize the representation for each table to your liking.  
+At this point, the function has all of the information that it needs to add very basic support for your data model to ReviewR. The schema file will automatically be added to the list of supported data models and a R file containing pre populated table functions will open with some very basic table representations coded. At this point, you may want to customize the representation for each table to your liking.  
 
 If your data model is simple, and each table stands on its own, ie. it does not contain relational information, you are done! Save your changes to the table function file and run:
 

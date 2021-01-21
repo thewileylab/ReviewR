@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-ReviewR is containerized! Users who are less familiar with R, would like to avoid any potential conflicts with existing packages or services, or simply do not want to manage their own R Environment may wish to utilize the containerized version of ReviewR. A Dockerfile may be obtained from GitHub to build, run, and deploy ReviewR in your local or server environment. 
+ReviewR is containerized! Users who are less familiar with R, would like to avoid any potential conflicts with existing packages or services, or simply do not want to manage their own R Environment may wish to utilize the containerized version of ReviewR. A Dockerfile may be obtained from the ReviewR package to build, run, and deploy ReviewR in your local or server environment. 
 
 ## Docker Desktop
 
@@ -29,7 +29,7 @@ Install the version of Docker Desktop that is appropriate for you operating syst
 ### Run ReviewR from Docker
 
 #### Download
-After Docker Desktop has been installed for your operating system, open an R console and fork the ReviewR repository with the `usethis` package: 
+After Docker Desktop has been installed for your operating system we need to obtain the ReviewR source code. Open an R console and fork the ReviewR repository with the `usethis` package: 
 
 ```{r eval=FALSE}
 # install.packages('usethis')
@@ -37,6 +37,10 @@ usethis::create_from_github(repo_spec = 'thewileylab/ReviewR')
 ```
 
 *This step will fork the most recent version of the ReviewR package from GitHub into your working directory which includes additional files and development tools not built directly into the package. This includes an `Dockerfile` which will be used to create a ReviewR container.*
+
+If R is not available on the system you are using, the package source may also be obtained via the following URL: 
+
+* https://github.com/thewileylab/ReviewR/archive/master.zip
 
 #### Build ReviewR
 Using the command line for your operating system, navigate to the location containing the forked the repository. For this example, the Dockerfile should reside in a ReviewR folder within your working directory from the previous section. 
@@ -60,7 +64,11 @@ That's it! ReviewR can now be accessed from your browser at http://localhost:141
 
 ## Server
 
-ReviewR may also be hosted on your server running Docker. This guide will help you to install Docker, build a ReviewR container, and secure and serve the container with NGINX. This guide is for server systems running Ubuntu 18.04. Docker installation instructions have been adapted from: https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04
+If you wish to support multiple concurrent users, ReviewR may also be hosted on your server running Docker. This guide will help you to install Docker, start a Shiny Server container, and serve the ReviewR application securely with NGINX. 
+
+This following guide is for server systems running Ubuntu 18.04. Docker installation instructions have been adapted from: 
+
+* https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04
 
 ### Docker Installation
 
@@ -85,7 +93,6 @@ Finally, we can add the Docker repository to our system:
 
 ```{bash, eval=F}
 sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
-
 ```
 
 With the Docker repository added, we can now install Docker Community Edition to our server:
@@ -114,32 +121,49 @@ sudo usermod -aG docker adeline
 
 Docker is now configured!
 
-### Build ReviewR
+### Build Shiny Server Container
 
-First, we'll need to fork the ReviewR repository with the `usethis` package. From an R console, run: 
+In order to facilitate multiple concurrent users, a Shiny Server container will need to be built, including all of the dependencies that ReviewR requires. With docker already installed, build a suitable Docker image using a Dockerfile contained in the ReviewR source. To begin this process, we need to make a directory to hold the ReviewR application:
+
+```{bash, eval=FALSE}
+mkdir -p ~/srv/shinyapps
+```
+
+Next, clone the ReviewR source from GitHub:
+
+* If R is installed, we can fork the ReviewR package from an R console with the `usethis` package:
 
 ```{r eval=FALSE}
 # install.packages('usethis')
-usethis::create_from_github(repo_spec = 'thewileylab/ReviewR')
+usethis::create_from_github(repo_spec = 'thewileylab/ReviewR', destdir = '~/srv/shinyapps')
 ```
 
+* Otherwise, clone from GitHub using the git commands in a bash terminal: 
 
-Next, navigate to the location that you forked the repository. For this example, the Dockerfile was downloaded to a `ReviewR` directory, in the path that the previous bash commands were run from. 
-
-```{bash eval=FALSE}
-cd ReviewR
-docker build -t reviewr .
+```{bash, eval=FALSE}
+cd ~/srv/shinyapps
+git clone https://github.com/thewileylab/ReviewR 
 ```
 
-#### Run ReviewR
+Finally, build the Shiny Server container using the Dockerfile contained in the ReviewR repository:
 
-After the Docker image has been created, you are ready to start the ReviewR container on your system:
-
-```{bash eval=FALSE}
-docker run --publish 1410:1410 --detach --name ReviewR reviewr:latest
+```{bash, eval=FALSE}
+cd ~/srv/shinyapps/ReviewR/Docker_ShinyServer
+docker build -t shiny-server_reviewr .
 ```
 
-At this stage, ReviewR is running on your server on port 1410. You may verify this installation by visiting http://localhost:1410. 
+Take a quick break while the container image is built. You deserve it!
+
+Once the image has finished building, we can start the container:
+
+```{bash, eval=F}
+docker run -d -p 3838:3838 \
+    -v ~/srv/shinyapps/:/srv/shiny-server/ \
+    -v ~/srv/shinylog/:/var/log/shiny-server/ \
+    shiny-server_reviewr:latest
+```
+
+A Shiny Server container should start and begin serving any applications located in the `~/srv/shinyapps` directory on your system. As ReviewR has been cloned to this directory it should now be accessible via the web at: http://server.ip.address:3838/ReviewR
 
 In order to securely host this container at a URL, we'll need to configure NGINX to reverse proxy this container with a Let's Encrypt Certificate. Read on to see how.
 
@@ -153,17 +177,17 @@ Next, we need to configure NGINX to proxy traffic from web clients to the Docker
 
 ```{bash, eval=F}
 ## substitute nano for your preferred text editor: emacs, jed, joe, pico, sandy, vi, vim, etc.
-sudo nano /etc/nginx/sites-available/reviewr_docker
+sudo nano /etc/nginx/sites-available/shiny-server_reviewr
 ```
 
-Modify the following server block code by replacing `reviewr.your.domain.url` with the domain name that own. Then, copy this text into the file that you are editing. 
+Modify the following server block code by replacing `shiny.your.domain.url` with the domain name that own. Then, copy this text into the file that you are editing. In this example, a sub domain of "shiny" is prepended to the server domain, though your specific configuration may vary. 
 
 ```
 server {
-  server_name   reviewr.your.domain.url;
+  server_name   shiny.your.domain.url;
 
   location / {
-    proxy_pass  http://localhost:1410;
+    proxy_pass  http://localhost:3838;
   }
 }
 ```
@@ -174,15 +198,15 @@ server {
 ls -l /etc/nginx/sites-available
 ```
 
-A file called "reviewr_docker" should be among the files that is returned. 
+A file called "shiny-server_reviewr" should be among the files that is returned. 
 
 Next, we need to enable the server block that we just created. With NGINX, this is accomplished by symlinking the server block to the `/etc/nginx/sites-enabled` folder. Run:
 
 ```{bash, eval=F}
-sudo ln -s /etc/nginx/sites-available/reviewr_docker /etc/nginx/sites-enabled/reviewr_docker
+sudo ln -s /etc/nginx/sites-available/shiny-server_reviewr /etc/nginx/sites-enabled/shiny-server_reviewr
 ```
 
-At this point, your Shiny Server should be accessible at `http://reviewr.your.domain.url` . If the ReviewR Docker Container is not immediately available at your domain after completing all of the steps to this point, you may have to restart NGINX; `sudo systemctl reload nginx`
+At this point, your Shiny Server should be accessible at `http://shiny.your.domain.url/ReviewR` . If the ReviewR Docker Container is not immediately available at your domain after completing all of the steps to this point, you may have to restart NGINX; `sudo systemctl reload nginx`
 
 Continue to the next section to secure access to your container with Let's Encrypt.
 
@@ -190,10 +214,10 @@ Continue to the next section to secure access to your container with Let's Encry
 
 This portion of the guide assumes that you have already installed Certbot on your system by following the instructions in `vignette('deploy_server')`.
 
-As we have already configured a server block for our container in the previous section, we are ready to run the Certbot software to secure our domain. Run the following code block, substituting `reviewr.your.domain.url` with the domain that you configured in the nginx server block for the ReviewR container:
+As we have already configured a server block for our container in the previous section, we are ready to run the Certbot software to secure our domain. Run the following code block, substituting `shiny.your.domain.url` with the domain that you configured in the nginx server block for the ReviewR container:
 
 ```{bash, eval=F}
-sudo certbot --nginx -d reviewr.your.domain.url
+sudo certbot --nginx -d shiny.your.domain.url
 ```
 
 If this is your first time running Certbot, you will be prompted to enter an email address and agree to the terms of service. After doing so, Certbot will initiate a connection with the Let’s Encrypt server and then begin testing your server to verify that you control the domain you’re requesting a certificate for. Certbot will then ask you whether or not you'd like to redirect all HTTP traffic to HTTPS traffic. It is _highly recommended_ to do so. Please select the option for 'Redirect', which will ensure that users are _only_ capable of accessing your site via secure HTTPS.
