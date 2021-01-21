@@ -22,3 +22,4 @@ $run_dev.*
 vignettes/privacy-policy.Rmd
 ^\.github$
 ^inst/_pkgdown\.yml$
+^Docker_ShinyServer$
