@@ -126,7 +126,7 @@ Docker is now configured!
 In order to facilitate multiple concurrent users, a Shiny Server container will need to be built, including all of the dependencies that ReviewR requires. With docker already installed, build a suitable Docker image using a Dockerfile contained in the ReviewR source. To begin this process, we need to make a directory to hold the ReviewR application:
 
 ```{bash, eval=FALSE}
-mkdir ~/srv/shinyapps
+mkdir -p ~/srv/shinyapps
 ```
 
 Next, clone the ReviewR source from GitHub:
@@ -180,11 +180,11 @@ Next, we need to configure NGINX to proxy traffic from web clients to the Docker
 sudo nano /etc/nginx/sites-available/shiny-server_reviewr
 ```
 
-Modify the following server block code by replacing `reviewr.your.domain.url` with the domain name that own. Then, copy this text into the file that you are editing. 
+Modify the following server block code by replacing `shiny.your.domain.url` with the domain name that own. Then, copy this text into the file that you are editing. In this example, a sub domain of "shiny" is prepended to the server domain, though your specific configuration may vary. 
 
 ```
 server {
-  server_name   reviewr.your.domain.url;
+  server_name   shiny.your.domain.url;
 
   location / {
     proxy_pass  http://localhost:3838;
@@ -198,7 +198,7 @@ server {
 ls -l /etc/nginx/sites-available
 ```
 
-A file called "reviewr_docker" should be among the files that is returned. 
+A file called "shiny-server_reviewr" should be among the files that is returned. 
 
 Next, we need to enable the server block that we just created. With NGINX, this is accomplished by symlinking the server block to the `/etc/nginx/sites-enabled` folder. Run:
 
@@ -206,7 +206,7 @@ Next, we need to enable the server block that we just created. With NGINX, this 
 sudo ln -s /etc/nginx/sites-available/shiny-server_reviewr /etc/nginx/sites-enabled/shiny-server_reviewr
 ```
 
-At this point, your Shiny Server should be accessible at `http://reviewr.your.domain.url` . If the ReviewR Docker Container is not immediately available at your domain after completing all of the steps to this point, you may have to restart NGINX; `sudo systemctl reload nginx`
+At this point, your Shiny Server should be accessible at `http://shiny.your.domain.url/ReviewR` . If the ReviewR Docker Container is not immediately available at your domain after completing all of the steps to this point, you may have to restart NGINX; `sudo systemctl reload nginx`
 
 Continue to the next section to secure access to your container with Let's Encrypt.
 
@@ -214,10 +214,10 @@ Continue to the next section to secure access to your container with Let's Encry
 
 This portion of the guide assumes that you have already installed Certbot on your system by following the instructions in `vignette('deploy_server')`.
 
-As we have already configured a server block for our container in the previous section, we are ready to run the Certbot software to secure our domain. Run the following code block, substituting `reviewr.your.domain.url` with the domain that you configured in the nginx server block for the ReviewR container:
+As we have already configured a server block for our container in the previous section, we are ready to run the Certbot software to secure our domain. Run the following code block, substituting `shiny.your.domain.url` with the domain that you configured in the nginx server block for the ReviewR container:
 
 ```{bash, eval=F}
-sudo certbot --nginx -d reviewr.your.domain.url
+sudo certbot --nginx -d shiny.your.domain.url
 ```
 
 If this is your first time running Certbot, you will be prompted to enter an email address and agree to the terms of service. After doing so, Certbot will initiate a connection with the Let’s Encrypt server and then begin testing your server to verify that you control the domain you’re requesting a certificate for. Certbot will then ask you whether or not you'd like to redirect all HTTP traffic to HTTPS traffic. It is _highly recommended_ to do so. Please select the option for 'Redirect', which will ensure that users are _only_ capable of accessing your site via secure HTTPS.
