@@ -60,7 +60,7 @@ After the Docker image has been created, you are ready to run ReviewR on your lo
 docker run --publish 1410:1410 --detach --name ReviewR reviewr:latest
 ```
 
-That's it! ReviewR can now be accessed from your browser at http://localhost:1410. 
+That's it! ReviewR can now be accessed from your browser at `http://localhost:1410`. 
 
 ## Server
 
@@ -163,7 +163,7 @@ docker run -d -p 3838:3838 \
     shiny-server_reviewr:latest
 ```
 
-A Shiny Server container should start and begin serving any applications located in the `~/srv/shinyapps` directory on your system. As ReviewR has been cloned to this directory it should now be accessible via the web at: http://server.ip.address:3838/ReviewR
+A Shiny Server container should start and begin serving any applications located in the `~/srv/shinyapps` directory on your system. As ReviewR has been cloned to this directory it should now be accessible via the web at: `http://server.ip.address:3838/ReviewR`
 
 In order to securely host this container at a URL, we'll need to configure NGINX to reverse proxy this container with a Let's Encrypt Certificate. Read on to see how.
 
@@ -222,4 +222,4 @@ sudo certbot --nginx -d shiny.your.domain.url
 
 If this is your first time running Certbot, you will be prompted to enter an email address and agree to the terms of service. After doing so, Certbot will initiate a connection with the Let’s Encrypt server and then begin testing your server to verify that you control the domain you’re requesting a certificate for. Certbot will then ask you whether or not you'd like to redirect all HTTP traffic to HTTPS traffic. It is _highly recommended_ to do so. Please select the option for 'Redirect', which will ensure that users are _only_ capable of accessing your site via secure HTTPS.
 
-Congratulations, your ReviewR container is now secured and ready to accessed securely via https://reviewr.your.domain.url !
+Congratulations, your ReviewR container is now secured and ready to accessed securely via `https://reviewr.your.domain.url` !

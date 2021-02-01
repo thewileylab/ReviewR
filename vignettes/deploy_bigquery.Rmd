@@ -48,7 +48,7 @@ Due to how Google OAuth clientIDs are configured, if you are using a server depl
     + At the top, click *Create credentials > OAuth client ID*
     + Select "Web application" as the application type
       + Optionally, provide a name for your web application client
-    + Add the https URL of your shiny server ReviewR installation to the Authorized redirect URIs section *eg: https://your.shinyserver.org/ReviewR*
+    + Add the https URL of your shiny server ReviewR installation to the Authorized redirect URIs section *eg: `https://your.shinyserver.url/ReviewR`*
     + Click *Create*
 3. Locate the client ID that was created and click "Download JSON"
     + Save the file as "client_secret.json"
