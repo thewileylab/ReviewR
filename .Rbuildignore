@@ -23,4 +23,4 @@ vignettes/privacy-policy.Rmd
 ^\.github$
 ^inst/_pkgdown\.yml$
 ^Docker_ShinyServer$
-cran-comments.md
+^cran-comments\.md$
