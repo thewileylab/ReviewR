@@ -81,7 +81,7 @@ A helper function, `dev_database_module()`, has been provided with ReviewR to he
 * `mod_name` - This is an internal variable that ReviewR uses to keep track of the return values from the module, including the DBI connection object. 
 * `display_name` - This variable will be the "choice" that is presented to users on the Setup tab, so be sure it is descriptive and recognizable!
 
-When ready, rsun:
+When ready, run:
 
 ```{r eval=FALSE}
 ReviewR:::dev_database_module(mod_name = 'your_module', display_name = 'Your Module Display Name')
