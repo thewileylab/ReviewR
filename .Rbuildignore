@@ -24,3 +24,4 @@ vignettes/privacy-policy.Rmd
 ^inst/_pkgdown\.yml$
 ^Docker_ShinyServer$
 ^cran-comments\.md$
+^CRAN-RELEASE$
