@@ -75,4 +75,6 @@ Please note that while our tool is designed to be as secure as your local comput
 If you encounter bugs, errors, issues or other general unpleasantness, please let us know on [GitHub](https://github.com/thewileylab/ReviewR/issues).
 
 ---
-Please note that the 'ReviewR' project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this project, you agree to abide by its terms.
+## Code of Conduct
+  
+  Please note that the ReviewR project is released with a [Contributor Code of Conduct](reviewr.thewileylab.org/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
