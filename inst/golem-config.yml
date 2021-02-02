@@ -1,6 +1,6 @@
 default:
   golem_name: ReviewR
-  golem_version: 2.3.2
+  golem_version: 2.3.3
   app_prod: no
 production:
   app_prod: yes
