@@ -174,5 +174,5 @@ please let us know on
 ## Code of Conduct
 
 Please note that the ReviewR project is released with a [Contributor
-Code of Conduct](reviewr.thewileylab.org/CODE_OF_CONDUCT.html). By
-contributing to this project, you agree to abide by its terms.
+Code of Conduct](https://reviewr.thewileylab.org/CODE_OF_CONDUCT.html).
+By contributing to this project, you agree to abide by its terms.

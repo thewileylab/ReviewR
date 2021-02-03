@@ -77,4 +77,4 @@ If you encounter bugs, errors, issues or other general unpleasantness, please le
 ---
 ## Code of Conduct
   
-  Please note that the ReviewR project is released with a [Contributor Code of Conduct](reviewr.thewileylab.org/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
+  Please note that the ReviewR project is released with a [Contributor Code of Conduct](https://reviewr.thewileylab.org/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.
