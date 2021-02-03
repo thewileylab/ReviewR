@@ -1,4 +1,46 @@
 
+## Resubmission 3
+
+This is a third resubmission of the 'ReviewR' package. In this version I have addressed the following identified issues:
+
+* Add protocol to the for the contributing code of conduct in README.md
+* Add organization to ORGANIZATION field of LICENSE file, per CRAN template
+* Incremented the package version number to v2.3.4
+
+## Test environments
+
+### GitHub Actions
+
+* windows-latest (release), R 4.0.3 
+* macOS-latest (release), R 4.0.3 
+* ubuntu-20.04 (release), R 4.0.3 
+* ubuntu-20.04 (devel), R devel
+
+### R-hub
+
+* Windows Server 2008 R2 SP1, R-devel, 32/64 bit
+* Ubuntu Linux 20.04.1 LTS, R-release, GCC
+* Fedora Linux, R-devel, clang, gfortran
+
+### Win-builder
+
+* R-devel
+
+## R CMD check results
+There were no ERRORs or WARNINGs. 
+
+There was 1 NOTE:
+
+* checking package dependencies ... NOTE
+  Imports includes 30 non-default packages.
+  Importing from so many packages makes the package vulnerable to any of
+  them becoming unavailable.  Move as many as possible to Suggests and
+  use conditionally.
+  
+  This package utilizes the R Tidyvrese, which has a defined [lifecycle](https://lifecycle.r-lib.org/articles/stages.html) for all functions. This will allow ample time to locate and update any deprecated/retired functions before they become unavailable. 
+
+---
+
 ## Resubmission 2
 
 This is a second resubmission of the 'ReviewR' package. In this version I have addressed the following identified issues:
