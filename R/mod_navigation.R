@@ -60,7 +60,7 @@ all_patient_search_dt <- function(id) {
   ns <- NS(id)
   tagList(
     DT::dataTableOutput(ns('all_patient_search_dt')) %>% withSpinner() ,
-    uiOutput(ns('datamodel_message'))
+    uiOutput(ns('data_model_message'))
     )
   }
 
@@ -122,7 +122,7 @@ chart_review_navigation <- function(id) {
 
 # Server ---- 
 #' @param database_vars Database variables returned from user selected database setup module
-#' @param datamodel_vars Data model variables returned from mod_datamodel_setup
+#' @param data_model_vars Data model variables returned from mod_data_model_detection
 #' @param abstract_vars Abstraction variables returned from user selected abstraction module
 #' @param parent_session the parent environment of this module
 #'
@@ -141,7 +141,7 @@ chart_review_navigation <- function(id) {
 #' @importFrom shinyjs disable hide enable show
 #' @importFrom shinyWidgets updatePickerInput
 #' @importFrom utils tail
-mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_vars, parent_session) {
+mod_navigation_server <- function(id, database_vars, data_model_vars, abstract_vars, parent_session) {
   moduleServer(
     id,
     function(input, output, session) {
@@ -167,9 +167,9 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
         selected_subject_status = NULL
         )
       
-      observeEvent(datamodel_vars$table_functions, ignoreNULL = F, ignoreInit = T, {
+      observeEvent(data_model_vars$table_functions, ignoreNULL = F, ignoreInit = T, {
         ## When disconnecting, reset module to initial state
-        if(is.null(datamodel_vars$table_functions) == TRUE) {
+        if(is.null(data_model_vars$table_functions) == TRUE) {
           message('Resetting patient navigation.')
           ## Clear Navigation Vars
           navigation_vars$dt_proxy <- NULL
@@ -199,10 +199,10 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
             ## Create DT Proxy
             navigation_vars$dt_proxy <- DT::dataTableProxy(outputId = ns('all_patient_search_dt'), session = parent_session)
             ## Retrieve "all patients" table
-            all_patients_args <- list(table_map = datamodel_vars$table_map, 
+            all_patients_args <- list(table_map = data_model_vars$table_map, 
                                       db_connection = database_vars()$db_con
                                       )
-            navigation_vars$all_patients <- rlang::exec(datamodel_vars$all_patients_table %>% 
+            navigation_vars$all_patients <- rlang::exec(data_model_vars$all_patients_table %>% 
                                                           pull('function_name'),
                                                         !!!all_patients_args
                                                         )
@@ -270,10 +270,10 @@ mod_navigation_server <- function(id, database_vars, datamodel_vars, abstract_va
         })
       
       # Data model ----
-      ## Render Datamodel Output
-      output$datamodel_message <- renderText({
+      ## Render Datam Model Output
+      output$data_model_message <- renderText({
         req(database_vars()$is_connected == 'yes')
-        datamodel_vars$message
+        data_model_vars$message
       })
       
       # Subject Info ----
