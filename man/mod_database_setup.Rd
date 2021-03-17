@@ -33,7 +33,7 @@ This module consists of the following components:
 \subsection{Module UI function}{
 
 \itemize{
-\item{\code{database_setup_ui}}: A uiOutput with a dropdown selector containing
+\item{\code{database_setup_ui}}: A tagList with a dropdown selector containing
 available database modules.
 }
 }

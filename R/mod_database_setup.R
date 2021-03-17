@@ -15,7 +15,7 @@
 #' ## Module UI function
 #' 
 #' \itemize{
-#' \item{`database_setup_ui`}: A uiOutput with a dropdown selector containing 
+#' \item{`database_setup_ui`}: A tagList with a dropdown selector containing 
 #' available database modules.
 #' }
 #' ## Module Server function
