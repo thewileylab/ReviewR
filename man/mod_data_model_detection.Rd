@@ -16,11 +16,11 @@ data_model_detection_server(id, database_vars, navigation_vars, parent_session)
 \arguments{
 \item{id}{The Module namespace}
 
-\item{database_vars}{Database variables returned from the database setup module}
+\item{database_vars}{A reactiveValues object as returned by \link[ReviewR]{mod_database_setup}.}
 
-\item{navigation_vars}{Navigation variables returned from mod_navigation}
+\item{navigation_vars}{A reactiveValues object as returned by \link[ReviewR]{mod_navigation}.}
 
-\item{parent_session}{The parent environment of this module}
+\item{parent_session}{The session information from the parent environment of this module.}
 }
 \value{
 \emph{data_model_detection_ui}:

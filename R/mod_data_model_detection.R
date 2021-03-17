@@ -183,9 +183,9 @@ patient_chart_ui <- function(id) {
 
 # Server ----
 #' @rdname mod_data_model_detection
-#' @param database_vars Database variables returned from the database setup module
-#' @param navigation_vars Navigation variables returned from mod_navigation
-#' @param parent_session The parent environment of this module
+#' @param database_vars A reactiveValues object as returned by \link[ReviewR]{mod_database_setup}.
+#' @param navigation_vars A reactiveValues object as returned by \link[ReviewR]{mod_navigation}.
+#' @param parent_session The session information from the parent environment of this module.
 #'  
 #' @keywords internal
 #' 
