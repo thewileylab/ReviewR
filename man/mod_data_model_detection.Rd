@@ -46,8 +46,8 @@ the "Chart Review" tab.
 }}
 }
 \description{
-This module is designed to interrogate a user connected database, comparing it
-with known common data models to determine the both the data model and version
+This module will interrogate a user connected database, comparing it with
+known common data models to determine the both the data model and version
 (when applicable) of the user's database.
 
 It informs the rest of the application how to interpret and display the data
