@@ -1,14 +1,47 @@
-# UI ----
-#' Module Selector
-#'
-#' A Shiny module to select from available ReviewR database modules
-#'
-#' @param id 
+# Module Documentation ----
+#' Database Module Selector
 #' 
-#' @rdname mod_database_setup
+#' @description 
+#' 
+#' This module allows the user to select from available ReviewR database modules. It 
+#' dynamically returns the database setup UI and database connection information, based 
+#' on the user's selection. 
+#' 
+#' See \code{vignette("customize_support_new_rdbms", package = "ReviewR")} for more 
+#' information on database modules and how to add support for additional databases.
+#' 
+#' This module consists of the following components:
+#' 
+#' ## Module UI function
+#' 
+#' \itemize{
+#' \item{`database_setup_ui`}: A uiOutput with a dropdown selector containing 
+#' available database modules.
+#' }
+#' ## Module Server function
+#' \itemize{
+#' \item{`database_setup_server`}: Processes user selection and returns the selected
+#' database module's configuration UI and any connection information returns.
+#' }
+#' 
+#' @param id The Module namespace
+#' @name mod_database_setup
+#' 
+#' @return 
+#' *database_setup_ui*:
+#' \item{tagList}{A tagList containing a selectInput that allows for selection of 
+#' available database setup modules.}
+#' *database_setup_server*:
+#' \item{reactiveValues}{This module has no returns of its own, but will pass on
+#' the `reactiveValues` returns from the user selected database module.}
+#' 
+NULL
+#> NULL
+
+# UI ----
+#' @rdname  mod_database_setup
 #' 
 #' @keywords internal
-#' @export
 #'
 #' @importFrom shiny NS tagList 
 database_setup_ui <- function(id) {
@@ -23,15 +56,10 @@ database_setup_ui <- function(id) {
     )
 }
 
-# Server ----    
-#' Module Selector
-#'
-#' @param id 
-#' 
-#' @rdname mod_database_setup
+# Server ----
+#' @rdname  mod_database_setup
 #' 
 #' @keywords internal
-#' @export
 #' 
 #' @import dbplyr
 #' @importFrom magrittr %>% extract2
@@ -40,7 +68,7 @@ database_setup_ui <- function(id) {
 #' @importFrom shinyjs disable enable
 #' 
 
-mod_database_setup_server <- function(id){
+database_setup_server <- function(id){
   moduleServer(
     id,
     function(input, output, session) {
