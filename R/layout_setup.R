@@ -24,8 +24,8 @@ setup <- function() {
                  style = 'background: #ebf0f6',
                  ## Database Setup
                  database_setup_ui('db-selector'),
-                 ## Datamodel Detection
-                 datamodel_detection_ui('data-model')
+                 ## Data Model Detection
+                 data_model_detection_ui('data-model')
                  )
                ),
         column(width = 6,

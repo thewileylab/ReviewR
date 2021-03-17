@@ -63,7 +63,7 @@ In the event that the data model cannot be determined, ReviewR will notify you w
 knitr::include_graphics('connect2db_error.png')
 ```
 
-See the [Support a Custom Data Model](https://reviewr.thewileylab.org/articles/customize_support_new_datamodel.html) vignette to learn how to add support for your particular dataset. 
+See the [Support a Custom Data Model](https://reviewr.thewileylab.org/articles/customize_support_new_data_model.html) vignette to learn how to add support for your particular dataset. 
 
 ## Next Steps
 

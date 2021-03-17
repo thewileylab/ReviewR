@@ -10,7 +10,7 @@ navigation_message(id)
 mod_navigation_server(
   id,
   database_vars,
-  datamodel_vars,
+  data_model_vars,
   abstract_vars,
   parent_session
 )
@@ -20,7 +20,7 @@ mod_navigation_server(
 
 \item{database_vars}{Database variables returned from user selected database setup module}
 
-\item{datamodel_vars}{Data model variables returned from mod_datamodel_setup}
+\item{data_model_vars}{Data model variables returned from mod_data_model_detection}
 
 \item{abstract_vars}{Abstraction variables returned from user selected abstraction module}
 
