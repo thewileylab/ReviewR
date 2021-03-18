@@ -146,7 +146,7 @@ chart_review_navigation <- function(id) {
 #' @importFrom shinyjs disable hide enable show
 #' @importFrom shinyWidgets updatePickerInput
 #' @importFrom utils tail
-mod_navigation_server <- function(id, database_vars, data_model_vars, abstract_vars, parent_session) {
+navigation_server <- function(id, database_vars, data_model_vars, abstract_vars, parent_session) {
   moduleServer(
     id,
     function(input, output, session) {
