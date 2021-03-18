@@ -20,7 +20,7 @@ reviewr_datatable(.data, dom = "ftip", column_filter = "top", search_term = "")
 A \link[DT:datatable]{DT::datatable}
 }
 \description{
-This is a wrapper function around \link[DT:datatable]{DT::datatable} which applies common extensions
+This is a wrapper function around \link[DT:datatable]{DT::datatable} which applies common extensions,
 options and default values used throughout the ReviewR application.
 }
 \keyword{internal}
