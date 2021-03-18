@@ -6,6 +6,8 @@
 #' @importFrom shiny shinyApp
 #' @importFrom golem with_golem_options
 #' 
+#' @return No return value, called to start the ReviewR Shiny Application!
+#' 
 #  __________            .__              __________ 
 #  \______   \ _______  _|__| ______  _  _\______   \
 #   |       _// __ \  \/ /  |/ __ \ \/ \/ /|       _/
