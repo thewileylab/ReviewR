@@ -2,19 +2,21 @@
 # Helpers ----
 #' Installed App
 #' 
-#' Invisibly returns an OAuth app 
-#'
-#' @return An Invisible OAuth consumer application, produced by [httr::oauth_app()]
-#'
-#' @export
-#' @keywords internal
+#' Invisibly returns an OAuth app.
+#' 
 #' @rdname internal-assets
+#' @keywords internal
+#' 
+#' @return An Invisible OAuth consumer application, produced by [httr::oauth_app()]
+#' 
+
 installed_app <- function() {
   sbqoa()
 }
-#' @export
-#' @keywords internal
+
 #' @rdname internal-assets
+#' @keywords internal
+#' 
 #' @noRd
 print.hidden_fn <- function(x, ...) {
   x <- 'Nope'
@@ -31,8 +33,7 @@ print.hidden_fn <- function(x, ...) {
 #' @importFrom shinyjs useShinyjs
 #' @importFrom shinyWidgets useShinydashboard useShinydashboardPlus
 #' @noRd
-sbq_add_external_resources <- function(){
-  
+sbq_add_external_resources <- function() {
   add_resource_path(
     'www', app_sys('app/www')
   )
@@ -46,16 +47,67 @@ sbq_add_external_resources <- function(){
     )
 }
 
-# UI ----
-#' BigQuery Setup UI
-#'
-#' This module is designed to guide a user through the process of authenticating with Google BigQuery. It is responsible for returning an authorization token, the user selected project,the user selected dataset, and a DBI connection to a BigQuery Dataset.
-#'
-#' @param id The module namespace
+# Module Documentation ----
+#' Google BigQuery Database Module
 #' 
-#' @return The BigQuery Setup UI
+#' @description
+#' 
+#' This module is designed to guide a user through the process of authenticating with 
+#' Google BigQuery. It is responsible for retrieving:
+#' \itemize{
+#' \item{An OAuth 2.0 authorization token}
+#' \item{A list of GCP projects that are available to the authenticated user}
+#' \item{A list of BigQuery datasets contained within available projects}
+#' }
+#' The user is visually guided through the authentication process. Once authenticated, 
+#' the user is presented with project/dataset selections and once configured a 
+#' [DBI::dbConnect()] object is returned.
+#' 
+#' This module consists of the following components:
+#' 
+#' ## Module UI function
+#' 
+#' \itemize{
+#' \item{`bigquery_setup_ui`}: A uiOutput responsible for guiding a user through 
+#' the Google OAuth 2.0 authorization flow and graphically selecting a Google Big
+#' Query project/dataset.
+#' }
+#' ## Module Server function
+#' \itemize{
+#' \item{`bigquery_setup_server`}: The logic that controls the graphical user 
+#' interface, including redirecting to Google, receiving an authorization code, 
+#' requesting an authorization token, and authenticating the application. 
+#' Ultimately responsible for returning public Google user information and a 
+#' [DBI::dbconnect()] object used to connect to the configured BigQuery database.
+#' }
+#' 
+#' @param id The module namespace
+#' @name mod_bigquery
+#' 
+#' @return 
+#' *bigquery_setup_ui*:
+#' \item{tagList}{The Google BigQuery Setup UI}
+#' *bigquery_setup_server*:
+#' \item{reactiveValues}{
+#' \itemize{
+#' \item{moduleName}: A string, containing the module moniker.
+#' \item{moduleType}: A string, with the module type (what does it do?)
+#' \item{setup_ui}: The module setup ui function
+#' \item{is_connected}: A string, with module connection status. Valid statuses are
+#' 'yes' or 'no'.
+#' \item{db_con}: A [DBI::dbConnect] object, containing the user configured BigQuery
+#' connection information. 
+#' \item{user_info}: A list, containing public user information from Google about 
+#' the currently authenticated user.
+#' }}
+#' 
+NULL
+#> NULL
+
+# UI ----
+#' @rdname mod_bigquery
+#' 
 #' @keywords internal
-#' @export
 #' 
 #' @importFrom shinydashboard box
 #' @importFrom shinyjs hidden
@@ -79,14 +131,12 @@ bigquery_setup_ui <- function(id) {
   }
 
 # Server ----
-#' BigQuery Setup Server
-#'
-#' @param id The Module namespace
-#' @param secrets_json Location of Google secrets json. Defaults to '/srv/shiny-server/.bq_client_id/client_secret.json' for Shiny Server installations.
-#'
-#' @return BigQuery connection variables and user information
+#' @rdname mod_bigquery
+#' 
 #' @keywords internal
-#' @export
+#' 
+#' @param secrets_json A string, containing the location of Google secrets json. Defaults 
+#' to '/srv/shiny-server/.bq_client_id/client_secret.json' for Shiny Server installations.
 #'
 #' @importFrom bigrquery bq_auth bq_projects bq_project_datasets bigquery dbDisconnect
 #' @importFrom DBI dbConnect
@@ -99,7 +149,7 @@ bigquery_setup_ui <- function(id) {
 #' @importFrom purrr flatten
 #' @importFrom rlang .data
 #' @importFrom shinyjs runjs show hide
-#' @importFrom shinydashboardPlus widgetUserBox
+#' @importFrom shinydashboardPlus userBox userDescription
 #' @importFrom shinyWidgets actionBttn
 #' @importFrom tibble enframe
 #' @importFrom tidyr unnest
@@ -289,40 +339,44 @@ bigquery_setup_server <- function(id, secrets_json = '/srv/shiny-server/.bq_clie
           } else { 
             tagList(
               div(
-                shinydashboardPlus::widgetUserBox(title = bigquery_export$user_info$name,
-                                                  width = 12,
-                                                  subtitle = bigquery_export$user_info$email,
-                                                  src = bigquery_export$user_info$picture,
-                                                  type = 2, 
-                                                  color = 'primary',
-                                                  collapsible = FALSE,
-                                                  HTML(glue::glue('{bigquery_export$user_info$given_name}, you have successfully authenticated with Google BigQuery. Please select a dataset from from the list of available projects, or sign out and sign in with a different Google Account.<br><br>')),
-                                                  br(),
-                                                  selectizeInput(inputId = ns('bq_project_id'),
-                                                                 label = 'Select from Available Google Projects:',
-                                                                 choices = bigquery_setup$bq_projects,
-                                                                 options = list(create = FALSE,
-                                                                                placeholder = 'No Available Projects')
-                                                                 ),
-                                                  selectizeInput(inputId = ns('bq_dataset_id'),
-                                                                 label = 'Select from Available BigQuery Datasets:',
-                                                                 choices = NULL
-                                                                 ),
-                                                  shinyjs::hidden(
-                                                    div(id = ns('bq_connect_div'),
-                                                        actionButton(inputId = ns('bq_connect'),label = 'Connect',icon = icon('cloud'))
-                                                        )
-                                                    ),
-                                                  footer = fluidRow(
-                                                    div(actionBttn(inputId = ns('logout'),
-                                                                   label = 'Sign Out of Google',
-                                                                   style = 'jelly',
-                                                                   icon = icon(name = 'sign-out-alt')
-                                                                   ),
-                                                        style="float:right;margin-right:20px"
-                                                        )
-                                                    )
-                                                  ), 
+                shinydashboardPlus::userBox(
+                  title = userDescription(
+                    title = bigquery_export$user_info$name,
+                    subtitle = bigquery_export$user_info$email,
+                    image = bigquery_export$user_info$picture,
+                    type = 2),
+                  width = 12,
+                  status = 'primary',
+                  collapsible = FALSE,
+                  HTML(glue::glue('{bigquery_export$user_info$given_name}, you have successfully authenticated with Google BigQuery. Please select a dataset from from the list of available projects, or sign out and sign in with a different Google Account.<br><br>')),
+                  br(),
+                  selectizeInput(inputId = ns('bq_project_id'),
+                                 label = 'Select from Available Google Projects:',
+                                 choices = bigquery_setup$bq_projects,
+                                 options = list(create = FALSE,
+                                                placeholder = 'No Available Projects')
+                                 ),
+                  selectizeInput(inputId = ns('bq_dataset_id'),
+                                 label = 'Select from Available BigQuery Datasets:',
+                                 choices = NULL
+                                 ),
+                  shinyjs::hidden(
+                    div(
+                      id = ns('bq_connect_div'),
+                      actionButton(inputId = ns('bq_connect'),label = 'Connect',icon = icon('cloud'))
+                      )
+                    ),
+                  footer = fluidRow(
+                    div(
+                      actionBttn(inputId = ns('logout'),
+                                 label = 'Sign Out of Google',
+                                 style = 'jelly',
+                                 icon = icon(name = 'sign-out-alt')
+                                 ),
+                      style="float:right;margin-right:20px"
+                      )
+                    )
+                  ), 
                 style = 'margin-left:-15px;margin-right:-15px'
                 )
               ) 
@@ -369,35 +423,38 @@ bigquery_setup_server <- function(id, secrets_json = '/srv/shiny-server/.bq_clie
       google_configured_ui <- reactive({
         req(bigquery_export$is_connected == 'yes')
         tagList(
-          shinydashboardPlus::widgetUserBox(title = bigquery_export$user_info$name,
-                                            width = 12,
-                                            subtitle = bigquery_export$user_info$email,
-                                            src = bigquery_export$user_info$picture,
-                                            type = 2, 
-                                            color = 'primary',
-                                            collapsible = FALSE,
-                                            HTML(paste('<H3>Success!!</H3>',
-                                                       'You have connected to a Google BigQuery database.',
-                                                       '<br>',
-                                                       '<br>',
-                                                       '<H4>Connection Information:</H4>',
-                                                       '<b>Project:</b>', bigquery_setup$bq_project_id,
-                                                       '<br>',
-                                                       '<b>Dataset:</b>', bigquery_setup$bq_dataset_id,
-                                                       '<br>'
-                                                       )
-                                                 ),
-                                            actionButton(inputId = ns('sbq_disconnect'), label = 'Disconnect'),
-                                            footer = fluidRow(
-                                              div(actionBttn(inputId = ns('logout_2'),
-                                                             label = 'Sign Out of Google',
-                                                             style = 'jelly',
-                                                             icon = icon(name = 'sign-out-alt')
-                                                             ),
-                                                  style="float:right;margin-right:20px"
-                                                  )
-                                              )
-                                            )
+          shinydashboardPlus::userBox(
+            title = userDescription(
+              title = bigquery_export$user_info$name,
+              subtitle = bigquery_export$user_info$email,
+              image = bigquery_export$user_info$picture,
+              type = 2),
+            width = 12,
+            status = 'primary',
+            collapsible = FALSE,
+            HTML(paste('<H3>Success!!</H3>',
+                       'You have connected to a Google BigQuery database.',
+                       '<br>',
+                       '<br>',
+                       '<H4>Connection Information:</H4>',
+                       '<b>Project:</b>', bigquery_setup$bq_project_id,
+                       '<br>',
+                       '<b>Dataset:</b>', bigquery_setup$bq_dataset_id,
+                       '<br>'
+                       )
+                 ),
+            actionButton(inputId = ns('sbq_disconnect'), label = 'Disconnect'),
+            footer = fluidRow(
+              div(
+                actionBttn(inputId = ns('logout_2'),
+                           label = 'Sign Out of Google',
+                           style = 'jelly',
+                           icon = icon(name = 'sign-out-alt')
+                           ),
+                style="float:right;margin-right:20px"
+                )
+              )
+            )
           )
         })
       
