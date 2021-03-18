@@ -12,8 +12,9 @@
 #'          \/     \/             \/               \/ 
 #'                                       by WileyLab
 #'
-#' Making manual record review fun since 2019!}
-#'
+#' Making manual record review fun since 2019!
+#' 
+#' authors:  Laura Wiley, Luke Rasmussen, David Mayer}
 #'
 #' @param ... A list of options to pass to golem
 #'
@@ -22,11 +23,7 @@
 #' @importFrom golem with_golem_options
 #' 
 #' @return No return value, called to start the ReviewR Shiny Application!
-
-
-#
-# authors:  Laura Wiley, Luke Rasmussen, David Mayer
-#
+#' 
 run_app <- function(...) {
   with_golem_options(
     app = shinyApp(ui = app_ui, 
