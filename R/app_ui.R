@@ -30,7 +30,7 @@ app_ui <- function() {
 #' @importFrom golem add_resource_path activate_js favicon bundle_resources
 #' @importFrom shinyjs useShinyjs
 #' @importFrom shinyWidgets useShinydashboard useSweetAlert
-golem_add_external_resources <- function(){
+golem_add_external_resources <- function() {
   add_resource_path(
     'www', app_sys('app/www')
   )
