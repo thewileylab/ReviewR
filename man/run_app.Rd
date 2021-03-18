@@ -24,5 +24,7 @@ Start the ReviewR Application in a browser on port 1410.
          \/     \/             \/               \/ 
                                       by WileyLab
 
-Making manual record review fun since 2019!}
+Making manual record review fun since 2019!
+
+authors:  Laura Wiley, Luke Rasmussen, David Mayer}
 }
