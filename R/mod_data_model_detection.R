@@ -273,7 +273,7 @@ data_model_detection_server <- function(id, database_vars, navigation_vars, pare
           if(any(str_detect(string = search(), pattern = 'package:ReviewR') ) == FALSE) {
             attachNamespace("ReviewR")
             }
-          data_model_vars$table_functions <- lsf.str('package:ReviewR', pattern = glue::glue('{data_model_vars$table_map$data_model}_table')) %>% 
+          data_model_vars$table_functions <- lsf.str(envir = asNamespace('ReviewR'), pattern = glue::glue('{data_model_vars$table_map$data_model}_table')) %>% 
             as.character() %>% 
             dplyr::tibble(function_name = .) %>% 
             # filter(stringr::str_detect(.data$function_name, glue::glue('{data_model_vars$table_map$data_model}_table') )) %>% 
