@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_app.R
 \name{run_app}
 \alias{run_app}
-\title{Run the ReviewR Application}
+\title{Run Application}
 \usage{
 run_app(...)
 }
@@ -13,5 +13,16 @@ run_app(...)
 No return value, called to start the ReviewR Shiny Application!
 }
 \description{
-Run the ReviewR Application
+Start the ReviewR Application in a browser on port 1410.
+
+\preformatted{
+ __________            .__              __________ 
+ \______   \ _______  _|__| ______  _  _\______   \
+  |       _// __ \  \/ /  |/ __ \ \/ \/ /|       _/
+  |    |   \  ___/\   /|  \  ___/\     / |    |   \
+  |____|_  /\___  >\_/ |__|\___  >\/\_/  |____|_  /
+         \/     \/             \/               \/ 
+                                      by WileyLab
+
+Making manual record review fun since 2019!}
 }
