@@ -1,6 +1,6 @@
 Package: ReviewR
 Title: A Light-Weight, Portable Tool for Reviewing Individual Patient Records
-Version: 2.3.4
+Version: 2.3.5
 Authors@R: c(
             person('Laura', 'Wiley', email = 'laura.wiley@cuanschutz.edu', role = c('aut'), comment = c(ORCID = "0000-0001-6681-9754")),
             person('Luke', 'Rasmussen', email = 'luke.rasmussen@northwestern.edu', role = c('aut'), comment = c(ORCID = "0000-0002-4497-8049")),
@@ -44,9 +44,9 @@ Imports:
     shiny (>= 1.5.0),
     shinycssloaders (>= 1.0.0),
     shinydashboard,
-    shinydashboardPlus,
+    shinydashboardPlus (>= 2.0.0),
     shinyjs,
-    shinyWidgets,
+    shinyWidgets (>= 0.6.0),
     snakecase,
     stringr,
     tibble,
