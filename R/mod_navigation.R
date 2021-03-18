@@ -1,14 +1,19 @@
 # Helper Functions ---- 
 #' ReviewR DataTable
+#' 
+#' @description 
+#' This is a wrapper function around [DT::datatable] which applies common extensions,
+#' options and default values used throughout the ReviewR application.
 #'
 #' @param .data A local tibble or data frame to be rendered in the ReviewR UI
-#' @param dom Define the table control elements to appear on the page and in what order
+#' @param dom Define the table control elements to appear on the page and in what order. See:
+#' \url{https://datatables.net/reference/option/dom}
 #' @param column_filter Where to display individual column filters. Valid entries are: 'top','bottom','none'
 #' @param search_term A string or regular expression used as a filter for patient data
 #' 
-#' @return return a DT with custom options
+#' @return A [DT::datatable]
 #' @keywords internal
-#' @export 
+#'
 #' @importFrom DT datatable
 #'
 reviewr_datatable <- function(.data, dom = 'ftip', column_filter = 'top', search_term = '') {
