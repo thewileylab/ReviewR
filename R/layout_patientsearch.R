@@ -1,11 +1,13 @@
 #' ReviewR Patient Search Tab
 #'
-#' This file contains all elements that are needed to render the Patient Search Tab
+#' This function contains all of the elements that control the layout of 
+#' the Patient Search Tab.
 #'
-#' @return Patient Search Tab UI Output
-#' @export
+#' @return [shiny::renderUI] Output containing the Patient Search Tab
+#' 
 #' @keywords internal
-#'
+#' @family layout
+#' 
 patient_search <- function() {
   renderUI({
     tagList(

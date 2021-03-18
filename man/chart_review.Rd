@@ -7,9 +7,17 @@
 chart_review()
 }
 \value{
-Chart Review Tab UI Output
+\link[shiny:renderUI]{shiny::renderUI} Output containing the Chart Review Tab
 }
 \description{
-This file contains all elements that are needed to render the Chart Review Tab
+This function contains all of the elements that control the layout of
+the Chart Review Tab.
 }
+\seealso{
+Other layout: 
+\code{\link{homepage}()},
+\code{\link{patient_search}()},
+\code{\link{setup}()}
+}
+\concept{layout}
 \keyword{internal}

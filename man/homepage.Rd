@@ -7,9 +7,17 @@
 homepage()
 }
 \value{
-Homepage Tab UI Output
+\link[shiny:renderUI]{shiny::renderUI} Output containing the Homepage Tab
 }
 \description{
-This file contains all the UI elements that are needed to render the Homepage Tab, which contains basic information about using ReviewR.
+This function contains all of the elements that control the layout of
+the Homepage Tab.
 }
+\seealso{
+Other layout: 
+\code{\link{chart_review}()},
+\code{\link{patient_search}()},
+\code{\link{setup}()}
+}
+\concept{layout}
 \keyword{internal}
