@@ -2,12 +2,12 @@
 % Please edit documentation in R/mod_navigation.R
 \name{navigation_message}
 \alias{navigation_message}
-\alias{mod_navigation_server}
+\alias{navigation_server}
 \title{Patient Navigation}
 \usage{
 navigation_message(id)
 
-mod_navigation_server(
+navigation_server(
   id,
   database_vars,
   data_model_vars,
