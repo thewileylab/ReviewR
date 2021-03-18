@@ -9,6 +9,9 @@ run_app(...)
 \arguments{
 \item{...}{A list of options to pass to golem}
 }
+\value{
+No return value, called to start the ReviewR Shiny Application!
+}
 \description{
 Run the ReviewR Application
 }
