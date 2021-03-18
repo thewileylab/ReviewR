@@ -54,17 +54,17 @@ app_server <- function(input, output, session) {
   
   # Setup Modules ---- 
   ## Database
-  database_vars <- mod_database_setup_server('db-selector')
+  database_vars <- database_setup_server('db-selector')
   ## Database Detection 
-  datamodel_vars <- mod_datamodel_detection_server('data-model', database_vars, navigation_vars, session)
+  data_model_vars <- data_model_detection_server('data-model', database_vars, navigation_vars, session)
   ## Abstraction
-  abstract_vars <- mod_abstraction_setup_server('abs-selector', selected_subject_id)
+  abstract_vars <- abstraction_setup_server('abs-selector', selected_subject_id)
   
   # Patient Navigation Module ----
-  navigation_vars <- mod_navigation_server('pt-navigation', database_vars, datamodel_vars, abstract_vars, session)
+  navigation_vars <- navigation_server('pt-navigation', database_vars, data_model_vars, abstract_vars, session)
   ## Encapsulate 'selected_subject_id' return as a reactive, to be used in abstraction modules
   selected_subject_id <- reactive({ navigation_vars$selected_subject_id })
 
   # Chart Review Module ----
-  mod_chartreview_server('chart-review', database_vars, abstract_vars)
+  chartreview_server('chart-review', database_vars, abstract_vars)
   }
