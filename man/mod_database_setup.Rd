@@ -16,15 +16,16 @@ database_setup_server(id)
 \value{
 \emph{database_setup_ui}:
 \item{tagList}{A tagList containing a selectInput that allows for selection of
-available database setup modules.}
+available database setup modules and the setup UI for the selected database
+module.}
 \emph{database_setup_server}:
 \item{reactiveValues}{This module has no returns of its own, but will pass on
 the \code{reactiveValues} returns from the user selected database module.}
 }
 \description{
-This module allows the user to select from available ReviewR database modules. It
-dynamically returns the database setup UI and database connection information, based
-on the user's selection.
+This module allows the user to select an available ReviewR database module
+from a dropdown list. It dynamically returns the database setup UI and user
+configured database connection information from the selected module.
 
 See \code{vignette("customize_support_new_rdbms", package = "ReviewR")} for more
 information on database modules and how to add support for additional databases.
@@ -41,8 +42,9 @@ available database modules.
 \subsection{Module Server function}{
 
 \itemize{
-\item{\code{database_setup_server}}: Processes user selection and returns the selected
-database module's configuration UI and any connection information returns.
+\item{\code{database_setup_server}}: Processes user selection and dynamically returns
+a uiOutput for the selected database module's setup UI. Any returns from the
+configured database connection module are captured and returned.
 }
 }
 }
