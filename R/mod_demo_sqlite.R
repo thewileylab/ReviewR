@@ -25,10 +25,11 @@
 #'   \item{table_data}{\emph{list}: The table data, in OMOP v5.2.2}
 #'   ...
 #' }
-#' @source \url{https://github.com/thewileylab/synPUF/releases/tag/0.0.1.10}
-#' @source \url{https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF.html}
-#' @source \url{https://github.com/OHDSI/CommonDataModel/blob/v5.2.2/PostgreSQL/OMOP%20CDM%20ddl%20-%20PostgreSQL.sql}
-#' @source \url{https://www.mtsamples.com/}
+#' @source 
+#' * \url{https://github.com/thewileylab/synPUF/releases/tag/0.0.1.10}
+#' * \url{https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF.html}
+#' * \url{https://github.com/OHDSI/CommonDataModel/blob/v5.2.2/PostgreSQL/OMOP%20CDM%20ddl%20-%20PostgreSQL.sql}
+#' * \url{https://www.mtsamples.com/}
 "synPUF"
 
 # UI ----
