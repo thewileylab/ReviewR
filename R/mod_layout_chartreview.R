@@ -1,13 +1,45 @@
+# Module Documentation ----
+#' Chart Review Interface Module
+#' 
+#' @description 
+#' 
+#' This module determines if "View" or "Review" interface is needed based on presence 
+#' or absence of a configured abstraction module. When an abstraction module
+#' is configured on the "Setup" tab of ReviewR, a column will be created to the 
+#' right of the patient chart for the abstraction data collection instrument. 
+#' Otherwise, the patient chart will take up the full view.
+#' 
+#' This module consists of the following components:
+#' 
+#' ## Module UI function
+#' 
+#' \itemize{
+#' \item{`chartreview_ui`}: A uiOutput containing the View or Review
+#' interface
+#' }
+#' ## Module Server function
+#' \itemize{
+#' \item{`chartreview_server`}: The logic that controls the layout
+#' of the "Chart Review" tab in ReviewR. "View" if no abstraction module
+#' is configured. "Review" if abstraction module configured.
+#' }
+#' @param id The module namespace
+#' @name mod_layout_chartreview
+#' 
+#' @return 
+#' *chartreview_ui*:
+#' \item{tagList}{The Chart Review UI}
+#' *chartreview_server*: 
+#' \item{}{This function has no return, other than creating a UI output for the
+#' UI function of this module.}
+#' 
+NULL
+#> NULL
+
 # UI ----
-#' Chart Review
-#'
-#' @param id The namespace id for the UI output
-#'
-#' @rdname mod_chartreview
+#' @rdname mod_layout_chartreview
 #' 
 #' @keywords internal
-#' @export
-#'
 chartreview_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -16,18 +48,15 @@ chartreview_ui <- function(id) {
   }
 
 # Server ----
-#' Chart Review
-#'
-#' @param id The namespace id for the UI output
-#' @param database_vars Database variables returned from user selected database setup module
-#' @param abstract_vars Abstraction variables returned from user selected abstraction module
-#'
-#' @rdname mod_chartreview
+#' @rdname mod_layout_chartreview
 #' 
 #' @keywords internal
-#' @export
+#' 
+#' @param database_vars A reactiveValues object as returned by \link[ReviewR]{mod_database_setup}.
+#' @param abstract_vars A reactiveValues object as returned by \link[ReviewR]{mod_abstraction_setup}.
+#' 
 #' @importFrom magrittr %>% 
-mod_chartreview_server <- function(id, database_vars, abstract_vars) {
+chartreview_server <- function(id, database_vars, abstract_vars) {
   moduleServer(
     id,
     function(input, output, session) {
