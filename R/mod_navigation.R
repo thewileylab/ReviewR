@@ -37,22 +37,90 @@ reviewr_datatable <- function(.data, dom = 'ftip', column_filter = 'top', search
                 )
   }
 
-# UI ----
-#' Patient Navigation
-#'
-#' This module will render the dataTable on the 'Patient Search' tab containing all patients in the cohort. 
-#' The selected patient in the DT is kept in sync with the 'Chart Review' tab.
+# Module Documentation ----
+#' Patient Navigation Module
 #' 
-#' @param id The namespace id for the UI output
-#'
+#' @description 
+#' This module will render the "all patients" dataTable (DT) located on the 'Patient Search' 
+#' tab of ReviewR and will display demographic information about subjects in the 
+#' connected database. The subject id of the selections made on this tab are extracted and 
+#' passed to other ReviewR modules. As selections are made using the DT or the navigation 
+#' buttons on the 'Chart Review' tab, the selected patient in the DT is kept in sync by 
+#' this module. 
+#' 
+#' Additionally, demographic and (optionally) abstraction status information about the 
+#' selected patient are extracted and placed into a header on the 'Chart Review' tab.
+#' 
+#' This module consists of the following components:
+#' 
+#' ## Module UI functions
+#' 
+#' \itemize{
+#' \item{`navigation_message`}: A uiOutput to display a placeholder message when no 
+#' database is connected.
+#' \item{`all_patient_search_dt`}: A uiOutput containing the "all patients" dataTable 
+#' with patient demographic information from the connected database.
+#' \item{`chart_review_subject_info`}: A uiOutput containing the selected subject's 
+#' demographic information to display on the 'Chart Review' tab.
+#' \item{`chart_review_navigation`}: A uiOutput containing the "Jump to Subject ID' 
+#' dropdown and previous and next buttons used to navigate through patient data on the
+#' 'Chart Review' tab.
+#' }
+#' ## Module Server function
+#' \itemize{
+#' \item{navigation_server}: Provides all of the logic assosciated with displaying 
+#' patient demographic information, selecting a patient to review, and navigating 
+#' through the connected patient database. Returns user selected patient information
+#' for use by other modules.
+#' }
+#' 
+#' ## Keyboard Shortcuts
+#' 
+#' This module also provides keyboard shortcuts to assist with navigating through 
+#' patient data. The "meta" key refers to "ctrl" on Windows and "Cmd" on Mac.
+#' 
+#' * Next Patient: “alt + meta + >” 
+#' * Prev Patient: “alt + meta + <” 
+#' 
+#' @param id The Module namespace
+#' @name mod_navigation
+#' 
+#' @return 
+#' *navigation_message*:
+#' \item{tagList}{A uiOutput to display a placeholder message when no 
+#' database is connected.}
+#' *all_patient_search_dt*:
+#' \item{tagList}{A uiOutput containing the "all patients" dataTable 
+#' with patient demographic information from the connected database.}
+#' *chart_review_subject_info*:
+#' \item{tagList}{A uiOutput containing the selected subject's 
+#' demographic information to display on the 'Chart Review' tab.}
+#' *chart_review_navigation*:
+#' \item{tagList}{A uiOutput containing the "Jump to Subject ID' 
+#' dropdown and previous and next buttons used to navigate through patient data on the
+#' 'Chart Review' tab.}
+#' *navigation_server*:
+#' \item{reactiveValues}{
+#' \itemize{
+#' \item{*selected_subject_id*}: A character representing the currently selected subject in
+#' the currently connected database.
+#' \item{*selected_subject_info*}: A [dplyr::tibble] containing demographic information about
+#' the selected subject.
+#' \item{*selected_subject_status*}: A character containing the abstraction status of the 
+#' selected subject, when an abstraction module is configured and abstraction data is
+#' present.
+#' }}
+NULL
+#> NULL
+
+# UI ----
 #' @rdname mod_navigation
 #' 
 #' @keywords internal
-#' @export
+#'
 #' @import shiny 
 #' @importFrom shinycssloaders withSpinner
 #' @importFrom shinyWidgets pickerInput pickerOptions
-#' 
 
 navigation_message <- function(id) {
   ns <- NS(id)
@@ -61,6 +129,9 @@ navigation_message <- function(id) {
     )
   }
 
+#' @rdname mod_navigation
+#' 
+#' @keywords internal
 all_patient_search_dt <- function(id) {
   ns <- NS(id)
   tagList(
@@ -69,13 +140,19 @@ all_patient_search_dt <- function(id) {
     )
   }
 
+#' @rdname mod_navigation
+#' 
+#' @keywords internal
 chart_review_subject_info <- function(id) {
   ns <- NS(id)
   tagList(
     uiOutput(ns('subject_info')) %>% withSpinner(type = 7, proxy.height = 100, size = .5)
-  )
-}
+    )
+  }
 
+#' @rdname mod_navigation
+#' 
+#' @keywords internal
 chart_review_navigation <- function(id) {
   ns <- NS(id)
   
@@ -126,15 +203,15 @@ chart_review_navigation <- function(id) {
 }
 
 # Server ---- 
-#' @param database_vars Database variables returned from user selected database setup module
-#' @param data_model_vars Data model variables returned from mod_data_model_detection
-#' @param abstract_vars Abstraction variables returned from user selected abstraction module
-#' @param parent_session the parent environment of this module
-#'
 #' @rdname mod_navigation
 #' 
 #' @keywords internal
-#' @export
+#'
+#' @param database_vars A reactiveValues object as returned by \link[ReviewR]{mod_database_setup}.
+#' @param data_model_vars A reactiveValues object as returned by \link[ReviewR]{mod_data_model_detection}.
+#' @param abstract_vars A reactiveValues object as returned by \link[ReviewR]{mod_abstraction_setup}.
+#' @param parent_session The session information from the parent environment of this module.
+#'
 #' @import shiny 
 #' @importFrom DT reloadData formatStyle selectRows dataTableProxy
 #' @importFrom glue glue
