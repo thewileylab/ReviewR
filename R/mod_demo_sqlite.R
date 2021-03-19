@@ -132,7 +132,7 @@ demo_sqlite_setup_server <- function(id) {
         ### Module Info
         moduleName = 'Demo SQLite',
         moduleType = 'database',
-        setup_ui = ReviewR::demo_sqlite_setup_ui,
+        setup_ui = demo_sqlite_setup_ui,
         is_connected = 'no',       
         db_con = NULL
         )
