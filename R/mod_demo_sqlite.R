@@ -32,20 +32,59 @@
 #' * \url{https://www.mtsamples.com/}
 "synPUF"
 
-# UI ----
-#' Demo SQLite Setup UI
-#'
-#' This module is designed to guide a user through the process of authenticating your database
+# Module Documentation ----
+#' Demo SQLite Database Module
+#' 
+#' @description
+#' 
+#' This module will create an in memory SQLite database with demo data from
+#' the CMS 2008-2010 Data Entrepreneurs’ Synthetic Public Use File (DE-SynPUF) 
+#' from OHDSI. It will allow you to preview the functionality of ReviewR
+#' if you do not have access to a database of patient information.
+#' 
+#' This module consists of the following components:
+#' 
+#' ## Module UI function
+#' 
+#' \itemize{
+#' \item{`demo_sqlite_setup_ui`}: A uiOutput that allows users to connect to 
+#' the demonstration database.
+#' }
+#' ## Module Server function
+#' \itemize{
+#' \item{`demo_sqlite_setup_server`}: The logic that creates the demonstration
+#' SQLite database and returns a [DBI::dbConnect()] object used to connect 
+#' to the demo database.
+#' }
 #' 
 #' @param id The module namespace
+#' @name mod_demo_sqlite
 #' 
-#' @return The Demo SQLite Setup UI
+#' @return 
+#' *demo_sqlite_setup_ui*:
+#' \item{tagList}{The Demo SQLite Setup UI}
+#' *demo_sqlite_setup_server*:
+#' \item{reactiveValues}{
+#' \itemize{
+#' \item{moduleName}: A string, containing the module moniker.
+#' \item{moduleType}: A string, with the module type (what does it do?)
+#' \item{setup_ui}: The module setup ui function
+#' \item{is_connected}: A string, with module connection status. Valid statuses are
+#' 'yes' or 'no'.
+#' \item{db_con}: A [DBI::dbConnect] object, containing the user configured 
+#' connection information. 
+#' }}
+#' 
+NULL
+#> NULL
+
+# UI ----
+#' @rdname mod_demo_sqlite 
+#' 
 #' @keywords internal
-#' @export
 #' 
 #' @importFrom shiny NS
 #' @importFrom shinyjs hidden
-#'
 demo_sqlite_setup_ui <- function(id) { 
   ns <- NS(id)
   tagList(
@@ -75,19 +114,14 @@ demo_sqlite_setup_ui <- function(id) {
   }
 
 # Server ----
-#' Demo SQLite Setup Server
-#'
-#' @param id The Module namespace
-#'
-#' @return Demo SQLite connection variables
+#' @rdname mod_demo_sqlite
+#' 
 #' @keywords internal
-#' @export
 #'
 #' @importFrom DBI dbConnect
 #' @importFrom purrr map2
 #' @importFrom RSQLite dbDisconnect dbWriteTable SQLite
 #' @importFrom shinyjs hide show
-#' 
 demo_sqlite_setup_server <- function(id) {
   moduleServer(
     id,
