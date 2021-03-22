@@ -22,15 +22,56 @@ spg_add_external_resources <- function(){
   )
 }
 
+# Module Documentation ----
+#' PostgreSQL Database Module
+#' 
+#' @description
+#' 
+#' This module is designed to guide a user through the process of authenticating with 
+#' a PostgreSQL database. The user is visually prompted for typical PostgreSQL connection
+#' parameters. User entered information is verified and once authenticated, a 
+#' [DBI::dbConnect()] object is returned.
+#' 
+#' This module consists of the following components:
+#' 
+#' ## Module UI function
+#' 
+#' \itemize{
+#' \item{`postgresql_setup_ui`}: A uiOutput that allows users to connect to provide
+#' connection parameters required to connect to a PostgreSQL database.
+#' }
+#' ## Module Server function
+#' \itemize{
+#' \item{`postgresql_setup_server`}: The logic that controls the graphical user 
+#' interface, validates user inputs, and returns a [DBI::dbconnect()] object 
+#' used to connect to the desired PostgreSQL database.
+#' }
+#' 
+#' @param id The module namespace
+#' @name mod_postgres
+#' 
+#' @return 
+#' *postgresql_setup_ui*:
+#' \item{tagList}{The shinyPostgreSQL Setup UI}
+#' *postgresql_setup_server*:
+#' \item{reactiveValues}{
+#' \itemize{
+#' \item{moduleName}: A string, containing the module moniker.
+#' \item{moduleType}: A string, with the module type (what does it do?)
+#' \item{setup_ui}: The module setup ui function
+#' \item{is_connected}: A string, with module connection status. Valid statuses are
+#' 'yes' or 'no'.
+#' \item{db_con}: A [DBI::dbConnect] object, containing the user configured PostgreSQL
+#' connection information. 
+#' }}
+#' 
+NULL
+#> NULL
+
 # UI ----
-#' PostgreSQL Setup UI
-#'
-#' This module is designed to guide a user through the process of authenticating with a PostgreSQL database. It is responsible for creating a DBI connection object to a PostgreSQL database.
-#' @param id The Module namespace
-#'
-#' @return The PostgreSQL Setup UI
+#' @rdname mod_postgres
+#' 
 #' @keywords internal
-#' @export
 #' 
 #' @importFrom shiny NS tagList 
 #' @importFrom shinycssloaders withSpinner
@@ -62,13 +103,9 @@ postgresql_setup_ui <- function(id){
   }
 
 # Server ----    
-#' mod_PostgreSQL_setup Server Function
-#'
-#' @param id The PostgreSQL Setup UI
-#'
-#' @return PostgreSQL connection variables and DBI connection object.
+#' @rdname mod_postgres
+#' 
 #' @keywords internal
-#' @export
 #' 
 #' @importFrom DBI dbConnect
 #' @importFrom RPostgres Postgres dbDisconnect
