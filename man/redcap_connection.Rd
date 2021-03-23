@@ -7,14 +7,36 @@
 redcap_connection(url, token)
 }
 \arguments{
-\item{url}{The API URL for your institution's REDCap instance}
+\item{url}{A string containing the https URL for your institution's REDCap API.}
 
-\item{token}{The API token for your REDCap project}
+\item{token}{A string containing the API token for your REDCap project.}
 }
 \value{
-If the URL and token are correct, return a redcapAPI connection object. Else, return diagnostic error.
+A redcapAPI connection object if the URL and API token are correct
+( See: \link[redcapAPI:redcapConnection]{redcapAPI::redcapConnection} ). Else, return diagnostic error.
 }
 \description{
-A 'safe' wrapper for redcapAPI::redcapConnection(). Will return diagnostic error codes in case incorrect URL or token are provided.
+\subsection{Overview}{
+
+A 'safe' wrapper for \code{\link[redcapAPI:redcapConnection]{redcapAPI::redcapConnection()}}. Will return diagnostic
+error codes in case incorrect URL or token are provided instead of failing
+outright.
+}
+
+\subsection{REDCap API Security}{
+
+It is good practice to ensure that SSL certs are validated when utilizing the REDCap API.
+To ensure this happens, set the CURLOPT_SSL_VERIFYPEER' option to TRUE to avoid potential
+man in the middle attacks.
+
+The redcapAPI package utilizes the httr package to perform operations using the REDCap API.
+Configuration options can be passed directly to httr via the config option in the
+\link[redcapAPI:redcapConnection]{redcapAPI::redcapConnection} function. Here, we set 'ssl_verifypeer = 1L' to ensure
+cert checking is enabled.
+\itemize{
+\item \url{https://www.rdocumentation.org/packages/redcapAPI/versions/2.3/topics/redcapConnection}
+\item \url{https://httr.r-lib.org/reference/httr_options.html}
+}
+}
 }
 \keyword{internal}

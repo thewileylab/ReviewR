@@ -2,7 +2,7 @@
 % Please edit documentation in R/mod_REDCap.R
 \name{safe_exportRecords}
 \alias{safe_exportRecords}
-\title{Safe Export Records}
+\title{REDCap Safe Export Records}
 \usage{
 safe_exportRecords(rc_con, rc_field_names)
 }
@@ -12,9 +12,12 @@ safe_exportRecords(rc_con, rc_field_names)
 \item{rc_field_names}{The field names for a REDCap instrument}
 }
 \value{
-A data frame containing existing REDCap records, or an empty data frame with the structure of what the records would look like
+A data frame containing existing REDCap records, or an empty data
+frame with the structure of what the records would look like.
 }
 \description{
-Export REDCap Records in a REDCap Project. Sometimes, records don't exist (empty instrument). Use field names to create empty data structure.
+A safe wrapper around \link[redcapAPI:exportRecords]{redcapAPI::exportRecords} that does not fail when records
+are requested from an empty REDCap project. In the event of an empty project,
+field names are used to create an empty data structure.
 }
 \keyword{internal}
