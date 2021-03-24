@@ -24,7 +24,7 @@ This is the fourth resubmission of the 'ReviewR' package. In this version I have
 ### R-hub
 
 * Windows Server 2008 R2 SP1, R-devel, 32/64 bit
-  * libcurl error code 35 returned for some vignettes URLs - I believe this to be an error as URLs are still active and pass the same checks on other platforms.
+  * libcurl error code 35 returned for some vignettes URLs - I believe this to be an error as identified URLs are still active and pass the same checks on other platforms.
 * Ubuntu Linux 20.04.1 LTS, R-release, GCC
 * Fedora Linux, R-devel, clang, gfortran
 
