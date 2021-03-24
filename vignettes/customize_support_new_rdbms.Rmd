@@ -64,7 +64,7 @@ The first step to developing a new ReviewR module will be to fork the latest ver
 usethis::create_from_github(repo_spec = 'thewileylab/ReviewR', destdir = '~/')
 ```
 
-Please see [this guide](https://happygitwithr.com/index.html) if you have trouble connecting RStudio with Git. It is also possible to fork this repository directly from GitHub if all else fails. 
+Please see [this guide](https://happygitwithr.com) if you have trouble connecting RStudio with Git. It is also possible to fork this repository directly from GitHub if all else fails. 
 
 Navigate to the forked repository and open the `ReviewR.Rproj` file. This will open the project in RStudio. Finally, using the devtools package run:
 ```{r eval=FALSE}

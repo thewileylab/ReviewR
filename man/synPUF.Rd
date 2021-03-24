@@ -15,7 +15,7 @@ A data frame with 23 rows and 2 variables:
 \source{
 \itemize{
 \item \url{https://github.com/thewileylab/synPUF/releases/tag/0.0.1.10}
-\item \url{https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF.html}
+\item \url{https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF}
 \item \url{https://github.com/OHDSI/CommonDataModel/blob/v5.2.2/PostgreSQL/OMOP\%20CDM\%20ddl\%20-\%20PostgreSQL.sql}
 \item \url{https://www.mtsamples.com/}
 }
@@ -32,7 +32,7 @@ Synthetic Public Use File (DE-SynPUF) from OHDSI.
 
 \subsection{Details}{
 \itemize{
-\item \href{https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF.html}{Information on the SynPUF data source is available here}
+\item \href{https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF}{Information on the SynPUF data source is available here}
 \item \href{https://github.com/OHDSI/CommonDataModel/blob/v5.2.2/PostgreSQL/OMOP\%20CDM\%20ddl\%20-\%20PostgreSQL.sql}{CDM 5.2.2 DDL for the OHDSI supported DBMSs is available here}
 \item \href{https://www.mtsamples.com/}{Notes Obtained from MTSamples.com}
 }

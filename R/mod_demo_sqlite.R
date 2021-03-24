@@ -10,7 +10,7 @@
 #' 
 #' ## Details
 #' 
-#' * \href{https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF.html}{Information on the SynPUF data source is available here}
+#' * \href{https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF}{Information on the SynPUF data source is available here}
 #' * \href{https://github.com/OHDSI/CommonDataModel/blob/v5.2.2/PostgreSQL/OMOP%20CDM%20ddl%20-%20PostgreSQL.sql}{CDM 5.2.2 DDL for the OHDSI supported DBMSs is available here}
 #' * \href{https://www.mtsamples.com/}{Notes Obtained from MTSamples.com}
 #' 
@@ -27,7 +27,7 @@
 #' }
 #' @source 
 #' * \url{https://github.com/thewileylab/synPUF/releases/tag/0.0.1.10}
-#' * \url{https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF.html}
+#' * \url{https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF}
 #' * \url{https://github.com/OHDSI/CommonDataModel/blob/v5.2.2/PostgreSQL/OMOP%20CDM%20ddl%20-%20PostgreSQL.sql}
 #' * \url{https://www.mtsamples.com/}
 "synPUF"
@@ -100,7 +100,7 @@ demo_sqlite_setup_ui <- function(id) {
           HTML("This demonstration database module contains a 10 person subset of the CMS 2008-2010 Data Entrepreneurs' Synthetic Public Use File (DE-SynPUF) from OHDSI."),
           h4('Details'),
           HTML('<ul>
-                <li><a href="https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF.html" target="_blank" rel="noopener noreferrer">SynPUF Dataset Information</a></li>
+                <li><a href="https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF" target="_blank" rel="noopener noreferrer">SynPUF Dataset Information</a></li>
                 <li><a href="https://github.com/OHDSI/CommonDataModel/blob/v5.2.2/PostgreSQL/OMOP%20CDM%20ddl%20-%20PostgreSQL.sql" target="_blank" rel="noopener noreferrer">OMOP CDM 5.2.2 DDL for OHDSI supported DBMSs</a></li>
                 <li><a href="https://www.mtsamples.com/" target="_blank" rel="noopener noreferrer">Notes Obtained from MTSamples.com</a></li>
                 <li><a href="https://github.com/thewileylab/synPUF" target="_blank" rel="noopener noreferrer">R Dataset ETL Process</a></li>

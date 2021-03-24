@@ -143,7 +143,7 @@ First ensure you have access to the latest development tools and file structure 
 usethis::create_from_github(repo_spec = 'thewileylab/ReviewR', destdir = '~/')
 ```
 
-Please see [this guide](https://happygitwithr.com/index.html) if you have trouble connecting RStudio with Git. It is also possible to fork this repository directly from GitHub if all else fails. 
+Please see [this guide](https://happygitwithr.com) if you have trouble connecting RStudio with Git. It is also possible to fork this repository directly from GitHub if all else fails. 
 
 *IMPORTANT:* If you think you would like to contribute data model support to the ReviewR project, start a new branch to hold your development work. However, if these changes are only for your own use or for a custom data model that does not have widespread use cases, feel free to perform your development work using the default branch. 
 
