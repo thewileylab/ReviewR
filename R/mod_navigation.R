@@ -68,7 +68,7 @@ reviewr_datatable <- function(.data, dom = 'ftip', column_filter = 'top', search
 #' }
 #' ## Module Server function
 #' \itemize{
-#' \item{navigation_server}: Provides all of the logic assosciated with displaying 
+#' \item{navigation_server}: Provides all of the logic associated with displaying 
 #' patient demographic information, selecting a patient to review, and navigating 
 #' through the connected patient database. Returns user selected patient information
 #' for use by other modules.
