@@ -2,7 +2,7 @@
 % Please edit documentation in R/database_tables_omop.R
 \name{get_concept}
 \alias{get_concept}
-\title{OMOP Get Concepts}
+\title{OMOP Get Concept}
 \usage{
 get_concept(
   table_map,
@@ -19,33 +19,37 @@ get_concept(
 )
 }
 \arguments{
-\item{table_map}{tibble containing standard CDM mapped to user tables}
+\item{table_map}{A \link[dplyr:reexports]{dplyr::tibble} containing a mapping between the CDM standard
+tables and fields to the user connected tables and fields.}
 
-\item{db_connection}{DBI connection object}
+\item{db_connection}{A \link[DBI:dbConnect]{DBI::dbConnect} object.}
 
-\item{concept_table}{Standard CDM concept table name}
+\item{concept_table}{A string, containing the standard CDM concept table name.}
 
-\item{concept_id}{Standard CDM concept id field}
+\item{concept_id}{A string, containing the standard CDM concept id field.}
 
-\item{concept_name}{Standard CDM concept name field}
+\item{concept_name}{A string, containing the standard CDM concept name field.}
 
-\item{table}{Table that needs concepts retrieved}
+\item{table}{A string, containing the table name that requires OMOP concepts.}
 
-\item{joinable_id}{What variable is joinable between the concept table and the desired table}
+\item{joinable_id}{A string, indicating what variable is "joinable" between the concept
+table and the desired table.}
 
-\item{table_concept_id}{The table concept id}
+\item{table_concept_id}{A string, containing the the table concept id}
 
-\item{col_name}{Would you like to rename the retrieved concept?}
+\item{col_name}{A string, containing the desired name for the retrieved concept.}
 
-\item{subject_id_field}{Which field contains the subject id?}
+\item{subject_id_field}{A string, identifying which table field contains the subject id.}
 
-\item{selected_subject}{For which subject would you like to retrieve concepts?}
+\item{selected_subject}{A numeric, or coercible to numeric containing the desired
+subject id.}
 }
 \value{
-The desired OMOP concepts based on the user data model for all subjects
+The desired OMOP concept based on the user data model for all subjects
 }
 \description{
-OMOP Get Concepts
+This function assists with transforming OMOP concept_ids to interpretable strings
+by retrieving the requested concepts from the appropriate OMOP concept table.
 }
 \examples{
 \dontrun{

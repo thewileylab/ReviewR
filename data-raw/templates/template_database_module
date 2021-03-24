@@ -7,7 +7,7 @@
 #' 
 #' @return The {display_name} Setup UI
 #' @keywords internal
-#' @export
+#' 
 #' 
 #' @importFrom shiny NS
 #'
@@ -26,7 +26,7 @@
 #'
 #' @return {display_name} connection variables
 #' @keywords internal
-#' @export
+#' 
 #'
 #' @importFrom DBI dbConnect
 #' 
