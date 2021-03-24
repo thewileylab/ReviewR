@@ -1,20 +1,34 @@
-#' MIMIC Tables
+# Database Tables Documentation ----
+#' MIMIC-III Tables
 #'
-#' Collection of functions to create prearranged views of MIMIC patient data for ReviewR.
+#' @description 
+#' A collection of functions to create prearranged views of MIMIC-III patient data 
+#' when supplied with database connection information and a mapping of the connected 
+#' database.
 #' 
-#' @param table_map tibble containing a the CDM that most closely matches the user's database and a map of standard tables to user tables
-#' @param db_connection Connection info received from the database setup module
+#' @param table_map A [dplyr::tibble] containing a mapping between the CDM standard
+#' tables and fields to the user connected tables and fields.
+#' @param db_connection A [DBI::dbConnect] object.
+#' @param subject_id A numeric, or coercible to numeric. 
+#' @name mimic3_tables
 #'
-#' @rdname mimic3_tables
 #' @keywords internal
-#' @export
+#' 
 #' @importFrom dplyr arrange select everything matches mutate_all mutate_if rename_at collect filter inner_join vars 
 #' @importFrom snakecase to_title_case
 #' @importFrom stringr str_replace regex str_replace_all
 #' @importFrom rlang .data
+#' 
+#' @return A [dplyr::tibble] containing pre-coordinated patient information from the connected database.
+#'
+NULL
+#> NULL
 
-## MIMIC All Patient Table ----
 
+# MIMIC All Patient Table ----
+#' @rdname mimic3_tables
+#' @keywords internal
+#' 
 mimic3_table_all_patients <- function(table_map, db_connection) {
   user_table(table_map, db_connection, 'PATIENTS') %>% 
     select(ID = user_field(table_map, 'PATIENTS', 'SUBJECT_ID'), 
@@ -32,12 +46,10 @@ mimic3_table_all_patients <- function(table_map, db_connection) {
     rename_at(vars(-1), to_title_case)
 }
 
-## MIMIC Admissions Table ----
-#' @param subject_id The selected subject 
-#'
+# MIMIC Admissions Table ----
 #' @rdname mimic3_tables
 #' @keywords internal
-#' @export
+#' 
 mimic3_table_admissions <- function(table_map, db_connection, subject_id) {
   subject <- as.integer(subject_id)
   user_table(table_map, db_connection, 'ADMISSIONS') %>% 
@@ -50,10 +62,10 @@ mimic3_table_admissions <- function(table_map, db_connection, subject_id) {
     rename_at(vars(-1), to_title_case)
 }
 
-## MIMIC Callout Table ----
+# MIMIC Callout Table ----
 #' @rdname mimic3_tables
 #' @keywords internal
-#' @export
+#' 
 mimic3_table_callout <- function(table_map, db_connection, subject_id) {
   subject <- as.integer(subject_id)
   user_table(table_map, db_connection, 'CALLOUT') %>% 
@@ -67,10 +79,10 @@ mimic3_table_callout <- function(table_map, db_connection, subject_id) {
     rename_at(vars(-1), ~ str_replace(string = ., pattern = regex(pattern = 'id$',ignore_case = T),replacement = ' ID'))
 }
 
-## MIMIC Chart Events Table ----
+# MIMIC Chart Events Table ----
 #' @rdname mimic3_tables
 #' @keywords internal
-#' @export
+#' 
 mimic3_table_chart_events <- function(table_map, db_connection, subject_id) {
   subject <- as.integer(subject_id)
   user_table(table_map, db_connection, 'CHARTEVENTS') %>%
@@ -83,10 +95,10 @@ mimic3_table_chart_events <- function(table_map, db_connection, subject_id) {
     rename_at(vars(-1), to_title_case)
 }
 
-## MIMIC CPT Events Table ----
+# MIMIC CPT Events Table ----
 #' @rdname mimic3_tables
 #' @keywords internal
-#' @export
+#' 
 mimic3_table_cpt_events <- function(table_map, db_connection, subject_id) {
   subject <- as.integer(subject_id)
   user_table(table_map, db_connection, 'CPTEVENTS') %>% 
@@ -99,10 +111,10 @@ mimic3_table_cpt_events <- function(table_map, db_connection, subject_id) {
     rename_at(vars(-1), to_title_case)
 }
 
-## MIMIC Diagnoses ICD Table ----
+# MIMIC Diagnoses ICD Table ----
 #' @rdname mimic3_tables
 #' @keywords internal
-#' @export
+#' 
 mimic3_table_diagnoses_icd <- function(table_map, db_connection, subject_id) {
   subject <- as.integer(subject_id)
   user_table(table_map, db_connection, 'DIAGNOSES_ICD') %>% 
@@ -118,10 +130,10 @@ mimic3_table_diagnoses_icd <- function(table_map, db_connection, subject_id) {
     rename_at(vars(-1), to_title_case)
 }
 
-## MIMIC DRG Codes Table ----
+# MIMIC DRG Codes Table ----
 #' @rdname mimic3_tables
 #' @keywords internal
-#' @export
+#' 
 mimic3_table_drg_codes <- function(table_map, db_connection, subject_id) {
   subject <- as.integer(subject_id)
   user_table(table_map, db_connection, 'DRGCODES') %>% 
@@ -134,10 +146,10 @@ mimic3_table_drg_codes <- function(table_map, db_connection, subject_id) {
     rename_at(vars(-1), to_title_case)
 }
 
-## MIMIC ICU Stays Table ----
+# MIMIC ICU Stays Table ----
 #' @rdname mimic3_tables
 #' @keywords internal
-#' @export
+#' 
 mimic3_table_icu_stays <- function(table_map, db_connection, subject_id) {
   subject <- as.integer(subject_id)
   user_table(table_map, db_connection, 'ICUSTAYS') %>% 
@@ -151,10 +163,10 @@ mimic3_table_icu_stays <- function(table_map, db_connection, subject_id) {
     rename_at(vars(-1), ~ str_replace(string = ., pattern = regex(pattern = 'id$',ignore_case = T),replacement = ' ID'))
 }
 
-## MIMIC Lab Events Table ----
+# MIMIC Lab Events Table ----
 #' @rdname mimic3_tables
 #' @keywords internal
-#' @export
+#' 
 mimic3_table_lab_events <- function(table_map, db_connection, subject_id) {
   subject <- as.integer(subject_id)
   user_table(table_map, db_connection, 'LABEVENTS') %>% 
@@ -172,10 +184,10 @@ mimic3_table_lab_events <- function(table_map, db_connection, subject_id) {
     rename_at(vars(-1), ~ str_replace(string = ., pattern = regex(pattern = 'id$',ignore_case = T),replacement = ' ID'))
 }
 
-## MIMIC Microbiology Events Table ----
+# MIMIC Microbiology Events Table ----
 #' @rdname mimic3_tables
 #' @keywords internal
-#' @export
+#' 
 mimic3_table_microbiology_events <- function(table_map, db_connection, subject_id) {
   subject <- as.integer(subject_id)
   user_table(table_map, db_connection, 'MICROBIOLOGYEVENTS') %>% 
@@ -189,10 +201,10 @@ mimic3_table_microbiology_events <- function(table_map, db_connection, subject_i
     rename_at(vars(-1), ~ str_replace(string = ., pattern = regex(pattern = 'id$',ignore_case = T),replacement = ' ID'))
 }
 
-## MIMIC Note Events Table ----
+# MIMIC Note Events Table ----
 #' @rdname mimic3_tables
 #' @keywords internal
-#' @export
+#' 
 mimic3_table_note_events <- function(table_map, db_connection, subject_id) {
   subject <- as.integer(subject_id)
   user_table(table_map, db_connection, 'NOTEEVENTS') %>% 
@@ -206,10 +218,10 @@ mimic3_table_note_events <- function(table_map, db_connection, subject_id) {
     rename_at(vars(-1), to_title_case)
   }
 
-## MIMIC Prescriptions Events MV Table ----
+# MIMIC Prescriptions Events MV Table ----
 #' @rdname mimic3_tables
 #' @keywords internal
-#' @export
+#' 
 mimic3_table_prescriptions <- function(table_map, db_connection, subject_id) {
   subject <- as.integer(subject_id)
   user_table(table_map, db_connection, 'PRESCRIPTIONS') %>% 
@@ -223,10 +235,10 @@ mimic3_table_prescriptions <- function(table_map, db_connection, subject_id) {
     rename_at(vars(-1), ~ str_replace(string = ., pattern = regex(pattern = 'id$',ignore_case = T),replacement = ' ID'))
 }
 
-## MIMIC Procedure Events MV Table ----
+# MIMIC Procedure Events MV Table ----
 #' @rdname mimic3_tables
 #' @keywords internal
-#' @export
+#' 
 mimic3_table_procedure_events <- function(table_map, db_connection, subject_id) {
   subject <- as.integer(subject_id)
   user_table(table_map, db_connection, 'PROCEDUREEVENTS_MV') %>% 
@@ -244,10 +256,10 @@ mimic3_table_procedure_events <- function(table_map, db_connection, subject_id) 
     rename_at(vars(-1), ~ str_replace(string = ., pattern = regex(pattern = 'id$',ignore_case = T),replacement = ' ID'))
 }
 
-## MIMIC Procedures ICD Table ----
+# MIMIC Procedures ICD Table ----
 #' @rdname mimic3_tables
 #' @keywords internal
-#' @export
+#' 
 mimic3_table_procedures_icd <- function(table_map, db_connection, subject_id) {
   subject <- as.integer(subject_id)
   user_table(table_map, db_connection, 'PROCEDURES_ICD') %>% 
@@ -265,10 +277,10 @@ mimic3_table_procedures_icd <- function(table_map, db_connection, subject_id) {
     rename_at(vars(-1), ~ str_replace(string = ., pattern = regex(pattern = 'id$',ignore_case = T),replacement = ' ID'))
 }
 
-## MIMIC Services Table ----
+# MIMIC Services Table ----
 #' @rdname mimic3_tables
 #' @keywords internal
-#' @export
+#' 
 mimic3_table_services <- function(table_map, db_connection, subject_id) {
   subject <- as.integer(subject_id)
   SERVICE = c("CMED","CSURG","DENT","ENT","GU","GYN","MED","NB","NBB","NMED","NSURG","OBS","ORTHO","OMED", "PSURG","PSYCH","SURG","TRAUMA","TSURG","VSURG")
@@ -290,10 +302,10 @@ mimic3_table_services <- function(table_map, db_connection, subject_id) {
     rename_at(vars(-1), to_title_case)
 }
 
-## MIMIC Transfers Table ----
+# MIMIC Transfers Table ----
 #' @rdname mimic3_tables
 #' @keywords internal
-#' @export
+#' 
 mimic3_table_transfers <- function(table_map, db_connection, subject_id) {
   subject <- as.integer(subject_id)
   user_table(table_map, db_connection, 'TRANSFERS') %>% 

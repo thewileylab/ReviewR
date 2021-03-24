@@ -34,16 +34,21 @@
 # Helper Functions ----
 #' DT to Viewer
 #'
-#' Save a DT::datatable as a self contained HTML file to display for display in the RStudio Viewer Pane
+#' Save a temporary [DT::datatable] as a self contained HTML file to display 
+#' in the RStudio Viewer Pane. Used to provided users with choices
+#' when prompted for action by a dev function.
 #'
-#' @param .data A tibble/data frame containing the desired data to save
-#' @param file \emph{Optional}. Manually define file path (with .html extension) for HTML representation of DT
+#' @param .data A [dplyr::tibble] containing the desired data to save
+#' @param file \emph{Optional}. Manually define file path (with .html extension) 
+#' for HTML representation of DT
 #'
 #' @keywords internal
 #' @importFrom dplyr select
 #' @importFrom DT datatable saveWidget
 #' @importFrom rlang .data
-#' @return Temporary HTML file to be displayed in the RStudio Viewer Pane
+#' 
+#' @return This function returns a temporary HTML file displayed in the 
+#' RStudio Viewer Pane
 #'
 dt_2_viewer <- function(.data, file = NULL) {
   if(is.null(file) ) {
@@ -65,7 +70,7 @@ dt_2_viewer <- function(.data, file = NULL) {
 # Dev Functions ----
 #' Develop A Database Module
 #'
-#' This function will create a database module skeleton  with 
+#' This function will create a database module skeleton with 
 #' required elements already populated, based on user inputs.
 #' Common database module packages are imported automatically,
 #' but developers should add imports to the roxygen skeleton as 
@@ -80,6 +85,7 @@ dt_2_viewer <- function(.data, file = NULL) {
 #'
 #' @importFrom glue glue glue_collapse
 #' @importFrom purrr map
+#' 
 #' @return A .R file populated with a database module skeleton
 dev_add_database_module <- function(mod_name = NULL, display_name = NULL) {
   if(!requireNamespace('rstudioapi', quietly = T)) {
@@ -120,8 +126,9 @@ dev_add_database_module <- function(mod_name = NULL, display_name = NULL) {
 #' @importFrom stringr str_remove_all str_split
 #' @importFrom tidyr replace_na nest separate
 #' @importFrom rlang .data names2
+#' 
 #' @return A .R file populated with basic database table functions
-dev_add_datamodel <- function(csv) {
+dev_add_data_model <- function(csv) {
   if(!requireNamespace('readr', quietly = T)) {
     stop("'readr' package is required for this function to work. Please install it.",
          call. = FALSE)
@@ -141,14 +148,14 @@ dev_add_datamodel <- function(csv) {
   temp <- readr::read_csv(file = csv)
 
   ## If required columns are present, Add user supplied CSV file to package and 
-  ## incorporate into ReviewR::supported_datamodels.rda
+  ## incorporate into ReviewR::supported_data_models.rda
   if(all(required_cols %in% rlang::names2(temp)) ) {
-    file.copy(from = csv, to = 'data-raw/datamodels/')
-    supported_datamodels <-  dplyr::tibble(file_path = list.files(path = file.path('data-raw/datamodels'),full.names = T,recursive = T)) %>% 
-      mutate(datamodel = basename(.data$file_path),
-             datamodel = str_remove_all(.data$datamodel, '\\.csv$')
+    file.copy(from = csv, to = 'data-raw/data_models/')
+    supported_data_models <-  dplyr::tibble(file_path = list.files(path = file.path('data-raw/data_models'),full.names = T,recursive = T)) %>% 
+      mutate(data_model = basename(.data$file_path),
+             data_model = str_remove_all(.data$data_model, '\\.csv$')
              ) %>% 
-      separate(col = .data$datamodel, into = c('datamodel','model_version'), sep = '_', extra = 'drop', fill = 'right') %>% 
+      separate(col = .data$data_model, into = c('data_model','model_version'), sep = '_', extra = 'drop', fill = 'right') %>% 
       mutate(model_version = tidyr::replace_na(.data$model_version, ''),
              cdm = map(.data$file_path,
                        ~readr::read_csv(.x)
@@ -158,24 +165,24 @@ dev_add_datamodel <- function(csv) {
       mutate(joinable_table = tolower(.data$table),
              joinable_field = tolower(.data$field)
              ) %>% 
-      group_by(.data$file_path,.data$datamodel,.data$model_version) %>% 
+      group_by(.data$file_path,.data$data_model,.data$model_version) %>% 
       nest() %>% 
-      relocate(.data$datamodel, .data$model_version, .data$data, .data$file_path)
-    usethis::use_data(supported_datamodels, overwrite = T)
+      relocate(.data$data_model, .data$model_version, .data$data, .data$file_path)
+    usethis::use_data(supported_data_models, overwrite = T)
   
     ## Determine data model moniker and version
-    temp_datamodel <-basename(csv) %>%
+    temp_data_model <-basename(csv) %>%
       str_remove_all('\\.csv$') %>% 
       str_split(pattern = '_')
-    new_datamodel <- temp_datamodel[[1]][1]
-    new_datamodel_version <- if(is.na(temp_datamodel[[1]][2]) ) {
+    new_data_model <- temp_data_model[[1]][1]
+    new_data_model_version <- if(is.na(temp_data_model[[1]][2]) ) {
       ''
       } else {
-        temp_datamodel[[1]][2]
+        temp_data_model[[1]][2]
         }
     
     ## Create a filename to hold data model table functions
-    fn_filename <- glue::glue('R/database_tables_{new_datamodel}.R')
+    fn_filename <- glue::glue('R/database_tables_{new_data_model}.R')
     
     ## Interview the User ----
     ### All Patients Table
@@ -236,8 +243,8 @@ dev_add_datamodel <- function(csv) {
           pull(.data$field)
         
         ## Discover Subject Tables that should potentially be rendered
-        new_tables <- supported_datamodels %>% 
-          filter(.data$datamodel == new_datamodel & .data$model_version == new_datamodel_version ) %>% 
+        new_tables <- supported_data_models %>% 
+          filter(.data$data_model == new_data_model & .data$model_version == new_data_model_version ) %>% 
           pull(.data$data) %>% 
           magrittr::extract2(1) %>% 
           distinct(.data$table) %>% 
@@ -262,7 +269,7 @@ dev_add_datamodel <- function(csv) {
                                                    )
                                }
                                )
-        ### Append Subject Tables to datamodel_tables R file
+        ### Append Subject Tables to data_model_tables R file
         map(subject_tables,
             ~cat(.x, file = fn_filename, append = T))
         
@@ -284,6 +291,8 @@ dev_add_datamodel <- function(csv) {
 #' @family Development Functions
 #'
 #' @export
+#' @return No return value, called to move a Google desktop Client ID JSON file to 
+#' a ReviewR accessible location.
 #'
 dev_add_google_client_id <- function(file_path) {
   # Gather Platform Information

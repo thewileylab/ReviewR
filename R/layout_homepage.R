@@ -1,11 +1,13 @@
 #' ReviewR Homepage Tab
 #'
-#' This file contains all the UI elements that are needed to render the Homepage Tab, which contains basic information about using ReviewR.
-#'
-#' @return Homepage Tab UI Output
-#' @export
+#' This function contains all of the elements that control the layout of 
+#' the Homepage Tab.
+#' 
+#' @return [shiny::renderUI] Output containing the Homepage Tab 
+#' 
 #' @keywords internal
-#'
+#' @family layout
+#' 
 homepage <- function() {
   renderUI({
     tagList(

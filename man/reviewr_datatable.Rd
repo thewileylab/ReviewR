@@ -9,16 +9,18 @@ reviewr_datatable(.data, dom = "ftip", column_filter = "top", search_term = "")
 \arguments{
 \item{.data}{A local tibble or data frame to be rendered in the ReviewR UI}
 
-\item{dom}{Define the table control elements to appear on the page and in what order}
+\item{dom}{Define the table control elements to appear on the page and in what order. See:
+\url{https://datatables.net/reference/option/dom}}
 
 \item{column_filter}{Where to display individual column filters. Valid entries are: 'top','bottom','none'}
 
 \item{search_term}{A string or regular expression used as a filter for patient data}
 }
 \value{
-return a DT with custom options
+A \link[DT:datatable]{DT::datatable}
 }
 \description{
-ReviewR DataTable
+This is a wrapper function around \link[DT:datatable]{DT::datatable} which applies common extensions,
+options and default values used throughout the ReviewR application.
 }
 \keyword{internal}

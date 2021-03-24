@@ -1,11 +1,13 @@
 #' ReviewR Setup Tab
 #'
-#' This file contains the UI elements that are needed to render the Setup Tab and configure ReviewR. Each element consists of a module, which is rendered within it's own box element on the setup tab. 
+#' This function contains all of the elements that control the layout of 
+#' the Setup Tab.
 #'
-#' @return Setup Tab UI Output
-#' @export
+#' @return [shiny::renderUI] Output containing the Setup Tab
+#' 
 #' @keywords internal
-#'
+#' @family layout
+#' 
 setup <- function() {
   renderUI({
     # Define Setup Tab UI ----
@@ -24,8 +26,8 @@ setup <- function() {
                  style = 'background: #ebf0f6',
                  ## Database Setup
                  database_setup_ui('db-selector'),
-                 ## Datamodel Detection
-                 datamodel_detection_ui('data-model')
+                 ## Data Model Detection
+                 data_model_detection_ui('data-model')
                  )
                ),
         column(width = 6,

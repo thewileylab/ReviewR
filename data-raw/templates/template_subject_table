@@ -3,7 +3,7 @@
 #'
 #' @rdname {new_datamodel}_tables
 #' @keywords internal
-#' @export
+#' 
 {new_datamodel}_table_{new_table} <- function(table_map, db_connection, subject_id) {{
   subject <- as.integer(subject_id)
   user_table(table_map, db_connection, '{new_table}') %>% 
