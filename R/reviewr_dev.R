@@ -34,16 +34,21 @@
 # Helper Functions ----
 #' DT to Viewer
 #'
-#' Save a DT::datatable as a self contained HTML file to display for display in the RStudio Viewer Pane
+#' Save a temporary [DT::datatable] as a self contained HTML file to display 
+#' in the RStudio Viewer Pane. Used to provided users with choices
+#' when prompted for action by a dev function.
 #'
-#' @param .data A tibble/data frame containing the desired data to save
-#' @param file \emph{Optional}. Manually define file path (with .html extension) for HTML representation of DT
+#' @param .data A [dplyr::tibble] containing the desired data to save
+#' @param file \emph{Optional}. Manually define file path (with .html extension) 
+#' for HTML representation of DT
 #'
 #' @keywords internal
 #' @importFrom dplyr select
 #' @importFrom DT datatable saveWidget
 #' @importFrom rlang .data
-#' @return Temporary HTML file to be displayed in the RStudio Viewer Pane
+#' 
+#' @return This function returns a temporary HTML file displayed in the 
+#' RStudio Viewer Pane
 #'
 dt_2_viewer <- function(.data, file = NULL) {
   if(is.null(file) ) {
@@ -65,7 +70,7 @@ dt_2_viewer <- function(.data, file = NULL) {
 # Dev Functions ----
 #' Develop A Database Module
 #'
-#' This function will create a database module skeleton  with 
+#' This function will create a database module skeleton with 
 #' required elements already populated, based on user inputs.
 #' Common database module packages are imported automatically,
 #' but developers should add imports to the roxygen skeleton as 
@@ -80,6 +85,7 @@ dt_2_viewer <- function(.data, file = NULL) {
 #'
 #' @importFrom glue glue glue_collapse
 #' @importFrom purrr map
+#' 
 #' @return A .R file populated with a database module skeleton
 dev_add_database_module <- function(mod_name = NULL, display_name = NULL) {
   if(!requireNamespace('rstudioapi', quietly = T)) {
@@ -120,6 +126,7 @@ dev_add_database_module <- function(mod_name = NULL, display_name = NULL) {
 #' @importFrom stringr str_remove_all str_split
 #' @importFrom tidyr replace_na nest separate
 #' @importFrom rlang .data names2
+#' 
 #' @return A .R file populated with basic database table functions
 dev_add_data_model <- function(csv) {
   if(!requireNamespace('readr', quietly = T)) {
@@ -284,8 +291,8 @@ dev_add_data_model <- function(csv) {
 #' @family Development Functions
 #'
 #' @export
-#' @return No return value, called to correctly place a Google desktop Client ID JSON file so 
-#' that it may be located by ReviewR.
+#' @return No return value, called to move a Google desktop Client ID JSON file to 
+#' a ReviewR accessible location.
 #'
 dev_add_google_client_id <- function(file_path) {
   # Gather Platform Information

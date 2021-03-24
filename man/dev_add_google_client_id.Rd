@@ -10,8 +10,8 @@ dev_add_google_client_id(file_path)
 \item{file_path}{Path to a "Desktop" Google Client ID JSON on your local system.}
 }
 \value{
-No return value, called to correctly place a Google desktop Client ID JSON file so
-that it may be located by ReviewR.
+No return value, called to move a Google desktop Client ID JSON file to
+a ReviewR accessible location.
 }
 \description{
 This function will move a Google desktop Client ID json from Google Cloud into the appropriate

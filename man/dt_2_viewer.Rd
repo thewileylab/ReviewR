@@ -7,14 +7,18 @@
 dt_2_viewer(.data, file = NULL)
 }
 \arguments{
-\item{.data}{A tibble/data frame containing the desired data to save}
+\item{.data}{A \link[dplyr:reexports]{dplyr::tibble} containing the desired data to save}
 
-\item{file}{\emph{Optional}. Manually define file path (with .html extension) for HTML representation of DT}
+\item{file}{\emph{Optional}. Manually define file path (with .html extension)
+for HTML representation of DT}
 }
 \value{
-Temporary HTML file to be displayed in the RStudio Viewer Pane
+This function returns a temporary HTML file displayed in the
+RStudio Viewer Pane
 }
 \description{
-Save a DT::datatable as a self contained HTML file to display for display in the RStudio Viewer Pane
+Save a temporary \link[DT:datatable]{DT::datatable} as a self contained HTML file to display
+in the RStudio Viewer Pane. Used to provided users with choices
+when prompted for action by a dev function.
 }
 \keyword{internal}
