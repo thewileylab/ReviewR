@@ -47,7 +47,8 @@
 
 
 <meta property="og:title" content="ReviewR DataTable — reviewr_datatable" />
-<meta property="og:description" content="ReviewR DataTable" />
+<meta property="og:description" content="This is a wrapper function around DT::datatable which applies common extensions,
+options and default values used throughout the ReviewR application." />
 <meta property="og:image" content="reviewr.thewileylab.org/logo.svg" />
 
 
@@ -80,7 +81,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ReviewR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.5</span>
       </span>
     </div>
 
@@ -141,7 +142,7 @@
       <a href="../articles/customize_support_new_rdbms.html">Support a New Relational Database Management System</a>
     </li>
     <li>
-      <a href="../articles/customize_support_new_datamodel.html">Support a Custom Datamodel</a>
+      <a href="../articles/customize_support_new_data_model.html">Support a Custom Data Model</a>
     </li>
   </ul>
 </li>
@@ -173,7 +174,8 @@
     </div>
 
     <div class="ref-description">
-    <p>ReviewR DataTable</p>
+    <p>This is a wrapper function around <a href='https://rdrr.io/pkg/DT/man/datatable.html'>DT::datatable</a> which applies common extensions,
+options and default values used throughout the ReviewR application.</p>
     </div>
 
     <pre class="usage"><span class='fu'>reviewr_datatable</span><span class='op'>(</span><span class='va'>.data</span>, dom <span class='op'>=</span> <span class='st'>"ftip"</span>, column_filter <span class='op'>=</span> <span class='st'>"top"</span>, search_term <span class='op'>=</span> <span class='st'>""</span><span class='op'>)</span></pre>
@@ -187,7 +189,8 @@
     </tr>
     <tr>
       <th>dom</th>
-      <td><p>Define the table control elements to appear on the page and in what order</p></td>
+      <td><p>Define the table control elements to appear on the page and in what order. See:
+<a href='https://datatables.net/reference/option/dom'>https://datatables.net/reference/option/dom</a></p></td>
     </tr>
     <tr>
       <th>column_filter</th>
@@ -201,7 +204,7 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>return a DT with custom options</p>
+    <p>A <a href='https://rdrr.io/pkg/DT/man/datatable.html'>DT::datatable</a></p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Module Selector — abstraction_setup_ui • ReviewR</title>
+<title>Abstraction Module Selector — mod_abstraction_setup • ReviewR</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,33 @@
 
 
 
-<meta property="og:title" content="Module Selector — abstraction_setup_ui" />
-<meta property="og:description" content="A Shiny module to select from available ReviewR abstraction modules" />
+<meta property="og:title" content="Abstraction Module Selector — mod_abstraction_setup" />
+<meta property="og:description" content="This module allows the user to select an available ReviewR abstraction module
+from a dropdown list. It dynamically returns the abstraction setup and
+instrument user interfaces as well as collected chart abstraction information
+from the selected module.
+This module consists of the following components:Module UI functions
+
+
+
+abstraction_setup_ui: A tagList with a dropdown selector containing
+available abstraction modules.
+abstraction_instrument_ui: A uiOutput containing the data collection
+instrument UI from the selected chart abstraction module.
+
+
+
+Module Server function
+
+
+
+abstraction_setup_server: Processes user selection and dynamically returns
+uiOutputs for the selected abstraction module's setup and data collection instrument
+user interfaces. Any returns from the configured abstraction module are captured and
+returned.
+
+
+" />
 <meta property="og:image" content="reviewr.thewileylab.org/logo.svg" />
 
 
@@ -80,7 +105,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ReviewR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.5</span>
       </span>
     </div>
 
@@ -141,7 +166,7 @@
       <a href="../articles/customize_support_new_rdbms.html">Support a New Relational Database Management System</a>
     </li>
     <li>
-      <a href="../articles/customize_support_new_datamodel.html">Support a Custom Datamodel</a>
+      <a href="../articles/customize_support_new_data_model.html">Support a Custom Data Model</a>
     </li>
   </ul>
 </li>
@@ -167,27 +192,71 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Module Selector</h1>
+    <h1>Abstraction Module Selector</h1>
     <small class="dont-index">Source: <a href='https://github.com/thewileylab/ReviewR/blob/master/R/mod_abstraction_setup.R'><code>R/mod_abstraction_setup.R</code></a></small>
     <div class="hidden name"><code>mod_abstraction_setup.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>A Shiny module to select from available ReviewR abstraction modules</p>
+    <p>This module allows the user to select an available ReviewR abstraction module
+from a dropdown list. It dynamically returns the abstraction setup and
+instrument user interfaces as well as collected chart abstraction information
+from the selected module.</p>
+<p>This module consists of the following components:</p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Module UI functions</h3>
+
+
+<ul>
+<li><p><code>abstraction_setup_ui</code>: A tagList with a dropdown selector containing
+available abstraction modules.</p></li>
+<li><p><code>abstraction_instrument_ui</code>: A uiOutput containing the data collection
+instrument UI from the selected chart abstraction module.</p></li>
+</ul>
+
+
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Module Server function</h3>
+
+
+<ul>
+<li><p><code>abstraction_setup_server</code>: Processes user selection and dynamically returns
+uiOutputs for the selected abstraction module's setup and data collection instrument
+user interfaces. Any returns from the configured abstraction module are captured and
+returned.</p></li>
+</ul>
+
+
     </div>
 
     <pre class="usage"><span class='fu'>abstraction_setup_ui</span><span class='op'>(</span><span class='va'>id</span><span class='op'>)</span>
 
-<span class='fu'>mod_abstraction_setup_server</span><span class='op'>(</span><span class='va'>id</span>, <span class='va'>subject_id</span><span class='op'>)</span></pre>
+<span class='fu'>abstraction_instrument_ui</span><span class='op'>(</span><span class='va'>id</span><span class='op'>)</span>
+
+<span class='fu'>abstraction_setup_server</span><span class='op'>(</span><span class='va'>id</span>, <span class='va'>subject_id</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>id</th>
-      <td></td>
+      <td><p>The Module namespace</p></td>
+    </tr>
+    <tr>
+      <th>subject_id</th>
+      <td><p>A reactive expression containing a subject identifier</p></td>
     </tr>
     </table>
+
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p><em>abstraction_setup_ui</em>:</p>
+<dt>tagList</dt><dd><p>A tagList containing a selectInput that allows for selection of
+available abstraction setup modules and the setup UI for the selected abstraction
+module.</p></dd>
+abstraction_instrument_ui:
+<dt>tagList</dt><dd><p>A tagList containing the selected abstraction module's data collection
+instrument UI.</p></dd>
+abstraction_setup_server:
+<dt>reactiveValues</dt><dd><p>This module has no returns of its own, but will pass on
+the <code>reactiveValues</code> returns from the user selected abstraction module.</p></dd>
 
 
   </div>

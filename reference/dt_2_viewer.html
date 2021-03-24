@@ -47,7 +47,9 @@
 
 
 <meta property="og:title" content="DT to Viewer — dt_2_viewer" />
-<meta property="og:description" content="Save a DT::datatable as a self contained HTML file to display for display in the RStudio Viewer Pane" />
+<meta property="og:description" content="Save a temporary DT::datatable as a self contained HTML file to display
+in the RStudio Viewer Pane. Used to provided users with choices
+when prompted for action by a dev function." />
 <meta property="og:image" content="reviewr.thewileylab.org/logo.svg" />
 
 
@@ -80,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ReviewR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.5</span>
       </span>
     </div>
 
@@ -141,7 +143,7 @@
       <a href="../articles/customize_support_new_rdbms.html">Support a New Relational Database Management System</a>
     </li>
     <li>
-      <a href="../articles/customize_support_new_datamodel.html">Support a Custom Datamodel</a>
+      <a href="../articles/customize_support_new_data_model.html">Support a Custom Data Model</a>
     </li>
   </ul>
 </li>
@@ -173,7 +175,9 @@
     </div>
 
     <div class="ref-description">
-    <p>Save a DT::datatable as a self contained HTML file to display for display in the RStudio Viewer Pane</p>
+    <p>Save a temporary <a href='https://rdrr.io/pkg/DT/man/datatable.html'>DT::datatable</a> as a self contained HTML file to display
+in the RStudio Viewer Pane. Used to provided users with choices
+when prompted for action by a dev function.</p>
     </div>
 
     <pre class="usage"><span class='fu'>dt_2_viewer</span><span class='op'>(</span><span class='va'>.data</span>, file <span class='op'>=</span> <span class='cn'>NULL</span><span class='op'>)</span></pre>
@@ -183,17 +187,19 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>.data</th>
-      <td><p>A tibble/data frame containing the desired data to save</p></td>
+      <td><p>A dplyr::tibble containing the desired data to save</p></td>
     </tr>
     <tr>
       <th>file</th>
-      <td><p><em>Optional</em>. Manually define file path (with .html extension) for HTML representation of DT</p></td>
+      <td><p><em>Optional</em>. Manually define file path (with .html extension)
+for HTML representation of DT</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Temporary HTML file to be displayed in the RStudio Viewer Pane</p>
+    <p>This function returns a temporary HTML file displayed in the
+RStudio Viewer Pane</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

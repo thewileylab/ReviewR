@@ -38,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ReviewR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.5</span>
       </span>
     </div>
 
@@ -99,7 +99,7 @@
       <a href="../articles/customize_support_new_rdbms.html">Support a New Relational Database Management System</a>
     </li>
     <li>
-      <a href="../articles/customize_support_new_datamodel.html">Support a Custom Datamodel</a>
+      <a href="../articles/customize_support_new_data_model.html">Support a Custom Data Model</a>
     </li>
   </ul>
 </li>
@@ -153,8 +153,8 @@
       <span class="va">namespace</span> <span class="op">&lt;-</span> <span class="st">'db-selector-ns'</span>
       <span class="co"># ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Add Database Setup Modules Here!!! ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #</span>
       <span class="co">## Add Database Setup Modules Here</span>
-      <span class="va">database_setup_vars</span> <span class="op">&lt;-</span> <span class="fu">reactiveValues</span><span class="op">(</span>bigquery <span class="op">=</span> <span class="fu"><a href="../reference/bigquery_setup_server.html">bigquery_setup_server</a></span><span class="op">(</span>id <span class="op">=</span> <span class="va">namespace</span> <span class="op">)</span>,
-                                            postgresql <span class="op">=</span> <span class="fu"><a href="../reference/postgresql_setup_server.html">postgresql_setup_server</a></span><span class="op">(</span>id <span class="op">=</span> <span class="va">namespace</span> <span class="op">)</span> <span class="co">#,</span>
+      <span class="va">database_setup_vars</span> <span class="op">&lt;-</span> <span class="fu">reactiveValues</span><span class="op">(</span>bigquery <span class="op">=</span> <span class="fu"><a href="../reference/mod_bigquery.html">bigquery_setup_server</a></span><span class="op">(</span>id <span class="op">=</span> <span class="va">namespace</span> <span class="op">)</span>,
+                                            postgresql <span class="op">=</span> <span class="fu"><a href="../reference/mod_postgres.html">postgresql_setup_server</a></span><span class="op">(</span>id <span class="op">=</span> <span class="va">namespace</span> <span class="op">)</span> <span class="co">#,</span>
                                             <span class="co"># new_module = new_module_setup_server(id = namespace)</span>
                                             <span class="op">)</span>
       <span class="co"># ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #</span></code></pre></div>

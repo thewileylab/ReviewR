@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Patient Navigation — navigation_message • ReviewR</title>
+<title>Patient Navigation Module — mod_navigation • ReviewR</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,9 +46,52 @@
 
 
 
-<meta property="og:title" content="Patient Navigation — navigation_message" />
-<meta property="og:description" content="This module will render the dataTable on the 'Patient Search' tab containing all patients in the cohort.
-The selected patient in the DT is kept in sync with the 'Chart Review' tab." />
+<meta property="og:title" content="Patient Navigation Module — mod_navigation" />
+<meta property="og:description" content="This module will render the &quot;all patients&quot; dataTable (DT) located on the 'Patient Search'
+tab of ReviewR and will display demographic information about subjects in the
+connected database. The subject id of the selections made on this tab are extracted and
+passed to other ReviewR modules. As selections are made using the DT or the navigation
+buttons on the 'Chart Review' tab, the selected patient in the DT is kept in sync by
+this module.
+Additionally, demographic and (optionally) abstraction status information about the
+selected patient are extracted and placed into a header on the 'Chart Review' tab.
+This module consists of the following components:Module UI functions
+
+
+
+navigation_message: A uiOutput to display a placeholder message when no
+database is connected.
+all_patient_search_dt: A uiOutput containing the &quot;all patients&quot; dataTable
+with patient demographic information from the connected database.
+chart_review_subject_info: A uiOutput containing the selected subject's
+demographic information to display on the 'Chart Review' tab.
+chart_review_navigation: A uiOutput containing the &quot;Jump to Subject ID'
+dropdown and previous and next buttons used to navigate through patient data on the
+'Chart Review' tab.
+
+
+
+Module Server function
+
+
+
+navigation_server: Provides all of the logic associated with displaying
+patient demographic information, selecting a patient to review, and navigating
+through the connected patient database. Returns user selected patient information
+for use by other modules.
+
+
+
+Keyboard Shortcuts
+
+
+This module also provides keyboard shortcuts to assist with navigating through
+patient data. The &quot;meta&quot; key refers to &quot;ctrl&quot; on Windows and &quot;Cmd&quot; on Mac.
+Next Patient: “alt + meta + &amp;gt;”
+Prev Patient: “alt + meta + &amp;lt;”
+
+
+" />
 <meta property="og:image" content="reviewr.thewileylab.org/logo.svg" />
 
 
@@ -81,7 +124,7 @@ The selected patient in the DT is kept in sync with the 'Chart Review' tab." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ReviewR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.5</span>
       </span>
     </div>
 
@@ -142,7 +185,7 @@ The selected patient in the DT is kept in sync with the 'Chart Review' tab." />
       <a href="../articles/customize_support_new_rdbms.html">Support a New Relational Database Management System</a>
     </li>
     <li>
-      <a href="../articles/customize_support_new_datamodel.html">Support a Custom Datamodel</a>
+      <a href="../articles/customize_support_new_data_model.html">Support a Custom Data Model</a>
     </li>
   </ul>
 </li>
@@ -168,22 +211,71 @@ The selected patient in the DT is kept in sync with the 'Chart Review' tab." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Patient Navigation</h1>
+    <h1>Patient Navigation Module</h1>
     <small class="dont-index">Source: <a href='https://github.com/thewileylab/ReviewR/blob/master/R/mod_navigation.R'><code>R/mod_navigation.R</code></a></small>
     <div class="hidden name"><code>mod_navigation.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This module will render the dataTable on the 'Patient Search' tab containing all patients in the cohort.
-The selected patient in the DT is kept in sync with the 'Chart Review' tab.</p>
+    <p>This module will render the "all patients" dataTable (DT) located on the 'Patient Search'
+tab of ReviewR and will display demographic information about subjects in the
+connected database. The subject id of the selections made on this tab are extracted and
+passed to other ReviewR modules. As selections are made using the DT or the navigation
+buttons on the 'Chart Review' tab, the selected patient in the DT is kept in sync by
+this module.</p>
+<p>Additionally, demographic and (optionally) abstraction status information about the
+selected patient are extracted and placed into a header on the 'Chart Review' tab.</p>
+<p>This module consists of the following components:</p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Module UI functions</h3>
+
+
+<ul>
+<li><p><code>navigation_message</code>: A uiOutput to display a placeholder message when no
+database is connected.</p></li>
+<li><p><code>all_patient_search_dt</code>: A uiOutput containing the "all patients" dataTable
+with patient demographic information from the connected database.</p></li>
+<li><p><code>chart_review_subject_info</code>: A uiOutput containing the selected subject's
+demographic information to display on the 'Chart Review' tab.</p></li>
+<li><p><code>chart_review_navigation</code>: A uiOutput containing the "Jump to Subject ID'
+dropdown and previous and next buttons used to navigate through patient data on the
+'Chart Review' tab.</p></li>
+</ul>
+
+
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Module Server function</h3>
+
+
+<ul>
+<li><p>navigation_server: Provides all of the logic associated with displaying
+patient demographic information, selecting a patient to review, and navigating
+through the connected patient database. Returns user selected patient information
+for use by other modules.</p></li>
+</ul>
+
+
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Keyboard Shortcuts</h3>
+
+
+<p>This module also provides keyboard shortcuts to assist with navigating through
+patient data. The "meta" key refers to "ctrl" on Windows and "Cmd" on Mac.</p><ul>
+<li><p>Next Patient: “alt + meta + &gt;”</p></li>
+<li><p>Prev Patient: “alt + meta + &lt;”</p></li>
+</ul>
+
+
     </div>
 
     <pre class="usage"><span class='fu'>navigation_message</span><span class='op'>(</span><span class='va'>id</span><span class='op'>)</span>
 
-<span class='fu'>mod_navigation_server</span><span class='op'>(</span>
+<span class='fu'>all_patient_search_dt</span><span class='op'>(</span><span class='va'>id</span><span class='op'>)</span>
+
+<span class='fu'>chart_review_subject_info</span><span class='op'>(</span><span class='va'>id</span><span class='op'>)</span>
+
+<span class='fu'>chart_review_navigation</span><span class='op'>(</span><span class='va'>id</span><span class='op'>)</span>
+
+<span class='fu'>navigation_server</span><span class='op'>(</span>
   <span class='va'>id</span>,
   <span class='va'>database_vars</span>,
-  <span class='va'>datamodel_vars</span>,
+  <span class='va'>data_model_vars</span>,
   <span class='va'>abstract_vars</span>,
   <span class='va'>parent_session</span>
 <span class='op'>)</span></pre>
@@ -193,25 +285,51 @@ The selected patient in the DT is kept in sync with the 'Chart Review' tab.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>id</th>
-      <td><p>The namespace id for the UI output</p></td>
+      <td><p>The Module namespace</p></td>
     </tr>
     <tr>
       <th>database_vars</th>
-      <td><p>Database variables returned from user selected database setup module</p></td>
+      <td><p>A reactiveValues object as returned by <a href='mod_database_setup.html'>mod_database_setup</a>.</p></td>
     </tr>
     <tr>
-      <th>datamodel_vars</th>
-      <td><p>Data model variables returned from mod_datamodel_setup</p></td>
+      <th>data_model_vars</th>
+      <td><p>A reactiveValues object as returned by <a href='mod_data_model_detection.html'>mod_data_model_detection</a>.</p></td>
     </tr>
     <tr>
       <th>abstract_vars</th>
-      <td><p>Abstraction variables returned from user selected abstraction module</p></td>
+      <td><p>A reactiveValues object as returned by <a href='mod_abstraction_setup.html'>mod_abstraction_setup</a>.</p></td>
     </tr>
     <tr>
       <th>parent_session</th>
-      <td><p>the parent environment of this module</p></td>
+      <td><p>The session information from the parent environment of this module.</p></td>
     </tr>
     </table>
+
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p><em>navigation_message</em>:</p>
+<dt>tagList</dt><dd><p>A uiOutput to display a placeholder message when no
+database is connected.</p></dd>
+all_patient_search_dt:
+<dt>tagList</dt><dd><p>A uiOutput containing the "all patients" dataTable
+with patient demographic information from the connected database.</p></dd>
+chart_review_subject_info:
+<dt>tagList</dt><dd><p>A uiOutput containing the selected subject's
+demographic information to display on the 'Chart Review' tab.</p></dd>
+chart_review_navigation:
+<dt>tagList</dt><dd><p>A uiOutput containing the "Jump to Subject ID'
+dropdown and previous and next buttons used to navigate through patient data on the
+'Chart Review' tab.</p></dd>
+navigation_server:
+<dt>reactiveValues</dt><dd><p><ul>
+<li><p><em>selected_subject_id</em>: A character representing the currently selected subject in
+the currently connected database.</p></li>
+<li><p><em>selected_subject_info</em>: A dplyr::tibble containing demographic information about
+the selected subject.</p></li>
+<li><p><em>selected_subject_status</em>: A character containing the abstraction status of the
+selected subject, when an abstraction module is configured and abstraction data is
+present.</p></li>
+</ul></p></dd>
 
 
   </div>

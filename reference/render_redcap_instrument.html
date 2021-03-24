@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Render REDCap Instrument — shinyREDCap_textInput • ReviewR</title>
+<title>Render REDCap Instrument — render_redcap_instrument • ReviewR</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,11 @@
 
 
 
-<meta property="og:title" content="Render REDCap Instrument — shinyREDCap_textInput" />
-<meta property="og:description" content="Collection of functions to map REDCap question types to native Shiny widgets." />
+<meta property="og:title" content="Render REDCap Instrument — render_redcap_instrument" />
+<meta property="og:description" content="This function will select the appropriate shiny widget translation function
+based on the provided parameters. Used to loop over REDCap project information
+to create an entire data collection instrument which may consist of multiple
+questions/question types." />
 <meta property="og:image" content="reviewr.thewileylab.org/logo.svg" />
 
 
@@ -80,7 +83,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ReviewR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.5</span>
       </span>
     </div>
 
@@ -141,7 +144,7 @@
       <a href="../articles/customize_support_new_rdbms.html">Support a New Relational Database Management System</a>
     </li>
     <li>
-      <a href="../articles/customize_support_new_datamodel.html">Support a Custom Datamodel</a>
+      <a href="../articles/customize_support_new_data_model.html">Support a Custom Data Model</a>
     </li>
   </ul>
 </li>
@@ -173,62 +176,45 @@
     </div>
 
     <div class="ref-description">
-    <p>Collection of functions to map REDCap question types to native Shiny widgets.</p>
+    <p>This function will select the appropriate shiny widget translation function
+based on the provided parameters. Used to loop over REDCap project information
+to create an entire data collection instrument which may consist of multiple
+questions/question types.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>shinyREDCap_textInput</span><span class='op'>(</span><span class='va'>id</span>, <span class='va'>field_label</span>, value <span class='op'>=</span> <span class='cn'>NULL</span>, placeholder <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
-
-<span class='fu'>shinyREDCap_dateInput</span><span class='op'>(</span><span class='va'>id</span>, <span class='va'>field_label</span>, value <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
-
-<span class='fu'>shinyREDCap_dropdown</span><span class='op'>(</span><span class='va'>id</span>, <span class='va'>field_label</span>, <span class='va'>required</span>, <span class='va'>choices</span>, value <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
-
-<span class='fu'>shinyREDCap_truefalse</span><span class='op'>(</span><span class='va'>id</span>, <span class='va'>field_label</span>, <span class='va'>required</span>, value <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
-
-<span class='fu'>shinyREDCap_yesno</span><span class='op'>(</span><span class='va'>id</span>, <span class='va'>field_label</span>, <span class='va'>required</span>, value <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
-
-<span class='fu'>shinyREDCap_radio</span><span class='op'>(</span><span class='va'>id</span>, <span class='va'>field_label</span>, <span class='va'>required</span>, <span class='va'>choices</span>, value <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
-
-<span class='fu'>shinyREDCap_checkbox</span><span class='op'>(</span><span class='va'>id</span>, <span class='va'>field_label</span>, <span class='va'>choices</span>, value <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
-
-<span class='fu'>shinyREDCap_notes</span><span class='op'>(</span><span class='va'>id</span>, <span class='va'>field_label</span>, value <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
-
-<span class='fu'>shinyREDCap_integer</span><span class='op'>(</span><span class='va'>id</span>, <span class='va'>field_label</span>, value <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span>
-
-<span class='fu'>render_redcap_instrument</span><span class='op'>(</span>
+    <pre class="usage"><span class='fu'>render_redcap_instrument</span><span class='op'>(</span>
   <span class='va'>shinyREDCap_type</span>,
-  <span class='va'>field_name</span>,
+  <span class='va'>id</span>,
   <span class='va'>field_label</span>,
   <span class='va'>required</span>,
   <span class='va'>choices</span>,
-  current_subject_data <span class='op'>=</span> <span class='cn'>NULL</span>
+  current_subject_data <span class='op'>=</span> <span class='cn'>NULL</span>,
+  <span class='va'>...</span>
 <span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
+      <th>shinyREDCap_type</th>
+      <td><p>A string indicating a supported shinyREDCap question type.
+Valid options include: "shinyREDCap_text", "shinyREDCap_date", "shinyREDCap_dropdown",
+"shinyREDCap_truefalse", "shinyREDCap_yesno", "shinyREDCap_radio", "shinyREDCap_checkbox",
+"shinyREDCap_notes", "shinyREDCap_integer"</p></td>
+    </tr>
+    <tr>
       <th>id</th>
-      <td><p>Unique REDCap question identifier</p></td>
+      <td><p>A string, containing a globally unique REDCap question identifier. Used to
+create a valid Shiny inputID.</p></td>
     </tr>
     <tr>
       <th>field_label</th>
-      <td><p>Question text, with formatting</p></td>
-    </tr>
-    <tr>
-      <th>value</th>
-      <td><p>Default value or previous data if question has previously been answered</p></td>
-    </tr>
-    <tr>
-      <th>placeholder</th>
-      <td><p>Placeholder text to help a reviewer decide how to answer the question</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Any additional parameters</p></td>
+      <td><p>A string containing the question being asked. May contain
+html formatting.</p></td>
     </tr>
     <tr>
       <th>required</th>
-      <td><p>Is this a required REDCap question type?</p></td>
+      <td><p>A string, "yes" or "no". Is this a required REDCap question type?</p></td>
     </tr>
     <tr>
       <th>choices</th>
@@ -236,10 +222,17 @@
     </tr>
     <tr>
       <th>current_subject_data</th>
-      <td><p>Previous REDCap data on the current subject</p></td>
+      <td><p>Previously saved REDCap data on the current subject.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Any additional parameters to pass to shiny widget inputs.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A shiny input widget for the UI</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

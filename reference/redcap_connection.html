@@ -47,7 +47,29 @@
 
 
 <meta property="og:title" content="REDCap Connection — redcap_connection" />
-<meta property="og:description" content="A 'safe' wrapper for redcapAPI::redcapConnection(). Will return diagnostic error codes in case incorrect URL or token are provided." />
+<meta property="og:description" content="
+Overview
+
+
+A 'safe' wrapper for redcapAPI::redcapConnection(). Will return diagnostic
+error codes in case incorrect URL or token are provided instead of failing
+outright.
+
+REDCap API Security
+
+
+It is good practice to ensure that SSL certs are validated when utilizing the REDCap API.
+To ensure this happens, set the CURLOPT_SSL_VERIFYPEER' option to TRUE to avoid potential
+man in the middle attacks.
+The redcapAPI package utilizes the httr package to perform operations using the REDCap API.
+Configuration options can be passed directly to httr via the config option in the
+redcapAPI::redcapConnection function. Here, we set 'ssl_verifypeer = 1L' to ensure
+cert checking is enabled.
+https://www.rdocumentation.org/packages/redcapAPI/versions/2.3/topics/redcapConnection
+https://httr.r-lib.org/reference/httr_options.html
+
+
+" />
 <meta property="og:image" content="reviewr.thewileylab.org/logo.svg" />
 
 
@@ -80,7 +102,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ReviewR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.5</span>
       </span>
     </div>
 
@@ -141,7 +163,7 @@
       <a href="../articles/customize_support_new_rdbms.html">Support a New Relational Database Management System</a>
     </li>
     <li>
-      <a href="../articles/customize_support_new_datamodel.html">Support a Custom Datamodel</a>
+      <a href="../articles/customize_support_new_data_model.html">Support a Custom Data Model</a>
     </li>
   </ul>
 </li>
@@ -173,7 +195,29 @@
     </div>
 
     <div class="ref-description">
-    <p>A 'safe' wrapper for redcapAPI::redcapConnection(). Will return diagnostic error codes in case incorrect URL or token are provided.</p>
+    
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Overview</h3>
+
+
+<p>A 'safe' wrapper for <code><a href='https://rdrr.io/pkg/redcapAPI/man/redcapConnection.html'>redcapAPI::redcapConnection()</a></code>. Will return diagnostic
+error codes in case incorrect URL or token are provided instead of failing
+outright.</p>
+
+<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>REDCap API Security</h3>
+
+
+<p>It is good practice to ensure that SSL certs are validated when utilizing the REDCap API.
+To ensure this happens, set the CURLOPT_SSL_VERIFYPEER' option to TRUE to avoid potential
+man in the middle attacks.</p>
+<p>The redcapAPI package utilizes the httr package to perform operations using the REDCap API.
+Configuration options can be passed directly to httr via the config option in the
+<a href='https://rdrr.io/pkg/redcapAPI/man/redcapConnection.html'>redcapAPI::redcapConnection</a> function. Here, we set 'ssl_verifypeer = 1L' to ensure
+cert checking is enabled.</p><ul>
+<li><p><a href='https://www.rdocumentation.org/packages/redcapAPI/versions/2.3/topics/redcapConnection'>https://www.rdocumentation.org/packages/redcapAPI/versions/2.3/topics/redcapConnection</a></p></li>
+<li><p><a href='https://httr.r-lib.org/reference/httr_options.html'>https://httr.r-lib.org/reference/httr_options.html</a></p></li>
+</ul>
+
+
     </div>
 
     <pre class="usage"><span class='fu'>redcap_connection</span><span class='op'>(</span><span class='va'>url</span>, <span class='va'>token</span><span class='op'>)</span></pre>
@@ -183,17 +227,18 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>url</th>
-      <td><p>The API URL for your institution's REDCap instance</p></td>
+      <td><p>A string containing the https URL for your institution's REDCap API.</p></td>
     </tr>
     <tr>
       <th>token</th>
-      <td><p>The API token for your REDCap project</p></td>
+      <td><p>A string containing the API token for your REDCap project.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>If the URL and token are correct, return a redcapAPI connection object. Else, return diagnostic error.</p>
+    <p>A redcapAPI connection object if the URL and API token are correct
+( See: <a href='https://rdrr.io/pkg/redcapAPI/man/redcapConnection.html'>redcapAPI::redcapConnection</a> ). Else, return diagnostic error.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

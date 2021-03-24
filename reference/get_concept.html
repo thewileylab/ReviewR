@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>OMOP Get Concepts — get_concept • ReviewR</title>
+<title>OMOP Get Concept — get_concept • ReviewR</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,9 @@
 
 
 
-<meta property="og:title" content="OMOP Get Concepts — get_concept" />
-<meta property="og:description" content="OMOP Get Concepts" />
+<meta property="og:title" content="OMOP Get Concept — get_concept" />
+<meta property="og:description" content="This function assists with transforming OMOP concept_ids to interpretable strings
+by retrieving the requested concepts from the appropriate OMOP concept table." />
 <meta property="og:image" content="reviewr.thewileylab.org/logo.svg" />
 
 
@@ -80,7 +81,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ReviewR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.5</span>
       </span>
     </div>
 
@@ -141,7 +142,7 @@
       <a href="../articles/customize_support_new_rdbms.html">Support a New Relational Database Management System</a>
     </li>
     <li>
-      <a href="../articles/customize_support_new_datamodel.html">Support a Custom Datamodel</a>
+      <a href="../articles/customize_support_new_data_model.html">Support a Custom Data Model</a>
     </li>
   </ul>
 </li>
@@ -167,13 +168,14 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>OMOP Get Concepts</h1>
+    <h1>OMOP Get Concept</h1>
     <small class="dont-index">Source: <a href='https://github.com/thewileylab/ReviewR/blob/master/R/database_tables_omop.R'><code>R/database_tables_omop.R</code></a></small>
     <div class="hidden name"><code>get_concept.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>OMOP Get Concepts</p>
+    <p>This function assists with transforming OMOP concept_ids to interpretable strings
+by retrieving the requested concepts from the appropriate OMOP concept table.</p>
     </div>
 
     <pre class="usage"><span class='fu'>get_concept</span><span class='op'>(</span>
@@ -195,53 +197,56 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>table_map</th>
-      <td><p>tibble containing standard CDM mapped to user tables</p></td>
+      <td><p>A dplyr::tibble containing a mapping between the CDM standard
+tables and fields to the user connected tables and fields.</p></td>
     </tr>
     <tr>
       <th>db_connection</th>
-      <td><p>DBI connection object</p></td>
+      <td><p>A <a href='https://dbi.r-dbi.org/reference/dbConnect.html'>DBI::dbConnect</a> object.</p></td>
     </tr>
     <tr>
       <th>concept_table</th>
-      <td><p>Standard CDM concept table name</p></td>
+      <td><p>A string, containing the standard CDM concept table name.</p></td>
     </tr>
     <tr>
       <th>concept_id</th>
-      <td><p>Standard CDM concept id field</p></td>
+      <td><p>A string, containing the standard CDM concept id field.</p></td>
     </tr>
     <tr>
       <th>concept_name</th>
-      <td><p>Standard CDM concept name field</p></td>
+      <td><p>A string, containing the standard CDM concept name field.</p></td>
     </tr>
     <tr>
       <th>table</th>
-      <td><p>Table that needs concepts retrieved</p></td>
+      <td><p>A string, containing the table name that requires OMOP concepts.</p></td>
     </tr>
     <tr>
       <th>joinable_id</th>
-      <td><p>What variable is joinable between the concept table and the desired table</p></td>
+      <td><p>A string, indicating what variable is "joinable" between the concept
+table and the desired table.</p></td>
     </tr>
     <tr>
       <th>table_concept_id</th>
-      <td><p>The table concept id</p></td>
+      <td><p>A string, containing the the table concept id</p></td>
     </tr>
     <tr>
       <th>col_name</th>
-      <td><p>Would you like to rename the retrieved concept?</p></td>
+      <td><p>A string, containing the desired name for the retrieved concept.</p></td>
     </tr>
     <tr>
       <th>subject_id_field</th>
-      <td><p>Which field contains the subject id?</p></td>
+      <td><p>A string, identifying which table field contains the subject id.</p></td>
     </tr>
     <tr>
       <th>selected_subject</th>
-      <td><p>For which subject would you like to retrieve concepts?</p></td>
+      <td><p>A numeric, or coercible to numeric containing the desired
+subject id.</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>The desired OMOP concepts based on the user data model for all subjects</p>
+    <p>The desired OMOP concept based on the user data model for all subjects</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='kw'>if</span> <span class='op'>(</span><span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>{</span>

@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>MIMIC Tables — mimic3_table_all_patients • ReviewR</title>
+<title>MIMIC-III Tables — mimic3_tables • ReviewR</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,10 @@
 
 
 
-<meta property="og:title" content="MIMIC Tables — mimic3_table_all_patients" />
-<meta property="og:description" content="Collection of functions to create prearranged views of MIMIC patient data for ReviewR." />
+<meta property="og:title" content="MIMIC-III Tables — mimic3_tables" />
+<meta property="og:description" content="A collection of functions to create prearranged views of MIMIC-III patient data
+when supplied with database connection information and a mapping of the connected
+database." />
 <meta property="og:image" content="reviewr.thewileylab.org/logo.svg" />
 
 
@@ -80,7 +82,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ReviewR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.5</span>
       </span>
     </div>
 
@@ -141,7 +143,7 @@
       <a href="../articles/customize_support_new_rdbms.html">Support a New Relational Database Management System</a>
     </li>
     <li>
-      <a href="../articles/customize_support_new_datamodel.html">Support a Custom Datamodel</a>
+      <a href="../articles/customize_support_new_data_model.html">Support a Custom Data Model</a>
     </li>
   </ul>
 </li>
@@ -167,13 +169,15 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>MIMIC Tables</h1>
+    <h1>MIMIC-III Tables</h1>
     <small class="dont-index">Source: <a href='https://github.com/thewileylab/ReviewR/blob/master/R/database_tables_mimic3.R'><code>R/database_tables_mimic3.R</code></a></small>
     <div class="hidden name"><code>mimic3_tables.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Collection of functions to create prearranged views of MIMIC patient data for ReviewR.</p>
+    <p>A collection of functions to create prearranged views of MIMIC-III patient data
+when supplied with database connection information and a mapping of the connected
+database.</p>
     </div>
 
     <pre class="usage"><span class='fu'>mimic3_table_all_patients</span><span class='op'>(</span><span class='va'>table_map</span>, <span class='va'>db_connection</span><span class='op'>)</span>
@@ -213,18 +217,22 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>table_map</th>
-      <td><p>tibble containing a the CDM that most closely matches the user's database and a map of standard tables to user tables</p></td>
+      <td><p>A dplyr::tibble containing a mapping between the CDM standard
+tables and fields to the user connected tables and fields.</p></td>
     </tr>
     <tr>
       <th>db_connection</th>
-      <td><p>Connection info received from the database setup module</p></td>
+      <td><p>A <a href='https://dbi.r-dbi.org/reference/dbConnect.html'>DBI::dbConnect</a> object.</p></td>
     </tr>
     <tr>
       <th>subject_id</th>
-      <td><p>The selected subject</p></td>
+      <td><p>A numeric, or coercible to numeric.</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A dplyr::tibble containing pre-coordinated patient information from the connected database.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
