@@ -51,18 +51,4 @@ The desired OMOP concept based on the user data model for all subjects
 This function assists with transforming OMOP concept_ids to interpretable strings
 by retrieving the requested concepts from the appropriate OMOP concept table.
 }
-\examples{
-\dontrun{
-## Retrieve all concepts
-gender_concepts <- get_concept(table_map = table_map,  db_connection = db_connection,  
-    concept_table = 'concept', concept_id = 'concept_id',  concept_name = 'concept_name',  
-    table = 'person', joinable_id = 'person_id', table_concept_id = 'gender_concept_id',  
-    col_name = 'Gender')
-## Retrieve concepts for a particular subject id     
-provider_concepts <- get_concept(table_map = table_map,  db_connection = db_connection,  
-    concept_table = 'provider', concept_id = 'provider_id',  concept_name = 'provider_name',  
-    table = 'person', joinable_id = 'person_id', table_concept_id = 'provider_id',  
-    col_name = 'Provider', subject_id_field = 'person_id', selected_subject = '1234') 
-}
-}
 \keyword{internal}
