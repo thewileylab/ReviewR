@@ -203,7 +203,6 @@ This will install a new, custom version of the ReviewR package with your newly d
 #' @param id The module namespace
 #' 
 #' @return The {display_name} Setup UI
-#' @export
 #' 
 #' @importFrom shiny NS
 #'
