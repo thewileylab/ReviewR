@@ -25,7 +25,6 @@ user info and create a DBI connection object, respectively.
 }
 \seealso{
 Other Development Functions: 
-\code{\link{dev_add_data_model}()},
-\code{\link{dev_add_google_client_id}()}
+\code{\link{dev_add_data_model}()}
 }
 \concept{Development Functions}
