@@ -37,20 +37,7 @@ if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 #' @importFrom rlang := 
 #' 
 #' @return The desired OMOP concept based on the user data model for all subjects
-#'
-#' @examples 
-#' \dontrun{
-#' ## Retrieve all concepts
-#' gender_concepts <- get_concept(table_map = table_map,  db_connection = db_connection,  
-#'     concept_table = 'concept', concept_id = 'concept_id',  concept_name = 'concept_name',  
-#'     table = 'person', joinable_id = 'person_id', table_concept_id = 'gender_concept_id',  
-#'     col_name = 'Gender')
-#' ## Retrieve concepts for a particular subject id     
-#' provider_concepts <- get_concept(table_map = table_map,  db_connection = db_connection,  
-#'     concept_table = 'provider', concept_id = 'provider_id',  concept_name = 'provider_name',  
-#'     table = 'person', joinable_id = 'person_id', table_concept_id = 'provider_id',  
-#'     col_name = 'Provider', subject_id_field = 'person_id', selected_subject = '1234') 
-#' }
+#' 
 
 get_concept <- function(table_map, db_connection, concept_table, concept_id, concept_name, table, joinable_id, table_concept_id, col_name, subject_id_field = NULL, selected_subject = NULL) {
   tryCatch({

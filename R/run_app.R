@@ -16,7 +16,11 @@
 #' 
 #' authors:  Laura Wiley, Luke Rasmussen, David Mayer}
 #'
-#' @param ... A list of options to pass to golem
+#' @param ... A list of options to pass to the app including:
+#' \itemize{
+#' \item{secrets_json: A string, containing a file path to a Google OAuth 2.0 
+#' Client ID JSON}
+#' }
 #'
 #' @export
 #' @importFrom shiny shinyApp

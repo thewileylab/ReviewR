@@ -7,7 +7,11 @@
 run_app(...)
 }
 \arguments{
-\item{...}{A list of options to pass to golem}
+\item{...}{A list of options to pass to the app including:
+\itemize{
+\item{secrets_json: A string, containing a file path to a Google OAuth 2.0
+Client ID JSON}
+}}
 }
 \value{
 No return value, called to start the ReviewR Shiny Application!

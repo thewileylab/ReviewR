@@ -8,16 +8,13 @@
 \usage{
 bigquery_setup_ui(id)
 
-bigquery_setup_server(
-  id,
-  secrets_json = "/srv/shiny-server/.bq_client_id/client_secret.json"
-)
+bigquery_setup_server(id, secrets_json = NULL)
 }
 \arguments{
 \item{id}{The module namespace}
 
-\item{secrets_json}{A string, containing the location of Google secrets json. Defaults
-to '/srv/shiny-server/.bq_client_id/client_secret.json' for Shiny Server installations.}
+\item{secrets_json}{A string, containing a file path to a Google OAuth 2.0 Client
+secrets JSON.}
 }
 \value{
 \emph{bigquery_setup_ui}:

@@ -22,7 +22,6 @@ based on the schema stored in the user supplied CSV.
 }
 \seealso{
 Other Development Functions: 
-\code{\link{dev_add_database_module}()},
-\code{\link{dev_add_google_client_id}()}
+\code{\link{dev_add_database_module}()}
 }
 \concept{Development Functions}

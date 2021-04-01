@@ -1,4 +1,4 @@
-# ReviewR 2.3.5
+# ReviewR 2.3.6
 
 ## Features
 

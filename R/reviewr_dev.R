@@ -280,39 +280,3 @@ dev_add_data_model <- function(csv) {
       message('Warning: Did not find "table" or "field" columns in specified CSV. Please ensure these fields are present, or specify a different CSV file.')
     }
 }
-
-#' Add Google Client ID
-#' 
-#' This function will move a Google desktop Client ID json from Google Cloud into the appropriate
-#' directory on your computer to be used by ReviewR in place of the built in credentials.
-#'
-#' @param file_path Path to a "Desktop" Google Client ID JSON on your local system.
-#' 
-#' @family Development Functions
-#'
-#' @export
-#' @return No return value, called to move a Google desktop Client ID JSON file to 
-#' a ReviewR accessible location.
-#'
-dev_add_google_client_id <- function(file_path) {
-  # Gather Platform Information
-  if(!requireNamespace('fs', quietly = T)) {
-    stop("'fs' package is required for this function to work. Please install it.",
-         call. = FALSE)
-  }
-  info <- .Platform
-  
-  # Clean user input
-  secrets_json <- fs::as_fs_path(file_path) 
-  
-  # Get (file) movin'!
-  if(info$OS.type == 'unix') {
-    fs::dir_create('~/.bq_client_id/')
-    fs::file_copy(path = secrets_json, new_path = '~/.bq_client_id/client_secret.json')
-    } else if (info$OS.type == 'windows') {
-      fs::dir_create('$HOMEPATH$/.bq_client_id/')
-      fs::file_copy(path = secrets_json, new_path = '$HOMEPATH$/.bq_client_id/client_secret.json')
-      } else {
-        message('How did you build R for this operating system?!')
-      }
-  }

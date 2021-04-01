@@ -10,7 +10,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-**ReviewR** is an R package and Shiny application for performing chart review from clinical electronic data warehouses developed by The Wiley Lab. This package uses internal resources owned by “ReviewR” project on Google Cloud Platform and are governed by the policies documented on this page. Your use of Google APIs with these packages is subject to each API’s respective terms of service. See https://developers.google.com/terms/.
+**ReviewR** is an R package and Shiny application for performing chart review from clinical electronic data warehouses developed by The Wiley Lab. This package uses internal resources owned by the “ReviewR” project on Google Cloud Platform and are governed by the policies documented on this page. Your use of Google APIs with these packages is subject to each API’s respective terms of service. See https://developers.google.com/terms/.
 
 If you would prefer not to authorize with ReviewR you may bring your own OAuth clientID from a Google Cloud Project of your choice.
 
