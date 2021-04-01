@@ -25,9 +25,6 @@
     <loc>reviewr.thewileylab.org/reference/dev_add_database_module.html</loc>
   </url>
   <url>
-    <loc>reviewr.thewileylab.org/reference/dev_add_google_client_id.html</loc>
-  </url>
-  <url>
     <loc>reviewr.thewileylab.org/reference/dt_2_viewer.html</loc>
   </url>
   <url>
@@ -95,6 +92,9 @@
   </url>
   <url>
     <loc>reviewr.thewileylab.org/reference/safe_exportRecords.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/safe_file.exists.html</loc>
   </url>
   <url>
     <loc>reviewr.thewileylab.org/reference/setup.html</loc>

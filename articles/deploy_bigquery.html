@@ -38,16 +38,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ReviewR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.6</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-<li>
-  <a href="../news/index.html">Changelog</a>
-</li>
-      </ul>
+      <ul class="nav navbar-nav"></ul>
 <ul class="nav navbar-nav navbar-right">
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -107,6 +103,9 @@
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
+  <a href="../news/index.html">Changelog</a>
+</li>
+<li>
   <a href="https://github.com/thewileylab/ReviewR/">
     <span class="fab fa-github fa-lg"></span>
      
@@ -143,8 +142,8 @@
 <div id="local-deployment" class="section level2">
 <h2 class="hasAnchor">
 <a href="#local-deployment" class="anchor"></a>Local Deployment</h2>
-<p>You should be able to use ReviewR locally to connect to Google BigQuery as expected. However you will likely see a notice that our app is not yet verified. You can see our full <a href="https://www.thewileylab.org/privacypolicy">privacy policy</a> for how we handle your data (briefly, we only collect aggregate usage information, none of your data sets are revealed or accessible to us). If those terms are acceptable for you, please select <code>Advanced</code> and then <code>Go to The Wiley Lab (unsafe)</code> to approve access to your data for use in ReviewR.</p>
-<p>It is also possible for you to obtain and provide your own Google API credentials so that you do not need to use the Wiley Lab OAuth Client. To do so:</p>
+<p>This package uses internal resources owned by the “ReviewR” project on Google Cloud Platform. You can see our full <a href="https://reviewr.thewileylab.org/articles/privacy-policy">privacy policy</a> for how we handle your data (briefly, we only collect aggregate usage information, none of your data sets are revealed or accessible to us). If those terms are acceptable for you, no further configuration is required! However, if you would prefer not to authorize with ReviewR you may bring your own OAuth clientID from a Google Cloud Project of your choice.</p>
+<p>To obtain and use your own Google API credentials:</p>
 <ol style="list-style-type: decimal">
 <li>Obtain a Google Cloud Platform Project
 <ul>
@@ -168,17 +167,16 @@
 </li>
 <li>Locate the client ID that was created and click “Download JSON”
 <ul>
-<li>Save the file as “client_secret.json” to <code>~/.ReviewR</code>
-</li>
+<li>Save the file as “client_secret.json” to <code>~/.bq_client_id</code> on Unix based systems or <code>$HOMEPATH$/.bq_client_id/client_secret.json</code> on Windows.</li>
 </ul>
 </li>
 </ol>
-<p>On launch, ReviewR will check the path defined in step 3 above for a <code>client_secret.json</code> file. If found, it will use these credentials instead of the Wiley Lab credentials that have been built into the package.</p>
+<p>On launch, ReviewR will check the path defined in step 3 above for a <code>client_secret.json</code> file. If found, it will use these credentials instead of the Wiley Lab credentials that have been built into the package. Additionally, you may also run <code><a href="../reference/run_app.html">ReviewR::run_app(secrets_json = '/path/to/client_secret.json')</a></code> if you would prefer to store this file elsewhere.</p>
 </div>
 <div id="server-deployment" class="section level2">
 <h2 class="hasAnchor">
 <a href="#server-deployment" class="anchor"></a>Server Deployment</h2>
-<p>Due to how Google OAuth clientIDs are configured, if you are using a server deployment of ReviewR that connects to data stored in Google BigQuery, you must obtain and provide your own Google API credentials. After ReviewR is installed and accessible on a server with a secured fully qualified domain name, then:</p>
+<p>If you are using ReviewR on a Shiny Server deployment and intend to connect to data stored in Google BigQuery <em>you must</em> obtain your own Google API credentials. Otherwise, authentication will fail as Google will be unable to determine where to redirect authenticated users. After ReviewR is installed and accessible on a server with a secured fully qualified domain name:</p>
 <ol style="list-style-type: decimal">
 <li>Obtain a Google Cloud Platform Project
 <ul>

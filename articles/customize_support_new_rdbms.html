@@ -38,16 +38,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ReviewR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.6</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-<li>
-  <a href="../news/index.html">Changelog</a>
-</li>
-      </ul>
+      <ul class="nav navbar-nav"></ul>
 <ul class="nav navbar-nav navbar-right">
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -105,6 +101,9 @@
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
 <li>
   <a href="https://github.com/thewileylab/ReviewR/">
@@ -312,50 +311,49 @@
 <span id="cb10-6"><a href="#cb10-6"></a><span class="co">#' @param id The module namespace</span></span>
 <span id="cb10-7"><a href="#cb10-7"></a><span class="co">#' </span></span>
 <span id="cb10-8"><a href="#cb10-8"></a><span class="co">#' @return The {display_name} Setup UI</span></span>
-<span id="cb10-9"><a href="#cb10-9"></a><span class="co">#' @export</span></span>
-<span id="cb10-10"><a href="#cb10-10"></a><span class="co">#' </span></span>
-<span id="cb10-11"><a href="#cb10-11"></a><span class="co">#' @importFrom shiny NS</span></span>
-<span id="cb10-12"><a href="#cb10-12"></a><span class="co">#'</span></span>
-<span id="cb10-13"><a href="#cb10-13"></a>{mod_name}_setup_ui &lt;-<span class="st"> </span><span class="cf">function</span>(id) { </span>
-<span id="cb10-14"><a href="#cb10-14"></a>  ns &lt;-<span class="st"> </span><span class="kw">NS</span>(id)</span>
-<span id="cb10-15"><a href="#cb10-15"></a>  <span class="kw">tagList</span>(</span>
-<span id="cb10-16"><a href="#cb10-16"></a>  <span class="co">## UI widgets here ----</span></span>
-<span id="cb10-17"><a href="#cb10-17"></a>    </span>
-<span id="cb10-18"><a href="#cb10-18"></a>    )</span>
-<span id="cb10-19"><a href="#cb10-19"></a>  }</span>
-<span id="cb10-20"><a href="#cb10-20"></a></span>
-<span id="cb10-21"><a href="#cb10-21"></a><span class="co"># Server ----</span></span>
-<span id="cb10-22"><a href="#cb10-22"></a><span class="co">#' {display_name} Setup Server</span></span>
-<span id="cb10-23"><a href="#cb10-23"></a><span class="co">#'</span></span>
-<span id="cb10-24"><a href="#cb10-24"></a><span class="co">#' @param id The Module namespace</span></span>
-<span id="cb10-25"><a href="#cb10-25"></a><span class="co">#'</span></span>
-<span id="cb10-26"><a href="#cb10-26"></a><span class="co">#' @return {display_name} connection variables</span></span>
-<span id="cb10-27"><a href="#cb10-27"></a><span class="co">#' @export</span></span>
-<span id="cb10-28"><a href="#cb10-28"></a><span class="co">#'</span></span>
-<span id="cb10-29"><a href="#cb10-29"></a><span class="co">#' @importFrom DBI dbConnect</span></span>
-<span id="cb10-30"><a href="#cb10-30"></a><span class="co">#' </span></span>
-<span id="cb10-31"><a href="#cb10-31"></a>{mod_name}_setup_server &lt;-<span class="st"> </span><span class="cf">function</span>(id) {</span>
-<span id="cb10-32"><a href="#cb10-32"></a>  <span class="kw">moduleServer</span>(</span>
-<span id="cb10-33"><a href="#cb10-33"></a>    id,</span>
-<span id="cb10-34"><a href="#cb10-34"></a>    <span class="cf">function</span>(input, output, session) {</span>
-<span id="cb10-35"><a href="#cb10-35"></a>      ns &lt;-<span class="st"> </span>session<span class="op">$</span>ns</span>
-<span id="cb10-36"><a href="#cb10-36"></a>      <span class="co">## {mod_name} Export Values ----</span></span>
-<span id="cb10-37"><a href="#cb10-37"></a>      {mod_name}_export &lt;-<span class="st"> </span><span class="kw">reactiveValues</span>(</span>
-<span id="cb10-38"><a href="#cb10-38"></a>        <span class="co">### Module Info</span></span>
-<span id="cb10-39"><a href="#cb10-39"></a>        <span class="dt">moduleName =</span> <span class="st">'{display_name}'</span>,</span>
-<span id="cb10-40"><a href="#cb10-40"></a>        <span class="dt">moduleType =</span> <span class="st">'database'</span>,</span>
-<span id="cb10-41"><a href="#cb10-41"></a>        <span class="dt">setup_ui =</span> ReviewR<span class="op">::</span>{mod_name}_setup_ui,</span>
-<span id="cb10-42"><a href="#cb10-42"></a>        <span class="dt">is_connected =</span> <span class="st">'no'</span>,       </span>
-<span id="cb10-43"><a href="#cb10-43"></a>        <span class="dt">db_con =</span> <span class="ot">NULL</span></span>
-<span id="cb10-44"><a href="#cb10-44"></a>        )</span>
-<span id="cb10-45"><a href="#cb10-45"></a>      <span class="co"># Server Code Here ----</span></span>
+<span id="cb10-9"><a href="#cb10-9"></a><span class="co">#' </span></span>
+<span id="cb10-10"><a href="#cb10-10"></a><span class="co">#' @importFrom shiny NS</span></span>
+<span id="cb10-11"><a href="#cb10-11"></a><span class="co">#'</span></span>
+<span id="cb10-12"><a href="#cb10-12"></a>{mod_name}_setup_ui &lt;-<span class="st"> </span><span class="cf">function</span>(id) { </span>
+<span id="cb10-13"><a href="#cb10-13"></a>  ns &lt;-<span class="st"> </span><span class="kw">NS</span>(id)</span>
+<span id="cb10-14"><a href="#cb10-14"></a>  <span class="kw">tagList</span>(</span>
+<span id="cb10-15"><a href="#cb10-15"></a>  <span class="co">## UI widgets here ----</span></span>
+<span id="cb10-16"><a href="#cb10-16"></a>    </span>
+<span id="cb10-17"><a href="#cb10-17"></a>    )</span>
+<span id="cb10-18"><a href="#cb10-18"></a>  }</span>
+<span id="cb10-19"><a href="#cb10-19"></a></span>
+<span id="cb10-20"><a href="#cb10-20"></a><span class="co"># Server ----</span></span>
+<span id="cb10-21"><a href="#cb10-21"></a><span class="co">#' {display_name} Setup Server</span></span>
+<span id="cb10-22"><a href="#cb10-22"></a><span class="co">#'</span></span>
+<span id="cb10-23"><a href="#cb10-23"></a><span class="co">#' @param id The Module namespace</span></span>
+<span id="cb10-24"><a href="#cb10-24"></a><span class="co">#'</span></span>
+<span id="cb10-25"><a href="#cb10-25"></a><span class="co">#' @return {display_name} connection variables</span></span>
+<span id="cb10-26"><a href="#cb10-26"></a><span class="co">#' @export</span></span>
+<span id="cb10-27"><a href="#cb10-27"></a><span class="co">#'</span></span>
+<span id="cb10-28"><a href="#cb10-28"></a><span class="co">#' @importFrom DBI dbConnect</span></span>
+<span id="cb10-29"><a href="#cb10-29"></a><span class="co">#' </span></span>
+<span id="cb10-30"><a href="#cb10-30"></a>{mod_name}_setup_server &lt;-<span class="st"> </span><span class="cf">function</span>(id) {</span>
+<span id="cb10-31"><a href="#cb10-31"></a>  <span class="kw">moduleServer</span>(</span>
+<span id="cb10-32"><a href="#cb10-32"></a>    id,</span>
+<span id="cb10-33"><a href="#cb10-33"></a>    <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb10-34"><a href="#cb10-34"></a>      ns &lt;-<span class="st"> </span>session<span class="op">$</span>ns</span>
+<span id="cb10-35"><a href="#cb10-35"></a>      <span class="co">## {mod_name} Export Values ----</span></span>
+<span id="cb10-36"><a href="#cb10-36"></a>      {mod_name}_export &lt;-<span class="st"> </span><span class="kw">reactiveValues</span>(</span>
+<span id="cb10-37"><a href="#cb10-37"></a>        <span class="co">### Module Info</span></span>
+<span id="cb10-38"><a href="#cb10-38"></a>        <span class="dt">moduleName =</span> <span class="st">'{display_name}'</span>,</span>
+<span id="cb10-39"><a href="#cb10-39"></a>        <span class="dt">moduleType =</span> <span class="st">'database'</span>,</span>
+<span id="cb10-40"><a href="#cb10-40"></a>        <span class="dt">setup_ui =</span> ReviewR<span class="op">::</span>{mod_name}_setup_ui,</span>
+<span id="cb10-41"><a href="#cb10-41"></a>        <span class="dt">is_connected =</span> <span class="st">'no'</span>,       </span>
+<span id="cb10-42"><a href="#cb10-42"></a>        <span class="dt">db_con =</span> <span class="ot">NULL</span></span>
+<span id="cb10-43"><a href="#cb10-43"></a>        )</span>
+<span id="cb10-44"><a href="#cb10-44"></a>      <span class="co"># Server Code Here ----</span></span>
+<span id="cb10-45"><a href="#cb10-45"></a>      </span>
 <span id="cb10-46"><a href="#cb10-46"></a>      </span>
-<span id="cb10-47"><a href="#cb10-47"></a>      </span>
-<span id="cb10-48"><a href="#cb10-48"></a>      <span class="co"># Return ----</span></span>
-<span id="cb10-49"><a href="#cb10-49"></a>      <span class="kw">return</span>({mod_name}_export)</span>
-<span id="cb10-50"><a href="#cb10-50"></a>    }</span>
-<span id="cb10-51"><a href="#cb10-51"></a>  )</span>
-<span id="cb10-52"><a href="#cb10-52"></a>}</span></code></pre></div>
+<span id="cb10-47"><a href="#cb10-47"></a>      <span class="co"># Return ----</span></span>
+<span id="cb10-48"><a href="#cb10-48"></a>      <span class="kw">return</span>({mod_name}_export)</span>
+<span id="cb10-49"><a href="#cb10-49"></a>    }</span>
+<span id="cb10-50"><a href="#cb10-50"></a>  )</span>
+<span id="cb10-51"><a href="#cb10-51"></a>}</span></code></pre></div>
 </div>
 </div>
   </div>

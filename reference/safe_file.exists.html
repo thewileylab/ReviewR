@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Database Module Selector — mod_database_setup • ReviewR</title>
+<title>Safe File Exists — safe_file.exists • ReviewR</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,31 +46,9 @@
 
 
 
-<meta property="og:title" content="Database Module Selector — mod_database_setup" />
-<meta property="og:description" content="This module allows the user to select an available ReviewR database module
-from a dropdown list. It dynamically returns the database setup UI and user
-configured database connection information from the selected module.
-See vignette(&quot;customize_support_new_rdbms&quot;, package = &quot;ReviewR&quot;) for more
-information on database modules and how to add support for additional databases.
-This module consists of the following components:Module UI function
-
-
-
-database_setup_ui: A tagList with a dropdown selector containing
-available database modules.
-
-
-
-Module Server function
-
-
-
-database_setup_server: Processes user selection and dynamically returns
-a uiOutput for the selected database module's setup UI. Any returns from the
-configured database connection module are captured and returned.
-
-
-" />
+<meta property="og:title" content="Safe File Exists — safe_file.exists" />
+<meta property="og:description" content="A &quot;safe&quot; wrapper around base::file.exists that returns a FALSE if no file
+path is supplied as an argument, instead of an error." />
 <meta property="og:image" content="reviewr.thewileylab.org/logo.svg" />
 
 
@@ -191,61 +169,31 @@ configured database connection module are captured and returned.
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Database Module Selector</h1>
-    <small class="dont-index">Source: <a href='https://github.com/thewileylab/ReviewR/blob/master/R/mod_database_setup.R'><code>R/mod_database_setup.R</code></a></small>
-    <div class="hidden name"><code>mod_database_setup.Rd</code></div>
+    <h1>Safe File Exists</h1>
+    <small class="dont-index">Source: <a href='https://github.com/thewileylab/ReviewR/blob/master/R/mod_BigQuery_setup.R'><code>R/mod_BigQuery_setup.R</code></a></small>
+    <div class="hidden name"><code>safe_file.exists.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>This module allows the user to select an available ReviewR database module
-from a dropdown list. It dynamically returns the database setup UI and user
-configured database connection information from the selected module.</p>
-<p>See <code><a href='../articles/customize_support_new_rdbms.html'>vignette("customize_support_new_rdbms", package = "ReviewR")</a></code> for more
-information on database modules and how to add support for additional databases.</p>
-<p>This module consists of the following components:</p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Module UI function</h3>
-
-
-<ul>
-<li><p><code>database_setup_ui</code>: A tagList with a dropdown selector containing
-available database modules.</p></li>
-</ul>
-
-
-<h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Module Server function</h3>
-
-
-<ul>
-<li><p><code>database_setup_server</code>: Processes user selection and dynamically returns
-a uiOutput for the selected database module's setup UI. Any returns from the
-configured database connection module are captured and returned.</p></li>
-</ul>
-
-
+    <p>A "safe" wrapper around <a href='https://rdrr.io/r/base/files.html'>base::file.exists</a> that returns a FALSE if no file
+path is supplied as an argument, instead of an error.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>database_setup_ui</span><span class='op'>(</span><span class='va'>id</span><span class='op'>)</span>
-
-<span class='fu'>database_setup_server</span><span class='op'>(</span><span class='va'>id</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>safe_file.exists</span><span class='op'>(</span><span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>id</th>
-      <td><p>The Module namespace</p></td>
+      <th>...</th>
+      <td><p>character vectors, containing file names or paths</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p><em>database_setup_ui</em>:</p>
-<dt>tagList</dt><dd><p>A tagList containing a selectInput that allows for selection of
-available database setup modules and the setup UI for the selected database
-module.</p></dd>
-database_setup_server:
-<dt>reactiveValues</dt><dd><p>This module has no returns of its own, but will pass on
-the <code>reactiveValues</code> returns from the user selected database module.</p></dd>
-
+    <p>Logical, true/false if file path is provided or NULL if not supplied
+with any input.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
