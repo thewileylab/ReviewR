@@ -1,10 +1,12 @@
 #' ReviewR Chart Review Tab
 #'
-#' This file contains all elements that are needed to render the Chart Review Tab
+#' This function contains all of the elements that control the layout of 
+#' the Chart Review Tab.
 #'
-#' @return Chart Review Tab UI Output
-#' @export
+#' @return [shiny::renderUI] Output containing the Chart Review Tab 
+#'
 #' @keywords internal
+#' @family layout
 #'
 chart_review <- function() {
   renderUI({

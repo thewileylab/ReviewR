@@ -16,7 +16,7 @@ This is the 'user viewable' name that will appear in the database module selecto
 A .R file populated with a database module skeleton
 }
 \description{
-This function will create a database module skeleton  with
+This function will create a database module skeleton with
 required elements already populated, based on user inputs.
 Common database module packages are imported automatically,
 but developers should add imports to the roxygen skeleton as
@@ -25,7 +25,6 @@ user info and create a DBI connection object, respectively.
 }
 \seealso{
 Other Development Functions: 
-\code{\link{dev_add_datamodel}()},
-\code{\link{dev_add_google_client_id}()}
+\code{\link{dev_add_data_model}()}
 }
 \concept{Development Functions}

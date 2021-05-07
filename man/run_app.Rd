@@ -2,13 +2,33 @@
 % Please edit documentation in R/run_app.R
 \name{run_app}
 \alias{run_app}
-\title{Run the ReviewR Application}
+\title{Run Application}
 \usage{
 run_app(...)
 }
 \arguments{
-\item{...}{A list of options to pass to golem}
+\item{...}{A list of options to pass to the app including:
+\itemize{
+\item{secrets_json: A string, containing a file path to a Google OAuth 2.0
+Client ID JSON}
+}}
+}
+\value{
+No return value, called to start the ReviewR Shiny Application!
 }
 \description{
-Run the ReviewR Application
+Start the ReviewR Application in a browser on port 1410.
+
+\preformatted{
+ __________            .__              __________ 
+ \______   \ _______  _|__| ______  _  _\______   \
+  |       _// __ \  \/ /  |/ __ \ \/ \/ /|       _/
+  |    |   \  ___/\   /|  \  ___/\     / |    |   \
+  |____|_  /\___  >\_/ |__|\___  >\/\_/  |____|_  /
+         \/     \/             \/               \/ 
+                                      by WileyLab
+
+Making manual record review fun since 2019!
+
+authors:  Laura Wiley, Luke Rasmussen, David Mayer}
 }

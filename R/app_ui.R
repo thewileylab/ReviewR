@@ -10,7 +10,7 @@ app_ui <- function() {
     # List the first level UI elements here 
     dashboardPage(title = 'ReviewR',
                   dashboardHeader(title = tags$a(href='https://github.com/orgs/thewileylab', target='_blank',
-                                                 tags$img(src='www/logo.png', width = '125px', height = '50px')
+                                                 tags$img(src='www/wl_logo.png', width = '125px', height = '50px')
                                                  )
                                   ),
                   dashboardSidebar(sidebarMenu(id = 'main_tabs',
@@ -30,13 +30,13 @@ app_ui <- function() {
 #' @importFrom golem add_resource_path activate_js favicon bundle_resources
 #' @importFrom shinyjs useShinyjs
 #' @importFrom shinyWidgets useShinydashboard useSweetAlert
-golem_add_external_resources <- function(){
+golem_add_external_resources <- function() {
   add_resource_path(
     'www', app_sys('app/www')
   )
   
   tags$head(
-    favicon(ext = 'png'),
+    favicon(ext = 'ico'),
     bundle_resources(
       path = app_sys('app/www'),
       app_title = 'ReviewR'

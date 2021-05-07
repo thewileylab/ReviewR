@@ -64,7 +64,7 @@ The first step to developing a new ReviewR module will be to fork the latest ver
 usethis::create_from_github(repo_spec = 'thewileylab/ReviewR', destdir = '~/')
 ```
 
-Please see [this guide](https://happygitwithr.com/index.html) if you have trouble connecting RStudio with Git. It is also possible to fork this repository directly from GitHub if all else fails. 
+Please see [this guide](https://happygitwithr.com) if you have trouble connecting RStudio with Git. It is also possible to fork this repository directly from GitHub if all else fails. 
 
 Navigate to the forked repository and open the `ReviewR.Rproj` file. This will open the project in RStudio. Finally, using the devtools package run:
 ```{r eval=FALSE}
@@ -81,7 +81,7 @@ A helper function, `dev_database_module()`, has been provided with ReviewR to he
 * `mod_name` - This is an internal variable that ReviewR uses to keep track of the return values from the module, including the DBI connection object. 
 * `display_name` - This variable will be the "choice" that is presented to users on the Setup tab, so be sure it is descriptive and recognizable!
 
-When ready, rsun:
+When ready, run:
 
 ```{r eval=FALSE}
 ReviewR:::dev_database_module(mod_name = 'your_module', display_name = 'Your Module Display Name')
@@ -203,7 +203,6 @@ This will install a new, custom version of the ReviewR package with your newly d
 #' @param id The module namespace
 #' 
 #' @return The {display_name} Setup UI
-#' @export
 #' 
 #' @importFrom shiny NS
 #'

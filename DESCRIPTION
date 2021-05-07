@@ -1,13 +1,20 @@
 Package: ReviewR
 Title: A Light-Weight, Portable Tool for Reviewing Individual Patient Records
-Version: 2.3.0
+Version: 2.3.6
 Authors@R: c(
             person('Laura', 'Wiley', email = 'laura.wiley@cuanschutz.edu', role = c('aut'), comment = c(ORCID = "0000-0001-6681-9754")),
             person('Luke', 'Rasmussen', email = 'luke.rasmussen@northwestern.edu', role = c('aut'), comment = c(ORCID = "0000-0002-4497-8049")),
             person('David', 'Mayer', email = 'david.mayer@cuanschutz.edu', role = c('cre', 'aut')),
             person(given = "The Wiley Lab", role = c("cph", "fnd"))
             )
-Description: A portable Shiny tool to help you explore data across different data models. Within ReviewR, you can browse patient data stored in either the OMOP or MIMIC-III data model. In addition to viewing patient data, you may also connect to a REDCap project to perform a chart review.
+Description: A portable Shiny tool to explore patient-level electronic health record data 
+    and perform chart review in a single integrated framework. This tool supports 
+    browsing clinical data in many different formats including multiple versions 
+    of the 'OMOP' common data model as well as the 'MIMIC-III' data model. In 
+    addition, chart review information is captured and stored securely via the 
+    Shiny interface in a 'REDCap' (Research Electronic Data Capture) project 
+    using the 'REDCap' API. See the 'ReviewR' website for additional information, 
+    documentation, and examples.
 License: BSD_3_clause + file LICENSE
 URL: https://reviewr.thewileylab.org/, https://github.com/thewileylab/ReviewR/
 BugReports: https://github.com/thewileylab/ReviewR/issues
@@ -37,9 +44,9 @@ Imports:
     shiny (>= 1.5.0),
     shinycssloaders (>= 1.0.0),
     shinydashboard,
-    shinydashboardPlus,
+    shinydashboardPlus (>= 2.0.0),
     shinyjs,
-    shinyWidgets,
+    shinyWidgets (>= 0.6.0),
     snakecase,
     stringr,
     tibble,

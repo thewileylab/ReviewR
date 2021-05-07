@@ -9,40 +9,35 @@
 #' @noRd
 if(getRversion() >= "2.15.1")  utils::globalVariables(c("."))
 
-#' OMOP Get Concepts
+#' OMOP Get Concept
+#' 
+#' @description 
+#' This function assists with transforming OMOP concept_ids to interpretable strings
+#' by retrieving the requested concepts from the appropriate OMOP concept table. 
+#' 
+#' @param table_map A [dplyr::tibble] containing a mapping between the CDM standard
+#' tables and fields to the user connected tables and fields.
+#' @param db_connection A [DBI::dbConnect] object.
+#' @param concept_table A string, containing the standard CDM concept table name.
+#' @param concept_id A string, containing the standard CDM concept id field.
+#' @param concept_name A string, containing the standard CDM concept name field.
+#' @param table A string, containing the table name that requires OMOP concepts.
+#' @param joinable_id A string, indicating what variable is "joinable" between the concept 
+#' table and the desired table.
+#' @param col_name A string, containing the desired name for the retrieved concept.
+#' @param table_concept_id A string, containing the the table concept id
+#' @param subject_id_field A string, identifying which table field contains the subject id.
+#' @param selected_subject A numeric, or coercible to numeric containing the desired 
+#' subject id.
 #'
-#' @param table_map tibble containing standard CDM mapped to user tables
-#' @param db_connection DBI connection object
-#' @param concept_table Standard CDM concept table name
-#' @param concept_id Standard CDM concept id field
-#' @param concept_name Standard CDM concept name field
-#' @param table Table that needs concepts retrieved
-#' @param joinable_id What variable is joinable between the concept table and the desired table
-#' @param col_name Would you like to rename the retrieved concept?
-#' @param table_concept_id The table concept id
-#' @param subject_id_field Which field contains the subject id?
-#' @param selected_subject For which subject would you like to retrieve concepts?
-#'
-#' @return The desired OMOP concepts based on the user data model for all subjects
 #' @keywords internal
-#' @export
+#' 
 #' @importFrom dplyr select inner_join rename contains mutate_all mutate_at
 #' @importFrom stats setNames
 #' @importFrom rlang := 
-#'
-#' @examples 
-#' \dontrun{
-#' ## Retrieve all concepts
-#' gender_concepts <- get_concept(table_map = table_map,  db_connection = db_connection,  
-#'     concept_table = 'concept', concept_id = 'concept_id',  concept_name = 'concept_name',  
-#'     table = 'person', joinable_id = 'person_id', table_concept_id = 'gender_concept_id',  
-#'     col_name = 'Gender')
-#' ## Retrieve concepts for a particular subject id     
-#' provider_concepts <- get_concept(table_map = table_map,  db_connection = db_connection,  
-#'     concept_table = 'provider', concept_id = 'provider_id',  concept_name = 'provider_name',  
-#'     table = 'person', joinable_id = 'person_id', table_concept_id = 'provider_id',  
-#'     col_name = 'Provider', subject_id_field = 'person_id', selected_subject = '1234') 
-#' }
+#' 
+#' @return The desired OMOP concept based on the user data model for all subjects
+#' 
 
 get_concept <- function(table_map, db_connection, concept_table, concept_id, concept_name, table, joinable_id, table_concept_id, col_name, subject_id_field = NULL, selected_subject = NULL) {
   tryCatch({
@@ -67,16 +62,22 @@ get_concept <- function(table_map, db_connection, concept_table, concept_id, con
     })
   }
 
+# Database Tables Documentation ----
 #' OMOP Tables
-#'
-#' Collection of functions to create prearranged views of OMOP patient data for ReviewR.
 #' 
-#' @param table_map tibble containing a the CDM that most closely matches the user's database and a map of standard tables to user tables
-#' @param db_connection Connection info received from the database setup module
+#' @description 
+#' Collection of functions to create prearranged views of OMOP patient data
+#' when supplied with database connection information and a mapping of the connected 
+#' database.
+#' 
+#' @param table_map A [dplyr::tibble] containing a mapping between the CDM standard
+#' tables and fields to the user connected tables and fields.
+#' @param db_connection A [DBI::dbConnect] object
+#' @param subject_id A numeric, or coercible to numeric. 
+#' @name omop_tables
 #'
-#' @rdname omop_tables
 #' @keywords internal
-#' @export
+#' 
 #' @importFrom dplyr any_of arrange select everything matches mutate_all mutate_if rename_at collect filter inner_join vars left_join 
 #' @importFrom snakecase to_title_case
 #' @importFrom stringr str_replace regex str_replace_all
@@ -85,9 +86,16 @@ get_concept <- function(table_map, db_connection, concept_table, concept_id, con
 #' @importFrom stats setNames
 #' @importFrom magrittr %>%
 #' 
+#' @return A [dplyr::tibble] containing pre-coordinated patient information from the connected database.
+#'
+NULL
+#> NULL
+#' 
 
 ## OMOP All Patient Table -----
-
+#' @rdname omop_tables
+#' @keywords internal
+#' 
 omop_table_all_patients <- function(table_map, db_connection) {
   # browser()
   ## Build Concepts
@@ -113,11 +121,9 @@ omop_table_all_patients <- function(table_map, db_connection) {
 }
 
 ## OMOP Condition Era -----
-#' @param subject_id The selected subject 
-#'
 #' @rdname omop_tables
 #' @keywords internal
-#' @export
+#' 
 omop_table_condition_era <- function(table_map, db_connection, subject_id) {
   message('Running Condition Era')
   subject <- as.integer(subject_id)
@@ -141,11 +147,9 @@ omop_table_condition_era <- function(table_map, db_connection, subject_id) {
 }
 
 ## OMOP Condition Occurrence -----
-#' @param subject_id The selected subject 
-#'
 #' @rdname omop_tables
 #' @keywords internal
-#' @export
+#' 
 omop_table_condition_occurrence <- function(table_map, db_connection, subject_id) {
   message('Running Condition Occurrence')
   subject <- as.integer(subject_id)
@@ -173,11 +177,9 @@ omop_table_condition_occurrence <- function(table_map, db_connection, subject_id
 }
 
 ## OMOP Death -----
-#' @param subject_id The selected subject 
-#'
 #' @rdname omop_tables
 #' @keywords internal
-#' @export
+#' 
 omop_table_death <- function(table_map, db_connection, subject_id) {
   message('Running Death')
   subject <- as.integer(subject_id)
@@ -199,11 +201,9 @@ omop_table_death <- function(table_map, db_connection, subject_id) {
 }
 
 ## Device Exposure -----
-#' @param subject_id The selected subject 
-#'
 #' @rdname omop_tables
 #' @keywords internal
-#' @export
+#' 
 omop_table_device_exposure <- function(table_map, db_connection, subject_id) {
   message('Running Device Exposure')
   subject <- as.integer(subject_id)
@@ -228,11 +228,9 @@ omop_table_device_exposure <- function(table_map, db_connection, subject_id) {
 }
  
 ## Dose Era -----
-#' @param subject_id The selected subject 
-#'
 #' @rdname omop_tables
 #' @keywords internal
-#' @export
+#' 
 omop_table_dose_era <- function(table_map, db_connection, subject_id) {
   message('Running Dose Era')
   subject <- as.integer(subject_id)
@@ -256,11 +254,9 @@ omop_table_dose_era <- function(table_map, db_connection, subject_id) {
 }
 
 ## Drug Era -----
-#' @param subject_id The selected subject 
-#'
 #' @rdname omop_tables
 #' @keywords internal
-#' @export
+#' 
 omop_table_drug_era <- function(table_map, db_connection, subject_id) {
   message('Running Drug Era')
   subject <- as.integer(subject_id)
@@ -283,11 +279,9 @@ omop_table_drug_era <- function(table_map, db_connection, subject_id) {
 }
 
 ## Drug Exposure -----
-#' @param subject_id The selected subject 
-#'
 #' @rdname omop_tables
 #' @keywords internal
-#' @export
+#' 
 omop_table_drug_exposure <- function(table_map, db_connection, subject_id) {
   message('Running Drug Exposure')
   subject <- as.integer(subject_id)
@@ -318,11 +312,9 @@ omop_table_drug_exposure <- function(table_map, db_connection, subject_id) {
 }
 
 ## Measurement -----
-#' @param subject_id The selected subject 
-#'
 #' @rdname omop_tables
 #' @keywords internal
-#' @export
+#' 
 omop_table_measurement <- function(table_map, db_connection, subject_id) {
   message('Running Measurement')
   subject <- as.integer(subject_id)
@@ -354,11 +346,9 @@ omop_table_measurement <- function(table_map, db_connection, subject_id) {
 }
 
 ## Note -----
-#' @param subject_id The selected subject 
-#'
 #' @rdname omop_tables
 #' @keywords internal
-#' @export
+#' 
 omop_table_note <- function(table_map, db_connection, subject_id) {
   message('Running Note')
   subject <- as.integer(subject_id)
@@ -389,11 +379,9 @@ omop_table_note <- function(table_map, db_connection, subject_id) {
 }
 
 ## Observation -----
-#' @param subject_id The selected subject 
-#'
 #' @rdname omop_tables
 #' @keywords internal
-#' @export
+#' 
 omop_table_observation <- function(table_map, db_connection, subject_id) {
   message('Running Observation')
   subject <- as.integer(subject_id)
@@ -427,11 +415,9 @@ omop_table_observation <- function(table_map, db_connection, subject_id) {
 }
 
 ## Observation Period -----
-#' @param subject_id The selected subject 
-#'
 #' @rdname omop_tables
 #' @keywords internal
-#' @export
+#' 
 omop_table_observation_period <- function(table_map, db_connection, subject_id) {
   message('Running Observation Period')
   subject <- as.integer(subject_id)
@@ -453,11 +439,9 @@ omop_table_observation_period <- function(table_map, db_connection, subject_id) 
 }
 
 ## Payer Plan Period -----
-#' @param subject_id The selected subject 
-#'
 #' @rdname omop_tables
 #' @keywords internal
-#' @export
+#' 
 omop_table_payer_plan_period <- function(table_map, db_connection, subject_id) {
   message('Running Payer Plan Period')
   subject <- as.integer(subject_id)
@@ -474,11 +458,9 @@ omop_table_payer_plan_period <- function(table_map, db_connection, subject_id) {
 }
 
 ## Procedure Occurrence -----
-#' @param subject_id The selected subject 
-#'
 #' @rdname omop_tables
 #' @keywords internal
-#' @export
+#' 
 omop_table_procedure_occurrence <- function(table_map, db_connection, subject_id) {
   message('Running Procedure Occurrence')
   subject <- as.integer(subject_id)
@@ -507,11 +489,9 @@ omop_table_procedure_occurrence <- function(table_map, db_connection, subject_id
 }
 
 ## Specimen -----
-#' @param subject_id The selected subject 
-#'
 #' @rdname omop_tables
 #' @keywords internal
-#' @export
+#' 
 omop_table_specimen <- function(table_map, db_connection, subject_id) {
   message('Running Specimen')
   subject <- as.integer(subject_id)
@@ -541,11 +521,9 @@ omop_table_specimen <- function(table_map, db_connection, subject_id) {
     rename_at(vars(-1), to_title_case)
 }
 ## Visit Occurrence -----
-#' @param subject_id The selected subject 
-#'
 #' @rdname omop_tables
 #' @keywords internal
-#' @export
+#' 
 omop_table_visit_occurrence <- function(table_map, db_connection, subject_id) {
   message('Running Visit Occurrence')
   subject <- as.integer(subject_id)

@@ -1,15 +1,54 @@
+# Module Documentation ----
+#' Abstraction Module Selector
+#' 
+#' @description 
+#' 
+#' This module allows the user to select an available ReviewR abstraction module 
+#' from a dropdown list. It dynamically returns the abstraction setup and 
+#' instrument user interfaces as well as collected chart abstraction information
+#' from the selected module. 
+#' 
+#' This module consists of the following components:
+#' 
+#' ## Module UI functions
+#' 
+#' \itemize{
+#' \item{`abstraction_setup_ui`}: A tagList with a dropdown selector containing 
+#' available abstraction modules.
+#' \item{`abstraction_instrument_ui`}: A uiOutput containing the data collection 
+#' instrument UI from the selected chart abstraction module.
+#' }
+#' ## Module Server function
+#' \itemize{
+#' \item{`abstraction_setup_server`}: Processes user selection and dynamically returns 
+#' uiOutputs for the selected abstraction module's setup and data collection instrument 
+#' user interfaces. Any returns from the configured abstraction module are captured and 
+#' returned.
+#' }
+#' 
+#' @param id The Module namespace
+#' @name mod_abstraction_setup
+#' 
+#' @return 
+#' *abstraction_setup_ui*:
+#' \item{tagList}{A tagList containing a selectInput that allows for selection of 
+#' available abstraction setup modules and the setup UI for the selected abstraction
+#' module.}
+#' *abstraction_instrument_ui*:
+#' \item{tagList}{A tagList containing the selected abstraction module's data collection
+#' instrument UI.}
+#' *abstraction_setup_server*:
+#' \item{reactiveValues}{This module has no returns of its own, but will pass on
+#' the `reactiveValues` returns from the user selected abstraction module.}
+#' 
+NULL
+#> NULL
+
 # UI ----
-#' Module Selector
-#'
-#' A Shiny module to select from available ReviewR abstraction modules
-#'
-#' @param id 
-#' 
 #' @rdname mod_abstraction_setup
-#' 
+#'  
 #' @keywords internal
-#' @export
-#'
+#' 
 #' @importFrom shiny NS tagList 
 abstraction_setup_ui <- function(id) {
   ns <- NS(id)
@@ -23,6 +62,11 @@ abstraction_setup_ui <- function(id) {
     )
 }
 
+#' @rdname mod_abstraction_setup
+#' 
+#' @keywords internal
+#' 
+
 abstraction_instrument_ui <- function(id) {
   ns <- NS(id)
   tagList(
@@ -31,14 +75,10 @@ abstraction_instrument_ui <- function(id) {
 }
 
 # Server ----    
-#' Module Selector
-#'
-#' @param id 
-#' 
 #' @rdname mod_abstraction_setup
+#' @param subject_id A reactive expression containing a subject identifier
 #' 
 #' @keywords internal
-#' @export
 #' 
 #' @importFrom magrittr %>% extract2
 #' @importFrom purrr map
@@ -46,7 +86,7 @@ abstraction_instrument_ui <- function(id) {
 #' @importFrom shinyjs disable enable
 #' 
 
-mod_abstraction_setup_server <- function(id, subject_id){
+abstraction_setup_server <- function(id, subject_id){
   moduleServer(
     id,
     function(input, output, session) {

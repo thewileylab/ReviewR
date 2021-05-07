@@ -20,9 +20,9 @@ In order to protect your privacy, Google has specific requirements for connectin
 
 ## Local Deployment
 
-You should be able to use ReviewR locally to connect to Google BigQuery as expected. However you will likely see a notice that our app is not yet verified. You can see our full [privacy policy](https://www.thewileylab.org/privacypolicy) for how we handle your data (briefly, we only collect aggregate usage information, none of your data sets are revealed or accessible to us). If those terms are acceptable for you, please select `Advanced` and then `Go to The Wiley Lab (unsafe)` to approve access to your data for use in ReviewR. 
+This package uses internal resources owned by the “ReviewR” project on Google Cloud Platform. You can see our full [privacy policy](https://reviewr.thewileylab.org/articles/privacy-policy) for how we handle your data (briefly, we only collect aggregate usage information, none of your data sets are revealed or accessible to us). If those terms are acceptable for you, no further configuration is required! However, if you would prefer not to authorize with ReviewR you may bring your own OAuth clientID from a Google Cloud Project of your choice.
 
-It is also possible for you to obtain and provide your own Google API credentials so that you do not need to use the Wiley Lab OAuth Client. To do so:
+To obtain and use your own Google API credentials:
 
 1. Obtain a Google Cloud Platform Project
     + https://console.cloud.google.com/
@@ -33,13 +33,13 @@ It is also possible for you to obtain and provide your own Google API credential
       + Optionally, provide a name for your Desktop client
     + Click *Create*
 3. Locate the client ID that was created and click "Download JSON"
-    + Save the file as "client_secret.json" to `~/.ReviewR`
+    + Save the file as "client_secret.json" to `~/.bq_client_id` on Unix based systems or `$HOMEPATH$/.bq_client_id/client_secret.json` on Windows.
 
-On launch, ReviewR will check the path defined in step 3 above for a `client_secret.json` file. If found, it will use these credentials instead of the Wiley Lab credentials that have been built into the package.
+On launch, ReviewR will check the path defined in step 3 above for a `client_secret.json` file. If found, it will use these credentials instead of the Wiley Lab credentials that have been built into the package. Additionally, you may also run `ReviewR::run_app(secrets_json = '/path/to/client_secret.json')` if you would prefer to store this file elsewhere. 
 
 ## Server Deployment
 
-Due to how Google OAuth clientIDs are configured, if you are using a server deployment of ReviewR that connects to data stored in Google BigQuery, you must obtain and provide your own Google API credentials. After ReviewR is installed and accessible on a server with a secured fully qualified domain name, then: 
+If you are using ReviewR on a Shiny Server deployment and intend to connect to data stored in Google BigQuery *you must* obtain your own Google API credentials. Otherwise, authentication will fail as Google will be unable to determine where to redirect authenticated users. After ReviewR is installed and accessible on a server with a secured fully qualified domain name: 
 
 1. Obtain a Google Cloud Platform Project
     + https://console.cloud.google.com/
@@ -48,7 +48,7 @@ Due to how Google OAuth clientIDs are configured, if you are using a server depl
     + At the top, click *Create credentials > OAuth client ID*
     + Select "Web application" as the application type
       + Optionally, provide a name for your web application client
-    + Add the https URL of your shiny server ReviewR installation to the Authorized redirect URIs section *eg: https://your.shinyserver.org/ReviewR*
+    + Add the https URL of your shiny server ReviewR installation to the Authorized redirect URIs section *eg: `https://your.shinyserver.url/ReviewR`*
     + Click *Create*
 3. Locate the client ID that was created and click "Download JSON"
     + Save the file as "client_secret.json"

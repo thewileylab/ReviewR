@@ -7,9 +7,17 @@
 setup()
 }
 \value{
-Setup Tab UI Output
+\link[shiny:renderUI]{shiny::renderUI} Output containing the Setup Tab
 }
 \description{
-This file contains the UI elements that are needed to render the Setup Tab and configure ReviewR. Each element consists of a module, which is rendered within it's own box element on the setup tab.
+This function contains all of the elements that control the layout of
+the Setup Tab.
 }
+\seealso{
+Other layout: 
+\code{\link{chart_review}()},
+\code{\link{homepage}()},
+\code{\link{patient_search}()}
+}
+\concept{layout}
 \keyword{internal}

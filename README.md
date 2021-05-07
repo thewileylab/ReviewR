@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-## Overview <img src='man/figures/logo.png' align="right" height="138.5" />
+## Overview <img src='man/figures/logo.svg' align="right" height="138.5" />
 
 <!-- badges: start -->
 
@@ -72,9 +72,9 @@ the left navigation menu).
 
 First, in the left panel, select which type of database you would like
 to connect to (e.g., Google BigQuery). You may also choose to select the
-Demo SQLite project to access synthetic clinical data in order to
-explore how ReviewR works without connecting to your own database. For
-BigQuery connections, simply press “Sign in with Google” and you will be
+Demo SQLite module to access synthetic clinical data in order to explore
+how ReviewR works without connecting to your own database. For BigQuery
+connections, simply press “Sign in with Google” and you will be
 redirected to authenticate with Google and then return to the
 application.
 
@@ -107,9 +107,9 @@ who has completed the review.
 
 First, in the left panel, select which type of database you would like
 to connect to (e.g., Google BigQuery). You may also choose to select the
-Demo SQLite project to access synthetic clinical data in order to
-explore how ReviewR works without connecting to your own database. For
-BigQuery connections, simply press “Sign in with Google” and you will be
+Demo SQLite module to access synthetic clinical data in order to explore
+how ReviewR works without connecting to your own database. For BigQuery
+connections, simply press “Sign in with Google” and you will be
 redirected to authenticate with Google and then return to the
 application.
 
@@ -125,13 +125,13 @@ identifies the chart reviewer and enter the name so it can also be
 auto-entered for each review session. If you do not want to record the
 reviewer identifier just select ‘(Not Applicable)’. When you have
 completed both selects click ‘Configure REDCap Instrument’.
-Congratulations - you are ready to perform your chart review\!
+Congratulations - you are ready to perform your chart review!
 
 You can now navigate to the ‘Patient Search’ tab, located in the left
 sidebar. On this tab you can see basic demographic information about
 each patient record as well as the review status for the record (e.g.,
-“Review Not Started”, “Complete”, etc.). If you have enabled support
-for multiple reviewers, then the review status of all other reviewers is
+“Review Not Started”, “Complete”, etc.). If you have enabled support for
+multiple reviewers, then the review status of all other reviewers is
 provided in addition to the status of the configured reviewer. Select a
 particular patient ID you would like to view and the ‘Chart Review’ tab
 will open. The top left panel includes the same demographic and review
@@ -149,7 +149,7 @@ questions identifying the patient and reviewer identifier are pre-filled
 in and not editable. Once you have finished with your entry for a
 record, set the REDCap status in the lower right panel and click ‘Save
 to REDCap’. *You must click ‘Save to REDCap’ or the data will not be
-saved in the app or uploaded to REDCap\!* If you would like to move to
+saved in the app or uploaded to REDCap!* If you would like to move to
 another patient you can use the patient navigation panel in the upper
 right corner. You can navigate to a specific patient using the dropdown
 selector or simply move to the next or previous patient records using
@@ -169,8 +169,10 @@ If you encounter bugs, errors, issues or other general unpleasantness,
 please let us know on
 [GitHub](https://github.com/thewileylab/ReviewR/issues).
 
------
+------------------------------------------------------------------------
 
-Please note that the ‘ReviewR’ project is released with a [Contributor
-Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this project,
-you agree to abide by its terms.
+## Code of Conduct
+
+Please note that the ReviewR project is released with a [Contributor
+Code of Conduct](https://reviewr.thewileylab.org/CODE_OF_CONDUCT.html).
+By contributing to this project, you agree to abide by its terms.

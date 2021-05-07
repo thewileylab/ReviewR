@@ -2,23 +2,48 @@
 # Helpers ----
 #' Installed App
 #' 
-#' Invisibly returns an OAuth app 
-#'
-#' @return An Invisible OAuth consumer application, produced by [httr::oauth_app()]
-#'
-#' @export
-#' @keywords internal
+#' Invisibly returns an OAuth app.
+#' 
 #' @rdname internal-assets
+#' @keywords internal
+#' 
+#' @return An Invisible OAuth consumer application, produced by [httr::oauth_app()]
+#' 
+
 installed_app <- function() {
   sbqoa()
 }
-#' @export
-#' @keywords internal
+
 #' @rdname internal-assets
+#' @keywords internal
+#' 
 #' @noRd
 print.hidden_fn <- function(x, ...) {
   x <- 'Nope'
   NextMethod('print')
+}
+
+#' Safe File Exists
+#' 
+#' A "safe" wrapper around [base::file.exists] that returns a FALSE if no file
+#' path is supplied as an argument, instead of an error.
+#'
+#' @param ... character vectors, containing file names or paths
+#' 
+#' @keywords internal
+#'
+#' @return Logical, true/false if file path is provided or NULL if not supplied
+#' with any input.
+#' 
+
+safe_file.exists <- function(...) {
+  tryCatch({
+    file.exists(...)
+    }, 
+    error = function(e) {
+      return(FALSE)
+    }
+  )
 }
 
 #' Add external Resources to the Application
@@ -31,8 +56,7 @@ print.hidden_fn <- function(x, ...) {
 #' @importFrom shinyjs useShinyjs
 #' @importFrom shinyWidgets useShinydashboard useShinydashboardPlus
 #' @noRd
-sbq_add_external_resources <- function(){
-  
+sbq_add_external_resources <- function() {
   add_resource_path(
     'www', app_sys('app/www')
   )
@@ -46,16 +70,67 @@ sbq_add_external_resources <- function(){
     )
 }
 
-# UI ----
-#' BigQuery Setup UI
-#'
-#' This module is designed to guide a user through the process of authenticating with Google BigQuery. It is responsible for returning an authorization token, the user selected project,the user selected dataset, and a DBI connection to a BigQuery Dataset.
-#'
-#' @param id The module namespace
+# Module Documentation ----
+#' Google BigQuery Database Module
 #' 
-#' @return The BigQuery Setup UI
+#' @description
+#' 
+#' This module is designed to guide a user through the process of authenticating with 
+#' Google BigQuery. It is responsible for retrieving:
+#' \itemize{
+#' \item{An OAuth 2.0 authorization token}
+#' \item{A list of GCP projects that are available to the authenticated user}
+#' \item{A list of BigQuery datasets contained within available projects}
+#' }
+#' The user is visually guided through the authentication process. Once authenticated, 
+#' the user is presented with project/dataset selections and once configured a 
+#' [DBI::dbConnect()] object is returned.
+#' 
+#' This module consists of the following components:
+#' 
+#' ## Module UI function
+#' 
+#' \itemize{
+#' \item{`bigquery_setup_ui`}: A uiOutput responsible for guiding a user through 
+#' the Google OAuth 2.0 authorization flow and graphically selecting a Google Big
+#' Query project/dataset.
+#' }
+#' ## Module Server function
+#' \itemize{
+#' \item{`bigquery_setup_server`}: The logic that controls the graphical user 
+#' interface, including redirecting to Google, receiving an authorization code, 
+#' requesting an authorization token, and authenticating the application. 
+#' Ultimately responsible for returning public Google user information and a 
+#' [DBI::dbconnect()] object used to connect to the configured BigQuery database.
+#' }
+#' 
+#' @param id The module namespace
+#' @name mod_bigquery
+#' 
+#' @return 
+#' *bigquery_setup_ui*:
+#' \item{tagList}{The Google BigQuery Setup UI}
+#' *bigquery_setup_server*:
+#' \item{reactiveValues}{
+#' \itemize{
+#' \item{moduleName}: A string, containing the module moniker.
+#' \item{moduleType}: A string, with the module type (what does it do?)
+#' \item{setup_ui}: The module setup ui function
+#' \item{is_connected}: A string, with module connection status. Valid statuses are
+#' 'yes' or 'no'.
+#' \item{db_con}: A [DBI::dbConnect] object, containing the user configured BigQuery
+#' connection information. 
+#' \item{user_info}: A list, containing public user information from Google about 
+#' the currently authenticated user.
+#' }}
+#' 
+NULL
+#> NULL
+
+# UI ----
+#' @rdname mod_bigquery
+#' 
 #' @keywords internal
-#' @export
 #' 
 #' @importFrom shinydashboard box
 #' @importFrom shinyjs hidden
@@ -79,32 +154,31 @@ bigquery_setup_ui <- function(id) {
   }
 
 # Server ----
-#' BigQuery Setup Server
-#'
-#' @param id The Module namespace
-#' @param secrets_json Location of Google secrets json. Defaults to '/srv/shiny-server/.bq_client_id/client_secret.json' for Shiny Server installations.
-#'
-#' @return BigQuery connection variables and user information
+#' @rdname mod_bigquery
+#' 
 #' @keywords internal
-#' @export
+#' 
+#' @param secrets_json A string, containing a file path to a Google OAuth 2.0 Client 
+#' secrets JSON.  
 #'
 #' @importFrom bigrquery bq_auth bq_projects bq_project_datasets bigquery dbDisconnect
 #' @importFrom DBI dbConnect
 #' @importFrom dplyr filter pull
 #' @importFrom gargle token_userinfo
 #' @importFrom glue glue
+#' @importFrom golem get_golem_options
 #' @importFrom httr oauth_app oauth_endpoints oauth2.0_authorize_url oauth2.0_token oauth2.0_access_token
 #' @importFrom jsonlite fromJSON
 #' @importFrom magrittr %>% 
 #' @importFrom purrr flatten
 #' @importFrom rlang .data
 #' @importFrom shinyjs runjs show hide
-#' @importFrom shinydashboardPlus widgetUserBox
+#' @importFrom shinydashboardPlus userBox userDescription
 #' @importFrom shinyWidgets actionBttn
 #' @importFrom tibble enframe
 #' @importFrom tidyr unnest
 #' 
-bigquery_setup_server <- function(id, secrets_json = '/srv/shiny-server/.bq_client_id/client_secret.json') {
+bigquery_setup_server <- function(id, secrets_json = NULL) {
   moduleServer(
     id,
     function(input, output, session) {
@@ -155,54 +229,81 @@ bigquery_setup_server <- function(id, secrets_json = '/srv/shiny-server/.bq_clie
         req(params()$code) 
         google_info$is_authorized <- 'yes'
         })
-      ### Platform client_id path
-      secrets_json_default <- if(.Platform$OS.type == 'unix') {
-        '~/.bq_client_id/client_secret.json' 
-        } else {'$HOMEPATH$/.bq_client_id/client_secret.json'}
       
-      ## OAuth Dance ----
-      #### We can dance if we want to
-      ### OAuth 2.0 Client ID using user supplied client_secrets.json
-      
-      #### Server Installs
-      if(hostname != 'localhost' & file.exists(secrets_json) ) { 
-        ### Web Authorization using user defined client_secrets.json. Always use path specified by user, if it exists.
-        secrets <- jsonlite::fromJSON(txt = file(secrets_json))
-        app <- oauth_app(appname = "shinyBigQuery",
-                         key = secrets$web$client_id,
-                         secret = secrets$web$client_secret,
-                         redirect_uri = client_url
-                         )
-        } else if(hostname != 'localhost' & file.exists('/srv/shiny-server/.bq_client_id/client_secret.json') ) {
-          ### Web Authorization using client_secrets.json in prescribed default location.
-          secrets <- jsonlite::fromJSON(txt = file('/srv/shiny-server/.bq_client_id/client_secret.json'))
+      ## Google Client Secret Locations ----
+        ### Golem client_id path
+        if ( !is.null(get_golem_options('secrets_json')) & safe_file.exists(get_golem_options('secrets_json')) ) {
+          secrets_json_golem <- get_golem_options('secrets_json')
+          } else {
+            secrets_json_golem <- NULL
+            }
+        ### Module param client_id path
+        if( !is.null(secrets_json) & safe_file.exists(secrets_json) ) {
+          secrets_json_param <- secrets_json
+          } else {
+            secrets_json_param <- NULL
+            }
+        ### Shiny Server default client_id path
+        secrets_json_server <- '/srv/shiny-server/.bq_client_id/client_secret.json'
+        ### Local Install platform specific default client_id path
+        secrets_json_platform_default <- if(.Platform$OS.type == 'unix') {
+          '~/.bq_client_id/client_secret.json' 
+          } else {'$HOMEPATH$/.bq_client_id/client_secret.json'}
+        
+        ## OAuth Dance ----
+        #### We can dance if we want to
+        
+        ### Secret secret, I've got a secret!
+        #### Server Installs
+        ##### Web Authorization using user defined client_secrets.json from run_app(). Always use path specified by user, if it exists.
+        if ( hostname != 'localhost' & !is.null(secrets_json_golem) ) {
+          secret <- jsonlite::fromJSON(txt = file(secrets_json_golem))
           app <- oauth_app(appname = "shinyBigQuery",
-                           key = secrets$web$client_id,
-                           secret = secrets$web$client_secret,
-                           redirect_uri = client_url
-                           )
-      #### Local Installs    
-        } else if(hostname == 'localhost' & file.exists(secrets_json) ) {
-          ### Installed Package Authorization using user defined client_secrets.json. Always use path specified by user, if it exists.
-          secrets <- jsonlite::fromJSON(txt = file(secrets_json))
-          app <- oauth_app(appname = "shinyBigQuery",
-                           key = secrets$installed$client_id,
-                           secret = secrets$installed$client_secret,
-                           redirect_uri = client_url
-                           )
-          } else if(hostname == 'localhost' & file.exists(secrets_json_default)) {
-            ### Installed Package Authorization using client_secrets.json in prescribed default location.
-            secrets <- jsonlite::fromJSON(txt = file(secrets_json_default))
+                           key = secret$web$client_id,
+                           secret = secret$web$client_secret,
+                           redirect_uri = client_url)
+          ##### Web Authorization using user defined client_secrets.json from param. Always use path specified by user, if it exists.
+          } else if ( hostname != 'localhost' & !is.null(secrets_json_param) ) {
+            secret <- jsonlite::fromJSON(txt = file(secrets_json_param))
             app <- oauth_app(appname = "shinyBigQuery",
-                             key = secrets$installed$client_id,
-                             secret = secrets$installed$client_secret,
-                             redirect_uri = client_url
-                             )
-            } else {
-              ### Installed Package Authorization using package client_secrets.json
-              ### After exhausting all other options, use the credentials installed by the package.
-              app <- installed_app()
-              }
+                             key = secret$web$client_id,
+                             secret = secret$web$client_secret,
+                             redirect_uri = client_url)
+            ##### Web Authorization using client_secrets.json in Shiny Server default location, if it exists.
+            } else if ( hostname != 'localhost' & file.exists(secrets_json_server) ) {
+              secret <- jsonlite::fromJSON(secrets_json_server)
+              app <- oauth_app(appname = "shinyBigQuery",
+                               key = secret$web$client_id,
+                               secret = secret$web$client_secret,
+                               redirect_uri = client_url)
+              #### Local Installs
+              ##### Installed Package Authorization using user defined client_secrets.json from run_app(). Always use path specified by user, if it exists.
+              } else if ( hostname == 'localhost' & !is.null(secrets_json_golem) ) {
+                secret <- jsonlite::fromJSON(txt = file(secrets_json_golem))
+                app <- oauth_app(appname = "shinyBigQuery",
+                                 key = secret$installed$client_id,
+                                 secret = secret$installed$client_secret,
+                                 redirect_uri = client_url)
+                ##### Installed Package Authorization using user defined client_secrets.json from param. Always use path specified by user, if it exists.
+                } else if ( hostname == 'localhost' & !is.null(secrets_json_param) ) {
+                  secret <- jsonlite::fromJSON(txt = file(secrets_json_param))
+                  app <- oauth_app(appname = "shinyBigQuery",
+                                   key = secret$installed$client_id,
+                                   secret = secret$installed$client_secret,
+                                   redirect_uri = client_url)
+                  ##### Installed Package Authorization using client_secrets.json in platform specific default location.
+                  } else if ( hostname == 'localhost' & file.exists(secrets_json_platform_default) ) {
+                    secret <- jsonlite::fromJSON(secrets_json_platform_default)
+                    app <- oauth_app(appname = "shinyBigQuery",
+                                     key = secret$installed$client_id,
+                                     secret = secret$installed$client_secret,
+                                     redirect_uri = client_url)
+                    ##### Installed Package Authorization using package client_secrets.json
+                    ##### After exhausting all other options, use the credentials installed by the package.
+                    } else {
+                      secret <- NULL
+                      app <- installed_app()
+                      }
       
       ### Define Google as the endpoint (this one is canned)
       api <- oauth_endpoints("google")
@@ -257,7 +358,7 @@ bigquery_setup_server <- function(id, secrets_json = '/srv/shiny-server/.bq_clie
       
       ## BQ Setup UI ----
       google_connect_ui <- reactive({
-        if(!file.exists(secrets_json) & hostname != 'localhost') {
+        if(is.null(secret) & hostname != 'localhost') {
           tagList(
             shinydashboard::box(title = 'Warning: Application Client Credentials Not Found',
                                 width = '100%',
@@ -289,40 +390,44 @@ bigquery_setup_server <- function(id, secrets_json = '/srv/shiny-server/.bq_clie
           } else { 
             tagList(
               div(
-                shinydashboardPlus::widgetUserBox(title = bigquery_export$user_info$name,
-                                                  width = 12,
-                                                  subtitle = bigquery_export$user_info$email,
-                                                  src = bigquery_export$user_info$picture,
-                                                  type = 2, 
-                                                  color = 'primary',
-                                                  collapsible = FALSE,
-                                                  HTML(glue::glue('{bigquery_export$user_info$given_name}, you have successfully authenticated with Google BigQuery. Please select a dataset from from the list of available projects, or sign out and sign in with a different Google Account.<br><br>')),
-                                                  br(),
-                                                  selectizeInput(inputId = ns('bq_project_id'),
-                                                                 label = 'Select from Available Google Projects:',
-                                                                 choices = bigquery_setup$bq_projects,
-                                                                 options = list(create = FALSE,
-                                                                                placeholder = 'No Available Projects')
-                                                                 ),
-                                                  selectizeInput(inputId = ns('bq_dataset_id'),
-                                                                 label = 'Select from Available BigQuery Datasets:',
-                                                                 choices = NULL
-                                                                 ),
-                                                  shinyjs::hidden(
-                                                    div(id = ns('bq_connect_div'),
-                                                        actionButton(inputId = ns('bq_connect'),label = 'Connect',icon = icon('cloud'))
-                                                        )
-                                                    ),
-                                                  footer = fluidRow(
-                                                    div(actionBttn(inputId = ns('logout'),
-                                                                   label = 'Sign Out of Google',
-                                                                   style = 'jelly',
-                                                                   icon = icon(name = 'sign-out-alt')
-                                                                   ),
-                                                        style="float:right;margin-right:20px"
-                                                        )
-                                                    )
-                                                  ), 
+                shinydashboardPlus::userBox(
+                  title = userDescription(
+                    title = bigquery_export$user_info$name,
+                    subtitle = bigquery_export$user_info$email,
+                    image = bigquery_export$user_info$picture,
+                    type = 2),
+                  width = 12,
+                  status = 'primary',
+                  collapsible = FALSE,
+                  HTML(glue::glue('{bigquery_export$user_info$given_name}, you have successfully authenticated with Google BigQuery. Please select a dataset from from the list of available projects, or sign out and sign in with a different Google Account.<br><br>')),
+                  br(),
+                  selectizeInput(inputId = ns('bq_project_id'),
+                                 label = 'Select from Available Google Projects:',
+                                 choices = bigquery_setup$bq_projects,
+                                 options = list(create = FALSE,
+                                                placeholder = 'No Available Projects')
+                                 ),
+                  selectizeInput(inputId = ns('bq_dataset_id'),
+                                 label = 'Select from Available BigQuery Datasets:',
+                                 choices = NULL
+                                 ),
+                  shinyjs::hidden(
+                    div(
+                      id = ns('bq_connect_div'),
+                      actionButton(inputId = ns('bq_connect'),label = 'Connect',icon = icon('cloud'))
+                      )
+                    ),
+                  footer = fluidRow(
+                    div(
+                      actionBttn(inputId = ns('logout'),
+                                 label = 'Sign Out of Google',
+                                 style = 'jelly',
+                                 icon = icon(name = 'sign-out-alt')
+                                 ),
+                      style="float:right;margin-right:20px"
+                      )
+                    )
+                  ), 
                 style = 'margin-left:-15px;margin-right:-15px'
                 )
               ) 
@@ -369,35 +474,38 @@ bigquery_setup_server <- function(id, secrets_json = '/srv/shiny-server/.bq_clie
       google_configured_ui <- reactive({
         req(bigquery_export$is_connected == 'yes')
         tagList(
-          shinydashboardPlus::widgetUserBox(title = bigquery_export$user_info$name,
-                                            width = 12,
-                                            subtitle = bigquery_export$user_info$email,
-                                            src = bigquery_export$user_info$picture,
-                                            type = 2, 
-                                            color = 'primary',
-                                            collapsible = FALSE,
-                                            HTML(paste('<H3>Success!!</H3>',
-                                                       'You have connected to a Google BigQuery database.',
-                                                       '<br>',
-                                                       '<br>',
-                                                       '<H4>Connection Information:</H4>',
-                                                       '<b>Project:</b>', bigquery_setup$bq_project_id,
-                                                       '<br>',
-                                                       '<b>Dataset:</b>', bigquery_setup$bq_dataset_id,
-                                                       '<br>'
-                                                       )
-                                                 ),
-                                            actionButton(inputId = ns('sbq_disconnect'), label = 'Disconnect'),
-                                            footer = fluidRow(
-                                              div(actionBttn(inputId = ns('logout_2'),
-                                                             label = 'Sign Out of Google',
-                                                             style = 'jelly',
-                                                             icon = icon(name = 'sign-out-alt')
-                                                             ),
-                                                  style="float:right;margin-right:20px"
-                                                  )
-                                              )
-                                            )
+          shinydashboardPlus::userBox(
+            title = userDescription(
+              title = bigquery_export$user_info$name,
+              subtitle = bigquery_export$user_info$email,
+              image = bigquery_export$user_info$picture,
+              type = 2),
+            width = 12,
+            status = 'primary',
+            collapsible = FALSE,
+            HTML(paste('<H3>Success!!</H3>',
+                       'You have connected to a Google BigQuery database.',
+                       '<br>',
+                       '<br>',
+                       '<H4>Connection Information:</H4>',
+                       '<b>Project:</b>', bigquery_setup$bq_project_id,
+                       '<br>',
+                       '<b>Dataset:</b>', bigquery_setup$bq_dataset_id,
+                       '<br>'
+                       )
+                 ),
+            actionButton(inputId = ns('sbq_disconnect'), label = 'Disconnect'),
+            footer = fluidRow(
+              div(
+                actionBttn(inputId = ns('logout_2'),
+                           label = 'Sign Out of Google',
+                           style = 'jelly',
+                           icon = icon(name = 'sign-out-alt')
+                           ),
+                style="float:right;margin-right:20px"
+                )
+              )
+            )
           )
         })
       
