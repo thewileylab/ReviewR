@@ -13,8 +13,9 @@ knitr::opts_chunk$set(
 
 ## Overview <img src='man/figures/logo.svg' align="right" height="138.5" />
 <!-- badges: start -->
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1488534.svg)](https://doi.org/10.5281/zenodo.1488534)
+[![CRAN status](https://www.r-pkg.org/badges/version/ReviewR)](https://CRAN.R-project.org/package=ReviewR)
 [![R-CMD-check](https://github.com/thewileylab/ReviewR/workflows/R-CMD-check/badge.svg)](https://github.com/thewileylab/ReviewR/actions)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1488534.svg)](https://doi.org/10.5281/zenodo.1488534)
 <!-- badges: end -->
 
 ReviewR is a portable Shiny tool to help you explore patient-level electronic health record data and perform chart review in a single integrated framework. It is is distributed as an R package using the [golem](https://thinkr-open.github.io/golem/) framework.
@@ -29,7 +30,16 @@ Full documentation available at [reviewr.thewileylab.org](https://reviewr.thewil
 
 ## Installation
 
+Install ReviewR from CRAN:
+
+```{r, eval=FALSE}
+install.packages('ReviewR')
+```
+
+### Development
+
 First ensure you have the library `devtools` installed. If you do not, please install using:
+
 ```{r eval=FALSE}
 install.packages('devtools')
 ```

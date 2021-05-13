@@ -5,8 +5,10 @@
 
 <!-- badges: start -->
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1488534.svg)](https://doi.org/10.5281/zenodo.1488534)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/ReviewR)](https://CRAN.R-project.org/package=ReviewR)
 [![R-CMD-check](https://github.com/thewileylab/ReviewR/workflows/R-CMD-check/badge.svg)](https://github.com/thewileylab/ReviewR/actions)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1488534.svg)](https://doi.org/10.5281/zenodo.1488534)
 <!-- badges: end -->
 
 ReviewR is a portable Shiny tool to help you explore patient-level
@@ -36,6 +38,14 @@ Full documentation available at
 [reviewr.thewileylab.org](https://reviewr.thewileylab.org).
 
 ## Installation
+
+Install ReviewR from CRAN:
+
+``` r
+install.packages('ReviewR')
+```
+
+### Development
 
 First ensure you have the library `devtools` installed. If you do not,
 please install using:
