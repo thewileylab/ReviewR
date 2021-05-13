@@ -45,7 +45,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">ReviewR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.6.9000</span>
       </span>
     </div>
 
@@ -146,18 +146,25 @@
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<p>First ensure you have the library <code>devtools</code> installed. If you do not, please install using:</p>
+<p>Install ReviewR from CRAN:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">'ReviewR'</span><span class="op">)</span></code></pre></div>
+<div id="development" class="section level3">
+<h3 class="hasAnchor">
+<a href="#development" class="anchor"></a>Development</h3>
+<p>First ensure you have the library <code>devtools</code> installed. If you do not, please install using:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">'devtools'</span><span class="op">)</span></code></pre></div>
 <p>Then install the latest development release of ReviewR using:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">'thewileylab/ReviewR'</span><span class="op">)</span></code></pre></div>
+</div>
 </div>
 <div id="usage" class="section level2">
 <h2 class="hasAnchor">
 <a href="#usage" class="anchor"></a>Usage</h2>
 <p>To run the application from your local computer simply run:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">ReviewR</span><span class="fu">::</span><span class="fu"><a href="reference/run_app.html">run_app</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>If you would like to deploy ReviewR on a server, see the <a href="https://reviewr.thewileylab.org/articles/deploy_server.html">Shiny Server Deployment</a> vignette. If you will be connecting to clinical data using Google BigQuery please see <a href="https://reviewr.thewileylab.org/articles/deploy_bigquery.html">Google BigQuery Deployment</a> vignette.</p>
 <div id="explore-clinical-data" class="section level4">
@@ -199,6 +206,8 @@
     <div class="links">
 <h2>Links</h2>
 <ul class="list-unstyled">
+<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=ReviewR">https://​cloud.r-project.org/​package=ReviewR</a>
+</li>
 <li>Browse source code at <br><a href="https://github.com/thewileylab/ReviewR/">https://​github.com/​thewileylab/​ReviewR/​</a>
 </li>
 <li>Report a bug at <br><a href="https://github.com/thewileylab/ReviewR/issues">https://​github.com/​thewileylab/​ReviewR/​issues</a>
@@ -236,8 +245,9 @@
   <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://doi.org/10.5281/zenodo.1488534"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.1488534.svg" alt="DOI"></a></li>
+<li><a href="https://CRAN.R-project.org/package=ReviewR"><img src="https://www.r-pkg.org/badges/version/ReviewR" alt="CRAN status"></a></li>
 <li><a href="https://github.com/thewileylab/ReviewR/actions"><img src="https://github.com/thewileylab/ReviewR/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://doi.org/10.5281/zenodo.1488534"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.1488534.svg" alt="DOI"></a></li>
 </ul>
 </div>
 </div>
