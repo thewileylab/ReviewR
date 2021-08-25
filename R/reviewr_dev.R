@@ -145,7 +145,7 @@ dev_add_data_model <- function(csv) {
   ### Define Required Columns
   required_cols <- c('table','field')
   ### Read User CSV
-  temp <- readr::read_csv(file = csv)
+  temp <- readr::read_csv(file = csv, show_col_types = FALSE)
 
   ## If required columns are present, Add user supplied CSV file to package and 
   ## incorporate into ReviewR::supported_data_models.rda
@@ -158,7 +158,7 @@ dev_add_data_model <- function(csv) {
       separate(col = .data$data_model, into = c('data_model','model_version'), sep = '_', extra = 'drop', fill = 'right') %>% 
       mutate(model_version = tidyr::replace_na(.data$model_version, ''),
              cdm = map(.data$file_path,
-                       ~readr::read_csv(.x)
+                       ~readr::read_csv(.x, show_col_types = FALSE)
                        )
              ) %>% 
       unnest(cols = .data$cdm) %>% 
