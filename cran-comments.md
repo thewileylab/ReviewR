@@ -19,9 +19,7 @@ Fixes
 ### R-hub
 
 * Windows Server 2008 R2 SP1, R-devel, 32/64 bit
-  * libcurl error code 35 returned for some vignettes URLs - I believe this to be an error as identified URLs are still active and pass the same checks on other platforms.
 * Ubuntu Linux 20.04.1 LTS, R-release, GCC
-  * PREPERROR, though overall r-hub build process appears to have succeeded. All R CMD checks appear to pass.
 * Fedora Linux, R-devel, clang, gfortran
 
 ### Win-builder
