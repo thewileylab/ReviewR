@@ -1,3 +1,9 @@
+# ReviewR 2.3.7
+
+## Fixes
+* Fixes template issue with development function (#24)
+* Updated demo database
+
 # ReviewR 2.3.6
 
 ## Features
