@@ -26,6 +26,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -38,12 +40,19 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ReviewR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.7</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav"></ul>
+      <ul class="nav navbar-nav">
+<li>
+  <a href="../reference/index.html">Reference</a>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
+      </ul>
 <ul class="nav navbar-nav navbar-right">
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -106,7 +115,7 @@
   <a href="../news/index.html">Changelog</a>
 </li>
 <li>
-  <a href="https://github.com/thewileylab/ReviewR/">
+  <a href="https://github.com/thewileylab/ReviewR/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -127,27 +136,27 @@
       <h1 data-toc-skip>Google BigQuery Deployment</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/thewileylab/ReviewR/blob/master/vignettes/deploy_bigquery.Rmd"><code>vignettes/deploy_bigquery.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/thewileylab/ReviewR/blob/HEAD/vignettes/deploy_bigquery.Rmd" class="external-link"><code>vignettes/deploy_bigquery.Rmd</code></a></small>
       <div class="hidden name"><code>deploy_bigquery.Rmd</code></div>
 
     </div>
 
     
     
-<div id="overview" class="section level2">
-<h2 class="hasAnchor">
-<a href="#overview" class="anchor"></a>Overview</h2>
+<div class="section level2">
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+</h2>
 <p>In order to protect your privacy, Google has specific requirements for connecting and allowing applications to access your data. These requirements mean that there are some things you should know, and in server deployments some extra setup steps required, for projects connecting to Google BigQuery.</p>
 </div>
-<div id="local-deployment" class="section level2">
-<h2 class="hasAnchor">
-<a href="#local-deployment" class="anchor"></a>Local Deployment</h2>
+<div class="section level2">
+<h2 id="local-deployment">Local Deployment<a class="anchor" aria-label="anchor" href="#local-deployment"></a>
+</h2>
 <p>This package uses internal resources owned by the “ReviewR” project on Google Cloud Platform. You can see our full <a href="https://reviewr.thewileylab.org/articles/privacy-policy">privacy policy</a> for how we handle your data (briefly, we only collect aggregate usage information, none of your data sets are revealed or accessible to us). If those terms are acceptable for you, no further configuration is required! However, if you would prefer not to authorize with ReviewR you may bring your own OAuth clientID from a Google Cloud Project of your choice.</p>
 <p>To obtain and use your own Google API credentials:</p>
 <ol style="list-style-type: decimal">
 <li>Obtain a Google Cloud Platform Project
 <ul>
-<li><a href="https://console.cloud.google.com/" class="uri">https://console.cloud.google.com/</a></li>
+<li><a href="https://console.cloud.google.com/" class="external-link uri">https://console.cloud.google.com/</a></li>
 </ul>
 </li>
 <li>Create an OAuth clientID and secret
@@ -171,16 +180,16 @@
 </ul>
 </li>
 </ol>
-<p>On launch, ReviewR will check the path defined in step 3 above for a <code>client_secret.json</code> file. If found, it will use these credentials instead of the Wiley Lab credentials that have been built into the package. Additionally, you may also run <code><a href="../reference/run_app.html">ReviewR::run_app(secrets_json = '/path/to/client_secret.json')</a></code> if you would prefer to store this file elsewhere.</p>
+<p>On launch, ReviewR will check the path defined in step 3 above for a <code>client_secret.json</code> file. If found, it will use these credentials instead of the Wiley Lab credentials that have been built into the package. Additionally, you may also run <code>ReviewR::run_app(secrets_json = '/path/to/client_secret.json')</code> if you would prefer to store this file elsewhere.</p>
 </div>
-<div id="server-deployment" class="section level2">
-<h2 class="hasAnchor">
-<a href="#server-deployment" class="anchor"></a>Server Deployment</h2>
+<div class="section level2">
+<h2 id="server-deployment">Server Deployment<a class="anchor" aria-label="anchor" href="#server-deployment"></a>
+</h2>
 <p>If you are using ReviewR on a Shiny Server deployment and intend to connect to data stored in Google BigQuery <em>you must</em> obtain your own Google API credentials. Otherwise, authentication will fail as Google will be unable to determine where to redirect authenticated users. After ReviewR is installed and accessible on a server with a secured fully qualified domain name:</p>
 <ol style="list-style-type: decimal">
 <li>Obtain a Google Cloud Platform Project
 <ul>
-<li><a href="https://console.cloud.google.com/" class="uri">https://console.cloud.google.com/</a></li>
+<li><a href="https://console.cloud.google.com/" class="external-link uri">https://console.cloud.google.com/</a></li>
 </ul>
 </li>
 <li>Create an OAuth clientID and secret
@@ -212,7 +221,7 @@
 </li>
 <li>If ReviewR is already installed, simply refresh the browser window.</li>
 </ol>
-<p><em>Additional Reading: (<a href="https://gargle.r-lib.org/articles/get-api-credentials.html#get-a-google-cloud-platform-project-1" class="uri">https://gargle.r-lib.org/articles/get-api-credentials.html#get-a-google-cloud-platform-project-1</a>)</em></p>
+<p><em>Additional Reading: (<a href="https://gargle.r-lib.org/articles/get-api-credentials.html#get-a-google-cloud-platform-project-1" class="external-link uri">https://gargle.r-lib.org/articles/get-api-credentials.html#get-a-google-cloud-platform-project-1</a>)</em></p>
 </div>
   </div>
 
@@ -227,11 +236,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Laura Wiley, Luke Rasmussen, David Mayer, <a href="https://www.thewileylab.org/"><img src="https://raw.githubusercontent.com/thewileylab/ReviewR/master/man/figures/WileyLab.svg" height="24"></a>.</p>
+  <p></p>
+<p>Developed by Laura Wiley, Luke Rasmussen, David Mayer, <a href="https://www.thewileylab.org/" class="external-link"><img src="https://raw.githubusercontent.com/thewileylab/ReviewR/master/reference/figures/WileyLab.svg" height="24"></a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -239,6 +250,8 @@
 
   
 
+
+  
 
   </body>
 </html>

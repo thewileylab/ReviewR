@@ -1,7 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>reviewr.thewileylab.org/404.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/CODE_OF_CONDUCT.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/LICENSE-text.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/LICENSE.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/articles/customize_support_new_data_model.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/articles/customize_support_new_rdbms.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/articles/deploy_bigquery.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/articles/deploy_docker.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/articles/deploy_local.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/articles/deploy_server.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/articles/index.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/articles/privacy-policy.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/articles/usage_connect_to_record_database.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/articles/usage_connect_to_redcap.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/articles/usage_perform_chart_review.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/authors.html</loc>
+  </url>
+  <url>
     <loc>reviewr.thewileylab.org/index.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/news/index.html</loc>
   </url>
   <url>
     <loc>reviewr.thewileylab.org/reference/ReviewR.html</loc>
@@ -32,6 +83,9 @@
   </url>
   <url>
     <loc>reviewr.thewileylab.org/reference/homepage.html</loc>
+  </url>
+  <url>
+    <loc>reviewr.thewileylab.org/reference/index.html</loc>
   </url>
   <url>
     <loc>reviewr.thewileylab.org/reference/internal-assets.html</loc>
@@ -113,35 +167,5 @@
   </url>
   <url>
     <loc>reviewr.thewileylab.org/reference/user_table.html</loc>
-  </url>
-  <url>
-    <loc>reviewr.thewileylab.org/articles/customize_support_new_data_model.html</loc>
-  </url>
-  <url>
-    <loc>reviewr.thewileylab.org/articles/customize_support_new_rdbms.html</loc>
-  </url>
-  <url>
-    <loc>reviewr.thewileylab.org/articles/deploy_bigquery.html</loc>
-  </url>
-  <url>
-    <loc>reviewr.thewileylab.org/articles/deploy_docker.html</loc>
-  </url>
-  <url>
-    <loc>reviewr.thewileylab.org/articles/deploy_local.html</loc>
-  </url>
-  <url>
-    <loc>reviewr.thewileylab.org/articles/deploy_server.html</loc>
-  </url>
-  <url>
-    <loc>reviewr.thewileylab.org/articles/privacy-policy.html</loc>
-  </url>
-  <url>
-    <loc>reviewr.thewileylab.org/articles/usage_connect_to_record_database.html</loc>
-  </url>
-  <url>
-    <loc>reviewr.thewileylab.org/articles/usage_connect_to_redcap.html</loc>
-  </url>
-  <url>
-    <loc>reviewr.thewileylab.org/articles/usage_perform_chart_review.html</loc>
   </url>
 </urlset>

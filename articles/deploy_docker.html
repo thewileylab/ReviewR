@@ -26,6 +26,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -38,12 +40,19 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ReviewR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.7</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav"></ul>
+      <ul class="nav navbar-nav">
+<li>
+  <a href="../reference/index.html">Reference</a>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
+      </ul>
 <ul class="nav navbar-nav navbar-right">
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -106,7 +115,7 @@
   <a href="../news/index.html">Changelog</a>
 </li>
 <li>
-  <a href="https://github.com/thewileylab/ReviewR/">
+  <a href="https://github.com/thewileylab/ReviewR/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -127,76 +136,76 @@
       <h1 data-toc-skip>Docker Deployment</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/thewileylab/ReviewR/blob/master/vignettes/deploy_docker.Rmd"><code>vignettes/deploy_docker.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/thewileylab/ReviewR/blob/HEAD/vignettes/deploy_docker.Rmd" class="external-link"><code>vignettes/deploy_docker.Rmd</code></a></small>
       <div class="hidden name"><code>deploy_docker.Rmd</code></div>
 
     </div>
 
     
     
-<div id="overview" class="section level2">
-<h2 class="hasAnchor">
-<a href="#overview" class="anchor"></a>Overview</h2>
+<div class="section level2">
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+</h2>
 <p>ReviewR is containerized! Users who are less familiar with R, would like to avoid any potential conflicts with existing packages or services, or simply do not want to manage their own R Environment may wish to utilize the containerized version of ReviewR. A Dockerfile may be obtained from the ReviewR package to build, run, and deploy ReviewR in your local or server environment.</p>
 </div>
-<div id="docker-desktop" class="section level2">
-<h2 class="hasAnchor">
-<a href="#docker-desktop" class="anchor"></a>Docker Desktop</h2>
-<div id="install-docker-desktop" class="section level3">
-<h3 class="hasAnchor">
-<a href="#install-docker-desktop" class="anchor"></a>Install Docker Desktop</h3>
+<div class="section level2">
+<h2 id="docker-desktop">Docker Desktop<a class="anchor" aria-label="anchor" href="#docker-desktop"></a>
+</h2>
+<div class="section level3">
+<h3 id="install-docker-desktop">Install Docker Desktop<a class="anchor" aria-label="anchor" href="#install-docker-desktop"></a>
+</h3>
 <p>Install the version of Docker Desktop that is appropriate for you operating system. Downloads and configuration instructions may be obtained at the following link:</p>
 <ul>
-<li><a href="https://docs.docker.com/desktop/" class="uri">https://docs.docker.com/desktop/</a></li>
+<li><a href="https://docs.docker.com/desktop/" class="external-link uri">https://docs.docker.com/desktop/</a></li>
 </ul>
 </div>
-<div id="run-reviewr-from-docker" class="section level3">
-<h3 class="hasAnchor">
-<a href="#run-reviewr-from-docker" class="anchor"></a>Run ReviewR from Docker</h3>
-<div id="download" class="section level4">
-<h4 class="hasAnchor">
-<a href="#download" class="anchor"></a>Download</h4>
+<div class="section level3">
+<h3 id="run-reviewr-from-docker">Run ReviewR from Docker<a class="anchor" aria-label="anchor" href="#run-reviewr-from-docker"></a>
+</h3>
+<div class="section level4">
+<h4 id="download">Download<a class="anchor" aria-label="anchor" href="#download"></a>
+</h4>
 <p>After Docker Desktop has been installed for your operating system we need to obtain the ReviewR source code. Open an R console and fork the ReviewR repository with the <code>usethis</code> package:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># install.packages('usethis')</span>
-<span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/create_from_github.html">create_from_github</a></span><span class="op">(</span>repo_spec <span class="op">=</span> <span class="st">'thewileylab/ReviewR'</span><span class="op">)</span></code></pre></div>
+<span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/create_from_github.html" class="external-link">create_from_github</a></span><span class="op">(</span>repo_spec <span class="op">=</span> <span class="st">'thewileylab/ReviewR'</span><span class="op">)</span></code></pre></div>
 <p><em>This step will fork the most recent version of the ReviewR package from GitHub into your working directory which includes additional files and development tools not built directly into the package. This includes an <code>Dockerfile</code> which will be used to create a ReviewR container.</em></p>
 <p>If R is not available on the system you are using, the package source may also be obtained via the following URL:</p>
 <ul>
-<li><a href="https://github.com/thewileylab/ReviewR/archive/master.zip" class="uri">https://github.com/thewileylab/ReviewR/archive/master.zip</a></li>
+<li><a href="https://github.com/thewileylab/ReviewR/archive/master.zip" class="external-link uri">https://github.com/thewileylab/ReviewR/archive/master.zip</a></li>
 </ul>
 </div>
-<div id="build-reviewr" class="section level4">
-<h4 class="hasAnchor">
-<a href="#build-reviewr" class="anchor"></a>Build ReviewR</h4>
+<div class="section level4">
+<h4 id="build-reviewr">Build ReviewR<a class="anchor" aria-label="anchor" href="#build-reviewr"></a>
+</h4>
 <p>Using the command line for your operating system, navigate to the location containing the forked the repository. For this example, the Dockerfile should reside in a ReviewR folder within your working directory from the previous section.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a><span class="bu">cd</span> ReviewR</span>
 <span id="cb2-2"><a href="#cb2-2"></a><span class="ex">docker</span> build -t reviewr .</span></code></pre></div>
 <p>This will grab all of the dependencies ReviewR requires from the internet and build a Docker image for your system. It may take a while, so grab a cup of coffee… possibly a meal.</p>
 </div>
-<div id="run-reviewr" class="section level4">
-<h4 class="hasAnchor">
-<a href="#run-reviewr" class="anchor"></a>Run ReviewR</h4>
+<div class="section level4">
+<h4 id="run-reviewr">Run ReviewR<a class="anchor" aria-label="anchor" href="#run-reviewr"></a>
+</h4>
 <p>After the Docker image has been created, you are ready to run ReviewR on your local system:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1"></a><span class="ex">docker</span> run --publish 1410:1410 --detach --name ReviewR reviewr:latest</span></code></pre></div>
 <p>That’s it! ReviewR can now be accessed from your browser at <code>http://localhost:1410</code>.</p>
 </div>
 </div>
 </div>
-<div id="server" class="section level2">
-<h2 class="hasAnchor">
-<a href="#server" class="anchor"></a>Server</h2>
+<div class="section level2">
+<h2 id="server">Server<a class="anchor" aria-label="anchor" href="#server"></a>
+</h2>
 <p>If you wish to support multiple concurrent users, ReviewR may also be hosted on your server running Docker. This guide will help you to install Docker, start a Shiny Server container, and serve the ReviewR application securely with NGINX.</p>
 <p>This following guide is for server systems running Ubuntu 18.04. Docker installation instructions have been adapted from:</p>
 <ul>
-<li><a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04" class="uri">https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04</a></li>
+<li><a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04" class="external-link uri">https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-18-04</a></li>
 </ul>
-<div id="docker-installation" class="section level3">
-<h3 class="hasAnchor">
-<a href="#docker-installation" class="anchor"></a>Docker Installation</h3>
-<div id="prerequisites" class="section level4">
-<h4 class="hasAnchor">
-<a href="#prerequisites" class="anchor"></a>Prerequisites</h4>
+<div class="section level3">
+<h3 id="docker-installation">Docker Installation<a class="anchor" aria-label="anchor" href="#docker-installation"></a>
+</h3>
+<div class="section level4">
+<h4 id="prerequisites">Prerequisites<a class="anchor" aria-label="anchor" href="#prerequisites"></a>
+</h4>
 <p>In order to make sure that the latest version of Docker is installed, we will add Docker’s official repository to the software manger for you server. To begin, SSH into your system and run:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">sudo</span> apt update</span>
 <span id="cb4-2"><a href="#cb4-2"></a><span class="fu">sudo</span> apt install apt-transport-https ca-certificates curl software-properties-common</span></code></pre></div>
@@ -209,9 +218,9 @@
 <div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1"></a><span class="fu">sudo</span> apt update</span>
 <span id="cb7-2"><a href="#cb7-2"></a><span class="fu">sudo</span> apt install docker-ce</span></code></pre></div>
 </div>
-<div id="docker-configuration-optional" class="section level4">
-<h4 class="hasAnchor">
-<a href="#docker-configuration-optional" class="anchor"></a>Docker Configuration (Optional)</h4>
+<div class="section level4">
+<h4 id="docker-configuration-optional">Docker Configuration (Optional)<a class="anchor" aria-label="anchor" href="#docker-configuration-optional"></a>
+</h4>
 <p>When first installed, docker commands can only be run by a root user. Depending on your configuration, this may not be desirable behavior. If you would like to be able to run Docker commands as a normal user, some additional configuration is required.</p>
 <p>First, we’ll need to add the active user to the “docker” group on the system. This can be accomplished by running:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1"></a><span class="fu">sudo</span> usermod -aG docker <span class="va">${USER}</span></span></code></pre></div>
@@ -221,9 +230,9 @@
 <p>Docker is now configured!</p>
 </div>
 </div>
-<div id="build-shiny-server-container" class="section level3">
-<h3 class="hasAnchor">
-<a href="#build-shiny-server-container" class="anchor"></a>Build Shiny Server Container</h3>
+<div class="section level3">
+<h3 id="build-shiny-server-container">Build Shiny Server Container<a class="anchor" aria-label="anchor" href="#build-shiny-server-container"></a>
+</h3>
 <p>In order to facilitate multiple concurrent users, a Shiny Server container will need to be built, including all of the dependencies that ReviewR requires. With docker already installed, build a suitable Docker image using a Dockerfile contained in the ReviewR source. To begin this process, we need to make a directory to hold the ReviewR application:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">mkdir</span> -p ~/srv/shinyapps</span></code></pre></div>
 <p>Next, clone the ReviewR source from GitHub:</p>
@@ -232,7 +241,7 @@
 </ul>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># install.packages('usethis')</span>
-<span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/create_from_github.html">create_from_github</a></span><span class="op">(</span>repo_spec <span class="op">=</span> <span class="st">'thewileylab/ReviewR'</span>, destdir <span class="op">=</span> <span class="st">'~/srv/shinyapps'</span><span class="op">)</span></code></pre></div>
+<span class="fu">usethis</span><span class="fu">::</span><span class="fu"><a href="https://usethis.r-lib.org/reference/create_from_github.html" class="external-link">create_from_github</a></span><span class="op">(</span>repo_spec <span class="op">=</span> <span class="st">'thewileylab/ReviewR'</span>, destdir <span class="op">=</span> <span class="st">'~/srv/shinyapps'</span><span class="op">)</span></code></pre></div>
 <ul>
 <li>Otherwise, clone from GitHub using the git commands in a bash terminal:</li>
 </ul>
@@ -251,13 +260,13 @@
 <p>In order to securely host this container at a URL, we’ll need to configure NGINX to reverse proxy this container with a Let’s Encrypt Certificate. Read on to see how.</p>
 </div>
 </div>
-<div id="configuring-nginx-to-reverse-proxy-reviewr-docker-container" class="section level2">
-<h2 class="hasAnchor">
-<a href="#configuring-nginx-to-reverse-proxy-reviewr-docker-container" class="anchor"></a>Configuring NGINX to Reverse Proxy ReviewR Docker Container</h2>
+<div class="section level2">
+<h2 id="configuring-nginx-to-reverse-proxy-reviewr-docker-container">Configuring NGINX to Reverse Proxy ReviewR Docker Container<a class="anchor" aria-label="anchor" href="#configuring-nginx-to-reverse-proxy-reviewr-docker-container"></a>
+</h2>
 <p>To serve your ReviewR Docker container with NGINX, we simply need to add and enable a server block, then secure it with the Certbot software which will install and configure a certificate from Let’s Encrypt. For information about how to obtain a domain and how to install NGINX, and Certbot please see <code><a href="../articles/deploy_server.html">vignette('deploy_server')</a></code>.</p>
-<div id="configure-nginx" class="section level3">
-<h3 class="hasAnchor">
-<a href="#configure-nginx" class="anchor"></a>Configure nginx</h3>
+<div class="section level3">
+<h3 id="configure-nginx">Configure nginx<a class="anchor" aria-label="anchor" href="#configure-nginx"></a>
+</h3>
 <p>Next, we need to configure NGINX to proxy traffic from web clients to the Docker Container. To accomplish this, we’ll need to add a server block to NGINX with information about our container. NGINX server blocks live in <code>/etc/nginx/sites-available/</code>. To initialize a server block for our container, issue the following command:</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1"></a><span class="co">## substitute nano for your preferred text editor: emacs, jed, joe, pico, sandy, vi, vim, etc.</span></span>
 <span id="cb15-2"><a href="#cb15-2"></a><span class="fu">sudo</span> nano /etc/nginx/sites-available/shiny-server_reviewr</span></code></pre></div>
@@ -277,9 +286,8 @@
 <p>At this point, your Shiny Server should be accessible at <code>http://shiny.your.domain.url/ReviewR</code> . If the ReviewR Docker Container is not immediately available at your domain after completing all of the steps to this point, you may have to restart NGINX; <code>sudo systemctl reload nginx</code></p>
 <p>Continue to the next section to secure access to your container with Let’s Encrypt.</p>
 </div>
-<div id="securing-docker-container-with-lets-encrypt" class="section level3">
-<h3 class="hasAnchor">
-<a href="#securing-docker-container-with-lets-encrypt" class="anchor"></a>Securing Docker Container with Let’s Encrypt <a id="lets-encrypt"></a>
+<div class="section level3">
+<h3 id="securing-docker-container-with-lets-encrypt">Securing Docker Container with Let’s Encrypt <a id="lets-encrypt"></a><a class="anchor" aria-label="anchor" href="#securing-docker-container-with-lets-encrypt"></a>
 </h3>
 <p>This portion of the guide assumes that you have already installed Certbot on your system by following the instructions in <code><a href="../articles/deploy_server.html">vignette('deploy_server')</a></code>.</p>
 <p>As we have already configured a server block for our container in the previous section, we are ready to run the Certbot software to secure our domain. Run the following code block, substituting <code>shiny.your.domain.url</code> with the domain that you configured in the nginx server block for the ReviewR container:</p>
@@ -301,11 +309,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Laura Wiley, Luke Rasmussen, David Mayer, <a href="https://www.thewileylab.org/"><img src="https://raw.githubusercontent.com/thewileylab/ReviewR/master/man/figures/WileyLab.svg" height="24"></a>.</p>
+  <p></p>
+<p>Developed by Laura Wiley, Luke Rasmussen, David Mayer, <a href="https://www.thewileylab.org/" class="external-link"><img src="https://raw.githubusercontent.com/thewileylab/ReviewR/master/reference/figures/WileyLab.svg" height="24"></a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -313,6 +323,8 @@
 
   
 
+
+  
 
   </body>
 </html>

@@ -26,6 +26,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -38,12 +40,19 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ReviewR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.7</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav"></ul>
+      <ul class="nav navbar-nav">
+<li>
+  <a href="../reference/index.html">Reference</a>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
+      </ul>
 <ul class="nav navbar-nav navbar-right">
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -106,7 +115,7 @@
   <a href="../news/index.html">Changelog</a>
 </li>
 <li>
-  <a href="https://github.com/thewileylab/ReviewR/">
+  <a href="https://github.com/thewileylab/ReviewR/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -127,22 +136,22 @@
       <h1 data-toc-skip>Connect to Patient Record Database</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/thewileylab/ReviewR/blob/master/vignettes/usage_connect_to_record_database.Rmd"><code>vignettes/usage_connect_to_record_database.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/thewileylab/ReviewR/blob/HEAD/vignettes/usage_connect_to_record_database.Rmd" class="external-link"><code>vignettes/usage_connect_to_record_database.Rmd</code></a></small>
       <div class="hidden name"><code>usage_connect_to_record_database.Rmd</code></div>
 
     </div>
 
     
     
-<div id="getting-started" class="section level2">
-<h2 class="hasAnchor">
-<a href="#getting-started" class="anchor"></a>Getting Started</h2>
+<div class="section level2">
+<h2 id="getting-started">Getting Started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
+</h2>
 <p>Launch the ReviewR application by running <code><a href="../reference/run_app.html">ReviewR::run_app()</a></code> from the R console or by visiting the URL of a Shiny Server deployed instance of ReviewR in a browser. On launch, ReviewR will show you the Homepage, which will provide some basic information about the ReviewR package.</p>
 <p>When you are ready to begin using ReviewR select the “Setup” option from the navigation menu on the left side of the application. The Setup section is divided into 2 columns, <a href="#connect-to-patient-database">Connect to Patient Database</a> and <a href="https://reviewr.thewileylab.org/articles/usage_connect_to_redcap.html">Configure Patient Chart Abstraction</a>.</p>
 </div>
-<div id="connect-to-patient-database" class="section level2">
-<h2 class="hasAnchor">
-<a href="#connect-to-patient-database" class="anchor"></a>Connect to Patient Database</h2>
+<div class="section level2">
+<h2 id="connect-to-patient-database">Connect to Patient Database<a class="anchor" aria-label="anchor" href="#connect-to-patient-database"></a>
+</h2>
 <p>ReviewR supports multiple database systems. A listing of available database modules is displayed in the drop down menu, located in this section:</p>
 <div class="figure" style="text-align: center">
 <img src="connect2db.png" alt="*Select from available database modules.*"><p class="caption">
@@ -150,31 +159,31 @@
 </p>
 </div>
 <p>Select the database module that you would like to connect to.</p>
-<div id="google-bigquery" class="section level4">
-<h4 class="hasAnchor">
-<a href="#google-bigquery" class="anchor"></a>Google BigQuery</h4>
+<div class="section level4">
+<h4 id="google-bigquery">Google BigQuery<a class="anchor" aria-label="anchor" href="#google-bigquery"></a>
+</h4>
 <p>If you are connecting to Google BigQuery, you will simply click “Sign In with Google”. See <a href="https://reviewr.thewileylab.org/articles/deploy_bigquery.html">Google BigQuery Deployment</a> for more information.</p>
 <p>Once you have successfully authenticated with Google you can select from your associated Google Cloud projects and the BigQuery data sets available within the selected project. Once you have selected the data set you wish to review, click “Connect”.</p>
 </div>
-<div id="postgresql" class="section level4">
-<h4 class="hasAnchor">
-<a href="#postgresql" class="anchor"></a>PostgreSQL</h4>
+<div class="section level4">
+<h4 id="postgresql">PostgreSQL<a class="anchor" aria-label="anchor" href="#postgresql"></a>
+</h4>
 <p>If you are connecting to PostgreSQL you will be prompted for configuration information about your database (database name, hostname, and port) as well as your login information (username and password) then click “Connect”.</p>
 </div>
-<div id="demo-sqlite-database" class="section level4">
-<h4 class="hasAnchor">
-<a href="#demo-sqlite-database" class="anchor"></a>Demo SQLite Database</h4>
-<p>If you would simply like to try ReviewR without connecting to your own data you can select the “Demo SQLite” database module and click “Connect”. This demo database contains simulated patient data from the <a href="https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF">CMS Synthetic Public Use File (SynPUF)</a> and <a href="https://www.mtsamples.com">MTSamples</a> databases.</p>
+<div class="section level4">
+<h4 id="demo-sqlite-database">Demo SQLite Database<a class="anchor" aria-label="anchor" href="#demo-sqlite-database"></a>
+</h4>
+<p>If you would simply like to try ReviewR without connecting to your own data you can select the “Demo SQLite” database module and click “Connect”. This demo database contains simulated patient data from the <a href="https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF" class="external-link">CMS Synthetic Public Use File (SynPUF)</a> and <a href="https://www.mtsamples.com" class="external-link">MTSamples</a> databases.</p>
 </div>
-<div id="other-relational-database-systems" class="section level4">
-<h4 class="hasAnchor">
-<a href="#other-relational-database-systems" class="anchor"></a>Other Relational Database Systems</h4>
+<div class="section level4">
+<h4 id="other-relational-database-systems">Other Relational Database Systems<a class="anchor" aria-label="anchor" href="#other-relational-database-systems"></a>
+</h4>
 <p>If you would like to connect ReviewR to a dataset stored in a different relational database system, see the <a href="https://reviewr.thewileylab.org/articles/customize_support_new_rdbms.html">Support a New Relational Database Management System</a> vignette.</p>
 </div>
 </div>
-<div id="data-model-detection" class="section level2">
-<h2 class="hasAnchor">
-<a href="#data-model-detection" class="anchor"></a>Data Model Detection</h2>
+<div class="section level2">
+<h2 id="data-model-detection">Data Model Detection<a class="anchor" aria-label="anchor" href="#data-model-detection"></a>
+</h2>
 <p>Once the required database credentials have been provided, the database setup module will create a connection to your database and attempt to identify the data model of the patient data stored in your database. The connection information and detected data model will be shown in the successful connection pane:</p>
 <div class="figure" style="text-align: center">
 <img src="connect2db_success.png" alt="*Successful connection to database with supported data model.*"><p class="caption">
@@ -189,9 +198,9 @@
 </div>
 <p>See the <a href="https://reviewr.thewileylab.org/articles/customize_support_new_data_model.html">Support a Custom Data Model</a> vignette to learn how to add support for your particular dataset.</p>
 </div>
-<div id="next-steps" class="section level2">
-<h2 class="hasAnchor">
-<a href="#next-steps" class="anchor"></a>Next Steps</h2>
+<div class="section level2">
+<h2 id="next-steps">Next Steps<a class="anchor" aria-label="anchor" href="#next-steps"></a>
+</h2>
 <p>ReviewR is now ready for you to view the patient information contained within your database. If you would like to configure chart abstraction using REDCap, please see the <a href="https://reviewr.thewileylab.org/articles/usage_connect_to_redcap.html">Connect to REDCap</a> vignette. Otherwise you can learn how to review patient charts in the <a href="https://reviewr.thewileylab.org/articles/usage_perform_chart_review.html">Perform a Chart Review</a> vignette.</p>
 </div>
   </div>
@@ -207,11 +216,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Laura Wiley, Luke Rasmussen, David Mayer, <a href="https://www.thewileylab.org/"><img src="https://raw.githubusercontent.com/thewileylab/ReviewR/master/man/figures/WileyLab.svg" height="24"></a>.</p>
+  <p></p>
+<p>Developed by Laura Wiley, Luke Rasmussen, David Mayer, <a href="https://www.thewileylab.org/" class="external-link"><img src="https://raw.githubusercontent.com/thewileylab/ReviewR/master/reference/figures/WileyLab.svg" height="24"></a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -219,6 +230,8 @@
 
   
 
+
+  
 
   </body>
 </html>

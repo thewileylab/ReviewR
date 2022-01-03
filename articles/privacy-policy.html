@@ -26,6 +26,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -38,12 +40,19 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">ReviewR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.3.7</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.3.7</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav"></ul>
+      <ul class="nav navbar-nav">
+<li>
+  <a href="../reference/index.html">Reference</a>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
+      </ul>
 <ul class="nav navbar-nav navbar-right">
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
@@ -106,7 +115,7 @@
   <a href="../news/index.html">Changelog</a>
 </li>
 <li>
-  <a href="https://github.com/thewileylab/ReviewR/">
+  <a href="https://github.com/thewileylab/ReviewR/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -127,31 +136,31 @@
       <h1 data-toc-skip>Privacy Policy for ReviewR</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/thewileylab/ReviewR/blob/master/vignettes/privacy-policy.Rmd"><code>vignettes/privacy-policy.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/thewileylab/ReviewR/blob/HEAD/vignettes/privacy-policy.Rmd" class="external-link"><code>vignettes/privacy-policy.Rmd</code></a></small>
       <div class="hidden name"><code>privacy-policy.Rmd</code></div>
 
     </div>
 
     
     
-<p><strong>ReviewR</strong> is an R package and Shiny application for performing chart review from clinical electronic data warehouses developed by The Wiley Lab. This package uses internal resources owned by the “ReviewR” project on Google Cloud Platform and are governed by the policies documented on this page. Your use of Google APIs with these packages is subject to each API’s respective terms of service. See <a href="https://developers.google.com/terms/" class="uri">https://developers.google.com/terms/</a>.</p>
+<p><strong>ReviewR</strong> is an R package and Shiny application for performing chart review from clinical electronic data warehouses developed by The Wiley Lab. This package uses internal resources owned by the “ReviewR” project on Google Cloud Platform and are governed by the policies documented on this page. Your use of Google APIs with these packages is subject to each API’s respective terms of service. See <a href="https://developers.google.com/terms/" class="external-link uri">https://developers.google.com/terms/</a>.</p>
 <p>If you would prefer not to authorize with ReviewR you may bring your own OAuth clientID from a Google Cloud Project of your choice.</p>
-<div id="privacy" class="section level1">
-<h1 class="hasAnchor">
-<a href="#privacy" class="anchor"></a>Privacy</h1>
-<div id="google-account-and-user-data" class="section level2">
-<h2 class="hasAnchor">
-<a href="#google-account-and-user-data" class="anchor"></a>Google account and user data</h2>
-<div id="accessing-user-data" class="section level3">
-<h3 class="hasAnchor">
-<a href="#accessing-user-data" class="anchor"></a>Accessing user data</h3>
+<div class="section level1">
+<h1 id="privacy">Privacy<a class="anchor" aria-label="anchor" href="#privacy"></a>
+</h1>
+<div class="section level2">
+<h2 id="google-account-and-user-data">Google account and user data<a class="anchor" aria-label="anchor" href="#google-account-and-user-data"></a>
+</h2>
+<div class="section level3">
+<h3 id="accessing-user-data">Accessing user data<a class="anchor" aria-label="anchor" href="#accessing-user-data"></a>
+</h3>
 <p>The ReviewR package allow you to access and interact with Google resources from your local computer/server by communicating directly with Google APIs to read your own data. This can only happen after you authenticate a specific Google account, authorize these actions, and provide the package a token confirming your authorization. We help you access this token by guiding you through the OAuth flow in the browser. As part of this process you must consent to allow “ReviewR” to operate on your behalf. The OAuth consent screen will tell you the exact “scope” (see below) of what is being authorized (i.e., the API/s requested and whether you are authorizing “read only” or “read and write” access.).</p>
 <p>The Wiley Lab never receives your data or permission to access your data. However we can see anonymous, aggregated information about usage of tokens obtained through our OAuth client, including which APIs and endpoints are accessed/configured.</p>
 <p><em>As a reminder, if you would prefer not to authorize with ReviewR you may bring your own OAuth clientID from a Google Cloud Project of your choice.</em></p>
 </div>
-<div id="scopes" class="section level3">
-<h3 class="hasAnchor">
-<a href="#scopes" class="anchor"></a>Scopes</h3>
+<div class="section level3">
+<h3 id="scopes">Scopes<a class="anchor" aria-label="anchor" href="#scopes"></a>
+</h3>
 <p>Overview of the scopes requested by ReviewR and their rationale:</p>
 <ul>
 <li>userinfo.email (read only): Allows ReviewR to display the email address associated with the connected user.</li>
@@ -160,22 +169,22 @@
 <li>devstorage.read_only: Allows ReviewR to download Google BigQuery results as allowed by existing IAM permissions.</li>
 </ul>
 </div>
-<div id="sharing-user-data" class="section level3">
-<h3 class="hasAnchor">
-<a href="#sharing-user-data" class="anchor"></a>Sharing user data</h3>
+<div class="section level3">
+<h3 id="sharing-user-data">Sharing user data<a class="anchor" aria-label="anchor" href="#sharing-user-data"></a>
+</h3>
 <p>ReviewR only communicate with Google APIs. No user data is shared with the Wiley Lab.</p>
 </div>
-<div id="storing-user-data" class="section level3">
-<h3 class="hasAnchor">
-<a href="#storing-user-data" class="anchor"></a>Storing user data</h3>
+<div class="section level3">
+<h3 id="storing-user-data">Storing user data<a class="anchor" aria-label="anchor" href="#storing-user-data"></a>
+</h3>
 <p>ReviewR does not store your credentials on your local machine as they are designed to be used in multi-user environments. Authentication must be performed at each login.</p>
 </div>
 </div>
 </div>
-<div id="policies-for-authors-of-packages-or-other-applications" class="section level1">
-<h1 class="hasAnchor">
-<a href="#policies-for-authors-of-packages-or-other-applications" class="anchor"></a>Policies for authors of packages or other applications</h1>
-<p>Do not use an API key or client ID from ReviewR or any other Wiley Lab project in an external package or tool. Per the Google User Data Policy <a href="https://developers.google.com/terms/api-services-user-data-policy" class="uri">https://developers.google.com/terms/api-services-user-data-policy</a>, your application must accurately represent itself when authenticating to Google API services. If you deploy this package in a server environment you must supply your own ClientID. Do not use credentials from The Wiley Lab as they will not be able to redirect users to your server’s domain; instead, use credentials associated with your project or your user.</p>
+<div class="section level1">
+<h1 id="policies-for-authors-of-packages-or-other-applications">Policies for authors of packages or other applications<a class="anchor" aria-label="anchor" href="#policies-for-authors-of-packages-or-other-applications"></a>
+</h1>
+<p>Do not use an API key or client ID from ReviewR or any other Wiley Lab project in an external package or tool. Per the Google User Data Policy <a href="https://developers.google.com/terms/api-services-user-data-policy" class="external-link uri">https://developers.google.com/terms/api-services-user-data-policy</a>, your application must accurately represent itself when authenticating to Google API services. If you deploy this package in a server environment you must supply your own ClientID. Do not use credentials from The Wiley Lab as they will not be able to redirect users to your server’s domain; instead, use credentials associated with your project or your user.</p>
 </div>
   </div>
 
@@ -190,11 +199,13 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Laura Wiley, Luke Rasmussen, David Mayer, <a href="https://www.thewileylab.org/"><img src="https://raw.githubusercontent.com/thewileylab/ReviewR/master/man/figures/WileyLab.svg" height="24"></a>.</p>
+  <p></p>
+<p>Developed by Laura Wiley, Luke Rasmussen, David Mayer, <a href="https://www.thewileylab.org/" class="external-link"><img src="https://raw.githubusercontent.com/thewileylab/ReviewR/master/reference/figures/WileyLab.svg" height="24"></a>.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -202,6 +213,8 @@
 
   
 
+
+  
 
   </body>
 </html>
