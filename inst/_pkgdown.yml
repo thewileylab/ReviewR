@@ -1,7 +1,7 @@
 url: reviewr.thewileylab.org
 template:
-  params:
-    bootswatch: flatly
+  bootstrap: 5
+  bootswatch: flatly
 home:
   links:
   - text: Additional WileyLab tools
@@ -10,8 +10,8 @@ home:
     href: https://reviewr.thewileylab.org/articles/privacy-policy
 authors:
   The Wiley Lab:
-    href: https://www.thewileylab.org/ 
-    html: <img src="https://raw.githubusercontent.com/thewileylab/ReviewR/master/man/figures/WileyLab.svg" height="24" />
+    href: "https://www.thewileylab.org/"
+    html: "<img src='https://raw.githubusercontent.com/thewileylab/ReviewR/master/man/figures/WileyLab.svg' height=24>"
 navbar:
   structure:
     right: [Deploying ReviewR, Using ReviewR, Customizing ReviewR, reference, news, github]
