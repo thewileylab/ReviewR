@@ -987,7 +987,7 @@ redcap_server <- function(id, subject_id) {
                        choices = redcap_setup$rc_instruments_list
                        )
         })
-      instrument_select_warning <- reactive({ HTML("<font color='#e83a2f'>Please click 'Save to REDCap' to capture currently entered values before to selecting a new instrument.</font>") })
+      instrument_select_warning <- reactive({ HTML("<font color='#e83a2f'>Please click 'Save to REDCap' to capture currently entered values before selecting a new instrument.</font>") })
       output$instrument_selection <- renderUI({ instrument_select() })
       output$instrument_select_warning <- renderUI({ instrument_select_warning() })
       
