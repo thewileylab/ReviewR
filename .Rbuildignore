@@ -25,3 +25,4 @@ vignettes/privacy-policy.Rmd
 ^Docker_ShinyServer$
 ^cran-comments\.md$
 ^CRAN-RELEASE$
+^reference$
