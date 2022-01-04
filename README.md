@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-## Overview <img src='man/figures/logo.svg' align="right" height="138.5" />
+# ReviewR <a href='https://reviewr.thewileylab.org'><img src='man/figures/logo.svg' align="right" height="139" /></a>
 
 <!-- badges: start -->
 
@@ -10,6 +10,8 @@ status](https://www.r-pkg.org/badges/version/ReviewR)](https://CRAN.R-project.or
 [![R-CMD-check](https://github.com/thewileylab/ReviewR/workflows/R-CMD-check/badge.svg)](https://github.com/thewileylab/ReviewR/actions)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1488534.svg)](https://doi.org/10.5281/zenodo.1488534)
 <!-- badges: end -->
+
+## Overview
 
 ReviewR is a portable Shiny tool to help you explore patient-level
 electronic health record data and perform chart review in a single
