@@ -108,12 +108,27 @@ dev_add_database_module <- function(mod_name = NULL, display_name = NULL) {
 
 #' Develop Data Model Table Functions
 #' 
-#' This function will assist in adding a new supported data model to 
-#' ReviewR. A schema file, stored as a CSV will be added to the 
-#' namespace, such that the database can be identified by the data model
-#' detection module. Additionally, a database_tables.R file will 
-#' be created and opened in R/ with basic table skeletons created
-#' based on the schema stored in the user supplied CSV.
+#' @description 
+#' This function will assist in adding support for a new data model to 
+#' ReviewR. A schema file, supplied as a CSV, will be added to the package
+#' namespace such that upon connection to a database containing the new data 
+#' model, ReviewR can identify and display it through the database detection 
+#' module. 
+#' 
+#' Users will be prompted to identify which table in the new data model
+#' contains a list of all patients. Additionally, users will be asked to 
+#' select which field uniquely identifies each patient. This field *must* 
+#' be present across all tables in the new data model for best results.
+#' 
+#' Once selections are captured, a database_tables.R file will be populated 
+#' and opened for editing in RStudio. Basic table skeletons are created based 
+#' on the provided schema and user selections.
+#' 
+#' Note: If the identifier field is not present across all tables, care
+#' must be taken to adjust the database_tables.R file to appropriately 
+#' represent the new data model structure.
+#' 
+
 #'
 #' @param csv \emph{Required}. The file path of a CSV file containing a data model schema
 #' 
@@ -145,8 +160,8 @@ dev_add_data_model <- function(csv) {
   ### Define Required Columns
   required_cols <- c('table','field')
   ### Read User CSV
-  temp <- readr::read_csv(file = csv)
-
+  temp <- suppressMessages(readr::read_csv(file = csv))
+  
   ## If required columns are present, Add user supplied CSV file to package and 
   ## incorporate into ReviewR::supported_data_models.rda
   if(all(required_cols %in% rlang::names2(temp)) ) {
@@ -158,7 +173,7 @@ dev_add_data_model <- function(csv) {
       separate(col = .data$data_model, into = c('data_model','model_version'), sep = '_', extra = 'drop', fill = 'right') %>% 
       mutate(model_version = tidyr::replace_na(.data$model_version, ''),
              cdm = map(.data$file_path,
-                       ~readr::read_csv(.x)
+                       ~suppressMessages(readr::read_csv(.x))
                        )
              ) %>% 
       unnest(cols = .data$cdm) %>% 
@@ -202,14 +217,18 @@ dev_add_data_model <- function(csv) {
             glue::glue('Please enter an integer {min(table_choices$Selection)}-{max(table_choices$Selection)}, or 0 to skip: ')
             }
       all_patients_selection <- readline(prompt = table_question)
-      if(!is.na(suppressWarnings(as.numeric(all_patients_selection))) ) {
+      if(!is.na(suppressMessages(as.numeric(all_patients_selection))) ) {
         all_patients_selection <- round(as.numeric(all_patients_selection), digits = 0)
         } else {
           all_patients_selection <- -1.2
           }
       }
     ### Patient Identifier field
+    patients_table_selection <- table_choices %>% 
+      filter(.data$Selection == all_patients_selection) %>% 
+      pull(.data$table)
     field_choices <- temp %>% 
+      dplyr::filter(table == patients_table_selection) %>% 
       dplyr::distinct(.data$field) %>% 
       mutate(Selection = row_number()) %>% 
       mutate(Selection = as.numeric(.data$Selection))
@@ -225,7 +244,7 @@ dev_add_data_model <- function(csv) {
             glue::glue('Please enter an integer {min(field_choices$Selection)}-{max(field_choices$Selection)}, or 0 to quit: ')
             }
       patient_identifier_field_selection <- readline(prompt = field_question)
-      if(!is.na(suppressWarnings(as.numeric(patient_identifier_field_selection))) ) {
+      if(!is.na(suppressMessages(as.numeric(patient_identifier_field_selection))) ) {
         patient_identifier_field_selection <- round(as.numeric(patient_identifier_field_selection), digits = 0)
         } else {
           patient_identifier_field_selection <- -1.2

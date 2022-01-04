@@ -13,12 +13,24 @@ dev_add_data_model(csv)
 A .R file populated with basic database table functions
 }
 \description{
-This function will assist in adding a new supported data model to
-ReviewR. A schema file, stored as a CSV will be added to the
-namespace, such that the database can be identified by the data model
-detection module. Additionally, a database_tables.R file will
-be created and opened in R/ with basic table skeletons created
-based on the schema stored in the user supplied CSV.
+This function will assist in adding support for a new data model to
+ReviewR. A schema file, supplied as a CSV, will be added to the package
+namespace such that upon connection to a database containing the new data
+model, ReviewR can identify and display it through the database detection
+module.
+
+Users will be prompted to identify which table in the new data model
+contains a list of all patients. Additionally, users will be asked to
+select which field uniquely identifies each patient. This field \emph{must}
+be present across all tables in the new data model for best results.
+
+Once selections are captured, a database_tables.R file will be populated
+and opened for editing in RStudio. Basic table skeletons are created based
+on the provided schema and user selections.
+
+Note: If the identifier field is not present across all tables, care
+must be taken to adjust the database_tables.R file to appropriately
+represent the new data model structure.
 }
 \seealso{
 Other Development Functions: 
