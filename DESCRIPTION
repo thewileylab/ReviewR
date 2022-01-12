@@ -4,7 +4,7 @@ Version: 2.3.7
 Authors@R: c(
             person('Laura', 'Wiley', email = 'laura.wiley@cuanschutz.edu', role = c('aut'), comment = c(ORCID = "0000-0001-6681-9754")),
             person('Luke', 'Rasmussen', email = 'luke.rasmussen@northwestern.edu', role = c('aut'), comment = c(ORCID = "0000-0002-4497-8049")),
-            person('David', 'Mayer', email = 'david.mayer@cuanschutz.edu', role = c('cre', 'aut')),
+            person('David', 'Mayer', email = 'david.mayer@cuanschutz.edu', role = c('cre', 'aut')), comment = c(ORCID = "0000-0002-6056-9771"),
             person(given = "The Wiley Lab", role = c("cph", "fnd"))
             )
 Description: A portable Shiny tool to explore patient-level electronic health record data 
