@@ -1,0 +1,14 @@
+citHeader("To cite ReviewR in publications use:")
+
+citEntry(
+  entry    = "Article",
+  title = "ReviewR: A light-weight and extensible tool for manual review of clinical records",
+  author = "David A. Mayer, Luke V. Rasmussen, Christopher D. Roark, Michael G.Kahn, Lisa M. Schilling, Laura K. Wiley",
+	journal = "medRxiv",
+	year = "2021",
+	publisher = "Cold Spring Harbor Laboratory Press",
+	url = "https://www.medrxiv.org/content/early/2021/10/26/2021.10.25.21265151",
+	eprint = "https://www.medrxiv.org/content/early/2021/10/26/2021.10.25.21265151.full.pdf",
+	doi = "10.1101/2021.10.25.21265151",
+  textVersion = paste("Wiley et al., (2021). ReviewR: A light-weight and extensible tool for manual review of clinical records. medRxiv, https://www.medrxiv.org/content/early/2021/10/26/2021.10.25.21265151")
+)
