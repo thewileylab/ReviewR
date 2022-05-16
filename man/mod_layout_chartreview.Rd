@@ -21,7 +21,7 @@ chartreview_server(id, database_vars, abstract_vars)
 \emph{chartreview_ui}:
 \item{tagList}{The Chart Review UI}
 \emph{chartreview_server}:
-\item{}{This function has no return, other than creating a UI output for the
+\item{NULL}{This function has no return, other than creating a UI output for the
 UI function of this module.}
 }
 \description{

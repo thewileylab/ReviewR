@@ -30,7 +30,7 @@
 #' *chartreview_ui*:
 #' \item{tagList}{The Chart Review UI}
 #' *chartreview_server*: 
-#' \item{}{This function has no return, other than creating a UI output for the
+#' \item{NULL}{This function has no return, other than creating a UI output for the
 #' UI function of this module.}
 #' 
 NULL
