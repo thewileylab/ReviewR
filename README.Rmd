@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 
 ReviewR is a portable Shiny tool to help you explore patient-level electronic health record data and perform chart review in a single integrated framework. It is is distributed as an R package using the [golem](https://thinkr-open.github.io/golem/) framework.
 
-This tool supports browsing clinical data in many different formats including multiple versions of the OMOP common data model as well as the MIMIC-III data model. If you are using a different data format, ReviewR can be easily customized to support your use case (see [Support a Custom Data Model](https://reviewr.thewileylab.org/articles/customize_support_new_datamodel.html) vignette).
+This tool supports browsing clinical data in many different formats including multiple versions of the OMOP common data model as well as the MIMIC-III data model. If you are using a different data format, ReviewR can be easily customized to support your use case (see [Support a Custom Data Model](https://reviewr.thewileylab.org/articles/customize_support_new_data_model.html) vignette).
 
 At present ReviewR supports data stored in Google BigQuery or Postgres, although it can be easily customized to access any database supported by [dbplyr](https://dbplyr.tidyverse.org/) (see [Support a New Relational Database Management System](https://reviewr.thewileylab.org/articles/customize_support_new_rdbms.html) vignette). 
 
