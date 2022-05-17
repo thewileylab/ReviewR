@@ -8,7 +8,7 @@
 * minor version bump
 * move pkgload to suggests
 * use latest roxygen
-* update dockerfile
+* update Dockerfile
 * add package CITATION
 
 # ReviewR 2.3.7
