@@ -23,7 +23,7 @@ including multiple versions of the OMOP common data model as well as the
 MIMIC-III data model. If you are using a different data format, ReviewR
 can be easily customized to support your use case (see [Support a Custom
 Data
-Model](https://reviewr.thewileylab.org/articles/customize_support_new_datamodel.html)
+Model](https://reviewr.thewileylab.org/articles/customize_support_new_data_model.html)
 vignette).
 
 At present ReviewR supports data stored in Google BigQuery or Postgres,
