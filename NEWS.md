@@ -1,3 +1,16 @@
+# ReviewR 2.3.8
+
+## Fixes
+* Address Rd issue in `mod_layout_chartreview()`
+
+## Misc Updates
+
+* minor version bump
+* move pkgload to suggests
+* use latest roxygen
+* update dockerfile
+* add package CITATION
+
 # ReviewR 2.3.7
 
 ## Fixes
