@@ -26,3 +26,4 @@ vignettes/privacy-policy.Rmd
 ^cran-comments\.md$
 ^CRAN-RELEASE$
 ^reference$
+^CRAN-SUBMISSION$
