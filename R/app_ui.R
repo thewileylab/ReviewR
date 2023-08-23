@@ -1,6 +1,5 @@
 #' @import shiny
 #' @import shinydashboard
-#' @importFrom dashboardthemes shinyDashboardThemes
 app_ui <- function() {
   stop_nav_jscode <- 'window.onbeforeunload = function() { return true; };'
   
@@ -18,8 +17,7 @@ app_ui <- function() {
                                                ),
                                    uiOutput('reviewr_version')
                                    ),
-                  dashboardBody(shinyDashboardThemes(theme = "blue_gradient"),
-                                tags$script(stop_nav_jscode), #Prevent navigation using browser buttons (back, reload, close tab)
+                  dashboardBody(tags$script(stop_nav_jscode), #Prevent navigation using browser buttons (back, reload, close tab)
                                 uiOutput('main_ui')
                                 )
                   )
