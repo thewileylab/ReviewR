@@ -1,5 +1,5 @@
-pandoc: 2.7.3
-pkgdown: 2.0.3
+pandoc: 2.19.2
+pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   customize_support_new_data_model: customize_support_new_data_model.html
@@ -12,7 +12,7 @@ articles:
   usage_connect_to_record_database: usage_connect_to_record_database.html
   usage_connect_to_redcap: usage_connect_to_redcap.html
   usage_perform_chart_review: usage_perform_chart_review.html
-last_built: 2022-05-18T17:08Z
+last_built: 2023-08-30T19:39Z
 urls:
   reference: reviewr.thewileylab.org/reference
   article: reviewr.thewileylab.org/articles
