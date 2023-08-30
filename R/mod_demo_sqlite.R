@@ -88,28 +88,33 @@ NULL
 demo_sqlite_setup_ui <- function(id) { 
   ns <- NS(id)
   tagList(
-    div(id = ns('demodb_setup'),
-      HTML('Connect to a demonstration SQLite database containing synPUF data.'),
-      br(),
-      br(),
-      actionButton(inputId = ns('demodb_connect'), label = 'Connect', icon = icon(name = 'database')),
-      ),
-    hidden(
-      div(id = ns('demodb_connected'),
-          h3('Success!'),
-          HTML("This demonstration database module contains a 10 person subset of the CMS 2008-2010 Data Entrepreneurs' Synthetic Public Use File (DE-SynPUF) from OHDSI."),
-          h4('Details'),
-          HTML('<ul>
-                <li><a href="https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF" target="_blank" rel="noopener noreferrer">SynPUF Dataset Information</a></li>
-                <li><a href="https://github.com/OHDSI/CommonDataModel/blob/v5.2.2/PostgreSQL/OMOP%20CDM%20ddl%20-%20PostgreSQL.sql" target="_blank" rel="noopener noreferrer">OMOP CDM 5.2.2 DDL for OHDSI supported DBMSs</a></li>
-                <li><a href="https://www.mtsamples.com/" target="_blank" rel="noopener noreferrer">Notes Obtained from MTSamples.com</a></li>
-                <li><a href="https://github.com/thewileylab/synPUF" target="_blank" rel="noopener noreferrer">R Dataset ETL Process</a></li>
-                </ul>'
-               ),
-          br(),
-          actionButton(inputId = ns('demodb_disconnect'), label = 'Disconnect')
-          )
-      )
+    shinydashboard::box(title = 'Connect to Demo Database',
+                        width = '100%',
+                        status = 'primary',
+                        solidHeader = F,
+                        div(id = ns('demodb_setup'),
+                            HTML('Connect to a demonstration SQLite database containing synPUF data.'),
+                            br(),
+                            br(),
+                            actionButton(inputId = ns('demodb_connect'), label = 'Connect', icon = icon(name = 'database')),
+                            ),
+                        hidden(
+                          div(id = ns('demodb_connected'),
+                              h3('Success!'),
+                              HTML("This demonstration database module contains a 10 person subset of the CMS 2008-2010 Data Entrepreneurs' Synthetic Public Use File (DE-SynPUF) from OHDSI."),
+                              h4('Details'),
+                              HTML('<ul>
+                              <li><a href="https://www.cms.gov/Research-Statistics-Data-and-Systems/Downloadable-Public-Use-Files/SynPUFs/DE_Syn_PUF" target="_blank" rel="noopener noreferrer">SynPUF Dataset Information</a></li>
+                              <li><a href="https://github.com/OHDSI/CommonDataModel/blob/v5.2.2/PostgreSQL/OMOP%20CDM%20ddl%20-%20PostgreSQL.sql" target="_blank" rel="noopener noreferrer">OMOP CDM 5.2.2 DDL for OHDSI supported DBMSs</a></li>
+                              <li><a href="https://www.mtsamples.com/" target="_blank" rel="noopener noreferrer">Notes Obtained from MTSamples.com</a></li>
+                              <li><a href="https://github.com/thewileylab/synPUF" target="_blank" rel="noopener noreferrer">R Dataset ETL Process</a></li>
+                                   </ul>'
+                                   ),
+                              br(),
+                              actionButton(inputId = ns('demodb_disconnect'), label = 'Disconnect')
+                              )
+                          )
+                        )
     )
   }
 
