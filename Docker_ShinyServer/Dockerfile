@@ -1,4 +1,4 @@
-FROM rocker/shiny:4.0.3
+FROM rocker/shiny:4.3.1
 
 RUN apt-get update -qq && apt-get -y --no-install-recommends install \
   git-core \
@@ -22,7 +22,6 @@ RUN apt-get update -qq && apt-get -y --no-install-recommends install \
     #--deps TRUE \
     bigrquery \
     config \
-    dashboardthemes \
     DBI \
     dbplyr \
     dplyr \
