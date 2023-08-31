@@ -44,7 +44,7 @@ src_add_external_resources <- function(){
 #' Configuration options can be passed directly to httr via the config option in the 
 #' [redcapAPI::redcapConnection] function. Here, we set 'ssl_verifypeer = 1L' to ensure
 #' cert checking is enabled.
-#' * \url{https://www.rdocumentation.org/packages/redcapAPI/versions/2.3/topics/redcapConnection}
+#' * \url{https://search.r-project.org/CRAN/refmans/redcapAPI/html/redcapConnection.html}
 #' * \url{https://httr.r-lib.org/reference/httr_options.html}
 #'
 #' @param url A string containing the https URL for your institution's REDCap API.

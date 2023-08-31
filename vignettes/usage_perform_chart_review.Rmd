@@ -37,7 +37,7 @@ knitr::include_graphics('reviewr_pt_search.png')
 
 Clicking a subject ID from the 'Patient Search' page will automatically redirect you to the 'Chart Review' portion of ReviewR. Here, you will be greeted by a screen similar to this:
 
-```{r figure_2, echo=FALSE, fig.cap = "*ReviewR Chart Review: Everything's [Shiny](https://shiny.rstudio.com/), Cap'n. Not to fret.*"}
+```{r figure_2, echo=FALSE, fig.cap = "*ReviewR Chart Review: Everything's [Shiny](https://shiny.posit.co/), Cap'n. Not to fret.*"}
 knitr::include_graphics('reviewr_chart_review.png')
 ```
 

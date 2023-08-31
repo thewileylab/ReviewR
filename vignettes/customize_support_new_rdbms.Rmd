@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 
 ## Overview
 
-ReviewR manages database connections with the help of the [DBI](https://db.rstudio.com/dbi/) and [dbplyr](https://dbplyr.tidyverse.org/) packages from RStudio. Leveraging these packages, ReviewR is able to operate on remote databases as if they are local, in-memory data frames. R code written with [dplyr](https://dplyr.tidyverse.org/) verbs are automatically translated to SQL by the dbplyr package and sent to the connected database. The translation to the connected database is handled by a DBI connection object, which references a database driver. A full list of dplyr compatible database back-ends can be found [here](https://db.rstudio.com/databases/). 
+ReviewR manages database connections with the help of the [DBI](https://dbi.r-dbi.org/) and [dbplyr](https://dbplyr.tidyverse.org/) packages from RStudio. Leveraging these packages, ReviewR is able to operate on remote databases as if they are local, in-memory data frames. R code written with [dplyr](https://dplyr.tidyverse.org/) verbs are automatically translated to SQL by the dbplyr package and sent to the connected database. The translation to the connected database is handled by a DBI connection object, which references a database driver. A full list of dplyr compatible database back-ends can be found [here](https://db.rstudio.com/databases/). 
 
 ### Database Modules
 
@@ -96,11 +96,11 @@ Take note of the [ReviewR Database Module Template](#reviewr-database-module-tem
 * {mod_name}_setup_ui - Defines the user interface that will guide someone through the database connection process
 * {mod_name}_setup_server - Defines what actions to take as a result of user inputs. 
 
-ReviewR utilizes the [`moduleServer()`](https://shiny.rstudio.com/reference/shiny/1.5.0/moduleServer.html) function introduced in Shiny 1.5. This allows the server portion of a module to be called within your application just like any other function, instead of relying on the previous `callModule()` syntax. 
+ReviewR utilizes the [`moduleServer()`](https://shiny.posit.co/r/reference/shiny/1.5.0/moduleserver) function introduced in Shiny 1.5. This allows the server portion of a module to be called within your application just like any other function, instead of relying on the previous `callModule()` syntax. 
 
 The next thing to note is that ReviewR modules will ultimately become a part of the ReviewR package namespace. This means that both the UI and Server functions *require* roxygen comments, with all function parameters, returns, and necessary package imports declared. 
 
-For additional information on module development, please see: https://shiny.rstudio.com/articles/modules.html
+For additional information on module development, please see: https://shiny.posit.co/r/articles/improve/modules/
 
 ### Requirements
 
@@ -115,7 +115,7 @@ For additional information on module development, please see: https://shiny.rstu
 
 #### UI Function
 
-Begin by adding [Shiny Widgets](https://shiny.rstudio.com/gallery/widget-gallery.html) to the `tagList()` portion of the UI function in your database module. Users will interact with these widgets to enter their database credentials. Consider adding a "Connect" and "Disconnect" button to your UI which can be monitored by your server function to store the user entered credentials and combine them into a DBI connection object. Specifics will vary by database. Remember to wrap all user inputID's with the `ns()` function, so that they will inherit the module namespace. 
+Begin by adding [Shiny Widgets](https://shiny.posit.co/r/gallery/widgets/widget-gallery/) to the `tagList()` portion of the UI function in your database module. Users will interact with these widgets to enter their database credentials. Consider adding a "Connect" and "Disconnect" button to your UI which can be monitored by your server function to store the user entered credentials and combine them into a DBI connection object. Specifics will vary by database. Remember to wrap all user inputID's with the `ns()` function, so that they will inherit the module namespace. 
 ```{r pseudo_ui_code, eval=F}
 tagList(
   actionButton(inputId = ns('connect'),label = 'connect'),

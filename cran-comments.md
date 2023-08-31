@@ -1,34 +1,28 @@
 
 ## Update Summary
 
-This is a minor update to the ReviewR package, bringing the version to  2.3.8
+This is a minor update to the ReviewR package, bringing the version to  2.3.9
 
 Fixes
 
-* Address Rd issue in `mod_layout_chartreview()`
-  
-    >In Rd \describe, \arguments and \value the item entries are of the form
-    >
-    >\item{LABEL}{DESCRIPTION}
-    >
-    >with a non-empty label: please modify your Rd files accordingly.
+*  Address Rd issue with package overview help file
 
 Misc Updates
 
 * minor version bump
-* move pkgload to suggests
-* use latest roxygen
-* update dockerfile
-* add package CITATION
+* Remove `dashboardthemes` dependency
+* Refresh vignettes with updated URLs
+* update dockerfile(s)
 
 ## Test environments
 
 ### GitHub Actions
 
-* windows-latest (release), R 4.2.0
-* macOS-latest (release), R 4.2.0
-* ubuntu-20.04 (release), R 4.2.0
-* ubuntu-20.04 (devel), R devel
+* windows-latest (release), R 4.3.1
+* macOS-latest (release), R 4.3.1
+* ubuntu-22.04.3 (release), R 4.3.1
+* ubuntu-22.04.3 (old-release), R 4.2.3
+* ubuntu-22.04.3 (devel), R devel
 
 ### R-hub
 
@@ -46,9 +40,9 @@ There were no ERRORs or WARNINGs.
 There was 1 NOTE:
 
 * checking package dependencies ... NOTE
-  Imports includes 29 non-default packages.
+  Imports includes 28 non-default packages.
   Importing from so many packages makes the package vulnerable to any of
-  them becoming unavailable.  Move as many as possible to Suggests and
+  them becoming unavailable. Move as many as possible to Suggests and
   use conditionally.
   
 This package utilizes the R Tidyvrese, which has a defined [lifecycle](https://lifecycle.r-lib.org/articles/stages.html) for all functions. This will allow ample time to locate and update any deprecated/retired functions before they become unavailable. 

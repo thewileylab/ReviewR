@@ -199,7 +199,7 @@ omop_table_all_patients <- function(table_map, db_connection) {
 }
 ```
 
-The above will add the human readable representation of the subjects gender to the 'person' table, rather than the numeric concept that is stored in the "person" table. For additional information on the OMOP data model, please consult the [OHDSI OMOP website](https://www.ohdsi.org/data-standardization/the-common-data-model/).
+The above will add the human readable representation of the subjects gender to the 'person' table, rather than the numeric concept that is stored in the "person" table. For additional information on the OMOP data model, please consult the [OHDSI OMOP website](https://www.ohdsi.org/data-standardization/).
 
 When developing, it is important to be aware of these relationships so that appropriate joins can be made to correctly the display the information properly to the user. Tables which contain relational information need not be displayed on the Chart Review Tab, and the table function skeletons created by the dev function may safely be removed.
 

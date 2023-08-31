@@ -34,7 +34,7 @@ Configuration options can be passed directly to httr via the config option in th
 \link[redcapAPI:redcapConnection]{redcapAPI::redcapConnection} function. Here, we set 'ssl_verifypeer = 1L' to ensure
 cert checking is enabled.
 \itemize{
-\item \url{https://www.rdocumentation.org/packages/redcapAPI/versions/2.3/topics/redcapConnection}
+\item \url{https://search.r-project.org/CRAN/refmans/redcapAPI/html/redcapConnection.html}
 \item \url{https://httr.r-lib.org/reference/httr_options.html}
 }
 }

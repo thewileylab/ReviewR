@@ -37,8 +37,8 @@ This guide **is not** [universally applicable](https://xkcd.com/1654/) to all se
 Information provided in this vignette has been adapted from other guides that have been listed in the [Suggested Reading](#suggested-reading) section below.
 
 ### Suggested Reading 
-* [Shiny Server: Quick Start Guide](https://support.rstudio.com/hc/en-us/articles/360011458854-Shiny-Server-Quick-Start-Installation-and-Configuration)
-* [Shiny Server: Running with a Proxy](https://support.rstudio.com/hc/en-us/articles/213733868-Running-Shiny-Server-with-a-Proxy)
+* [Shiny Server: Quick Start Guide](https://support.posit.co/hc/en-us/articles/360011458854-Shiny-Server-Quick-Start-Installation-and-Configuration)
+* [Shiny Server: Running with a Proxy](https://support.posit.co/hc/en-us/articles/213733868-Running-Shiny-Server-with-a-Proxy)
 * [Let's Encrypt Getting Started](https://letsencrypt.org/getting-started/)
 * [Secure NGINX with Let's Encrypt](https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-18-04)
 
@@ -74,8 +74,8 @@ sudo apt-get install gdebi-core
 Now that all prerequisites have been satisfied, download and install Shiny Server to your system:
 
 ```{bash, eval=F}
-wget https://download3.rstudio.org/ubuntu-14.04/x86_64/shiny-server-1.5.15.953-amd64.deb
-sudo gdebi shiny-server-1.5.15.953-amd64.deb
+wget https://download3.rstudio.org/ubuntu-18.04/x86_64/shiny-server-1.5.20.1002-amd64.deb
+sudo gdebi shiny-server-1.5.20.1002-amd64.deb
 ```
 
 At this point, you will have a bare bones basic Shiny Server Installation. If you would like to verify that Shiny has installed correctly, you may attempt a connection from a different machine on the same network by visiting: `your.server.ip_address:3838`

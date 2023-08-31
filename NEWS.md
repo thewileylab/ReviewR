@@ -1,3 +1,13 @@
+# ReviewR 2.3.9
+
+## Fixes
+* Address Rd issue with package overview help file
+
+## Misc Updates
+* Remove `dashboardthemes` dependency
+* Refresh vignettes with updated 
+* update dockerfile(s)
+
 # ReviewR 2.3.8
 
 ## Fixes
