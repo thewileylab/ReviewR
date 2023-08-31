@@ -6,7 +6,7 @@
 ## Misc Updates
 * Update CITATION
 * Remove `dashboardthemes` dependency
-* Refresh vignettes with updated 
+* Refresh vignettes with updated URLs
 * update Dockerfile(s)
 
 # ReviewR 2.3.8
