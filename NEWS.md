@@ -4,9 +4,10 @@
 * Address Rd issue with package overview help file
 
 ## Misc Updates
+* Update CITATION
 * Remove `dashboardthemes` dependency
 * Refresh vignettes with updated 
-* update dockerfile(s)
+* update Dockerfile(s)
 
 # ReviewR 2.3.8
 

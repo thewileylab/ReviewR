@@ -10,9 +10,10 @@ Fixes
 Misc Updates
 
 * minor version bump
+* Update CITATION
 * Remove `dashboardthemes` dependency
 * Refresh vignettes with updated URLs
-* update dockerfile(s)
+* update Dockerfile(s)
 
 ## Test environments
 
