@@ -107,7 +107,7 @@
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>ReviewR manages database connections with the help of the <a href="https://db.rstudio.com/dbi/" class="external-link">DBI</a> and <a href="https://dbplyr.tidyverse.org/" class="external-link">dbplyr</a> packages from RStudio.
+<p>ReviewR manages database connections with the help of the <a href="https://dbi.r-dbi.org/" class="external-link">DBI</a> and <a href="https://dbplyr.tidyverse.org/" class="external-link">dbplyr</a> packages from RStudio.
 Leveraging these packages, ReviewR is able to operate on remote
 databases as if they are local, in-memory data frames. R code written
 with <a href="https://dplyr.tidyverse.org/" class="external-link">dplyr</a> verbs are
@@ -229,7 +229,7 @@ someone through the database connection process</li>
 <li>{mod_name}_setup_server - Defines what actions to take as a result
 of user inputs.</li>
 </ul>
-<p>ReviewR utilizes the <a href="https://shiny.rstudio.com/reference/shiny/1.5.0/moduleServer.html" class="external-link"><code>moduleServer()</code></a>
+<p>ReviewR utilizes the <a href="https://shiny.posit.co/r/reference/shiny/1.5.0/moduleserver" class="external-link"><code>moduleServer()</code></a>
 function introduced in Shiny 1.5. This allows the server portion of a
 module to be called within your application just like any other
 function, instead of relying on the previous <code><a href="https://rdrr.io/pkg/shiny/man/callModule.html" class="external-link">callModule()</a></code>
@@ -238,7 +238,7 @@ syntax.</p>
 a part of the ReviewR package namespace. This means that both the UI and
 Server functions <em>require</em> roxygen comments, with all function
 parameters, returns, and necessary package imports declared.</p>
-<p>For additional information on module development, please see: <a href="https://shiny.rstudio.com/articles/modules.html" class="external-link uri">https://shiny.rstudio.com/articles/modules.html</a></p>
+<p>For additional information on module development, please see: <a href="https://shiny.posit.co/r/articles/improve/modules/" class="external-link uri">https://shiny.posit.co/r/articles/improve/modules/</a></p>
 </div>
 <div class="section level3">
 <h3 id="requirements">Requirements<a class="anchor" aria-label="anchor" href="#requirements"></a>
@@ -265,7 +265,7 @@ initial values set:
 <div class="section level4">
 <h4 id="ui-function">UI Function<a class="anchor" aria-label="anchor" href="#ui-function"></a>
 </h4>
-<p>Begin by adding <a href="https://shiny.rstudio.com/gallery/widget-gallery.html" class="external-link">Shiny
+<p>Begin by adding <a href="https://shiny.posit.co/r/gallery/widgets/widget-gallery/" class="external-link">Shiny
 Widgets</a> to the <code><a href="https://rstudio.github.io/htmltools/reference/tagList.html" class="external-link">tagList()</a></code> portion of the UI function in
 your database module. Users will interact with these widgets to enter
 their database credentials. Consider adding a “Connect” and “Disconnect”
