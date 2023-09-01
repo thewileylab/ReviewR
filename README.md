@@ -7,7 +7,7 @@
 
 [![CRAN
 status](https://www.r-pkg.org/badges/version/ReviewR)](https://CRAN.R-project.org/package=ReviewR)
-[![R-CMD-check](https://github.com/thewileylab/ReviewR/workflows/R-CMD-check/badge.svg)](https://github.com/thewileylab/ReviewR/actions)
+[![R-CMD-check](https://github.com/thewileylab/ReviewR/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/thewileylab/ReviewR/actions/workflows/R-CMD-check.yaml)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1488534.svg)](https://doi.org/10.5281/zenodo.1488534)
 <!-- badges: end -->
 
