@@ -1,11 +1,13 @@
 
 ## Update Summary
 
-This is a minor update to the ReviewR package, bringing the version to  2.3.9
+This is a minor update to the ReviewR package, bringing the version to  2.3.10
 
 Fixes
 
-*  Address Rd issue with package overview help file
+* CITATION DOI formatting
+* Address Rd issue with package overview help file
+
 
 Misc Updates
 
